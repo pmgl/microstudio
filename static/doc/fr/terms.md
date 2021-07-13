@@ -1,0 +1,7 @@
+## Conditions d'utilisation
+
+microStudio est fourni "tel quel", sans garantie d'aucune sorte, expresse ou implicite, y compris, mais sans s'y restreindre, les garanties de standard de qualité, d'adaptation à un usage particulier et d'absence de contrefaçon. En aucun cas, les auteurs ne peuvent être tenus responsables pour toute réclamation, dommage ou autre responsabilité, que ce soit dans le cadre d'une action en responsabilité contractuelle, délictuelle ou autre, découlant de l'utilisation du service ou en rapport avec l'utilisation de celui-ci.
+
+Vous restez l'unique propriétaire de tout ce que vous créez en privé avec microStudio. Lorsque vous rendez un projet public, vous acceptez qu'il soit visible publiquement, y compris son code source et ses autres consituants, et qu'il puisse être librement réutilisé par n'importe qui pour n'importe quel usage, sans aucune condition. Nous vous accordons le droit d'utiliser, copier, modifier, fusionner, publier, distribuer, sous-licencier et/ou vendre des copies de toute partie de microStudio nécessaire pour que votre projet exporté fonctionne comme une application autonome.
+
+Vous ne devez pas publier de contenu qui viole les droits d'auteur ou qui enfreint la loi de quelque façon que ce soit. Vous acceptez de ne pas publier de contenu qui pourrait être considéré comme inapproprié pour un public général. Vous acceptez d'être toujours bienveillant envers les autres utilisateurs. Nous nous réservons le droit de restreindre votre utilisation du service si vous ne vous conformiez pas à ces règles.

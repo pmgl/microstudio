@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+    <loc>https://microstudio.dev/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://microstudio.dev/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://microstudio.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/"/>
+  </url>
+
+  <url>
+    <loc>https://microstudio.dev/fr/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://microstudio.dev/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://microstudio.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/"/>
+  </url>
+
+  <url>
+    <loc>https://microstudio.dev/de/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://microstudio.dev/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://microstudio.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/"/>
+  </url>
+
+  <url>
+    <loc>https://microstudio.dev/pl/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://microstudio.dev/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://microstudio.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/"/>
+  </url>
+
+  <url>
+    <loc>https://microstudio.dev/community/</loc>
+  </url>
+
+  <url>
+    <loc>https://microstudio.dev/fr/community/</loc>
+  </url>
+
+</urlset>

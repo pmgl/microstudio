@@ -1,0 +1,200 @@
+#options-section {
+  overflow: auto ;
+  /*background: rgba(255,255,255,.05);*/
+  border-top: solid 10px hsl(200,30%,30%);
+}
+
+#projectoptions {
+  color: rgba(255,255,255,.8);
+}
+
+#projectoptions-left {
+  position: absolute ;
+  left: 0 ;
+  top: 0 ;
+  bottom: 0 ;
+  width: 160px ;
+  padding: 40px 0px 40px 40px ;
+}
+
+#projectoptions-icon {
+  width: 160px ;
+  border-radius: 10px ;
+  image-rendering: pixelated ;
+  background: #000 ;
+}
+
+#projectoptions-right {
+  position: absolute ;
+  left: 240px ;
+  top: 0 ;
+  bottom: 0 ;
+  right: 0 ;
+  padding: 40px 40px 40px 0px ;
+}
+
+#projectoptions-general {
+  position: absolute ;
+  left: 0px ;
+  top: 0 ;
+  bottom: 0 ;
+  width: 50% ;
+}
+
+#projectoptions-general-content {
+  padding: 40px ;
+}
+
+#projectoptions-users {
+  position: absolute ;
+  right: 0px ;
+  top: 0 ;
+  bottom: 0 ;
+  width: 50% ;
+}
+
+#projectoptions-users-content {
+  padding: 40px 40px 40px 0px ;
+}
+
+.projectoption {
+  margin-bottom: 40px ;
+}
+
+.projectoption .tip {
+  font-size: 12px ;
+  color: rgba(255,255,255,.5);
+}
+
+.projectoption input {
+  border: none ;
+  border-radius: 3px ;
+  font-size: 16px ;
+  padding: 5px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  margin: 5px 10px 5px 0px ;
+  font-family: "Source Sans Pro",Verdana ;
+}
+
+.projectoption input:focus {
+  outline: none ;
+  background: rgba(255,255,255,.3);
+}
+
+.projectoption .sluginput {
+  width: 70px ;
+  text-align: center ;
+  margin: 0 2px ;
+}
+
+.projectoptions h3 {
+  margin: 0px 0px 4px 0px ;
+}
+
+.projectoption select {
+  font-size: 16px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  border: none;
+  padding: 2px;
+  border-radius: 5px ;
+  height: 30px;
+  font-family: "Source Sans Pro",Verdana ;
+}
+
+.projectoption select option {
+  background-color: hsl(200,50%,10%);
+  padding: 2px ;
+}
+
+.projectoption select:focus {
+  outline: none ;
+  background: rgba(255,255,255,.4);
+}
+
+.projectoptions .adduser {
+  margin-top: 20px ;
+  border-top: solid 2px rgba(255,255,255,.1);
+  padding-top: 5px ;
+}
+
+.projectoptions .adduser .addbutton {
+  float: right ;
+  border-radius: 5px ;
+  background: hsl(160,50%,40%);
+  font-size: 16px ;
+  padding: 6px 20px ;
+  margin-top: 4px ;
+  cursor: pointer ;
+}
+.projectoptions .adduser .addbutton i {
+  margin-right: 10px ;
+}
+
+.projectoptions .adduser input {
+  border: none ;
+  border-radius: 3px ;
+  font-size: 16px ;
+  padding: 5px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  margin: 5px 10px 5px 0px ;
+  font-family: "Source Sans Pro",Verdana ;
+  width: 50%;
+}
+
+.projectoptions .adduser input:focus {
+  outline: none ;
+  background: rgba(255,255,255,.4);
+}
+
+.projectoptions .userlist .user {
+  margin: 2px ;
+  background: rgba(255,255,255,.1);
+  border-radius: 5px ;
+}
+
+.projectoptions .userlist .username {
+  padding: 6px ;
+}
+.projectoptions .userlist .username i {
+  margin-left: 10px ;
+}
+
+.projectoptions .userlist .remove {
+  float: right ;
+  border-radius: 5px ;
+  background: hsl(0,50%,40%);
+  font-size: 16px ;
+  padding: 6px 20px ;
+  cursor: pointer ;
+}
+.projectoptions .userlist .remove i {
+  margin-right: 10px ;
+}
+
+#project-option-graphics {
+  display: none ;
+}
+
+.projectoptions .validate-button-container {
+  display: inline-block ;
+  width: 100px ;
+  margin-left: 7px ;
+  transition-duration: .5s ;
+  transition-property: width ;
+  overflow: hidden ;
+  height: 30px ;
+  vertical-align: middle ;
+}
+.projectoptions .validate-button {
+  display: inline-block ;
+  padding: 5px 10px ;
+  font-size: 14px ;
+  border-radius: 3px ;
+  background: hsl(160,50%,40%);
+  color: #FFF ;
+  cursor: pointer ;
+  white-space: nowrap;
+}

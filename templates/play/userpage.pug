@@ -1,0 +1,55 @@
+doctype html
+html(lang='en')
+  head
+    title #{user} - microStudio
+    meta(http-equiv='content-type', content='text/html; charset=UTF-8')
+    meta(name="viewport" content="width=device-width, user-scalable=no, initial-scale=.6")
+    meta(charset='UTF-8')
+    meta(name='mobile-web-app-capable', content='yes')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    meta(name='description', content=user+" is on microStudio")
+      
+    link(rel="stylesheet" href="/lib/fontlib/fontawesome/css/all.css")
+      
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu-mono/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/700.css")
+      
+    link(rel="stylesheet" type="text/css" href="/css/userpage.css")
+    link(rel="stylesheet" type="text/css" href="/css/md.css")
+    if profile_image
+      link(rel="icon" type="image/png" href="/"+user+".png")
+    else
+      link(rel="icon" type="image/png" href="/img/favicon.png")
+
+  body.noselect.custom-cursor(oncontextmenu='return false;')
+    header
+      div.headerdiv
+        a(href="/")
+          img.logo(src="/img/microstudiologo.svg")
+        
+    div.content
+      if profile_image
+        img.profile_image(src="/"+user+".png")
+          
+      div.username#user-nick #{user}
+      div.description.dark.md !{description}
+      
+      div.sections
+        div.selected#section-projects Public Projects
+        //div#section-progress Stats & Achievements
+        //div#section-forum Forum interactions
+
+      div.projects#projects
+        each project in projects
+          -var path = "/"+user+"/"+project.slug+"/"
+          -var img = "/"+user+"/"+project.slug+"/icon72.png"
+          a(href=path)
+            div.projectbox(id="#{project.slug}")
+              img(src=img)
+              div.title #{project.title}
+          
+  
+    
+          

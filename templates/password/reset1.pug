@@ -1,0 +1,42 @@
+doctype html
+html
+  head
+    style.
+      body {
+        font-family: Verdana;
+        text-align: center ;
+        background: #111 ;
+        color: #FFF ;
+      }
+      img {
+        width: 200px ;
+      }
+      input,button {
+        font-size: 18px ;
+      }
+      input {
+        background: rgba(255,255,255,.1);
+        color: #FFF ;
+        padding: 4px 8px ;
+        border-radius: 5px ;
+        text-align: center ;
+      }
+      * {
+        margin: 10px ;
+      }
+  body()
+    img(src="/img/microstudiologo.svg")
+    p Choose your new password
+    input#password(type="password")
+    br
+    button(onclick="submit()") Submit
+    
+  script.
+    var submit = function() {
+      var token = "#{token}" ;
+      var userid = #{userid} ;
+      var pass = document.getElementById("password").value ;
+      window.location.replace(location.origin+"/pwd/"+userid+"/"+token+"/"+pass+"/") ;
+    }
+    
+    

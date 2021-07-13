@@ -1,0 +1,17 @@
+* function(x,y=x) can't work as expected
+
+DONE
+* implemented correct function scope
+* list insert push pop pull remove length
+* implement random
+* implement Date.now() replacement
+* micro.tick micro.time()
+* += -= *= /=
+* implement not
+* implement function arguments default value
+* implement return
+* Bug parseLine can return null and causing endless lists
+
+NEXT
+* classes, instanciation
+* in 1000 do plop() end (???? vraiment ????)

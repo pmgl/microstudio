@@ -1,0 +1,514 @@
+.editor-view,#editor-view {
+  position: absolute ;
+  top: 40px ;
+  bottom: 0px ;
+  left: 40px ;
+  right: 0 ;
+  transition-duration: .5s ;
+  transition-property: left ;
+}
+#editor-locked {
+  position: absolute ;
+  top: 60px ;
+  left: 240px ;
+  right: 40px ;
+  padding: 20px ;
+  z-index: 100 ;
+  height: 20px ;
+  transition-duration: .5s ;
+  transition-property: left ;
+  border-radius: 10px ;
+  color: #FFF ;
+  font-size: 16px ;
+  display: none ;
+}
+#editor-locked i {
+  margin-right: 5px ;
+}
+
+.code-splitbar {
+  background: hsl(200,30%,30%);
+  position: absolute ;
+  left: 400px ;
+  top: 0 ;
+  bottom: 0 ;
+  width: 10px ;
+  cursor: ew-resize;
+  z-index: 2 ;
+}
+
+.editor-separator {
+  background: linear-gradient(hsl(200,30%,30%) 0%,hsl(200,20%,20%) 10%,hsl(200,20%,10%) 90%,hsl(200,20%,0%) 100%);  height: 20px ;
+  position: absolute ;
+  padding: 0px 10px;
+  font-size: 12px;
+  top: 400px ;
+  left: 0px ;
+  right: 0px ;
+  cursor: ns-resize;
+}
+.editor-separator i {
+  padding: 1px 5px ;
+  font-size: 16px;
+}
+
+.runbar {
+  position: absolute;
+  right: 0px ;
+  left: 0px ;
+  top: 0px ;
+  height: 40px;
+  background: hsl(200,30%,30%);
+  border-left: solid 2px rgba(0,0,0,.5);
+  text-align: left ;
+  padding-left: 20px ;
+  white-space: nowrap ;
+}
+.runbar *,.runtime-splitbar * {
+  display: inline-block ;
+}
+.runbar .buttons,.runtime-splitbar .buttons {
+  display: inline-block ;
+  margin-left: 60px ;
+}
+.runbar .buttons div,.runtime-splitbar .buttons div {
+  margin-left: 1px ;
+  padding: 10px 15px ;
+  cursor: pointer ;
+  background: hsl(160,50%,40%);
+}
+.runbar .buttons div:hover,.runtime-splitbar .buttons div:hover  {
+  background: hsl(160,50%,60%);
+}
+
+.runbar .buttons div:active,.runtime-splitbar .buttons div:active  {
+  background: hsl(160,30%,30%);
+}
+
+.runbar .buttons .selected,.runtime-splitbar .buttons .selected,
+.runbar .buttons div.selected:hover,.runtime-splitbar .buttons div.selected:hover
+{
+  background: hsl(160,20%,35%);
+  cursor: default ;
+}
+#run-link {
+  display: inline-block ;
+  font-size: 14px ;
+  padding: 4px 12px ;
+  border-radius: 14px ;
+  background: hsl(200,50%,40%);
+  margin-left: 40px ;
+  white-space: nowrap ;
+  overflow: hidden ;
+  cursor: pointer ;
+  vertical-align: middle;
+}
+a#run-link {
+  color: #FFF ;
+  text-decoration: none ;
+}
+
+.runtime-container {
+  position: absolute ;
+  bottom: 0 ;
+  top: 0 ;
+  right: 0 ;
+  width: 50% ;
+}
+.runtime {
+  position: absolute ;
+  top:0 ;
+  left: 0 ;
+  right: 0 ;
+  height: 100px ;
+  text-align: center;
+}
+.runtime-splitbar {
+  background: hsl(200,30%,30%);
+  border-left: solid 2px rgba(0,0,0,.5);
+  position: absolute ;
+  left: 0px ;
+  top: 100px ;
+  right: 0 ;
+  height: 40px ;
+  transition-property: height ;
+  transition-duration: 0.5s ;
+  cursor: ns-resize;
+  z-index: 3 ;
+  overflow: hidden ;
+  white-space: nowrap;
+}
+
+.runtime-splitbar span {
+  margin-left: 20px ;
+}
+
+#console-options {
+  background: rgba(0,0,0,.2);
+  display: block ;
+  padding: 20px ;
+  line-height: 25px ;
+  white-space: nowrap;
+  color: rgba(255,255,255,.8);
+}
+
+#console-options label {
+  margin-left: 5px ;
+}
+
+.devicecontainer {
+  position: absolute ;
+  top: 40px ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+}
+#device {
+  position: absolute ;
+  top: 0px ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  background: #000 ;
+}
+#device iframe {
+  border: none ;
+}
+#device iframe {
+  width: 960px;
+  height: 540px;
+}
+#ruler {
+  position: absolute ;
+  top: 0 ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  pointer-events: none ;
+}
+.help-window {
+  position: absolute;
+  right: 5px ;
+  bottom: 5px ;
+  background: hsl(30,100%,90%);
+  border-radius: 20px ;
+  padding: 10px ;
+  color: hsl(20,20%,20%);
+  z-index: 4 ;
+  margin-left: 5px ;
+  overflow: hidden ;
+  min-height: 20px ;
+  min-width: 20px ;
+  cursor: pointer ;
+}
+
+.help-window.disabled {
+  background: hsl(20,0%,60%);
+}
+
+.help-window i {
+  margin: 0 ;
+}
+
+.help-window .left-side {
+  position: absolute ;
+  left: 0 ;
+  top: 0 ;
+  bottom: 0 ;
+  width: 20px ;
+  padding: 10px ;
+  background: rgba(0,0,0,.1);
+  text-align: center ;
+}
+
+.help-window .content {
+  margin-left: 40px;
+}
+
+.help-window p {
+  margin: 0 ;
+}
+
+.help-window h1, .help-window h2, .help-window h3, .help-window h4, .help-window h5, .help-window h6 {
+  font-size: 18px ;
+  padding: 0 ;
+  margin: 0 0 5px 0 ;
+}
+
+.help-window .see-doc-button {
+  border-radius: 3px ;
+  background: hsl(0,50%,40%);
+  font-size: 12px ;
+  color: #FFF ;
+  padding: 4px 8px ;
+  float: right ;
+  margin-left: 10px ;
+}
+
+.help-window .see-doc-button i {
+  margin-right: 4px ;
+}
+
+.code-tools {
+  position: absolute ;
+  right: 2px ;
+  top: 0px ;
+  height: 40px ;
+}
+
+.code-tools .buttons {
+  display: inline-block ;
+}
+.code-tools .buttons div {
+  display: inline-block ;
+  margin-left: 1px ;
+  padding: 10px 15px ;
+  cursor: pointer ;
+  background: hsl(160,50%,40%);
+  vertical-align: middle ;
+  height: 20px ;
+}
+.code-tools .buttons div:hover {
+  background: hsl(160,50%,60%);
+}
+
+.code-tools .buttons div:active  {
+  background: hsl(160,30%,30%);
+}
+#code-font-plus {
+  padding: 8px 11px ;
+  height: 24px ;
+  font-size: 19px ;
+}
+#code-font-minus {
+  padding: 12px 14px ;
+  height: 16px ;
+  font-size: 12px ;
+}
+
+.value-tool-button {
+  position: relative ;
+  display: inline-block ;
+  background: hsl(200,50%,50%);
+  color: #FFF ;
+  border-radius: 5px ;
+  padding: 6px ;
+  font-size: 13px ;
+  z-index: 4 ;
+  cursor: pointer ;
+  width: 80px ;
+  display: none ;
+  margin-left: 20px ;
+}
+
+.value-tool-button span {
+  background: #FFF ;
+  border-radius: 3px ;
+  padding: 2px 4px ;
+  font-size: 11px ;
+  color: hsl(200,50%,20%);
+}
+
+.value-tool-button i {
+  position: absolute;
+  right: 15px;
+  top: 5px;
+  font-size: 20px ;
+}
+
+.value-tool-button .slider-track {
+  background: rgba(255,255,255,.5) ;
+  border-radius: 2px ;
+  width: 30px ;
+  height: 3px ;
+  position: absolute ;
+  right: 10px ;
+  top: 15px ;
+}
+
+.value-tool-button .slider-cursor {
+  background: #FFF ;
+  border-radius: 9px ;
+  width: 9px ;
+  height: 9px ;
+  position: absolute ;
+  right: 23px ;
+  top: 12px ;
+  box-shadow: 0 0 5px hsl(200,50%,20%);
+}
+
+#color-value-tool-button {
+  display: none ;
+}
+
+.source-list-panel {
+  position: absolute ;
+  top: 40px ;
+  bottom: 0 ;
+  left: 0 ;
+  width: 40px ;
+  transition-duration: .5s ;
+  transition-property: width ;
+  overflow: hidden ;
+}
+.source-list-header {
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  right: 0 ;
+  height: 40px ;
+  cursor: pointer ;
+  white-space: nowrap ;
+}
+.source-list-header div {
+  position: absolute ;
+  right: 180px ;
+  transform: translateX(100%);
+  padding: 10px ;
+}
+.source-list-header i {
+  position: absolute ;
+  top: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  width: 18px;
+  padding: 11px 11px;
+  font-size: 18px;
+  color: rgba(255,255,255,.9);
+}
+
+.source-list {
+  position: absolute ;
+  top: 40px ;
+  bottom : 40px ;
+  left: 0 ;
+  right: 0 ;
+  font-size: 14px ;
+  overflow-y: auto ;
+  overflow-x: hidden ;
+}
+.source-list i {
+  padding: 10px 5px ;
+  font-size: 15px ;
+}
+.create-source-button {
+  position: absolute ;
+  bottom: 0px ;
+  height: 20px;
+  left: 0 ;
+  right: 0 ;
+  padding: 10px 12px ;
+  background: hsl(160,50%,40%);
+  font-size: 18px ;
+  cursor: pointer ;
+  color: #FFF ;
+  z-index: 1 ;
+  box-shadow: 0 -10px 20px #000;
+  text-align: center ;
+  white-space: nowrap ;
+}
+.create-source-button i {
+  margin-right: 10px ;
+}
+
+.source-list-item {
+  white-space: nowrap ;
+  margin: 1px 0px ;
+  background: rgba(0,0,0,.25);
+  cursor: pointer ;
+  position: relative ;
+}
+.source-list-item.selected {
+  background: hsl(200,30%,30%);
+}
+.source-list-item i {
+  padding: 10px 6px 10px 14px ;
+  font-size: 18px ;
+  white-space: nowrap ;
+}
+.source-list-item .filename {
+  display: inline-block;
+  margin: 10px 0 ;
+  padding: 2px 8px ;
+  /*background: rgba(255,255,255,.1);*/
+  border-radius: 3px ;
+  max-width: 150px ;
+}
+.source-list-item input {
+  border: none ;
+  border-radius: 3px ;
+  font-size: 14px ;
+  width: 100px ;
+  padding: 3px 5px ;
+  background: rgba(0,0,0,.5);
+  color: rgba(255,255,255,.8);
+  margin: 5px 10px 5px 0px ;
+  font-family: "Source Sans Pro",Verdana ;
+}
+.source-list-item .active-user {
+  display: none ;
+  position: absolute ;
+  bottom: 4px ;
+  left: 4px ;
+  font-size: 8px ;
+  color: #FFF ;
+  background: hsl(0,50%,50%);
+  padding: 4px ;
+  border-radius: 8px ;
+}
+
+.source-list-item input:focus {
+  outline: none ;
+}
+.source-tools {
+  text-align: right ;
+  position: absolute ;
+  left: 150px ;
+}
+.source-tools i {
+  border-radius: 3px ;
+  padding: 5px 4px;
+  margin: 7px 2px;
+  background: hsl(160,50%,40%);
+  display: inline-block ;
+  font-size: 14px ;
+  cursor: pointer ;
+}
+.source-tools i.fa-trash {
+  background: hsl(0,50%,40%);
+}
+
+.value-tool {
+  padding: 10px ;
+  background: #333 ;
+  border:solid 1px rgba(255,255,255,.2);
+  box-shadow: 0 0 5px #000 ;
+  border-radius: 5px ;
+  position: fixed ;
+}
+.value-tool input {
+  width: 300px ;
+}
+.value-tool canvas {
+  /*background: linear-gradient(to right,#444,rgba(0,0,0,0));*/
+}
+
+#run-window .content {
+  text-align: center ;
+}
+
+#run-window .titlebar.runbar {
+  padding: 2px 0 2px 20px ;
+  height: 36px ;
+  border: none ;
+  background: none ;
+}
+
+#run-window {
+  background: hsl(200,30%,30%);
+}
+
+#run-window .minify {
+  top:7px ;
+  right: 8px ;
+}

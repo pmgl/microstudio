@@ -1,0 +1,33 @@
+{
+  "name": "APPNAME",
+  "short_name": "APPSHORTNAME",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "display": "fullscreen",
+  "orientation": "ORIENTATION",
+  "scope": "SCOPE",
+  "start_url": "START_URL",
+  "icons": [
+    {
+      "src": "SCOPEicon192.png?v=ICONVERSION",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "SCOPEicon196.png?v=ICONVERSION",
+      "type": "image/png",
+      "sizes": "196x196",
+      "purpose": "maskable"
+    },
+    {
+      "src": "SCOPEicon512.png?v=ICONVERSION",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "SCOPEicon1024.png?v=ICONVERSION",
+      "type": "image/png",
+      "sizes": "1024x1024"
+    }
+  ]
+}

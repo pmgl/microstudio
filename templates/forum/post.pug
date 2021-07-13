@@ -1,0 +1,156 @@
+doctype html
+html(lang=language)
+  head
+    meta(name="description" content=post.text.split("\n")[0])
+    meta(name="viewport" content="width=device-width, user-scalable=no, initial-scale=.8")
+    link(rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/community/")
+    link(rel="alternate" hreflang="en" href="https://microstudio.dev/community/")
+    title #{post.title}
+
+    link(rel="stylesheet" type="text/css" href="/css/forum/forum.css")
+    link(rel="stylesheet" type="text/css" href="/css/forum/media.css")
+    link(rel="stylesheet" type="text/css" href="/css/md.css")
+      
+    link(rel="stylesheet" href="/lib/fontlib/fontawesome/css/all.css")
+      
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu-mono/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/700.css")
+
+    script(src="/js/forum/forum.js")
+    script(src="/js/forum/client.js")
+    script(src="/js/util/translator.js")
+    script(src="/lib/marked/marked.js")
+
+    script window.post = !{JSON.stringify(post_info)} ;
+    script window.community = !{JSON.stringify(community)} ;
+
+  body(class=theme)
+    header
+      div.username
+        i.fa.fa-user
+        img(style="display: none")
+        span #{translator.get("Login")}
+
+      a(href="/")
+        img.logo#logo(src="/img/microstudiologo.svg" alt="microStudio" title="microStudio")
+      a(href=community.language == "en" ? "/community/" : "/"+community.language+"/community/" title="microStudio Community")
+        div.community-icon
+          i.fa.fa-users
+          span #{translator.get("Community")}
+
+      div.login
+      div.menu
+
+    div.content
+      div.topright
+        div.theme #{translator.get(theme == "dark"? "LIGHT THEME" : "DARK THEME")}
+          
+      ul.categories
+        each cat in categories
+          if cat.slug == selected
+            li
+              a.category.selected(href=cat.path style="background: hsl("+cat.hue+",40%,50%)") #{cat.name}
+          else
+            li
+              a.category(href=cat.path style="background: hsl("+cat.hue+",50%,80%)") #{cat.name}
+
+      div.post-container
+        div.post-content
+          div.watch
+            div.text
+            div.button.unwatch
+
+          i.link.fas.fa-link(title="Copy link" data-link=post_info.url)
+          h1 #{post.title}
+
+          div.post-content-info
+            div.post-stats
+              div.post-likes(data-likes-post=post.id) <i class="fas fa-thumbs-up"></i> <span>#{post.likes.length}</span>
+              div.post-replies(data-replies=post.replies.length) <i class="fa fa-reply"></i> #{post.replies.length}
+              div.post-views(data-views=post.views) <i class="fa fa-eye"></i> #{post.views}
+              div.post-activity <i class="fa fa-clock"></i> <span data-activity=#{post.date}></span>
+
+            div.post-users
+              if post.author.flags.profile_image
+                img.user(src="/"+post.author.nick+".png" title=post.author.nick)
+              else
+                div.user(data-colorize=post.author.nick) #{post.author.nick.substring(0,1).toUpperCase()}
+
+            span.post-content-author #{post.author.nick}
+            a.post-category(href=post.category.path style="background:hsl("+post.category.hue+",40%,50%)") #{post.category.name}
+            if post.progress>0
+              div.post-progress(data-progress=post.progress) #{post.progress}%
+
+            if post.status
+              div.post-status(data-colorize=post.status) •&nbsp;&nbsp;#{post.status}&nbsp;&nbsp;•
+
+          div.post-text.md(data-author=post.author.nick data-type="post") !{post.getHTMLText()}
+
+        if post.reverse
+          - var i = post.replies.length-1
+          while i>=0
+            - var reply = post.replies[i]
+            if !reply.deleted && !reply.author.flags.censored && !reply.author.flags.banned
+              div.post-content(id="post-reply-"+i data-reply-id=reply.id)
+                i.link.fas.fa-link(title="Copy link" data-link=post_info.url+i+"/")
+                div.post-content-info
+                  div.post-stats
+                    div.post-likes(data-likes-reply=reply.id) <i class="fas fa-thumbs-up"></i> <span>#{reply.likes.length}</span>
+                    div.post-activity <i class="fa fa-clock"></i> <span data-activity=#{reply.activity}></span>
+
+                  div.post-users
+                    if reply.author.flags.profile_image
+                      img.user(src="/"+reply.author.nick+".png" title=reply.author.nick)
+                    else
+                      div.user( data-colorize=reply.author.nick) #{reply.author.nick.substring(0,1).toUpperCase()}
+                  span #{reply.author.nick}
+
+                div.post-text.md(data-author=reply.author.nick data-type="reply") !{reply.getHTMLText()}
+            - i -= 1
+        else
+          each reply,i in post.replies
+            if !reply.deleted && !reply.author.flags.censored && !reply.author.flags.banned
+              div.post-content(id="post-reply-"+i data-reply-id=reply.id)
+                i.link.fas.fa-link(title="Copy link" data-link=post_info.url+i+"/")
+                div.post-content-info
+                  div.post-stats
+                    div.post-likes(data-likes-reply=reply.id) <i class="fas fa-thumbs-up"></i> <span>#{reply.likes.length}</span>
+                    div.post-activity <i class="fa fa-clock"></i> <span data-activity=#{reply.activity}></span>
+
+                  div.post-users
+                    if reply.author.flags.profile_image
+                      img.user(src="/"+reply.author.nick+".png" title=reply.author.nick)
+                    else
+                      div.user( data-colorize=reply.author.nick) #{reply.author.nick.substring(0,1).toUpperCase()}
+                  span #{reply.author.nick}
+
+                div.post-text.md(data-author=reply.author.nick data-type="reply") !{reply.getHTMLText()}
+
+        div.edit-post-content.edit-reply-content#edit-post-content
+          h2.reply-title #{translator.get("Post a reply")}
+
+          div#edit-post-reserved
+            span#edit-post-progress-label #{translator.get("Progress")}
+            br
+            input#edit-post-progress(type="range")
+            br
+            span #{translator.get("Status")}
+            br
+            input#edit-post-status()
+
+          textarea#edit-post-text(placeholder=translator.get("Write your text here ; you can use markdown"))
+          br
+
+          div#edit-post-preview-area.md
+
+          div.edit-post-buttons
+            div.button.preview#edit-post-preview
+              i.fas.fa-eye
+              span #{translator.get("Preview")}
+            div.button.cancel#edit-post-cancel <i class="fa fa-times"></i> #{translator.get("Cancel")}
+            div.button.post#edit-post-post <i class="fas fa-share"></i> #{translator.get("Post")}
+
+        div#validate-your-email
+          div <i class="fas fa-info-circle"></i> #{translator.get("Validate your e-mail address to participate in the community")}

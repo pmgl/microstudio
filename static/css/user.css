@@ -1,0 +1,261 @@
+#usersettings-section {
+  display: none ;
+  padding: 80px ;
+  position:absolute ;
+  top: 0 ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  overflow: auto ;
+}
+
+
+
+.usersettings-page {
+  position: absolute;
+  top: 80px ;
+  bottom: 80px ;
+  overflow: auto ;
+  right: 80px ;
+  left: 300px ;
+}
+
+#usersettings-menu {
+  position: absolute ;
+  top: 80px ;
+  bottom: 80px ;
+  left: 30px ;
+  width: 200px ;
+  text-align: right ;
+  padding-top: 20px ;
+}
+#usersettings-menu div {
+  display: inline-block ;
+  background: rgba(255,255,255,.1);
+  border-radius: 25px ;
+  padding: 6px 15px ;
+  margin: 10px 0 ;
+  cursor: pointer ;
+}
+#usersettings-menu div.selected {
+  background: rgba(255,255,255,.3);
+}
+#usersettings-menu div i {
+  margin-left: 10px ;
+}
+
+
+
+
+
+
+#usersettings {
+  max-width: 800px ;
+}
+
+.usersetting {
+  margin-bottom: 40px ;
+}
+
+.usersettings textarea {
+  border: none ;
+  border-radius: 3px ;
+  font-size: 16px ;
+  padding: 5px ;
+  background: rgba(255,255,255,.1);
+  color: rgba(255,255,255,.8);
+  margin: 5px 10px 5px 0px ;
+  font-family: "Source Sans Pro",Verdana ;
+  width: 80% ;
+  height: 200px ;
+}
+
+.usersettings textarea:focus {
+  outline: none ;
+  background: rgba(255,255,255,.2);
+}
+
+.usersettings input {
+  border: none ;
+  border-radius: 3px ;
+  font-size: 16px ;
+  padding: 5px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  margin: 5px 10px 5px 0px ;
+  font-family: "Source Sans Pro",Verdana ;
+  width: 200px ;
+}
+.usersettings input#subscribe-newsletter {
+  width: initial ;
+}
+
+.usersettings input:focus {
+  outline: none ;
+  background: rgba(255,255,255,.3);
+}
+
+.usersettings h3 {
+  margin: 0px 0px 4px 0px ;
+}
+
+.usersettings .tip {
+  font-size: 12px ;
+  color: rgba(255,255,255,.5);
+}
+
+.usersettings h1 {
+  margin-bottom: 40px ;
+}
+
+.usersettings .validate-button-container {
+  display: inline-block ;
+  width: 200px ;
+  transition-duration: .5s ;
+  transition-property: width ;
+  overflow: hidden ;
+  height: 30px ;
+  vertical-align: middle ;
+}
+
+.usersettings .validate-button {
+  display: inline-block ;
+  padding: 5px 10px ;
+  font-size: 15px ;
+  border-radius: 5px ;
+  background: hsl(160,50%,40%);
+  color: #FFF ;
+  cursor: pointer ;
+  white-space: nowrap;
+}
+
+.usersettings .error {
+  color: hsl(30,100%,70%);
+  white-space: nowrap;
+  transition-duration: .5s ;
+  transition-property: width ;
+  width: 500px ;
+  overflow: hidden ;
+  display: inline-block ;
+}
+
+
+.usersetting .button {
+  display: inline-block ;
+  padding: 10px 20px ;
+  border-radius: 5px ;
+  background: hsl(160,50%,40%);
+  color: #FFF ;
+  cursor: pointer ;
+}
+.usersetting .button i {
+  margin-right: 5px ;
+}
+.usersettings a {
+  color: hsl(200,100%,80%);
+  text-decoration: none ;
+  padding: 10px 0 ;
+  /*background: rgba(255,255,255,.1);
+  border-radius: 15px ;*/
+}
+.usersettings a:visited {
+  color: hsl(200,50%,80%);
+  text-decoration: none ;
+}
+.usersettings a i {
+  margin-left: 10px ;
+}
+
+#translation-app {
+  display: none ;
+}
+
+#translation-app-back-button {
+  display: inline-block ;
+  border-radius: 5px ;
+  background: hsl(0,50%,40%);
+  padding: 4px 10px ;
+  font-size: 14px;
+  cursor: pointer ;
+  margin: 2px 40px 40px 20px ;
+}
+
+#open-translation-app {
+  display: none ;
+}
+
+#translation-app {
+  display: none ;
+}
+
+#translation-app input {
+  width: 46% ;
+  margin: 10px 1% ;
+}
+
+
+.usersettings table {
+  border-radius: 3px ;
+  margin-bottom: 20px ;
+}
+
+.usersettings table,.usersettings tr,.usersettings td {
+  color: rgba(255,255,255,.8);
+  font-size: 20px ;
+  border-spacing: 3px ;
+}
+
+.usersettings tr,.usersettings td,.usersettings th {
+  border: solid 1px rgba(0,0,0,.1);
+  padding: 10px ;
+  background: rgba(255,255,255,.1);
+  border-radius: 3px ;
+}
+.usersettings th {
+  font-weight: bold ;
+  background: rgba(0,0,0,.05);
+}
+
+#usersettings-profile-image {
+  position: relative ;
+  width: 128px ;
+  height: 128px ;
+  margin: 10px 0 ;
+  cursor: pointer ;
+}
+
+#usersettings-profile-image .fa-times-circle {
+  position: absolute ;
+  top: -10px ;
+  right: -10px ;
+  font-size: 20px ;
+  color: hsl(0,50%,70%) ;
+  cursor: pointer ;
+}
+#usersettings-profile-image .fa-user-circle {
+  position: absolute ;
+  top: 0 ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  font-size: 64px ;
+  padding: 32px ;
+  background: rgba(255,255,255,.1) ;
+  border-radius: 10px ;
+  color: rgba(255,255,255,.2) ;
+}
+#usersettings-profile-image img {
+  position: absolute ;
+  top: 0 ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  width: 128px ;
+  height: 128px ;
+  border-radius: 64px ;
+  transition-property: border-radius ;
+  transition-duration: .2s ;
+}
+#usersettings-profile-image img:hover {
+  border-radius: 10px ;
+}

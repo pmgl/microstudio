@@ -1,0 +1,70 @@
+doctype html
+html
+  head
+    title #{game.title}
+    meta(http-equiv='content-type', content='text/html; charset=UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui=1')
+    meta(charset='UTF-8')
+    meta(name='mobile-web-app-capable', content='yes')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    meta(name='description', content='')
+
+    meta(property="og:title" content=game.title)
+    meta(property="og:site_name" content="microStudio")
+    meta(property="og:url" content="https://microstudio.io/"+game.author+"/"+game.name+"/")
+    meta(property="og:image" content="https://microstudio.io/"+game.author+"/"+game.name+"/icon512.png")
+    meta(property="og:image:type" content="image/png")
+    meta(property="og:description" content=game.title+" by "+game.author)
+
+    link(rel="manifest" href="manifest.json")
+    link(rel='icon', type='image/png', href="/"+game.author+"/"+game.name+"/icon64.png")
+    link(rel="apple-touch-icon" sizes="180x180" href="/"+game.author+"/"+game.name+"/icon180.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/"+game.author+"/"+game.name+"/icon32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/"+game.author+"/"+game.name+"/icon16.png")
+
+    style.
+      html,body {
+        margin: 0;
+        padding: 0;
+        background-color: #000;
+        overflow:hidden;
+        font-family: Verdana;
+      }
+      .noselect {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      #canvaswrapper {
+        text-align: center ;
+      }
+
+    style.
+      @font-face {
+        font-family: "Bit Cell";
+        src: url("/fonts/bit_cell.ttf") format("truetype");
+      }
+    each font in fonts
+      style @font-face { font-family: "#{font}" ; src: url("/fonts/#{font}.ttf") format("truetype"); }
+
+    script window.fonts = !{JSON.stringify(fonts)}
+
+  body.noselect.custom-cursor(oncontextmenu='return false;')
+    #canvaswrapper
+
+    script(type="text/javascript").
+      !{game.resources}
+
+    script(type="text/javascript").
+      var orientation = '!{game.orientation}' ;
+      var aspect = '!{game.aspect}' ;
+      var graphics = '!{game.graphics}' ;
+
+    each file in javascript_files
+      script(src=file)
+
+  script(id="code" type="text/x-project-code").
+    !{game.code}

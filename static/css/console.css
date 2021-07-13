@@ -1,0 +1,142 @@
+html,body {
+  background: #EEE ;
+  font-family: "Ubuntu" ;
+}
+
+.content {
+  position: fixed ;
+  top: 0 ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  padding: 10vh ;
+  text-align: left ;
+}
+
+.content .filters {
+  position: relative ;
+  border-bottom: solid .5vh rgba(0,0,0,.1);
+  padding-bottom: 3vh ;
+}
+
+.poweroff {
+  position: absolute;
+  font-size: 4vh;
+  color: hsl(180,50%,40%);
+  right: 0;
+  top: 2vh;
+}
+
+.content ul {
+  display: inline-block ;
+  margin: 0px 0 0 0 ;
+  padding: 0 ;
+  white-space: nowrap;
+}
+
+.content li {
+  display: inline-block ;
+  margin-right: 2vh ;
+  font-size: 3vh;
+  padding: 1vh 2vh ;
+  color: hsl(180,50%,40%);
+  text-align: center;
+  cursor: pointer ;
+  border-radius: 1vh ;
+}
+
+.content li.selected {
+  color: #EEE ;
+  background: hsl(180,50%,40%);
+}
+
+
+
+.content .list {
+  text-align: center ;
+  white-space: nowrap ;
+  overflow: hidden ;
+}
+
+.content .list .box {
+  width: 25vh ;
+  height: 30vh ;
+  border-radius: 1vh ;
+  margin: 17vh 10vh 17vh 0 ;
+  display: inline-block;
+  position: relative ;
+}
+
+.box .title {
+  position: absolute ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  height: 2vh ;
+  color: #444 ;
+  text-align: center ;
+  padding: 1vh 0 ;
+  font-size: 3vh ;
+}
+
+.box img {
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  right: 0 ;
+  width: 25vh ;
+  height: 25vh ;
+  image-rendering: pixelated ;
+  border-radius: 1vh ;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 10vh;
+  right: 10vh;
+  height: 11vh;
+  border-top: solid .5vh rgba(0,0,0,.1);
+  padding-top: 6vh;
+  text-align: center;
+  font-size: 3vh;
+  color: rgba(0,0,0,.5);
+}
+.footer div {
+  display: inline-block ;
+}
+.footer img {
+  position: relative ;
+  top: .1vh ;
+  height: 4vh ;
+}
+.footer span {
+  margin-left: 2vh ;
+}
+
+.focusable {
+
+}
+
+.focus {
+  border: solid 1vh hsl(180,50%,50%);
+  box-shadow: 0 0 2vh hsl(180,100%,60%) ;
+  animation: focus-animation 2s infinite;
+}
+
+@keyframes focus-animation {
+  0% {
+    border: solid 1vh hsl(180,50%,70%);
+    box-shadow: 0 0 2vh hsl(180,100%,70%) ;
+  }
+
+  50% {
+    border: solid 1vh hsl(180,50%,50%);
+    box-shadow: 0 0 2vh hsl(180,100%,30%) ;
+  }
+
+  100% {
+    border: solid 1vh hsl(180,50%,70%);
+    box-shadow: 0 0 2vh hsl(180,100%,70%) ;
+  }
+}

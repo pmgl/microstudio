@@ -1,0 +1,64 @@
+div.music-left
+  div.assets-drop
+    div <i class="fas fa-arrow-circle-down"></i>
+    div #{translator.get("You can drop MP3 files here")}
+
+  div#create-music-button(style="display:none") <i class="fa fa-plus-square"></i> #{translator.get("Add Music")}
+
+  div.assetlist#musiclist
+    div#music-list
+
+div.horizontal-splitbar#music-splitbar
+
+div.music-right
+  div.assetinfo#musicinfo
+    input(type="text" value="")#music-name
+    div.validate-button-container#music-name-button
+      div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+
+    div.buttons
+      div#undo-music(title=translator.get("Undo"))
+        i.fa.fa-undo
+      div#redo-music(title=translator.get("Redo"))
+        i.fa.fa-redo
+
+      div#copy-music(title=translator.get("Copy"))
+        i.fa.fa-copy
+      div#cut-music(title=translator.get("Cut"))
+        i.fa.fa-cut
+      div#paste-music(title=translator.get("Paste"))
+        i.fa.fa-paste
+
+      div#delete-music.delete(title=translator.get("Delete Sound"))
+        i.fa.fa-trash
+
+  div#music-editor-locked
+  div#music-editor
+    div.placeholder #{translator.get("Drop your music files on the left. A sleek music creation app will land here in the future!")}
+
+//-    div#daw-transportbar TRANSPORT BAR
+
+//-    div#daw-container
+//-      div#daw-tracks
+//-        div#daw-track-headers
+//-          div.daw-track-header TRACK HEADER 1
+//-          div.daw-track-header TRACK HEADER 2
+//-          div.daw-track-header TRACK HEADER 3
+//-          div.daw-track-header TRACK HEADER 4
+//-          div.daw-track-header TRACK HEADER 5
+//-          div.daw-track-header TRACK HEADER 6
+//-          div.daw-track-header TRACK HEADER 7
+//-          div.daw-track-header TRACK HEADER 8
+//-        div#daw-track-content
+//-          div.daw-track TRACK 1
+//-          div.daw-track TRACK 2
+//-          div.daw-track TRACK 3
+//-          div.daw-track TRACK 4
+//-          div.daw-track TRACK 5
+//-          div.daw-track TRACK 6
+//-          div.daw-track TRACK 7
+//-          div.daw-track TRACK 8
+
+//-      div#daw-splitbar
+
+//-      div#daw-pianoroll PIANO ROLL

@@ -1,0 +1,359 @@
+div.synth
+  div.modules
+    div.module.oscillator#oscillator1
+      div.label Oscillator 1
+
+      div.buttongroup.inline
+        canvas.button#osc1-saw
+        canvas.button#osc1-square
+        canvas.button#osc1-sine
+        //- canvas.button#osc1-voice
+        //- canvas.button#osc1-string
+
+      div.inline(style="width:10px")
+      div.inline
+        div.knobline
+          div.labelledknob
+            canvas.knob#osc1-amp
+            div.knoblabel Amp
+
+
+          div.labelledknob
+            canvas.knob#osc1-mod
+            div.knoblabel Mod
+
+        div.knobline
+          div.labelledknob
+            canvas.knob#osc1-coarse(data-type="centered" data-quantize=48)
+            div.knoblabel Coarse
+
+          div.labelledknob
+            canvas.knob#osc1-tune(data-type="centered")
+            div.knoblabel Tune
+
+
+    div.separator
+      div#combine-button +
+
+    div.module.oscillator#oscillator2
+      div.label Oscillator 2
+
+      div.buttongroup.inline
+        canvas.button#osc2-saw
+        canvas.button#osc2-square
+        canvas.button#osc2-sine
+        //- canvas.button#osc2-voice
+        //- canvas.button#osc2-string
+
+      div.inline(style="width:10px")
+
+      div.inline
+        div.knobline
+          div.labelledknob
+            canvas.knob#osc2-amp
+            div.knoblabel Amp
+
+
+          div.labelledknob
+            canvas.knob#osc2-mod
+            div.knoblabel Mod
+
+        div.knobline
+          div.labelledknob
+            canvas.knob#osc2-coarse(data-type="centered" data-quantize=48)
+            div.knoblabel Coarse
+
+          div.labelledknob
+            canvas.knob#osc2-tune(data-type="centered")
+            div.knoblabel Tune
+
+    div.module#noise
+      div.label Noise
+
+      div.knobline
+        div.labelledknob
+          canvas.knob#noise-amp
+          div.knoblabel Amp
+
+        br
+
+        div.labelledknob
+          canvas.knob#noise-mod
+          div.knoblabel Color
+
+    div.module#filter
+      div.label Filter
+
+      div.inline
+        canvas.button#filter-highpass
+        canvas.button#filter-bandpass
+        canvas.button#filter-lowpass
+        br
+        br
+        canvas.button#filter-slope
+
+      div.inline(style="width:10px")
+
+      div.inline
+        div.knobline
+          div.labelledknob
+            canvas.knob#filter-cutoff
+            div.knoblabel Cutoff
+
+          div.labelledknob
+            canvas.knob#filter-resonance
+            div.knoblabel Resonance
+
+        div.knobline
+          div.labelledknob
+            canvas.knob#filter-follow
+            div.knoblabel Key follow
+
+
+    div.module#envelope1
+      div.label Amplitude Envelope
+
+      div.labelledslider
+        canvas.synth-slider#env1-a
+        div.knoblabel Attack
+
+      div.labelledslider
+        canvas.synth-slider#env1-d
+        div.knoblabel Decay
+
+      div.labelledslider
+        canvas.synth-slider#env1-s
+        div.knoblabel Sustain
+
+      div.labelledslider
+        canvas.synth-slider#env1-r
+        div.knoblabel Release
+
+    br
+
+    div.module#lfo1
+      div.label LFO 1
+
+      div.buttongroup.inline
+        canvas.button#lfo1-sine
+        canvas.button#lfo1-triangle
+        canvas.button#lfo1-saw
+        canvas.button#lfo1-invsaw
+
+      div.buttongroup.inline
+        canvas.button#lfo1-square
+        canvas.button#lfo1-random
+        canvas.button#lfo1-randomstep
+
+      div.inline(style="width:21px")
+
+      div.inline
+        div.center
+          div.selector#lfo1-out
+            i.fa.fa-caret-left
+            div.screen Filter Cutoff
+            i.fa.fa-caret-right
+
+        div.knobline
+          div.labelledknob
+            canvas.knob#lfo1-rate
+            div.knoblabel Rate
+            canvas.button#lfo1-audio
+
+          div.labelledknob
+            canvas.knob#lfo1-amount
+            div.knoblabel Amount
+
+
+    div.module#lfo2
+      div.label LFO 2
+
+      div.buttongroup.inline
+        canvas.button#lfo2-sine
+        canvas.button#lfo2-triangle
+        canvas.button#lfo2-saw
+        canvas.button#lfo2-invsaw
+
+      div.buttongroup.inline
+        canvas.button#lfo2-square
+        canvas.button#lfo2-random
+        canvas.button#lfo2-randomstep
+
+      div.inline(style="width:21px")
+
+      div.inline
+        div.center
+          div.selector#lfo2-out
+            i.fa.fa-caret-left
+            div.screen Filter Cutoff
+            i.fa.fa-caret-right
+
+        div.knobline
+          div.labelledknob
+            canvas.knob#lfo2-rate
+            div.knoblabel Rate
+            canvas.button#lfo2-audio
+
+          div.labelledknob
+            canvas.knob#lfo2-amount
+            div.knoblabel Amount
+
+
+    div.module#envelope2
+      div.label Modulation Envelope
+
+      div.labelledslider
+        canvas.synth-slider#env2-a
+        div.knoblabel Attack
+
+      div.labelledslider
+        canvas.synth-slider#env2-d
+        div.knoblabel Decay
+
+      div.labelledslider
+        canvas.synth-slider#env2-s
+        div.knoblabel Sustain
+
+      div.labelledslider
+        canvas.synth-slider#env2-r
+        div.knoblabel Release
+
+      div.inline(style="width:21px")
+
+      div.inline
+        div.center
+          div.selector#env2-out
+            i.fa.fa-caret-left
+            div.screen Filter Cutoff
+            i.fa.fa-caret-right
+
+          br
+
+          div.labelledknob
+            canvas.knob#env2-amount(data-type="centered")
+            div.knoblabel Amount
+
+    br
+
+    div.module#polyphony
+      div.label Polyphony
+
+      div.buttongroup.inline
+        canvas.button#polyphony-poly
+        canvas.button#polyphony-mono
+        br
+        canvas.button#sync
+
+      div.inline(style="width:13px")
+
+      div.labelledknob
+        canvas.knob#glide
+        div.knoblabel Glide
+
+    div.module#velocity
+      div.label Velocity
+
+      div.center(style="margin-top:10px")
+        div.selector#velocity-out
+          i.fa.fa-caret-left
+          div.screen OFF
+          i.fa.fa-caret-right
+
+        div.knobline
+          div.labelledknob
+            canvas.knob#velocity-amp
+            div.knoblabel Amp
+
+          div.labelledknob
+            canvas.knob#velocity-amount(data-type="centered")
+            div.knoblabel Amount
+
+
+    div.module#modulation
+      div.label Mod Wheel
+
+      div.inline
+        div.center(style="margin-top:10px")
+          div.selector#modulation-out
+            i.fa.fa-caret-left
+            div.screen OFF
+            i.fa.fa-caret-right
+
+          br
+
+          div.labelledknob
+            canvas.knob#modulation-amount(data-type="centered")
+            div.knoblabel Amount
+
+    div.module#fx1
+      div.label FX 1
+
+      div.center(style="margin-top:10px")
+        div.selector#fx1-type
+          i.fa.fa-caret-left
+          div.screen Distortion
+          i.fa.fa-caret-right
+
+        div.knobline
+          div.labelledknob
+            canvas.knob#fx1-amount
+            div.knoblabel Amount
+
+          div.labelledknob
+            canvas.knob#fx1-rate
+            div.knoblabel Rate
+
+
+    div.module#fx2
+      div.label FX 2
+
+      div.center(style="margin-top:10px")
+        div.selector#fx2-type
+          i.fa.fa-caret-left
+          div.screen Distortion
+          i.fa.fa-caret-right
+
+        div.knobline
+          div.labelledknob
+            canvas.knob#fx2-amount
+            div.knoblabel Amount
+
+          div.labelledknob
+            canvas.knob#fx2-rate
+            div.knoblabel Rate
+
+    div.module#eq
+      div.label Mix
+
+      div.center
+        div.knobline
+          div.labelledknob
+            canvas.knob#spatialize
+            div.knoblabel Spatialize
+
+          div.labelledknob
+            canvas.knob#pan(data-type="centered")
+            div.knoblabel Pan
+
+        div.knobline
+          div.labelledknob
+            canvas.knob#eq-low(data-type="centered")
+            div.knoblabel Low
+
+          div.labelledknob
+            canvas.knob#eq-mid(data-type="centered")
+            div.knoblabel Mid
+
+          div.labelledknob
+            canvas.knob#eq-high(data-type="centered")
+            div.knoblabel High
+
+  div.synth-keyboard
+    canvas#synth-pitchwheel(width="40px" height = "100px")
+    canvas#synth-modwheel(width="40px" height = "100px")
+    canvas#synth-keyboard(width="700px" height="100px" style="margin-left:10px")
+
+  //- div.layers
+  //-   div.layer-list
+  //-     div.layer LAYER 1
+  //-   div.add <i class="fa fa-plus"></i>

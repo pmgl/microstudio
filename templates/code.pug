@@ -1,0 +1,84 @@
+div.code-editor#code-editor
+  div.code-toolbar#code-toolbar Source Code
+  div.source-list-panel#source-list-panel
+    div.source-list-header#source-list-header
+      div #{translator.get("Files")}
+      i(class="fa fa-chevron-circle-right")
+    div.source-list#source-list
+    div.create-source-button#create-source-button <i class="fa fa-plus-square"></i> #{translator.get("Add File")}
+  div.editor-locked#editor-locked
+  div.editor-view#editor-view
+  div.help-window#help-window
+    div.left-side
+      i(class="fa fa-question")
+    div.content
+
+  div.code-tools
+    div.buttons
+      div#code-font-minus(title="Decrease font size") <i class="fas fa-long-arrow-alt-down"></i> A
+      div#code-font-plus(title="Increase font size") <i class="fas fa-long-arrow-alt-up"></i> A
+      div#code-search.selected(title="Search in code")
+        i.fas.fa-search
+
+    div.value-tool-button#color-value-tool-button
+      span CTRL
+      i.fa.fa-palette
+
+    div.value-tool-button#number-value-tool-button
+      span CTRL
+      div.slider-track
+      div.slider-cursor
+
+div.code-splitbar#code-splitbar
+
+div.runtime-container#runtime-container
+  div.runtime#runtime
+    div.runbar#runbar
+      span Run
+      div.buttons
+        div#run-button(title="Run project")
+          i.fas.fa-play
+        div#pause-button.selected(title="Pause execution")
+          i.fas.fa-pause
+        div#reload-button.selected(title="Restart project")
+          i.fa.fa-redo
+        div#detach-button(title="Detach run window")
+          i.fas.fa-window-restore
+
+      a#run-link(target="_blank")
+
+    div.devicecontainer
+      div#device
+
+      div#ruler
+        canvas#ruler-canvas
+
+  div.runtime-splitbar#runtime-splitbar
+    span Console
+    div.buttons
+      div#clear-button(title="Clear console")
+        i.fa.fa-trash-alt
+      div#console-options-button(title="Console options")
+        i.fa.fa-cogs
+    div#console-options
+      input#console-options-warning-undefined(type="checkbox")
+      label(for="console-options-warning-undefined") #{translator.get("Display warning when using an undefined variable")}
+      br
+      input#console-options-warning-nonfunction(type="checkbox")
+      label(for="console-options-warning-nonfunction") #{translator.get("Display warning when calling something that isn't a function")}
+      br
+      input#console-options-warning-assign(type="checkbox")
+      label(for="console-options-warning-assign") #{translator.get("Display warning when setting property on an undefined variable")}
+      br
+      input#console-options-transpiler(type="checkbox")
+      label(for="console-options-transpiler") #{translator.get("Use transpiler [Caution: alpha version, may not work]")}
+
+  div.runtime-terminal#runtime-terminal
+    div#terminal
+      div#terminal-view
+        div#terminal-lines
+      div#terminal-input-line
+        div#terminal-input-gt
+          i.fa.fa-angle-right
+        div#terminal-input-container
+          input#terminal-input(autocomplete="off" name="terminalinput")

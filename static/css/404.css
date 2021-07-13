@@ -1,0 +1,31 @@
+body {
+  text-align: center ;
+  background: hsl(200,20%,10%);
+  padding: 50px ;
+  color: #FFF ;
+  font-family: Verdana, sans-serif;
+  font-size: 16px ;
+}
+
+img {
+  width: 200px ;
+}
+
+div,a {
+  margin: 60px 0 0 0;
+  text-decoration: none ;
+  color: #FFF ;
+}
+
+.button {
+  display: inline-block ;
+  background: hsl(160,50%,40%);
+  border-radius: 5px ;
+  padding: 20px 40px ;
+  cursor: pointer ;
+}
+
+.e404 {
+  font-size: 120px ;
+  color: rgba(255,255,255,.2);
+}

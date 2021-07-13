@@ -1,0 +1,102 @@
+div.sprites-left
+  div.assets-drop
+    div <i class="fas fa-arrow-circle-down"></i>
+    div #{translator.get("You can drop PNG or JPEG files here")}
+
+  div.create-sprite-button#create-sprite-button <i class="fa fa-plus-square"></i> <span>#{translator.get("Add Sprite")}</span>
+  div.spritelist#spritelist
+    div.sprite-list#sprite-list
+
+div.sprites-splitbar
+
+div.sprites-right
+  div.spriteinfo#spriteinfo
+    input(type="text" value="")#sprite-name
+    div.validate-button-container#sprite-name-button
+      div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+    input(type="text" value="32")#sprite-width
+    span x
+    input(type="text" value="32")#sprite-height
+    div.validate-button-container#sprite-size-button
+      div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+    div.buttons
+      div#undo-sprite(title=translator.get("Undo"))
+        i.fa.fa-undo
+      div#redo-sprite(title=translator.get("Redo"))
+        i.fa.fa-redo
+
+      div#copy-sprite(title=translator.get("Copy"))
+        i.fa.fa-copy
+      div#cut-sprite(title=translator.get("Cut"))
+        i.fa.fa-cut
+      div#paste-sprite(title=translator.get("Paste"))
+        i.fa.fa-paste
+
+      div#delete-sprite(title=translator.get("Delete Sprite"))
+        i.fa.fa-trash
+
+  div#sprite-editor-locked
+  div#spriteeditorcontainer.expanded
+    div.spriteeditor#spriteeditor(tabindex="0")
+      canvas
+    div#sprite-grab-info-container
+      div#sprite-grab-info
+        i.fa.fa-hand-paper
+        span #{translator.get("Hold down space bar to move view")}
+    div#sprite-zoom
+      i.fa.fa-search-plus#sprite-zoom-plus(title=translator.get("Zoom in"))
+      br
+      i.fa.fa-search-minus#sprite-zoom-minus(title=translator.get("Zoom out"))
+
+  div#sprite-animation-title.collapsed
+      i.fa.fa-caret-down
+      span #{translator.get("Animation")}
+
+  div#sprite-animation-panel.collapsed
+    div#sprite-animation-preview
+      canvas(width="80" height="80")
+      input(type="range")
+
+    div#sprite-animation-steps
+      div#sprite-animation-list
+
+      div.button#add-frame-button(title=translator.get("Add new Frame"))
+        i.fa.fa-plus-square
+
+  div.spritebar#spritebar
+    div.spritetools#spritetools
+    div.spritetooloptions#spritetooloptions
+      div.spritetooloptionslist#spritetooloptionslist
+
+      //h3 Opacity
+      //input(type="range" min="0" max="100" value="100")#sprite-tool-opacity
+      div#colorpicker-group
+        div.colorpicker#colorpicker
+        div.spritetoolbutton#eyedropper
+          i(class="fa fa-eye-dropper")
+          br
+          span #{translator.get("Eyedropper tool")}
+        div.auto-palette
+          div.auto-palette-title Palette <i id="auto-palette-lock" class="fa fa-lock-open" title="#{translator.get('Lock palette')}"></i>
+          div#auto-palette-list
+
+      div#selection-group
+        div.selection-hint#selection-hint-move <span>⇧</span> +<i class="fa fa-mouse-pointer"></i> #{translator.get("Move")}
+        div.selection-hint#selection-hint-clone <span>Alt</span> +<i class="fa fa-mouse-pointer"></i> #{translator.get("Clone")}
+        div.selection-operation#selection-operation-film <i class="fa fa-th"></i> <i class="fa fa-arrow-right"></i> <i class="fa fa-play"></i> <br /> #{translator.get("Strip to animation")}
+
+    div.spritehelpers
+      div.spritehelper#sprite-helper-tile
+        i(class="fa fa-th-large")
+        br
+        span Tile
+
+      div.spritehelper#sprite-helper-vsymmetry
+        i(class="fa fa-arrows-alt-h")
+        br
+        span V Symmetry
+
+      div.spritehelper#sprite-helper-hsymmetry
+        i(class="fa fa-arrows-alt-v")
+        br
+        span H Symmetry

@@ -1,0 +1,15 @@
+div.create-asset-button#create-asset-button <i class="fa fa-plus-square"></i> #{translator.get("Add Asset")}
+
+div.assetlist#assetlist
+  div.asset-list#asset-list
+
+div.assetinfo#assetinfo
+  input(type="text" value="")#asset-name
+  div.validate-button-container#asset-name-button
+    div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+
+  div.buttons
+    div#delete-asset.delete(title=translator.get("Delete Asset"))
+      i.fa.fa-trash
+
+div.asseteditor#asset-viewer

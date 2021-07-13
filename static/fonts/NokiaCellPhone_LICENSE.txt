@@ -1,0 +1,136 @@
+==============================================================================
+NOKIA CELLPHONE FC SMALL
+========================
+
+
+==============================================================================
+Info
+====
+
+This is a font that emulates the bitmap font used by Nokia-based cell phones.
+As the name implies ("Nokia Cellphone Small"), this is the "Small" font - used
+on some menus, not the data fields (which it used a "big" font).
+
+This was done because 1) I needed to use it on some projects and 2) I saw lots
+of people asking for a font like this. So I had some experience in creating
+bitmap-emulating truetype fonts (that is, a truetype, vector-based font that
+works as if it was a bitmap-based font) and then I decided to do this thingie.
+I send a message to my Nokia 6120 cell phone with every characters that the
+cell phone had and then scanned the cellphone screens to rebuild it using
+fontlab 3 and 4.
+
+
+==============================================================================
+How to use (read it please)
+===========================
+
+This is a "bitmap" font, a truetype font that emulates real bitmap fonts (with
+no antialias, that is). It should be used at the same point size (8) or
+multiples thereof (16, 24, 32) to produce the best result. When used properly,
+it renders as the font found on the Nokia cellphones software.
+
+Here's some specific hints:
+
+Photoshop 5: use it as a normal font, with no antialias. The underline is way
+too low, but I can't fix it.
+
+Photoshop 7: use it as a normal font, with no antialias. If you're
+experiencing variating vertical positions for the underline, use a fixed
+leading/line spacing (10, for example) instead of the "auto" mode.
+
+Flash: use it normally. It will not produce antialias as long as you position
+your textfield on "rounded" pixels, related to the main flash stage. To do
+this, draw/type your textfield on stage, go to the "Info" panel, and be sure
+the topmost axis is selected (little black box) and its X and Y position are
+set to a position with no decimal points (e.g., 10 and 8 instead of 10.1 and
+8.5). You can embed the fonts too, *NO* antialias will occur as long as you use
+it on the right positions.
+
+
+==============================================================================
+Modifications
+=============
+
+* VERSION 2.2 - A minor correction on wordspacing which got increased on the
+last version. Now it's correct again (from 5 to 4 pixels).
+
+* VERSION 2.1 - Small additions, due to a BIG help by Panu Tuominen from
+PanuWorld (www.panuworld.net). Added characters:
+
+    Ý ý - Y/y with acute
+    Å å - A/a with ring
+    Ÿ ÿ - Y/y with diaeresis (Y being *done from certain clues* - not sure it's right, but it probably is)
+    `   - grave accent (unicode 0060)
+
+* VERSION 2.0 - Took it to a new metric system (more fit for "bitmap fonts"),
+fixed lots of small polygon discrepancies, and fixed some Flash filling holes
+bugs. I've changed the leading too; since there's no standard leading on the
+cellphone menus I've chosen one of my own.
+
+Also, since I got a new Nokia (3310) cellphone, there's ton of new characters
+available that I have added to the font. There are now 164 glyphs on the Nokia
+cellphone truetype font. Here's what have been added:
+
+    Ä ä - A/a with diaeresis
+    È è - E/e with grave
+    Ë ë - E/e with diaeresis
+    Ï ï - I/i with diaeresis
+    Î î - I/i with circumflex
+    Ò ò - O/o with grave
+    Ö ö - O/o with diaeresis
+    Ù ù - U/u with grave
+    Û û - U/u with circumflex
+    Ñ ñ - N/n with tilde
+    Ø ø - O/o with slash/stroke
+    * * - G/g with breve (turkish codepage)
+    ¤ - currency sign
+    Æ - latin capital letter AE
+    æ - latin small letter AE
+    ß - greek beta (I think)
+    € - Euro
+
+* VERSION 1.4 - Fixed the WORDSPACE and LEADING size. Thanks to Gustavo Rodrigues
+(from www.escritaurbana.com.br) for pointing me my mistakes. I also fixed some
+mistakes on the documentation (this file).
+
+* VERSION 1.2 - Optimized for Macromedia Flash usage (no hollows) and with
+a MAC TTF version provided by Chris Moritz (members.home.net/fieldofaction3).
+
+
+==============================================================================
+Copyright and stuff
+===================
+
+This is a free font/file, distribute as you wish to who you wish. You are free
+to use it on a movie, a videogame, a video, a broadcast, without having to ask
+my permission.
+
+Please do not send me emails asking me to sign release forms if it require
+any sort of scanning or digital compositing. It's a big chore. This license
+file and a simple confirmation email should suffice as proof that you are
+allowed to use it.
+
+Of course I don't mind emails letting me know where something has been used.
+Those are always gratifying!
+
+Do NOT sell this font. It's not yours and you can't make money of it.
+
+I don't know if the original Nokia font has some copyright which prevents
+people from making new fonts based on it. I hope not. Anyways, buy a Nokia,
+and I think everything's gonna be alright.
+
+Special thanks on this version go out to Carlos Bêla (www.goldenshower.gs) and
+Diogo Kalil (www.sincolor.com.br) for helping me out with the Mac version of
+the font. It has been extensively tested to ensure it's as smooth (hint,
+kerning, spacing and aliasing-wise) as the pc one is.
+
+
+==============================================================================
+Author
+======
+
+This font was done by Zeh Fernando on Fontlab 4 (www.fontlab.com) on a PC.
+
+Zeh Fernando
+zeh@zehfernando.com
+www.zehfernando.com

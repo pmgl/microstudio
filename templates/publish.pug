@@ -1,0 +1,108 @@
+div.publish-box
+  div.action-box#publish-box
+    div.publish-button#publish-button
+      i.fa.fa-eye
+      | #{translator.get("Make public")}
+
+    div#publish-validate-first #{translator.get("You must validate your e-mail address before you can make your project public.")}
+    div.publish-text #{translator.get("This project is currently private.")}
+
+  div.action-box#unpublish-box
+    div.publish-button#unpublish-button
+      i.fa.fa-eye-slash
+      | #{translator.get("Make private again")}
+    div.publish-text #{translator.get("This project is currently public.")}
+
+  h2 #{translator.get("Make public on microStudio")}
+  p #{translator.get("Making your project public will allow it to be listed in the Explore section of the site. Public projects can be run and used by anyone. Making a project public allows anyone to view and possibly reuse the source code.")}
+
+  h3 #{translator.get("Description")}
+  textarea#publish-box-textarea(rows=5 cols=60)
+
+  h3 #{translator.get("Tags")}
+  input#publish-add-tags(type="text")
+  div.validate-button-container#publish-add-tags-button
+    div.validate-button <i class="fa fa-plus"></i> #{translator.get("Add")}
+
+  div#publish-tag-list
+
+div.publish-box
+  div.action-box#html-export
+    div.publish-button
+      i.fa.fa-download
+      | #{translator.get("Export to HTML5")}
+
+  h2 #{translator.get("Export to HTML5")}
+  p #{translator.get("Exporting to HTML5 allows you to distribute your game as a web app or a standalone HTML app. Unzip contents, double-click index.html to start the game, or upload the contents to a subfolder of your existing web site.")}
+  p #{translator.get("You can also easily publish your HTML5 game on a number of platforms supporting HTML5 games. We have listed a few popular ones below, which you can check out:")}
+
+  div.logos
+    a(href="https://itch.io" target="_blank")
+      img.logo(src="/img/itchio.svg" alt="itch.io" title="itch.io")
+    a(href="https://gamejolt.com" target="_blank")
+      img.logo(src="/img/gamejolt.png" alt="Gamejolt" title="Gamejolt")
+    a(href="https://gamedistribution.com" target="_blank")
+      img.logo(src="/img/gamedistribution.svg" alt="Game Distribution" title="Game Distribution")
+    a(href="https://kongregate.com" target="_blank")
+      img.logo(src="/img/kongregate.svg" alt="Kongregate" title="Kongregate")
+    a(href="https://gamepix.com" target="_blank")
+      img.logo(src="/img/gamepix.png" alt="Gamepix" title="Gamepix")
+    a(href="https://crazygames.com" target="_blank")
+      img.logo(src="/img/crazygames.svg" alt="CrazyGames" title="CrazyGames")
+
+
+div.publish-box#publish-box-android
+  img.title(src="/img/android_robot.svg")
+  div.action-box#android-export
+    div.publish-button
+      i.fa.fa-wrench
+      | #{translator.get("Build for Android")}
+
+  h2 Build for Android <span class="beta">beta</span>
+  p #{translator.get("This will build an APK file of your game. An APK file is what you need to publish your game on the Google Play Store, for Android devices.")}
+  div.clear
+
+div.publish-box#publish-box-windows
+  img.title(src="/img/windows.svg")
+  div.action-box#windows-export
+    div.publish-button
+      i.fa.fa-wrench
+      | #{translator.get("Build for Windows")}
+
+  h2 Build for Windows <span class="beta">beta</span>
+  p #{translator.get("This will build your game as an executable for Windows (.EXE).")}
+  div.clear
+
+
+div.publish-box#publish-box-macos
+  img.title(src="/img/macos.svg")
+  div.action-box#macos-export
+    div.publish-button
+      i.fa.fa-wrench
+      | #{translator.get("Build for macOS")}
+
+  h2 Build for macOS <span class="beta">beta</span>
+  p #{translator.get("This will build your game as an executable for macOS.")}
+  div.clear
+
+div.publish-box#publish-box-linux
+  img.title(src="/img/ubuntu.svg")
+  div.action-box#linux-export
+    div.publish-button
+      i.fa.fa-wrench
+      | #{translator.get("Build for Linux")}
+
+  h2 Build for Linux <span class="beta">beta</span>
+  p #{translator.get("This will build your game as an executable for Linux (Ubuntu, x86).")}
+  div.clear
+    
+div.publish-box#publish-box-raspbian
+  img.title(src="/img/raspberry.svg")
+  div.action-box#raspbian-export
+    div.publish-button
+      i.fa.fa-wrench
+      | #{translator.get("Build for Raspberry Pi")}
+
+  h2 Build for Raspberry Pi <span class="beta">beta</span>
+  p #{translator.get("This will build your game as an executable for Raspberry Pi (Raspbian).")}
+  div.clear

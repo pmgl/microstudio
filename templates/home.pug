@@ -1,0 +1,455 @@
+doctype html
+html(lang=language)
+  head
+    meta(name="description" content=translator.get("Learn programming, create video games - microStudio is a free game engine online."))
+    meta(name="viewport" content="width=device-width, user-scalable=no, initial-scale=.6")
+    link(rel="alternate" hreflang="de" href="https://microstudio.dev/de/")
+    link(rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/")
+    link(rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/")
+    link(rel="alternate" hreflang="en" href="https://microstudio.dev")
+    title microStudio - #{translator.get("Learn programming, create games")}
+
+    each css in css_files
+      link(rel="stylesheet" type="text/css" href=css)
+
+    link(rel="stylesheet" href="/lib/fontlib/fontawesome/css/all.css")
+
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu-mono/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/700.css")
+
+    link(rel="apple-touch-icon" sizes="180x180" href="/img/favicon180.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/img/favicon32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/img/favicon16.png")
+    link(rel="manifest" href="/manifest.json")
+
+    script(type="application/ld+json").
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "microStudio",
+        "applicationCategory": "https://schema.org/WebApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "operatingSystem": "Any"
+      }
+
+    meta(property="og:title" content="microStudio")
+    meta(property="og:type" content="website")
+    meta(property="og:url" content="https://microstudio.dev")
+    meta(property="og:image" content="https://microstudio.dev/img/microstudio.jpg")
+    meta(property="og:description" content="microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything.")
+
+    meta(name="twitter:card" content="summary_large_image")
+    meta(name="twitter:site" content="@microStudio")
+    meta(name="twitter:title" content="microStudio")
+    meta(name="twitter:description" content="microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything.")
+    meta(name="twitter:image" content="https://microstudio.dev/img/microstudio.jpg")
+
+    script(src="/lib/jquery/jquery.js")
+    script(src="/lib/jquery-ui/jquery-ui.min.js")
+    script(src="/lib/ace/ace.js")
+    script(src="/lib/mode-microscript.js")
+    script(src="/lib/ace/mode-markdown.js")
+    script(src="/lib/ace/theme-tomorrow_night_bright.js")
+
+    script(src="/lib/marked/marked.js")
+    script(src="/lib/dompurify/purify.js")
+
+    each js in javascript_files
+      script(src=js)
+
+  body.notranslate(translate="no")
+    header
+      div(id="create-account-button" title=translator.get("Create My Account"))
+        <i class="login fa fa-user-plus"></i><span>#{translator.get("Create My Account")}</span>
+
+      div(id="login-button" title=translator.get("Login"))
+        <i class="login fa fa-sign-in-alt"></i><span>#{translator.get("Login")}</span>
+
+      div.login-info#login-info
+        div.username
+          img(style="display: none;")
+          i.fa.fa-user
+          span#user-nick
+
+      div#language-setting
+        i.fas.fa-comment
+        div.lang.notranslate(translate="no") #{language.toUpperCase()}
+
+      div.language-menu#language-menu
+        div.language-choice#language-choice-en(title="English")
+          i.fas.fa-comment
+          div.notranslate(translate="no") EN
+
+        div.language-choice#language-choice-fr(title="Français")
+          i.fas.fa-comment
+          div.notranslate(translate="no") FR
+
+        div.language-choice#language-choice-pl(title="Polski")
+          i.fas.fa-comment
+          div.notranslate(translate="no") PL
+
+        div.language-choice#language-choice-de(title="Deutsch")
+          i.fas.fa-comment
+          div.notranslate(translate="no") DE
+
+      img.logo#logo(src="/img/microstudiologo.svg" alt="microStudio" title="microStudio")
+
+      ul.titlemenu
+        li#menu-explore.selected(title=translator.get("Explore")) <i class="fa fa-search"></i><br /><span>#{translator.get("Explore")}</span>
+        li#menu-projects(title=translator.get("Create")) <i class="fa fa-code"></i><br /><span>#{translator.get("Create")}</span>
+        //- li#menu-play(title=translator.get("Play")) <i class="fa fa-gamepad"></i><br /><span>#{translator.get("Play")}</span>
+        li#menu-tutorials(title=translator.get("Tutorials")) <i class="fa fa-lightbulb"></i><br /><span>#{translator.get("Tutorials")}</span>
+        li#menu-help(title=translator.get("Documentation")) <i class="fa fa-book-open"></i><br /><span>#{translator.get("Documentation")}</span>
+        a(target="_blank" href=language == "fr" ? "/fr/community/" : "/community/")
+          li#menu-community(title=translator.get("Community")) <i class="fa fa-users"></i><br /><span>#{translator.get("Community")}</span> <span class="pastille">NEW</span>
+        li#menu-about(title=translator.get("About")) <i class="fa fa-info-circle"></i><br /><span>#{translator.get("About")}</span><i class="fab fa-patreon"></i>
+
+    div.usermenu(style="height:0px;")
+      //div.profile <i class="fa fa-user"></i> #{translator.get("Profile")}
+      div.settings <i class="fa fa-cogs"></i> #{translator.get("Settings")}
+      div.profile <i class="fas fa-user-circle"></i> #{translator.get("Profile")}
+      div.logout <i class="fa fa-power-off"></i> #{translator.get("Logout")}
+      div.create-account <i class="fa fa-user-plus"></i> #{translator.get("Create Account")}
+      div.discard-account <i class="fa fa-trash"></i> #{translator.get("Quit and Delete")}
+
+    div.main-container
+      div.home-section#home-section
+        div.part.part1
+          div.center
+            img.mainlogo(src="/img/microstudiologo.svg" alt="microStudio" style="width: 250px")
+            p.p1 #{translator.get("microStudio is a free game engine online.")}
+            p.p2 #{translator.get("Create games, learn programming, play, share, prototype and jam!")}
+
+          div.center.right
+            img.screen(src="/img/microstudio.jpg" alt="microStudio view")
+
+          div#home-header-background
+
+        div.part
+          div.center
+            img.screen(src="/img/mapeditor.png" alt="microStudio map editor")
+          div.center
+            h2 #{translator.get("Online and integrated")}
+            p #{translator.get("microStudio includes all you need to write code, create sprites and maps for your 2D game.")}
+            p #{translator.get("All from your web browser. Your project is stored in the cloud, accessible from anywhere.")}
+
+        div.part
+          div.center
+            h2 #{translator.get("Get into programming")}
+            p #{translator.get("Write your game code in microScript, a simple language inspired by Lua.")}
+            p #{translator.get("The documentation is always there to help. Create cool demos in just a few lines of code.")}
+          div.center
+            img.screen(src="/img/codeeditor.jpg" alt="Code Editor")
+
+        div.part
+          div.center
+            img.screen(src="/img/spriteeditor.jpg" alt="Sprite Editor")
+          div.center
+            h2 #{translator.get("Design")}
+            p #{translator.get("Create pixel art sprites and maps with the included editors.")}
+            p #{translator.get("Using your sprites and maps from code is as easy as 1-2-3.")}
+
+        div.part(style="padding-bottom:0")
+          div.center
+            h2 #{translator.get("Adjusting is a breeze")}
+            p #{translator.get("Change anything from your PC while testing your game on your mobile.")}
+            p #{translator.get("Your changes are immediately reflected in your ongoing playing session.")}
+          div.center(style="padding:0;line-height: 0;margin-top:-50px")
+            img.screen(src="/img/smartphone.png" alt="Run on your smartphone" style="box-shadow: none;")
+
+        div.part
+          div.center
+            i.fa.fa-users
+          div.center
+            h2 #{translator.get("Bring your friends")}
+            p #{translator.get("You can invite others to your project and work in teams.")}
+            p #{translator.get("microStudio automagically synchronizes all your project files in real time.")}
+
+        div.part
+          div.center
+            h2 #{translator.get("Get your gear ready")}
+            p #{translator.get("Control your game using the gamepad, touchscreen, keyboard or mouse inputs.")}
+            p #{translator.get("Export your project in a single click to HTML5, Windows, Linux, macOS. More export options are coming!")}
+          div.center
+            img.screen(src="/img/gamepad.svg" alt="Gamepad" style="box-shadow: none; width: 75%")
+
+        div.part
+          div.center
+            img.screen(src="/img/community.jpg" alt="Community" style="box-shadow: none;")
+          div.center
+            h2 #{translator.get("Join the community")}
+            p #{translator.get("Browse public games, demos, resources. Pick up what you need for your own project.")}
+            p #{translator.get("Contribute your best creations and help others.")}
+
+
+        div.part.last
+          img(src="/img/microstudiologo.svg" alt="microStudio" style="width: 250px")
+
+        div.part
+          h2 #{translator.get("So what now?")}
+          br
+          div.button#home-action-explore
+            i.fa.fa-search
+            br
+            span #{translator.get("Explore public projects")}
+          div.button#home-action-create
+            i.fa.fa-pencil-alt
+            br
+            span #{translator.get("Start creating!")}
+
+        div.footer
+          p #{translator.get("Created in Strasbourg, France. See 'About' for more information")}
+          p
+            img(src="/img/faviconlarge.png" alt="microStudio icon" style="border-radius: 8px; width: 48px")
+          p #{translator.get("You are not tracked here.")}<br />#{translator.get("microStudio doesn't use any third-party tracking script.")}
+          p.notranslate(translate="no")
+            a.notranslate(id="switch-to-fr" href="/fr/" translate="no") microStudio en Français
+            i.fa.fa-circle
+            a.notranslate(id="switch-to-en" href="/" translate="no") microStudio in English
+            br
+            a.notranslate(id="switch-to-pl" href="/pl/" translate="no") microStudio w języku polskim
+            i.fa.fa-circle
+            a.notranslate(id="switch-to-de" href="/de/" translate="no") microStudio auf Deutsch
+
+      div.exploreview#explore-section
+        div#explore-bar
+          div#explore-back-button
+            i(class="fa fa-arrow-left")
+            span #{translator.get("Back")}
+
+          div#explore-tools
+            div#explore-sort-button.hot
+              i.fas.fa-arrows-alt-v
+              span #{translator.get("Hot")}
+
+            div#explore-tags
+
+            div#explore-search
+              input#explore-search-input(name="search")
+              i.fa.fa-search
+
+        div#explore-contents
+          div#explore-box-list
+
+        div#explore-project-details
+          include projectdetails.pug
+
+      div.help-section#help-section
+        include help.pug
+
+      div.about-section#about-section
+        include about.pug
+
+      div.tutorials-section#tutorials-section
+        include tutorials.pug
+
+      div.usersettings-section#usersettings-section
+        include user.pug
+
+      div.projects-section#projects-section
+
+        div.myprojects#myprojects
+          div.title
+            div#projects-search
+              input#projects-search-input(name="search")
+              i.fa.fa-search
+            h1 #{translator.get("My Projects")}
+              div.create-project-button#create-project-button <i class="fa fa-plus-square"></i> #{translator.get("Create New Project")}
+          div.project-list#project-list
+
+        div.projectview#projectview
+          div.projectheader
+            div.backtoprojects#backtoprojects <i class="fa fa-arrow-left"></i> #{translator.get("Back to Projects")}
+            img#project-icon
+            span#project-name Project name
+            i#save-status(class="fa fa-ellipsis-h")
+            div#active-project-users
+              div.active-user
+                i(class="fa fa-user")
+                span username
+
+          div.sidemenu
+            ul
+              li(id="menuitem-code") <i class="fa fa-code"></i><br /> #{translator.get("Code")}
+              li(id="menuitem-sprites") <i class="fa fa-image"></i><br /> #{translator.get("Sprites")}
+              li(id="menuitem-maps") <i class="fa fa-map"></i><br /> #{translator.get("Maps")}
+              li(id="menuitem-assets") <i class="fa fa-cube"></i><br /> #{translator.get("Assets")}
+              li(id="menuitem-sounds") <i class="fa fa-volume-up"></i><br /> #{translator.get("Sounds")}
+              li(id="menuitem-music") <i class="fa fa-music"></i><br /> #{translator.get("Music")}
+              li(id="menuitem-doc") <i class="fas fa-book"></i><br /> #{translator.get("Doc")}
+              // li(id="menuitem-server") <i class="fa fa-server"></i><br /> #{translator.get("Server")}
+              li(id="menuitem-options") <i class="fa fa-cogs"></i><br /> #{translator.get("Settings")}
+              li(id="menuitem-publish") <i class="fa fa-upload"></i><br /> #{translator.get("Publish")}
+
+          div.section-container#section-container
+            div.section#code-section
+              include code.pug
+
+            div.section#explore-section
+
+            div.section#projects-section
+
+            div.section#sprites-section
+              include sprites.pug
+
+            div.section#maps-section
+              include maps.pug
+
+            div.section#assets-section
+              include assets.pug
+
+            div.section#sounds-section
+              include sounds.pug
+
+            div.section#music-section
+              include music.pug
+
+            div.section#doc-section
+              include doc.pug
+
+            div.section#server-section
+              include server.pug
+
+            div.section#settings-section.
+              Settings section here
+
+            div.section#options-section
+              include projectoptions.pug
+
+            div.section#publish-section
+              include publish.pug
+
+    div.overlay#login-overlay
+      div#login-window
+        form#guest-panel
+          h2 #{translator.get("Start creating")}
+          div.button#guest-action-guest
+            i.fas.fa-user-clock
+            br
+            h3 #{translator.get("Create as a guest")}
+            p #{translator.get("Start using microStudio without creating an account.")}
+
+          div.button#guest-action-create
+            i.fa.fa-user-plus
+            br
+            h3 #{translator.get("Create my account")}
+            p #{translator.get("Save your projects, work in teams, publish, vote, comment...")}
+
+          div.button#guest-action-login
+            i.fa.fa-sign-in-alt
+            br
+            h3 #{translator.get("Login")}
+            p #{translator.get("Log in to your existing account.")}
+
+        form#login-panel
+          h2 #{translator.get("Registered User")}
+          label #{translator.get("Nickname or e-mail")}
+          br
+          input(type="text" id="login_nick" required)
+          br
+          label #{translator.get("Password")}
+          br
+          input(type="password" id="login_password" required)
+          br
+          a#forgot-password-link(href="#") #{translator.get("Forgot password?")}
+          br
+          br
+          button#login-submit #{translator.get("Log in")}
+          br
+          br
+          p #{translator.get("Don't have an account yet?")}
+          a(href="#" id="switch_to_create_account") #{translator.get("Create my account")}
+        form#forgot-password-panel
+          h2 #{translator.get("Password Recovery")}
+          label #{translator.get("E-mail")}
+          br
+          input(type="text" id="forgot_email" required)
+          br
+          br
+          button#forgot-submit #{translator.get("Send password recovery e-mail")}
+          br
+          br
+          a(href="#" id="switch_from_forgot_to_login") #{translator.get("Back to login")}
+        form#create-account-panel
+          h2 #{translator.get("New User")}
+          label #{translator.get("Nickname")}
+          br
+          input(type="text" id="create_nick" required)
+          br
+          label #{translator.get("E-mail address")}
+          br
+          input(type="email" id="create_email" required placeholder="E-mail address")
+          br
+          label #{translator.get("Password")}
+          br
+          input(type="password" id="create_password" required)
+          br
+          div#create-account-terms
+          div(style="text-align:left")
+            input(type="checkbox" id="create-account-tos" style="margin-bottom:4px")
+            label(for="create-account-tos") #{translator.get("Accept the")}&nbsp;
+            a#create-account-toggle-terms(href="#") #{translator.get("Terms of Use")}
+            br
+            input(type="checkbox" id="create-account-newsletter")
+            label(for="create-account-newsletter") #{translator.get("Receive news (maximum once per month)")}
+          button#create-account-submit #{translator.get("Create Account")}
+          br
+          br
+          p #{translator.get("Already registered?")}
+          a(href="#" id="switch_to_log_in") #{translator.get("Log in to existing account")}
+
+    div.overlay#create-project-overlay
+      div#create-project-window
+        form#create-project-form
+          h2 #{translator.get("Create New Project")}
+          label #{translator.get("Title")}
+          br
+          input#create-project-title(type="text" required)
+          br
+          br
+          button#create-project-submit #{translator.get("Create Project")}
+
+    div#notification-container
+      div#notification-bubble
+        i(class="fa fa-comment")
+        span Example Bubble Text
+
+    div#tutorial-overlay
+
+    div.floating-window#tutorial-window
+      div.titlebar
+        i.icon.fa.fa-lightbulb
+        div.title #{translator.get("Tutorial")}
+        i.minify.fa.fa-compress
+      div.content.md
+      div.navigation
+        i.previous.fa.fa-arrow-left
+        span.step 1/15
+        i.next.fa.fa-arrow-right
+        i.resize.fa.fa-grip-horizontal
+
+    div.floating-window#run-window
+      div.titlebar.runbar
+        div.title #{translator.get("Run")}
+        div.buttons
+          div#run-button-win(title="Run project")
+            i.fas.fa-play
+          div#pause-button-win.selected(title="Pause execution")
+            i.fas.fa-pause
+          div#reload-button-win.selected(title="Restart project")
+            i.fa.fa-redo
+
+        i.minify.fas.fa-minus-square(style="background:none;")
+      div.content
+      div.navigation
+        i.resize.fa.fa-grip-horizontal
+
+    canvas#highlighter
+
+    i.fa.fa-arrow-right#highlighter-arrow

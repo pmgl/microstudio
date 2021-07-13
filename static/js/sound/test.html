@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <script src="midi.js"></script>
+    <script src="audiooutput.js"></script>
+    <style>
+    body {
+      height: 100% ;
+    }
+    h4 {
+      margin-bottom: 0 ;
+    }
+    </style>
+  </head>
+
+  <script>
+    window.onload = function() {
+      audio = null ;
+      var midi = null ;
+      document.body.addEventListener("click",function() {
+        if (audio) return ;
+      audio = new AudioOutput() ;
+      audio.start();
+      midi = new MIDI(function(data){
+        audio.sendNote(data)
+      }) ;
+    });
+    }
+  </script>
+</html>

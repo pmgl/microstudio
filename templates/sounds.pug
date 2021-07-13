@@ -1,0 +1,54 @@
+div.sounds-left
+  div.assets-drop
+    div <i class="fas fa-arrow-circle-down"></i>
+    div #{translator.get("You can drop WAV files here")}
+
+  div.create-asset-button#create-sound-button(style="display:none") <i class="fa fa-plus-square"></i> #{translator.get("Add Sound")}
+
+  div.assetlist#soundlist
+    div.asset-list#sound-list
+
+div.horizontal-splitbar#sounds-splitbar
+
+div.sounds-right
+  div.assetinfo#soundinfo
+    input(type="text" value="")#sound-name
+    div.validate-button-container#sound-name-button
+      div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+
+    div.buttons
+      div#undo-sound(title=translator.get("Undo"))
+        i.fa.fa-undo
+      div#redo-sound(title=translator.get("Redo"))
+        i.fa.fa-redo
+
+      div#copy-sound(title=translator.get("Copy"))
+        i.fa.fa-copy
+      div#cut-sound(title=translator.get("Cut"))
+        i.fa.fa-cut
+      div#paste-sound(title=translator.get("Paste"))
+        i.fa.fa-paste
+
+      div#delete-sound.delete(title=translator.get("Delete Sound"))
+        i.fa.fa-trash
+
+  div#sound-editor-locked
+  div#sample-editor
+    div.placeholder #{translator.get("Drop your sounds on the left. A sleek sound creation app will land here in the future!")}
+    //- div#sample-transport-bar
+    //- div#sample-view
+    //- div#sample-zoom
+    //-   i.fa.fa-search-plus#sample-zoom-plus(title=translator.get("Zoom in"))
+    //-   br
+    //-   i.fa.fa-search-minus#sample-zoom-minus(title=translator.get("Zoom out"))
+
+  div#sample-tools
+
+  div.floating-window#synth-window(style="display:none")
+    div.titlebar
+      div.title #{translator.get("Synthesizer")}
+      i.minify.fa.fa-compress
+    div.content
+      include synth.pug
+    //- div.navigation
+    //-   i.resize.fa.fa-grip-horizontal

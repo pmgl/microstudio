@@ -1,0 +1,602 @@
+.exploreview {
+  position: absolute;  top:0 ; bottom: 0 ; left: 0 ; right: 0 ;
+  display: none ;
+}
+.exploreview i {
+  margin-right: 10px ;
+}
+#explore-contents {
+  position: absolute ;
+  top: 40px ;
+  bottom: 0px ;
+  left: 0 ;
+  right: 0 ;
+  overflow: auto ;
+  padding: 5px ;
+}
+
+#explore-box-list {
+  text-align: center ;
+}
+.explore-project-box {
+  position: relative ;
+  margin: 20px ;
+  padding: 10px ;
+  display: inline-block ;
+  cursor: pointer ;
+  overflow: hidden ;
+  border-radius: 10px ;
+  width: 200px ;
+}
+.explore-project-box:hover {
+  box-shadow: 0 0 10px rgba(0,0,0,.5) ;
+  background: rgba(255,255,255,.1);
+}
+.explore-project-box .project-tag {
+  position: absolute;
+  right: 5px;
+  top: 200px;
+  color: #FFF;
+  background: hsl(200,50%,40%);
+  padding: 2px 8px;
+  border-radius: 25px;
+  font-size: 12px;
+  box-shadow: 0 0 4px 1px #000;
+  transform: rotate(-8deg);
+}
+
+.explore-project-box .icon {
+  display: block ;
+  width:200px ;
+  height: 200px ;
+}
+
+.explore-project-box i {
+  margin-right: 5px ;
+}
+.explore-project-box .icon {
+  background: #000 ;
+  border-radius: 10px ;
+}
+.explore-project-box .run-button {
+  background: hsl(160,50%,40%);
+  padding: 8px 16px ;
+  border-radius: 5px ;
+}
+.explore-project-box .run-button i {
+  margin-right: 10px ;
+}
+
+.explore-infobox {
+  margin: 10px 0;
+  text-align: left ;
+  font-size: 14px ;
+}
+
+.explore-project-title {
+  color: #FFF ;
+  font-size: 24px ;
+  margin: 5px 0 15px 0 ;
+  white-space: nowrap ;
+  text-align: center ;
+}
+
+.explore-project-button {
+  background: hsl(160,50%,40%);
+  padding: 4px 8px ;
+  border-radius: 3px ;
+  margin: 3px 0 ;
+  width: 60px ;
+  display: inline-block ;
+  text-align: left ;
+}
+
+.explore-project-button i {
+  width: 20px ;
+}
+
+.explore-project-likes {
+  background: hsl(200,50%,40%);
+  padding: 2px 4px ;
+  border-radius: 3px ;
+  margin: 20px 0 ;
+  cursor: pointer ;
+  position: absolute ;
+  top: 250px ;
+  right: 10px ;
+}
+
+.explore-project-likes.voted {
+  background: hsl(0,50%,50%);
+}
+
+#explore-bar {
+  position: absolute ;
+  top: 10px ;
+  height: 30px ;
+  left: 0 ;
+  right: 0 ;
+  padding: 5px ;
+  vertical-align: middle ;
+}
+#explore-back-button {
+  display: none ;
+  border-radius: 5px ;
+  padding: 4px 10px ;
+  font-size: 14px;
+  cursor: pointer ;
+  margin: 2px 40px 0 20px ;
+  background: hsl(0,50%,50%);
+}
+#explore-tools {
+  display: inline-block ;
+}
+#explore-tools div {
+  display: inline-block ;
+}
+#explore-sort-button {
+  background: hsl(0,50%,50%);
+  border-radius: 3px ;
+  padding: 4px 8px ;
+  font-size: 16px ;
+  margin-left: 12px ;
+  margin-top: 1px ;
+  cursor: pointer ;
+}
+#explore-sort-button.new {
+  background: hsl(160,50%,50%);
+}
+#explore-sort-button.top {
+  background: hsl(200,50%,50%);
+}
+#explore-sort-button i {
+  margin-right: 5px ;
+}
+#explore-search {
+  position: absolute ;
+  right: 0 ;
+  top: 0 ;
+  bottom: 0 ;
+  width: 200px ;
+}
+#explore-search input {
+  border-radius: 25px;
+      border: none;
+      margin: 6px;
+      font-size: 14px;
+      padding: 5px 15px;
+      background: rgba(255,255,255,.9);
+      width: 148px ;
+}
+#explore-search input:focus {
+  outline: none ;
+}
+#explore-search i {
+  position: absolute;
+      right: 16px;
+      top: 12px;
+      z-index: 1;
+      color: rgba(0,0,0,.3);
+      font-size: 16px;
+}
+#explore-tags {
+  position: absolute ;
+  left: 150px ;
+  right: 200px ;
+  top: 0 ;
+  bottom: 0 ;
+  white-space: nowrap ;
+  overflow: hidden;
+}
+#explore-tags div {
+  display: inline-block ;
+  border-radius: 20px ;
+  padding: 3px 8px ;
+  margin: 10px 2px ;
+  background: rgba(255,255,255,.1);
+  color: #FFF ;
+  cursor: pointer ;
+  font-size: 12px ;
+}
+#explore-tags span {
+  font-size: 8px ;
+  padding: 3px 5px ;
+  border-radius: 15px ;
+  background: rgba(255,255,255,.8);
+  color: rgba(0,0,0,.8);
+}
+#explore-tags div.active {
+  background: hsl(200,70%,50%);
+  box-shadow: 0 0 10px hsl(200,70%,50%);
+}
+#explore-tag div:hover {
+  background: hsl(200,70%,50%);
+}
+#explore-project-details {
+    display: none;
+    position: absolute;
+    top: 52px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-top: solid 10px hsl(200,30%,30%);
+}
+#project-details-info {
+  position: absolute ;
+  left: 0 ;
+  top: 40px ;
+  bottom: 0 ;
+  width: 45% ;
+  overflow: auto ;
+}
+#project-details-contents {
+  position: absolute ;
+  right: 0 ;
+  top: 0px ;
+  bottom: 0 ;
+  width: 55% ;
+}
+
+#project-details-info .inside {
+  padding: 0px 40px 40px 40px ;
+  position: relative ;
+}
+#project-details-contents .inside {
+  /*padding: 40px 0 40px 40px ;*/
+  padding-top: 1px ;
+  padding-left: 1px ;
+}
+#project-details-image {
+  width: 200px ;
+  height: 200px ;
+  border-radius: 10px ;
+  /*position: absolute ;
+  top: 40px ;
+  right: 40px ;*/
+}
+.project-details-summary {
+}
+.project-details-right {
+  float: right ;
+  margin-left: 40px ;
+  margin-bottom: 40px ;
+  text-align: right ;
+}
+#project-details-title {
+  font-size: 32px ;
+  margin-bottom: 20px ;
+}
+#project-details-author {
+  font-size: 18px ;
+  margin-bottom: 20px ;
+}
+#project-details-author i {
+  margin-right: 5px ;
+}
+#project-details-likes {
+  background: hsl(200,50%,40%);
+  padding: 2px 4px ;
+  border-radius: 3px ;
+  margin: 20px 0 ;
+  cursor: pointer ;
+  display: inline-block ;
+}
+#project-details-likes.voted {
+  background: hsl(0,50%,50%);
+}
+
+#project-details-runbutton {
+  border-radius: 5px ;
+/*  position: absolute ;
+  top: 280px ;
+  right: 40px ;*/
+  padding: 8px 20px ;
+  background: hsl(160,50%,40%);
+  text-decoration: none ;
+  color: #FFF ;
+  font-size: 18px ;
+}
+#project-details-clonebutton {
+  border-radius: 5px ;
+/*  position: absolute ;
+  top: 280px ;
+  right: 40px ;*/
+  padding: 8px 20px ;
+  background: hsl(0,50%,50%);
+  text-decoration: none ;
+  color: #FFF ;
+  font-size: 18px ;
+}
+#project-details-tags {
+}
+#project-details-tags div {
+  display: inline-block ;
+  margin: 2px 4px 2px 0 ;
+  border-radius: 15px ;
+  background: hsl(200,50%,40%);
+  padding: 3px 8px ;
+  font-size: 14px ;
+}
+#project-details-description {
+  margin-top: 40px ;
+}
+
+#project-details-description a {
+  color: hsl(200,50%,50%) ;
+  text-decoration: none ;
+}
+#project-details-description a:visited {
+  color: hsl(200,50%,50%) ;
+}
+
+#project-details-comments {
+}
+#project-comment-list p {
+  margin: 10px 0 0 0 ;
+}
+#project-details-comments .comment {
+}
+#project-details-comments .comment .author {
+}
+#project-details-comments .comment .contents {
+}
+
+#project-contents-menu ul {
+  display: inline-block ;
+  margin: 0px 0 0 0 ;
+  padding: 0 ;
+  /*border-bottom: solid 2px rgba(255,255,255,.1);*/
+}
+
+#project-contents-menu li {
+  display: block ;
+  padding: 15px 0px 8px 0 ;
+  font-size: 12px;
+  font-family: "Source Sans Pro";
+  color: hsla(200,10%,90%,.9);
+  text-align: center;
+  width: 60px;
+  cursor: pointer ;
+  margin: 0px 0px ;
+}
+
+#project-contents-menu li .fa-code { color: hsla(0,100%,80%,.85);}
+#project-contents-menu li .fa-image { color: hsla(45,100%,80%,.85);}
+#project-contents-menu li .fa-map { color: hsla(90,100%,80%,.85);}
+#project-contents-menu li .fa-volume-up { color: hsla(135,100%,80%,.85);}
+#project-contents-menu li .fa-music { color: hsla(180,100%,80%,.85);}
+#project-contents-menu li .fa-book { color: hsla(225,100%,80%,.85);}
+#project-contents-menu li .fa-server { color: hsla(270,100%,80%,.85);}
+
+#project-contents-menu li.selected .fa-code { color: hsla(0,100%,70%,1);}
+#project-contents-menu li.selected .fa-image { color: hsla(45,100%,70%,1);}
+#project-contents-menu li.selected .fa-map { color: hsla(90,100%,70%,1);}
+#project-contents-menu li.selected .fa-volume-up { color: hsla(135,100%,70%,1);}
+#project-contents-menu li.selected .fa-music { color: hsla(180,100%,70%,1);}
+#project-contents-menu li.selected .fa-book { color: hsla(225,100%,70%,1);}
+#project-contents-menu li.selected .fa-server { color: hsla(270,100%,70%,1);}
+
+#project-contents-menu li:hover {
+  background-color: rgba(255,255,255,.05) ;
+  color: hsla(200,10%,100%,.9);
+}
+#project-contents-menu .selected,#project-contents-menu .selected:hover {
+  background-color: rgba(255,255,255,.2);
+  margin-bottom: 0px;
+  color: hsla(200,10%,100%,1);
+  /*box-shadow: 10px 0px 10px -10px hsla(200,100%,70%,1) inset;*/
+}
+
+#project-contents-menu li i {
+  font-size: 20px;
+  padding-bottom: 5px;
+}
+#project-contents-view {
+  position: absolute ;
+  right: 0 ;
+  left: 60px ;
+  top: 0 ;
+  bottom: 0 ;
+  overflow: auto ;
+}
+#project-contents-view .item-list-container {
+  position: absolute ;
+  top: 10px ;
+  left: 10px ;
+  right: 10px ;
+  bottom: 70px ;
+  overflow: auto ;
+}
+#project-contents-view .sprite-list {
+  line-height: 0px ;
+}
+#project-contents-view .sprites .export-panel {
+  position: absolute ;
+  bottom: 0 ;
+  height: 45px ;
+  left: 0 ;
+  right: 0 ;
+  text-align: center ;
+}
+
+#project-contents-view .sprites .export-panel a {
+  border-radius: 5px ;
+  background: hsl(160,50%,40%);
+  color: #FFF ;
+  font-size: 16px ;
+  padding: 10px 20px ;
+  cursor: pointer ;
+  text-decoration: none ;
+}
+
+#project-contents-view .sprite {
+  display: inline-block ;
+  margin: 2px ;
+  border-radius: 10px ;
+  overflow: hidden ;
+  background: rgba(0,0,0,.5);
+  width: 100px ;
+  transition-duration: 1s ;
+  transition-property: width ;
+}
+#project-contents-view .sprite div {
+  background: hsl(160,50%,40%);
+  cursor: pointer ;
+  font-size: 12px ;
+  padding: 4px 8px ;
+  line-height: 14px ;
+  text-align: center ;
+  width: 84px ;
+}
+
+#project-contents-view .sound {
+  display: inline-block ;
+  margin: 2px ;
+  border-radius: 10px ;
+  overflow: hidden ;
+  background: rgba(0,0,0,.5);
+  transition-duration: 1s ;
+  transition-property: width ;
+  box-shadow: 0 0 4px #000 ;
+  text-align: center;
+  font-size: 12px ;
+  cursor: pointer ;
+}
+
+#project-contents-view .music {
+  display: inline-block ;
+  margin: 2px ;
+  border-radius: 10px ;
+  overflow: hidden ;
+  background: rgba(0,0,0,.5);
+  transition-duration: 1s ;
+  transition-property: width ;
+  box-shadow: 0 0 4px #000 ;
+  text-align: center;
+  font-size: 12px ;
+  cursor: pointer ;
+}
+
+
+#project-contents-view .doc-render {
+  background: hsl(30,50%,80%);
+  padding: 40px ;
+  border-radius: 10px ;
+}
+#project-contents-view .code-list {
+  position: absolute ;
+  left: 0 ;
+  width: 100px ;
+  top: 0px ;
+  bottom: 0 ;
+}
+#project-contents-view .code-list div {
+  font-size: 14px ;
+  margin: 1px ;
+  padding: 6.5px ;
+  background: rgba(255,255,255,.1);
+  cursor: pointer ;
+}
+#project-contents-view .code-list div.selected {
+  background: rgba(255,255,255,.2);
+}
+#project-contents-view .code-list div i {
+  margin-right: 5px ;
+}
+#project-contents-view-editor {
+  position: absolute ;
+  left: 100px ;
+  right: 0 ;
+  top: 0 ;
+  bottom: 0 ;
+  overflow: hidden ;
+  border-radius: 10px ;
+}
+#project-contents-view .import-button {
+  background: hsl(160,50%,40%);
+  padding: 10px 20px ;
+  border-radius: 10px ;
+  cursor: pointer ;
+  position: absolute ;
+  top: 40px ;
+  right: 40px ;
+  font-size: 16px ;
+  line-height: 20px ;
+  text-align: center ;
+  width: 200px ;
+  z-index: 1 ;
+}
+#project-contents-view .import-button.done {
+  background: hsl(30,50%,40%);
+}
+
+#project-contents-view .import-button i {
+  margin-right: 10px ;
+}
+#project-contents-view .doc {
+  position: absolute ;
+  top: 10px ;
+  left: 10px ;
+  right: 10px ;
+  bottom: 10px ;
+  overflow: auto ;
+}
+#project-contents-view .doc-render {
+  padding: 40px ;
+}
+
+.project-details-comments {
+  clear: both ;
+  margin-top:40px ;
+}
+.project-details-comments .comment {
+  margin: 10px 0 ;
+  padding: 10px ;
+  background: rgba(255,255,255,.1);
+  border-radius: 5px ;
+}
+.project-details-comments .author {
+  margin-bottom: 10px ;
+}
+.project-details-comments .buttons {
+  margin-bottom: 10px ;
+  margin-left: 10px ;
+  float: right ;
+  text-align: right ;
+}
+.project-details-comments .buttons div {
+  margin: 5px 0 ;
+}
+.project-details-comments .time {
+  margin-bottom: 10px ;
+  margin-left: 10px ;
+  padding: 2px 8px ;
+  border-radius: 10px ;
+  font-size: 12px ;
+  background-color: hsla(200,50%,40%,.5);
+  color: #FFF ;
+  float: right ;
+}
+.project-details-comments .contents {
+  user-select: text ;
+}
+.project-details-comments .contents a {
+  color: hsl(200,50%,50%) ;
+  text-decoration: none ;
+}
+.project-details-comments .contents a:visited {
+  color: hsl(200,50%,50%) ;
+}
+.project-details-comments textarea {
+  margin: 10px 0 ;
+  padding: 10px ;
+  box-sizing: border-box ;
+  width: 100% ;
+  background: rgba(255,255,255,.2);
+  color: #FFF ;
+  border-radius: 10px ;
+  border: none ;
+  outline: none ;
+  font-size: 14px;
+  font-family: "Source Sans Pro",Verdana;
+}

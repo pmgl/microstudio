@@ -1,0 +1,59 @@
+doctype html
+html
+  head
+    title #{game.title}
+    meta(http-equiv='content-type', content='text/html; charset=UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui=1')
+    meta(charset='UTF-8')
+    meta(name='mobile-web-app-capable', content='yes')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    meta(name='description', content='')
+            
+    link(rel="manifest" href="manifest.json")
+    link(rel='icon', type='image/png', href="icon64.png")
+    link(rel="apple-touch-icon" sizes="180x180" href="icon180.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="icon32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="icon16.png")
+      
+    style.
+      html,body {
+        margin: 0;
+        padding: 0;
+        background-color: #000;
+        overflow:hidden;
+        font-family: Verdana;
+      }
+      .noselect {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      #canvaswrapper {
+        text-align: center ;
+      }
+      
+    each font in fonts
+      style @font-face { font-family: "#{font}" ; src: url("fonts/#{font}.ttf") format("truetype"); }
+      
+    script window.fonts = !{JSON.stringify(fonts)}
+
+  body.noselect.custom-cursor(oncontextmenu='return false;')
+    #canvaswrapper
+
+    script(type="text/javascript").
+      !{game.resources}
+      
+    script(type="text/javascript").
+      var orientation = '!{game.orientation}' ;
+      var aspect = '!{game.aspect}' ;
+      window.skip_service_worker = true;
+      window.exported_project = true;
+      
+    each file in javascript_files
+      script(src=file)
+
+  script(id="code" type="text/x-microscript").
+    !{game.code}

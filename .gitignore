@@ -1,0 +1,8 @@
+plugins/
+server/.greenlockrc
+server/greenlock.d
+config.json
+server/node_modules/
+files/
+data/
+.DS_Store

@@ -1,0 +1,114 @@
+div.usersettings#usersettings
+  div#usersettings-menu
+    div.selected#usersettings-menu-settings #{translator.get("Settings")}
+      i.fa.fa-cogs
+    br
+    div#usersettings-menu-profile #{translator.get("Profile")}
+      i.fas.fa-user-circle
+    //- br
+    //- div#usersettings-menu-progress #{translator.get("Stats & Achievements")}
+    
+  div.usersettings-page#usersettings-settings
+    h1 #{translator.get("User Settings")}
+    div.usersetting
+      h3 #{translator.get("Nickname")}
+      input#usersetting-nick(type="text")
+      div.validate-button-container#usersetting-nick-button
+        div.validate-button <i class="fa fa-check"></i> #{translator.get("Change nickname")}
+      div.error#usersetting-nick-error
+      div.tip #{translator.get("Your nickname will be displayed publicly.")}
+
+    div.usersetting
+      h3 #{translator.get("E-mail Address")}
+      input#usersetting-email(type="text")
+      div.validate-button-container#usersetting-email-button
+        div.validate-button <i class="fa fa-check"></i> #{translator.get("Change e-mail")}
+      div.error#usersetting-email-error
+      br
+
+    div.usersetting#email-not-validated
+      p #{translator.get("Your e-mail address is not validated yet. Check your e-mails and click on the validation link we sent to you. In case you did not receive the validation e-mail yet, use the button below to resend:")}
+      div.button#resend-validation-email <i class="fa fa-paper-plane"></i> #{translator.get("Resend validation e-mail")}
+      br
+      div#validation-email-resent(style="display: none;") #{translator.get("We have just resent a validation e-mail.")}
+
+    //- div.usersetting
+    //-   div.button#change-password <i class="fa fa-sync-alt"></i> #{translator.get("Change password")}
+
+    div.usersetting
+      h3 Newsletter
+      input(type="checkbox" id="subscribe-newsletter")
+      label(for="subscribe-newsletter") #{translator.get("Receive newsletter")}
+      br
+      span.tip #{translator.get("We will send you an information email no more than once a month.")}
+
+    div.usersetting
+      h3 #{translator.get("Account Type")}
+      div#usersettings-account-type
+
+    div.usersetting
+      h3 #{translator.get("Storage")}
+      span#usersettings-storage
+
+    div.usersetting#advanced
+      div.button#open-translation-app <i class="fa fa-globe"></i> #{translator.get("Open translation tool")}
+
+
+  div.usersettings-page#usersettings-profile(style="display: none")
+    h1 #{translator.get("Your Profile")}
+    
+    div.usersetting
+      h3 #{translator.get("User Description")}
+      textarea#usersettings-profile-description
+      div.tip #{translator.get("Tell us more about yourself (only if you wish to). This text will be displayed on your public page.")}
+      
+    div.usersetting
+      h3 #{translator.get("Profile Image")}
+      div#usersettings-profile-image
+        i.fas.fa-user-circle
+        img(style="display:none")
+        i.fas.fa-times-circle(title=translator.get("Remove Profile Image"))
+          
+      div.tip #{translator.get("Drop your image here. This image will be displayed publicly, along with your nickname.")}
+      
+    div.usersetting
+      h3 #{translator.get("Check your public page")}
+      a#user-public-page(target="_blank") microstudio.io/
+      div.tip #{translator.get("Your public page displays your nickname, description, profile image and a list of your public projects.")}
+
+
+  //- div.usersettings-page#usersettings-progress(style="display: none")
+  //-   h1 #{translator.get("Your Progress")}
+  //- 
+  //-   h2 #{translator.get("Level")}
+  //- 
+  //-   table
+  //-     tbody
+  //-       tr
+  //-         td Experience Points (XP)
+  //-         td 38583
+  //-       tr
+  //-         td Level
+  //-         td 4
+  //- 
+  //-   h2 #{translator.get("Statistics")}
+  //- 
+  //-   table
+  //-     tbody
+  //-       tr
+  //-         td Pixels Drawn
+  //-         td 38583
+  //-       tr
+  //-         td Code Characters typed
+  //-         td 48923
+  //- 
+  //-       tr
+  //-         td Code Lines Typed
+  //-         td 1234
+  //- 
+  //-   h2 #{translator.get("Achievements")}
+
+div.usersettings#translation-app
+  div
+    div#translation-app-back-button <i class="fa fa-arrow-left"></i> #{translator.get("Back")}
+  div#translation-app-contents

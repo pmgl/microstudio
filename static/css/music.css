@@ -1,0 +1,150 @@
+.music-left {
+  position: absolute ;
+  left: 0 ;
+  width: 400px ;
+  top: 0 ;
+  bottom: 0 ;
+  border-top: solid 40px hsl(200,30%,30%);
+  overflow: hidden ;
+}
+
+.music-right {
+  position: absolute ;
+  right: 0px ;
+  width: 400px ;
+  top: 0 ;
+  bottom: 0 ;
+  overflow: hidden ;
+}
+
+.music-splitbar {
+  background: hsl(200,7%,28%);
+  position: absolute ;
+  left: 400px ;
+  top: 0 ;
+  bottom: 0 ;
+  width: 10px ;
+  cursor: ew-resize;
+  z-index: 2 ;
+}
+
+
+.musiclist {
+  position: absolute;
+  background: rgba(0,0,0,.25) ;
+  left: 0 ;
+  top: 40px ;
+  bottom: 40px ;
+  right: 0 ;
+  text-align: center ;
+  line-height: 0 ;
+  padding-top: 10px ;
+  padding-bottom: 10px ;
+  overflow-x: hidden ;
+  overflow-y: auto ;
+}
+
+#create-music-button {
+  position: absolute ;
+  bottom: 0px ;
+  height: 40px;
+  left: 0 ;
+  right: 0 ;
+  padding: 0px 30px ;
+  background: hsl(160,50%,40%);
+  font-size: 18px ;
+  cursor: pointer ;
+  color: #FFF ;
+  z-index: 1 ;
+  box-shadow: 0 -10px 20px #000;
+  line-height: 40px ;
+  text-align: center ;
+}
+#create-music-button i {
+  margin-right: 0px ;
+}
+#create-music-button span {
+  white-space: nowrap ;
+  margin-left: 10px ;
+}
+
+#music-editor {
+  position: absolute ;
+  top: 40px;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+}
+
+#daw-transportbar {
+  position: absolute ;
+  top: 0px ;
+  left: 0px ;
+  right: 0px ;
+  height: 60px ;
+}
+
+#daw-container {
+  position: absolute ;
+  top: 60px ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+}
+
+#daw-tracks {
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  right: 0 ;
+  height: 500px ;
+  overflow-y: auto ;
+}
+
+#daw-splitbar {
+  background: hsl(200,7%,28%);
+  position: absolute ;
+  left: 0 ;
+  top: 400px ;
+  right: 0 ;
+  height: 10px ;
+  cursor: ns-resize;
+  z-index: 2 ;
+}
+
+#daw-pianoroll {
+  position: absolute ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  height: 100px ;
+}
+
+#daw-track-headers {
+  width: 200px ;
+  position: absolute ;
+  top: 0 ;
+  bottom: 0 ;
+  left: 0 ;
+}
+
+#daw-track-content {
+  position:absolute ;
+  left: 200px ;
+  top: 0 ;
+  right: 0 ;
+  overflow-x: auto ;
+  overflow-y: hidden ;
+}
+
+.daw-track-header {
+  border: solid 1px #FFF ;
+  width: 190px ;
+  height: 60px ;
+}
+
+.daw-track {
+  border: solid 1px #FFF ;
+  width: 2000px ;
+  height: 60.0px ;
+}

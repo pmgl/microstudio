@@ -1,0 +1,40 @@
+<html>
+  <body>
+    <textarea id="code" style="width:600;height:600px;">
+      f = function(n)
+        plop = function()
+          n
+        end
+      end
+
+      f(10)
+
+      plop()
+
+    </textarea><br/><br/>
+    <button onclick="exec()">Run</button>
+    <br/><br/>
+    <div id="output"></div>
+    <script src="random.js"></script>
+    <script src="program.js"></script>
+    <script src="token.js"></script>
+    <script src="tokenizer.js"></script>
+    <script src="parser.js"></script>
+    <script src="microvm.js"></script>
+    <script>
+      var exec = function() {
+        document.getElementById("output").innerText = ""
+        var code = document.getElementById("code").value
+        var parser = new Parser(code).parse()
+        var print = function(text) {
+          document.getElementById("output").innerHTML += Program.toString(text)+"<br/>"
+        }
+        vm = new MicroVM({
+          print: print
+        })
+        print(vm.run(parser.program,1000000));
+      }
+      exec()
+    </script>
+  </body>
+</html>

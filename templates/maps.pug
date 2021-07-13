@@ -1,0 +1,55 @@
+div.maps-left
+  div.create-map-button#create-map-button <i class="fa fa-plus-square"></i> <span>#{translator.get("Add Map")}</span>
+  div.maplist#maplist
+    div.map-list#map-list
+
+div.maps-splitbar
+
+div.maps-right
+  div.mapinfo#mapinfo
+    input(type="text" value="")#map-name
+    div.validate-button-container#map-name-button
+      div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+    span &nbsp;&nbsp;&nbsp;&nbsp;Map Size
+    input(type="text" value="16")#map-width
+    span x
+    input(type="text" value="10")#map-height
+    div.validate-button-container#map-size-button
+      div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+    span &nbsp;&nbsp;&nbsp;&nbsp;Block Size
+    input(type="text" value="16")#map-block-width
+    span x
+    input(type="text" value="16")#map-block-height
+    div.validate-button-container#map-blocksize-button
+      div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+    div.buttons
+      div#undo-map
+        i.fa.fa-undo
+      div#redo-map
+        i.fa.fa-redo
+
+      div#copy-map
+        i.fa.fa-copy
+      div#cut-map
+        i.fa.fa-cut
+      div#paste-map
+        i.fa.fa-paste
+
+      div#delete-map
+        i.fa.fa-trash
+
+  div#map-editor-locked
+  div#mapeditor-container
+    div.mapeditor#mapeditor
+      div#mapeditor-wrapper
+      div#mapeditor-bottombar
+        span #{translator.get("Background")}
+        div#map-background-color
+        select#map-underlay-select
+        div#map-coordinates
+
+    div.mapeditor-splitbar
+
+    div.mapbar#mapbar(tabindex="1")
+      div.map-tilepicker#map-tilepicker
+      div.map-sprite-list#map-sprite-list

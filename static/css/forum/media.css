@@ -1,0 +1,60 @@
+@media screen and (max-width: 800px) {
+  /*.post-activity {
+    display: none ;
+  }*/
+  .post-container, .posts, .description, .create-post-button-wrapper {
+    padding: 20px ;
+  }
+  .create-post {
+    right: 20px ;
+  }
+  .post-author {
+    display: none ;
+  }
+  .post-users {
+    display: none ;
+  }
+  .title-zone {
+    padding-right: 10px ;
+  }
+
+  .description {
+  /*  display: none ;*/
+    padding-bottom: 0 ;
+  }
+
+  .description h1 {
+    display: none ;
+  }
+  .filtering {
+    padding: 0 20px ;
+    margin-top: 20px ;
+  }
+
+  .create-post {
+    border-radius: 60px ;
+    font-size: 30px ;
+    padding: 10px 15px ;
+  }
+  .create-post span {
+    display: none ;
+  }
+  .post-content-info span {
+    margin-left: 0 ;
+  }
+
+  .post-content .link {
+    display: none ;
+  }
+
+  .edit-post {
+    padding: 70px 10px 10px 10px ;
+  }
+
+  .edit-post-content {
+    padding: 20px ;
+  }
+  .edit-reply-content {
+    padding: 0px ;
+  }
+}

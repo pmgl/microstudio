@@ -1,0 +1,255 @@
+#tutorials-section {
+  display: none ;
+}
+
+.tutorials {
+  position: absolute ;
+  top: 0 ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  padding: 30px ;
+  text-align: center ;
+  overflow: auto ;
+}
+
+.tutorials h1 {
+  color: rgba(255,255,255,.7);
+  margin-top: 40px ;
+}
+.tutorials h3 {
+  color: rgba(255,255,255,.7);
+  margin-bottom: 50px ;
+}
+
+.tutorials .course {
+  border-radius: 10px ;
+  background: hsl(30,50%,90%);
+  color: #000 ;
+  display: inline-block ;
+  padding: 20px ;
+  margin: 10px ;
+  vertical-align: top ;
+  width: 300px ;
+}
+.tutorials .course p {
+  margin-bottom: 20px ;
+  text-align: left ;
+  font-size: 14px ;
+}
+
+.tutorials .course ul {
+  list-style-type: none ;
+  padding: 0 ;
+  margin: 0 ;
+}
+.tutorials .course li {
+  position: relative ;
+  list-style-type: none ;
+  text-align: left ;
+  margin: 4px 0 ;
+  padding-right: 10px ;
+  border-radius: 5px ;
+  background: rgba(0,0,0,.1);
+  text-align: left ;
+  vertical-align: middle ;
+  cursor: pointer ;
+  overflow: hidden ;
+}
+.tutorials .course li:hover {
+  background: hsl(200,50%,70%) ;
+}
+.tutorials .course li i {
+  margin-right: 10px ;
+  padding: 10px ;
+  background: hsl(160,50%,50%) ;
+  color: #FFF ;
+  font-size: 10px ;
+}
+.tutorials .course li i.fa-check {
+  background: none ;
+}
+.tutorials .course li a {
+  position: absolute ;
+  right: 0 ;
+  top: 0 ;
+}
+
+.tutorials .course li i.fa-file {
+  background: none ;
+  color: rgba(0,0,0,.4) ;
+  font-size: 18px ;
+  padding: 6px 0 ;
+  cursor: pointer ;
+}
+.tutorials .course li i.fa-check {
+  color: rgba(0,0,0,.5);
+  font-size: 16px ;
+  padding: 7px ;
+}
+
+#tutorial-window {
+  position: fixed ;
+  top: 200px ;
+  left: 300px ;
+  width: 400px ;
+  height: 300px ;
+  border-radius: 10px ;
+  box-shadow: 0 0 20px #000, 0 0 2px 0px #000 ;
+  background: hsl(30,100%,95%);
+  z-index: 10 ;
+  display: none ;
+  overflow: hidden ;
+}
+#tutorial-window .titlebar {
+    position: absolute ;
+    left: 0 ;
+    right: 0 ;
+    top: 0 ;
+    height: 20px;
+    padding: 10px 10px;
+    background: hsl(200,50%,40%);
+    color: #FFF;
+    font-size: 16px;
+    cursor: move;
+}
+#tutorial-window .titlebar .icon {
+  display: inline-block ;
+  margin-right: 10px ;
+}
+#tutorial-window .titlebar .title {
+  display: inline-block ;
+}
+#tutorial-window .titlebar .minify {
+  background: rgba(0,0,0,.5);
+  border-radius: 20px ;
+  padding: 6px 7px ;
+  position: absolute ;
+  right: 4px ;
+  top: 4px ;
+  text-align: center ;
+  cursor: pointer ;
+  font-size: 20px ;
+}
+#tutorial-window .navigation {
+  position: absolute;
+  bottom: 0 ;
+  height: 40px ;
+  left: 0 ;
+  right: 0 ;
+  background: rgba(0,0,0,.1);
+}
+#tutorial-window .navigation i.previous {
+  background: hsl(200,50%,50%);
+  padding: 12px 10px ;
+  position: absolute ;
+  left: 0 ;
+  width: 20px ;
+  text-align: center ;
+  cursor: pointer ;
+}
+#tutorial-window .navigation i.next {
+  background: hsl(200,50%,50%);
+  padding: 12px 10px ;
+  position: absolute ;
+  right: 40px ;
+  width: 20px ;
+  text-align: center ;
+  cursor: pointer ;
+}
+#tutorial-window .navigation i.next.fa-check {
+  background: hsl(160,50%,50%);
+}
+#tutorial-window .navigation span.step {
+  padding: 12px 10px ;
+  text-align: center ;
+  position: absolute ;
+  right: 80px ;
+  left: 40px ;
+  color: rgba(0,0,0,.9) ;
+}
+#tutorial-window .navigation i.resize {
+  padding: 12px 10px ;
+  text-align: center ;
+  position: absolute ;
+  right: 0px ;
+  width: 20px ;
+  transform: rotateZ(-45deg);
+  color: rgba(0,0,0,.5) ;
+  cursor: nwse-resize ;
+}
+
+#tutorial-window .content {
+  position: absolute ;
+  left: 5px ;
+  right: 5px ;
+  top: 45px ;
+  bottom: 45px ;
+  padding: 15px;
+  overflow: auto ;
+  font-size: 18px;
+  font-family: Helvetica,sans-serif;
+}
+
+#tutorial-window .content::-webkit-scrollbar-track {
+  background: rgba(0,0,0,.15);
+  border-radius: 5px;
+  margin: 4px 2px;
+}
+
+#tutorial-window .content::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,.25);
+  border-radius: 5px;
+  margin: 4px 1px;
+}
+
+#tutorial-window.minimized {
+  transition-duration: .2s ;
+  transition-property: top,left,width,height;
+  border-radius: 20px;
+}
+
+#tutorial-window.minimized .navigation {
+  display: none ;
+}
+
+#tutorial-window.minimized .title {
+  display: none ;
+}
+
+#tutorial-window.minimized .minify {
+  display: none ;
+}
+
+#tutorial-window.minimized .icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  padding: 7px 9px;
+}
+
+#highlighter {
+  position: fixed ;
+  z-index: 15 ;
+  display: none ;
+  pointer-events: none ;
+}
+#highlighter-arrow {
+  position: fixed ;
+  z-index: 5 ;
+  display: none ;
+  pointer-events: none ;
+}
+
+#tutorial-overlay {
+  position: fixed ;
+  top: 0 ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  z-index: 4 ;
+  display: none ;
+  background: hsla(200,100%,10%,.9) ;
+  pointer-events: none ;
+}

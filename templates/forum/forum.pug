@@ -1,0 +1,162 @@
+doctype html
+html(lang=language)
+  head
+    meta(name="description" content=description)
+    meta(name="viewport" content="width=device-width, user-scalable=no, initial-scale=.8")
+    link(rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/community/")
+    link(rel="alternate" hreflang="en" href="https://microstudio.dev/community/")
+    title #{name} - microStudio
+
+    link(rel="stylesheet" type="text/css" href="/css/forum/forum.css")
+    link(rel="stylesheet" type="text/css" href="/css/forum/media.css")
+    link(rel="stylesheet" type="text/css" href="/css/md.css")
+      
+    link(rel="stylesheet" href="/lib/fontlib/fontawesome/css/all.css")
+      
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu-mono/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/700.css")
+
+    script(src="/js/forum/forum.js")
+    script(src="/js/forum/client.js")
+    script(src="/js/util/translator.js")
+    script(src="/lib/marked/marked.js")
+
+    link(rel="apple-touch-icon" sizes="180x180" href="/img/favicon180.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/img/favicon32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/img/favicon16.png")
+    if community.language == "fr"
+      link(rel="manifest" href="/community/manifest_fr.json")
+    else
+      link(rel="manifest" href="/community/manifest.json")
+
+    script window.community = !{JSON.stringify(community)} ;
+
+  body(class=theme)
+    header
+      div.username
+        i.fa.fa-user
+        img(style="display: none")
+        span #{translator.get("Login")}
+
+      a(href="/")
+        img.logo#logo(src="/img/microstudiologo.svg" alt="microStudio" title="microStudio")
+      a(href=community.language == "en" ? "/community/" : "/"+community.language+"/community/" title="microStudio Community")
+        div.community-icon
+          i.fa.fa-users
+          span #{translator.get("Community")}
+
+      div.login
+      div.menu
+
+    div.content
+      div.topright
+        div.theme #{translator.get(theme == "dark"? "LIGHT THEME" : "DARK THEME")}
+
+        select.languages(onchange="location = this.value == 'en'? '/community/' : '/'+this.value+'/community/' ;")
+          each la in community.languages
+            if la == community.language
+              option(value=la selected) #{la.toUpperCase()}
+            else
+              option(value=la) #{la.toUpperCase()}
+
+      ul.categories
+        each cat in categories
+          if cat.slug == selected
+            li
+              a.category.selected(href=cat.path style="background: hsl("+cat.hue+",40%,50%)") #{cat.name}
+          else
+            li
+              a.category(href=cat.path style="background: hsl("+cat.hue+",50%,80%)") #{cat.name}
+
+      div.description
+        div.watch
+          div.text
+          div.button.unwatch
+        if selected != "all"
+          h1 #{name}
+
+        p #{description}
+
+      div.filtering
+        div#searchbar
+          input
+          i.fa.fa-search
+
+        div#sorting
+          i.fas.fa-arrows-alt-v
+          span #{translator.get("Activity")}
+
+      div.posts
+        each post in posts
+          if !post.author.flags.censored && !post.author.flags.banned
+            div.post(data-post-id=post.id data-post-activity=post.activity data-post-likes=post.likes.length data-post-views=post.views data-post-replies=post.replies.length data-post-created=post.date)
+              if post.author.flags.profile_image
+                img.author-icon(src="/"+post.author.nick+".png")
+              else
+                div.author-icon(title=post.author.nick data-colorize=post.author.nick)
+                  span #{post.author.nick.substring(0,1).toUpperCase()}
+
+              div.post-top
+                div.post-author #{post.author.nick}
+                a.title(href=post.getPath()) #{post.title}
+
+              div.post-info
+                div.post-stats
+                  div.post-likes(data-likes-post=post.id) <i class="fas fa-thumbs-up"></i> <span>#{post.likes.length}</span>
+                  if post.replies.length>0
+                    div.post-replies(data-replies=post.replies.length) <i class="fa fa-reply"></i> #{post.replies.length}
+
+                  div.post-views(data-views=post.views) <i class="fa fa-eye"></i> #{post.views || 0}
+                  div.post-activity <i class="fa fa-clock"></i> <span data-activity=#{post.activity}></span>
+                a.post-category(href=post.category.path style="background: hsl("+post.category.hue+",40%,50%)") #{post.category.name}
+                if post.progress>0
+                  div.post-progress(data-progress=post.progress) #{post.progress}%
+                if post.status
+                  div.post-status(data-colorize=post.status) •&nbsp;&nbsp;#{post.status}&nbsp;&nbsp;•
+                div.post-users
+                  each p in post.people
+                    if !p.author.flags.censored && !p.author.flags.banned
+                      if p.author.flags.profile_image
+                        img.user(title=p.author.nick src="/"+p.author.nick+".png")
+                      else
+                        div.user(title=p.author.nick data-colorize=p.author.nick) #{p.author.nick.substring(0,1).toUpperCase()}
+
+    div.create-post-button-container
+      div.create-post-button-wrapper
+        div.create-post#create-post-button
+          i.fas.fa-pencil-alt
+          span #{translator.get("New Post")}
+
+    div.edit-post#edit-post
+      div.edit-post-content#edit-post-content
+        h1 #{translator.get("New Post")}
+
+        select#edit-post-category
+          option(value="" disabled selected) #{translator.get("Choose category...")}
+          each cat in categories
+            if cat.slug != "all"
+              if cat.slug == selected
+                option(value=cat.slug selected data-perm=cat.permissions.post) #{cat.name}
+              else
+                option(value=cat.slug data-perm=cat.permissions.post) #{cat.name}
+        br
+
+        input#edit-post-title(placeholder=translator.get("Title of your post"))
+        br
+
+        textarea#edit-post-text(placeholder=translator.get("Write your text here ; you can use markdown"))
+        br
+
+        div#edit-post-preview-area.md
+
+        div.edit-post-buttons
+          div.button.preview#edit-post-preview
+            i.fas.fa-eye
+            span #{translator.get("Preview")}
+          div.button.cancel#edit-post-cancel <i class="fa fa-times"></i> #{translator.get("Cancel")}
+          div.button.post#edit-post-post <i class="fas fa-share"></i> #{translator.get("Post")}
+
+    div#validate-your-email
+      div <i class="fas fa-info-circle"></i> #{translator.get("Validate your e-mail address to participate in the community")}

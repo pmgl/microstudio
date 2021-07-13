@@ -1,0 +1,38 @@
+doctype html
+html
+  head
+    link(rel="stylesheet" type="text/css" href="/css/console.css")
+    
+    link(rel="stylesheet" href="/lib/fontlib/fontawesome/css/all.css")
+
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/ubuntu-mono/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/index.css")
+    link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/700.css")
+
+    link(rel="icon" type="image/png" href="/img/favicon.png")
+
+    script(src="/js/console/console.js")
+
+    title microStudio BOX
+  body(oncontextmenu="return false;")
+    div.intro
+
+    div.content
+      div.filters
+        ul
+          li.selected.focus My Games
+          li Hot
+          li New
+          li Top
+
+        i.poweroff.fa.fa-power-off
+
+      div.list#list
+
+    div.footer
+      img(src="/img/microstudiologoblack.svg")
+      span BOX
+
+    script.
+      var gamelist = !{JSON.stringify(gamelist)} ;

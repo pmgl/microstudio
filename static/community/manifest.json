@@ -1,0 +1,29 @@
+{
+    "name": "microStudio Community",
+    "short_name": "mS Community",
+    "start_url": "/community/",
+    "display": "fullscreen",
+    "orientation": "portrait",
+    "scope": "/community/",
+
+    "icons": [
+      {
+        "src": "/img/forumicon192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/img/forumicon196.png",
+        "type": "image/png",
+        "sizes": "196x196",
+        "purpose": "maskable"
+      },
+      {
+        "src": "/img/forumicon512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "theme_color": "hsl(160,50%,20%)",
+    "background_color": "hsl(160,40%,10%)"
+}

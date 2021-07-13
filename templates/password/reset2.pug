@@ -1,0 +1,35 @@
+doctype html
+html
+  head
+    style.
+      body {
+        font-family: Verdana;
+        text-align: center ;
+        background: #111 ;
+        color: #FFF ;
+      }
+      img {
+        width: 200px ;
+      }
+      input,button {
+        font-size: 18px ;
+      }
+      input {
+        background: rgba(255,255,255,.1);
+        color: #FFF ;
+        padding: 4px 8px ;
+        border-radius: 5px ;
+        text-align: center ;
+      }
+      * {
+        margin: 10px ;
+      }
+  body()
+    img(src="/img/microstudiologo.svg")
+    p Your password has been reset.
+    
+  script.
+    setTimeout(function(){
+      window.location.replace(location.origin) ;
+      },5000) ;
+    

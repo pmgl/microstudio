@@ -1,0 +1,122 @@
+html {
+  height: 100% ;
+}
+
+html,body {
+  font-family: "Source Sans Pro",Verdana;
+  color: hsla(200,10%,90%,.8);
+  margin: 0px;
+
+  -webkit-user-select: none;
+     -moz-user-select: -moz-none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+body {
+  background: linear-gradient(135deg, hsl(200,35%,16%), hsl(200,20%,11%));
+}
+
+header {
+  font-size: 20px;
+  color: #FFF;
+  margin-bottom: 20px ;
+}
+
+.headerdiv {
+  margin-left: 20px ;
+  margin-top: 14px;
+  font-family: "Source Sans Pro";
+  text-align: center ;
+}
+
+.headerdiv img {
+  width: 200px ;
+  margin: 20px 0 ;
+}
+
+.content {
+  padding: 40px ;
+}
+
+.projects {
+  text-align: left;
+  clear: both ;
+}
+
+.projectbox {
+  display: inline-block ;
+  margin: 10px ;
+  padding: 10px ;
+  font-size: 18px;
+  text-align: center ;
+  vertical-align: top ;
+  width: 120px ;
+}
+
+.projectbox .icon {
+  display: inline-block;
+  width: 72px ;
+  height: 72px;
+  border-radius: 10px ;
+  background: hsl(200,50%,50%);
+}
+
+.projectbox .title {
+  text-align: center ;
+  font-family: "Ubuntu" ;
+  margin-top: 10px ;
+  text-shadow: 0 0 3px #000 ;
+}
+
+a {
+  color: #FFF;
+}
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+#canvaswrapper {
+  text-align: center ;
+}
+
+.profile_image {
+  display: inline-block ;
+  margin-right: 40px ;
+  border-radius: 64px ;
+  vertical-align: middle ;
+}
+
+.username {
+  display: inline-block ;
+  font-size: 36px ;
+  margin-bottom: 10px ;
+  vertical-align: middle ;
+}
+
+.description {
+  margin-top: 40px ;
+}
+
+.sections {
+  margin: 40px 0 ;
+}
+
+.sections div {
+  border-radius: 30px ;
+  background: rgba(255,255,255,.1) ;
+  display: inline-block ;
+  margin: 10px 20px 10px 0 ;
+  padding: 10px 20px ;
+  cursor: pointer ;
+}
+
+.sections div.selected {
+  border-radius: 30px ;
+  background: rgba(255,255,255,.9) ;
+  color: rgba(0,0,0,.9);
+}

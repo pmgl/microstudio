@@ -1,0 +1,199 @@
+.home-section {
+  display: none ;
+  position: fixed ;
+  top: 0px ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  overflow: auto ;
+  text-align: center ;
+  font-size: 22px ;
+  color: rgba(255,255,255,.7);
+}
+
+#home-header-background {
+  position: fixed ;
+  height: 0px ;
+  top: 0 ;
+  left: 0 ;
+  right: 0 ;
+  background: linear-gradient(135deg,hsl(200,50%,20%),hsl(200,20%,10%)) ;
+  transition-property: height ;
+  transition-duration: 1s ;
+}
+.home-section::-webkit-scrollbar {
+    width: 10px;
+    background: #AAA;
+}
+
+.home-section::-webkit-scrollbar-track {
+  background: #EEE;
+  border-radius: 5px;
+  margin: 4px 1px;
+}
+
+.home-section::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+  margin: 4px 1px;
+}
+
+.home-section i {
+  font-size: 150px ;
+  color: hsl(200,30%,70%);
+}
+.home-section h2 {
+  font-size: 32px ;
+  color: #444 ;
+  margin-top: 0 ;
+}
+.home-section img.screen {
+  box-shadow: 0 0 20px #000 ;
+  width: 100% ;
+}
+
+.home-section div.part {
+  padding: 60px 0 ;
+  background: hsl(200,10%,90%);
+  color: #222 ;
+  overflow: hidden ;
+}
+
+@keyframes screenshot-animation {
+  from {
+    transform: perspective(1000px) rotateY(-25deg) scale(0.9,0.9) translateX(-50px);
+  }
+
+  to {
+    transform: perspective(1000px) rotateY(0deg) scale(1,1) translateX(0);
+  }
+}
+
+@keyframes text-animation {
+  from {
+    transform: translateX(-20000px) ;
+  }
+  to {
+    transform: translateX(0px) ;
+  }
+}
+
+@keyframes logo-animation {
+  from {
+    transform: perspective(100px) rotateX(60deg) scale(0.7,0.7);
+  }
+
+  to {
+    transform: perspective(100px) rotateX(0deg) scale(1,1) ;
+  }
+}
+
+.home-section .mainlogo {
+  animation: 2s ease-out logo-animation ;
+}
+
+.home-section div.part.part1 {
+  position: relative ;
+  padding: 160px 0 100px 0 ;
+  background: linear-gradient(135deg, hsl(200,50%,30%), hsl(10,50%,30%) 120%);
+  color: #FFF ;
+  padding-top: 160px ;
+}
+.home-section div.part.part1 .right {
+  width: auto ;
+}
+.home-section div.part.part1 .right img {
+  max-width: 800px ;
+  margin-bottom: -20%;
+  animation: 3s ease-in-out screenshot-animation ;
+}
+.home-section div.part.part1 .p1 {
+  animation: 1s ease-out text-animation ;
+}
+.home-section div.part.part1 .p2 {
+  animation: 2s ease-out text-animation ;
+}
+
+.home-section div.part.last {
+  background: linear-gradient(135deg, hsl(200,50%,30%), hsl(10,50%,30%) 120%);
+  border-top: solid 5px hsl(200,50%,15%);
+  border-bottom: solid 5px hsl(200,50%,15%);
+  padding: 30px 0;
+}
+
+.home-section div.part:nth-child(even) {
+  background: #FFF;
+}
+
+.home-section div.right {
+  display: inline-block ;
+  text-align: right ;
+  width: 400px ;
+  padding: 20px 40px ;
+  vertical-align: top;
+}
+.home-section div.left {
+  display: inline-block ;
+  text-align: left ;
+  width: 400px ;
+  padding: 20px 40px ;
+  vertical-align: top;
+}
+.home-section div.center {
+  display: inline-block ;
+  text-align: center ;
+  width: 400px ;
+  padding: 20px 40px ;
+  vertical-align: middle;
+}
+
+.container h2 {
+  margin: 100px 50px 50px 50px ;
+  font-weight: normal ;
+  text-align: center ;
+}
+
+.button-container {
+  margin: 20px 0  ;
+  text-align: center ;
+}
+.home-section .button {
+  margin: 20px ;
+  display: inline-block;
+  text-align: center ;
+  padding: 20px 30px ;
+  border-radius: 10px ;
+  background: hsl(160,50%,40%);
+  box-shadow: 0 0 5px rgba(255,255,255,.5) inset, 0 0 5px rgba(0,0,0,.5);
+  color: rgba(255,255,255,.9);
+  font-size: 24px ;
+  cursor: pointer ;
+  width: 300px ;
+}
+.home-section .button i {
+  font-size: 40px ;
+  margin-bottom: 10px ;
+  color: rgba(255,255,255,.5);
+}
+
+.home-section .footer {
+  background: linear-gradient(175deg, hsl(200,50%,20%), transparent);
+  padding: 40px 20% ;
+  text-align: center ;
+  color: hsl(200,20%,80%);
+  font-size: 14px ;
+}
+.home-section .footer i {
+  font-size: 14px ;
+}
+.home-section .footer p {
+  margin: 40px 0 ;
+}
+.home-section .footer p a {
+  color: hsl(200,100%,80%);
+  text-decoration: none ;
+}
+.home-section .footer p i {
+  margin: 0 20px ;
+  font-size: 10px ;
+}

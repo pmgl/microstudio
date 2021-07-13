@@ -1,0 +1,149 @@
+
+#publish-section {
+  padding: 10px ;
+  overflow: auto ;
+  border-top: solid 10px hsl(200,30%,30%);
+}
+
+.publish-box {
+  margin: 10px 10px 30px 10px ;
+  padding: 20px ;
+  border-bottom: solid 2px rgba(255,255,255,.1);
+}
+.publish-box:last-child {
+  border: none ;
+}
+.publish-box h2 {
+  margin: 0 ;
+  font-size: 24px ;
+  font-family: Ubuntu ;
+  color: rgba(255,255,255,.8);
+}
+.publish-box h2 .beta {
+  border-radius: 10px ;
+  font-size: 12px ;
+  padding: 2px 8px ;
+  position: relative ;
+  bottom: 15px ;
+  left: 5px ;
+  background: hsl(0,50%,50%);
+}
+.publish-box p {
+}
+
+.publish-box .action-box {
+  float:right ;
+  margin-left: 40px ;
+  width: 35%;
+}
+
+.publish-button {
+  border-radius: 5px ;
+  padding: 10px 20px ;
+  background: hsl(160,50%,40%);
+  margin-bottom: 20px ;
+  text-align: center ;
+  cursor: pointer ;
+}
+
+.publish-button.disabled {
+  background: hsla(160,50%,40%,.2);
+  cursor: default ;
+}
+
+.publish-text {
+  margin-top: 20px ;
+  font-style: italic ;
+  color:rgba(255,255,255,.7);
+}
+
+.publish-button i {
+  margin-right: 10px ;
+        }
+
+
+.publish-box input, .publish-box textarea {
+  border: none ;
+  border-radius: 3px ;
+  font-size: 16px ;
+  padding: 5px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  margin: 5px 10px 5px 0px ;
+  font-family: "Source Sans Pro",Verdana ;
+}
+
+.publish-box input:focus, .publish-box textarea:focus {
+  outline: none ;
+  background: rgba(255,255,255,.3);
+}
+
+.publish-box h3 {
+  margin-bottom: 5px ;
+}
+
+.publish-box i {
+  margin-right: 5px ;
+}
+
+.publish-box input {
+  display: inline-block ;
+  margin-right: 5px ;
+}
+
+.publish-box .validate-button-container {
+  display: inline-block ;
+  width: 200px ;
+  transition-duration: .5s ;
+  transition-property: width ;
+  overflow: hidden ;
+  height: 30px ;
+  vertical-align: middle ;
+}
+
+.publish-box .validate-button {
+  border-radius: 5px ;
+  background: hsl(160,50%,40%);
+  padding: 4px 12px ;
+  cursor: pointer ;
+  display: inline-block ;
+}
+
+#publish-tag-list {
+  margin-top: 10px ;
+}
+
+#publish-tag-list div {
+  display: inline-block ;
+  font-size: 14px ;
+  padding: 3px 3px 3px 10px ;
+  border-radius: 14px ;
+  background: hsl(200,50%,40%);
+  margin-right: 5px ;
+}
+#publish-tag-list div i {
+  margin-left: 10px ;
+  cursor: pointer ;
+}
+
+.publish-box .logos {
+  text-align: center ;
+}
+
+.publish-box .logo {
+  width: 120px ;
+  margin-right: 60px ;
+  margin-top: 20px ;
+  margin-bottom: 10px ;
+  vertical-align: middle ;
+}
+
+.publish-box img.title {
+  float:left ;
+  margin: 0 40px 40px 0 ;
+  width: 100px ;5
+}
+
+.clear {
+  clear: both ;
+}

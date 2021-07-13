@@ -1,0 +1,77 @@
+div.projectoptions#projectoptions
+  div#projectoptions-left
+    img#projectoptions-icon
+
+  div#projectoptions-right
+    div#projectoptions-general
+      div#projectoptions-general-content
+        div.projectoption
+          h3 #{translator.get("Project Title")}
+          input#projectoption-name(type="text")
+          br
+          //span.tip #{translator.get("The display name of your project")}
+
+        div.projectoption
+          h3 #{translator.get("Project Slug")}
+          span#projectoption-slugprefix microstudio.io/username/
+          input.sluginput#projectoption-slug(type="text")
+          div.validate-button-container#project-slug-button
+            div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+
+          span /
+          br
+          // span.tip #{translator.get("The identifier used to build the URL of your project")}
+
+
+        div.projectoption
+          h3 #{translator.get("Project Secret Code")}
+          span.tip #{translator.get("Secret URL for testing your project when not set to public")}
+          br
+          span#projectoption-codeprefix microstudio.io/username/
+          input.sluginput#projectoption-code(type="text")
+          div.validate-button-container#project-code-button
+            div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+
+          span /
+          br
+
+        div.projectoption
+          h3 #{translator.get("Orientation")}
+          select#projectoption-orientation
+            option(value="any") #{translator.get("Any")}
+            option(value="portrait") #{translator.get("Portrait")}
+            option(value="landscape") #{translator.get("Landscape")}
+
+        div.projectoption
+          h3 #{translator.get("Aspect ratio")}
+          select#projectoption-aspect
+            option(value="free") #{translator.get("Free")}
+            option(value="2x1") #{translator.get("Force 2:1")}
+            option(value="16x9") #{translator.get("Force 16:9")}
+            option(value="4x3") #{translator.get("Force 4:3")}
+            option(value="1x1") #{translator.get("Force 1:1 (square)")}
+            option(value=">2x1") #{translator.get("2:1 or above")}
+            option(value=">16x9") #{translator.get("16:9 or above")}
+            option(value=">4x3") #{translator.get("4:3 or above")}
+            option(value=">1x1") #{translator.get("1:1 or above")}
+
+
+        div.projectoption#project-option-graphics
+          h3 #{translator.get("Graphics library")}
+          select#projectoption-graphics
+            option(value="M1") Basic
+            option(value="M3D") micro3D
+
+        div.projectoption#project-option-storage
+          h3 #{translator.get("Storage used")}
+          span#projectoption-storage-used
+
+    div#projectoptions-users
+      div#projectoptions-users-content
+        h3 #{translator.get("Users")}
+        p #{translator.get("Here is where your grant other users access to edit your project. Users added here are granted full control on your project, except for adding or deleting other users.")}
+        div.userlist#project-user-list
+
+        div.adduser
+          input.username#add-project-user-nick(placeholder=translator.get("nickname"))
+          div.addbutton#add-project-user <i class="fa fa-user-plus"></i> #{translator.get("Add User")}

@@ -1,0 +1,91 @@
+div#project-details-info
+  div.inside
+    div.project-details-right
+      img#project-details-image
+      br
+      br
+      br
+      a#project-details-runbutton(target="_blank")
+        i(class="fa fa-play")
+        span #{translator.get("Run")}
+      br
+      br
+      a#project-details-clonebutton(href="#")
+        i(class="fa fa-copy")
+        span #{translator.get("Clone")}
+    div.project-details-summary
+      div#project-details-title Title
+      div#project-details-author
+        i(class="fa fa-user")
+        span author
+      div#project-details-likes likes
+      div#project-details-tags
+        div.tag tag1
+        div.tag tag2
+    div.dark.md#project-details-description Description
+
+    div.project-details-comments
+      h3 #{translator.get("Comments")}
+      div#project-comment-list
+        div.comment
+          div.author
+            i.fa.fa-user
+            span author
+          div.contents comment contents
+
+      div#post-project-comment
+        textarea(rows=4)
+        div.right
+          div.greenbutton#post-project-comment-button
+            i.fa.fa-envelope
+            span #{translator.get("Post")}
+
+      div.redbutton#login-to-post-comment
+        i.fa.fa-user
+        span #{translator.get("Log in to post comments")}
+
+      div.redbutton#validate-to-post-comment
+        i.fa.fa-check
+        span #{translator.get("Validate your email to post comments")}
+
+div.horizontal-splitbar
+
+div#project-details-contents
+  div.inside
+    div#project-contents-menu
+      li#project-contents-menu-code <i class="fa fa-code"></i><br /> #{translator.get("Code")}
+      li#project-contents-menu-sprites <i class="fa fa-image"></i><br /> #{translator.get("Sprites")}
+      li#project-contents-menu-sounds <i class="fa fa-volume-up"></i><br /> #{translator.get("Sounds")}
+      li#project-contents-menu-music <i class="fa fa-music"></i><br /> #{translator.get("Music")}
+      //- li#project-contents-menu-maps <i class="fa fa-map"></i><br /> #{translator.get("Maps")}
+      li#project-contents-menu-doc <i class="fa fa-book"></i><br /> #{translator.get("Doc")}
+
+    div#project-contents-view
+      div.code
+        div.code-list
+        div.import-button#project-contents-source-import
+          i(class="fa fa-download")
+          span Import source file
+        div#project-contents-view-editor
+
+      div.sprites
+        div.item-list-container
+          div.sprite-list
+        div.export-panel
+          a
+            i.fa.fa-download
+            span #{translator.get("Export all in a ZIP file")}
+
+      div.sounds
+        div.item-list-container
+          div.sound-list
+
+      div.music
+        div.item-list-container
+          div.music-list
+
+      div.doc
+        div.doc-render
+        div.import-button#project-contents-doc-import
+          i(class="fa fa-download")
+          span Import doc

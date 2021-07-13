@@ -1,0 +1,106 @@
+.runtime-terminal {
+  position: absolute ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  height: 100px ;
+  border-left: solid 2px rgba(0,0,0,.5);
+  z-index: 2 ;
+}
+#terminal {
+  position: absolute ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  top: 0 ;
+}
+#terminal-view {
+  position: absolute ;
+  top:0 ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 40px ;
+  background: hsl(200,50%,12%) ;
+  font-family: "Ubuntu Mono";
+  font-size: 16px;
+  overflow: auto ;
+/*  box-shadow: 0 0 200px 0 rgba(0,0,0,1) inset;*/
+}
+
+#terminal-input-line {
+  position: absolute ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  height: 40px ;
+  background: hsl(200,50%,15%);
+}
+#terminal-input-gt {
+  position: absolute ;
+  left: 0 ;
+  width: 10px ;
+  top: 0 ;
+  bottom: 0 ;
+  font-family: "Ubuntu Mono";
+  font-size: 20px;
+  color: hsl(200,100%,70%);
+  padding: 11px 10px ;
+}
+#terminal-input-container {
+  position: absolute ;
+  bottom: 0 ;
+  left: 30px ;
+  right: 0 ;
+  height: 40px ;
+  border: none ;
+  background: hsl(200,50%,15%);
+}
+#terminal-input {
+  position: absolute ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  top: 0 ;
+  bottom: 0 ;
+  height: 40px ;
+  border: none ;
+  width: 100% ;
+  background: hsl(200,50%,15%);
+  font-family: "Ubuntu Mono";
+  font-size: 16px;
+  color: hsl(200,100%,70%);
+  outline: none ;
+  padding: 0 0 0 0 ;
+}
+#terminal-lines {
+  padding: 5px ;
+  font-family: "Ubuntu Mono";
+  font-size: 16px;
+  color: hsl(200,100%,80%);
+  user-select: text ;
+}
+#terminal-lines div {
+  padding: 0 4px 0 18px ;
+  white-space: pre-wrap ;
+  line-height: 22px ;
+}
+#terminal-lines div.error {
+  color: hsl(20,100%,70%);
+}
+#terminal-lines div.input {
+  background: rgba(255,255,255,.05) ;
+  border-radius: 3px ;
+  padding: 0 4px ;
+}
+#terminal-lines div.input i {
+  opacity: .25 ;
+}
+.fa-ellipsis-v {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}

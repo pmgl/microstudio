@@ -1,0 +1,735 @@
+html,body {
+  font-family: "Source Sans Pro",Verdana;
+  color: #111 ;
+  margin: 0px;
+}
+
+header {
+  position: fixed ;
+  background: hsl(170,40%,30%);
+  top: 0 ;
+  left: 0;
+  right: 0 ;
+  height: 60px;
+  font-size: 20px;
+  color: rgba(255,255,255,.7);
+  white-space: nowrap;
+  z-index: 1 ;
+}
+
+header .logo {
+  display: inline-block ;
+  margin-left: 20px ;
+  margin-top: 18px;
+  margin-right: 20px ;
+  color: rgba(255,255,255,.9);
+  width: 160px ;
+  vertical-align: top ;
+  cursor: pointer ;
+}
+
+header .community-icon {
+  display: inline-block ;
+  padding-top: 20px ;
+  font-size: 18px ;
+  text-align: center;
+  color: rgba(255,255,255,.8);
+}
+header .community-icon  i {
+  font-size: 18px ;
+  margin-right: 10px ;
+}
+
+header .username {
+  display: none ;
+  float: right ;
+  margin: 12px 20px 0 0 ;
+  padding: 0 10px 0 0 ;
+  border-radius: 30px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8) ;
+  font-size: 18px ;
+  cursor: pointer ;
+  height: 38px ;
+}
+header .username i {
+  margin-right: 10px ;
+  margin-left: 10px ;
+  vertical-align: middle ;
+}
+header .username img {
+  width: 32px ;
+  height: 32px ;
+  border-radius: 16px ;
+  margin: 3px 10px 3px 3px;
+  vertical-align: middle ;
+}
+.username span {
+  display: inline-block ;
+  vertical-align: middle ;
+  margin: 6px ;
+}
+
+.content {
+  margin-top: 60px ;
+}
+
+.topright {
+  float: right ;
+  margin: 0px 0px 20px 20px ;
+}
+.topright div, .topright select {
+  display: inline-block ;
+}
+.theme {
+  background: #333 ;
+  color: #CCC ;
+  font-size: 10px ;
+  width: 40px ;
+  padding: 12px 10px ;
+  height: 32px ;
+  text-align: center ;
+  font-family: Ubuntu,sans-serif ;
+  cursor: pointer ;
+}
+.languages {
+  font-size: 16px ;
+  padding: 18px 20px ;
+  border-radius: 0 ;
+  background: rgba(0,0,0,.1);
+  border: none ;
+  outline: none ;
+  -moz-appearance:none;
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+.categories {
+  background: #EEE ;
+  padding: 5px ;
+  font-family: Ubuntu ;
+  text-align: center ;
+  margin: 0 ;
+}
+.categories li {
+  display: inline-block;
+}
+
+.category {
+  display: inline-block ;
+  margin: 5px ;
+  font-size: 14px ;
+  padding: 10px ;
+  border-radius: 5px ;
+  background: hsl(160,30%,80%) ;
+  color: rgba(0,0,0,.4);
+  cursor: pointer ;
+  text-decoration: none ;
+}
+.category:hover {
+  color: rgba(0,0,0,.8);
+  box-shadow: 0 0 10px 10px #FFF ;
+  padding: 12px ;
+  margin: 3px ;
+}
+
+.category.selected {
+  background: hsl(190,50%,40%);
+  color: white ;
+  margin-right: 40px ;
+}
+
+.watch {
+  float: right ;
+  text-align: right ;
+  font-size: 16px ;
+  color: #888 ;
+  margin: 0 0 8px 20px ;
+  display: none ;
+}
+.watch .text {
+  margin-bottom: 5px ;
+  max-width: 300px ;
+}
+.watch .button {
+  display: inline-block ;
+  background: hsl(190,40%,50%);
+  color: white ;
+  padding: 5px 10px ;
+  border-radius: 5px ;
+  cursor: pointer ;
+}
+.watch .button.unwatch {
+  background: hsl(20,50%,50%);
+}
+.watch .button i {
+  margin-right: 5px ;
+}
+
+.description {
+  max-width: 1200px ;
+  margin-left: auto ;
+  margin-right: auto ;
+  padding: 40px ;
+  font-size: 20px ;
+  clear: both ;
+}
+
+.description h1 {
+  margin: 0 0 10px 0;
+  font-size: 32px ;
+  font-family: Ubuntu,sans-serif;
+}
+.description p {
+  margin: 0 ;
+}
+.filtering {
+  max-width: 1200px ;
+  margin-left: auto ;
+  margin-right: auto ;
+  padding: 0 40px ;
+  font-size: 16px ;
+}
+#searchbar {
+  float: right ;
+  position: relative ;
+}
+#searchbar input {
+  box-sizing: border-box;
+  margin-bottom: 20px ;
+  font-size: 20px ;
+  padding: 5px 32px 5px 10px;
+  border-radius: 5px ;
+  border: solid 1px rgba(0,0,0,.2);
+  background: #EEE ;
+  color: #444 ;
+  width: 300px ;
+  transition-property: width ;
+  transition-duration: 250ms ;
+}
+
+#searchbar input:focus {
+  outline: none ;
+  box-shadow: 0 0 0px 3px hsla(190,50%,30%,.3) ;
+}
+#searchbar i {
+  position: absolute ;
+  top: 5px ;
+  right: 5px ;
+  color: rgba(0,0,0,.3);
+  font-size: 24px ;
+  cursor: pointer ;
+}
+
+#sorting {
+  display: inline-block ;
+  background: #789 ;
+  color: white ;
+  padding: 7px 12px ;
+  border-radius: 3px ;
+  cursor: pointer ;
+  margin-bottom: 20px ;
+}
+#sorting i {
+  margin-right: 10px ;
+}
+
+.posts {
+  max-width: 1200px ;
+  margin-left: auto ;
+  margin-right: auto ;
+  padding: 0 40px 100px 40px ;
+}
+
+.post {
+  border-bottom: solid 1px #EEE ;
+  position: relative ;
+  padding-top: 10px ;
+}
+
+.author-icon {
+  background: hsl(30,60%,60%) ;
+  width: 64px;
+  height: 64px ;
+  border-radius: 32px ;
+  position: absolute ;
+  top: 10px ;
+  left: 0 ;
+}
+.author-icon span {
+  position: absolute ;
+  color: white ;
+  font-size: 30px;
+  text-align: center ;
+  top: 12px ;
+  left: 0 ;
+  right: 0 ;
+}
+.post-top {
+  position: relative ;
+  padding-left: 80px ;
+  padding-right: 10px ;
+}
+.post-top .title {
+  font-size: 24px ;
+  font-family: Ubuntu ;
+  text-decoration: none;
+  color: #222;
+}
+.post-author {
+  float: right ;
+  margin-left: 40px ;
+  font-size: 18px ;
+}
+.post-category {
+  display: inline-block ;
+  padding: 5px 10px ;
+  font-size: 14px ;
+  border-radius: 5px ;
+  background: hsl(160,50%,40%);
+  color: white ;
+  margin-top: 10px ;
+  margin-right: 20px ;
+  text-decoration: none ;
+}
+.post-progress {
+  width: 200px ;
+  height: 20px ;
+  margin: 10px 20px 10px 0 ;
+  background: linear-gradient(90deg, hsl(190,80%,40%) 0%, hsl(190,80%,40%) 50%,hsl(190,10%,80%) 50%);
+  border-radius: 20px ;
+  display:inline-block ;
+  color: white ;
+  font-family: Ubuntu ;
+  font-size: 14px ;
+  padding-top: 2px ;
+  text-align: center;
+}
+.post-status {
+  margin: 10px 20px 10px 0 ;
+  padding: 4px 10px ;
+  background: hsl(190,50%,40%) ;
+  border-radius: 20px ;
+  display:inline-block ;
+  color: white ;
+  font-family: Ubuntu ;
+  font-size: 14px ;
+  text-align: center;
+}
+.post-status i {
+  margin-right: 5px ;
+}
+.post-info {
+  padding-left: 80px ;
+  margin-bottom: 10px ;
+}
+.post-info .post-author {
+  font-size: 20px ;
+}
+.post-stats {
+  float: right ;
+  font-family: Ubuntu ;
+}
+.post-replies,.post-views,.post-activity,.post-likes {
+  display: inline-block ;
+  margin-left: 10px ;
+  margin-top: 10px ;
+  padding: 5px 10px ;
+  border-radius: 5px ;
+  font-size: 14px ;
+  background: #AAA ;
+  color: white ;
+}
+.post-likes {
+  background: hsl(190,40%,50%);
+}
+.post-likes.self {
+    background: hsl(20,50%,50%);
+}
+
+.post-stats div i {
+  margin-right: 5px ;
+}
+
+.post-users {
+  display: inline-block ;
+  margin-top: 10px ;
+}
+
+.post-users .user {
+  display: inline-block ;
+  background: hsl(0,50%,40%);
+  color: white ;
+  margin-right: 5px ;
+  padding: 8px 8px ;
+  border-radius: 50px ;
+  vertical-align: middle ;
+  font-size: 13px ;
+  width: 16px ;
+  height: 16px ;
+  text-align: center ;
+}
+
+.post-users img.user {
+  display: inline-block ;
+  width: 32px ;
+  height: 32px ;
+  border-radius: 16px ;
+  padding: 0 ;
+}
+
+.create-post-button-container {
+  position: fixed ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+}
+
+.create-post-button-wrapper {
+  position: relative ;
+  max-width: 1200px ;
+  margin-left: auto ;
+  margin-right: auto ;
+  padding: 40px ;
+}
+
+.create-post {
+  position: absolute ;
+  bottom: 20px ;
+  right: 40px ;
+  border-radius: 10px ;
+  font-size: 24px ;
+  padding: 10px 15px ;
+  color: white ;
+  background: hsl(190,50%,50%);
+  box-shadow: 0 0 10px 10px #FFF ;
+  cursor: pointer ;
+}
+
+.create-post span {
+  margin-left: 10px ;
+}
+
+.post-container {
+  max-width: 1200px ;
+  margin-left: auto ;
+  margin-right: auto ;
+  padding: 40px ;
+}
+
+.post-content {
+  position: relative ;
+  font-family: Source Sans Pro ;
+  border-bottom: solid 1px #DDD ;
+  padding: 10px 0 40px 0 ;
+}
+
+.post-content .link {
+  position: absolute ;
+  left: -35px ;
+  top: 20px ;
+  color: #AAA ;
+  padding: 5px ;
+  border-radius: 3px ;
+}
+
+.post-content .link:hover {
+  background: #AAA ;
+  color: white ;
+}
+
+
+.post-content h1 {
+  margin: 0 ;
+}
+
+.post-content-info {
+  margin-bottom: 20px ;
+  vertical-align: middle ;
+}
+
+.post-content-info .post-content-author {
+  margin-left: 5px ;
+  margin-right: 20px ;
+}
+
+.post-text {
+  font-size: 18px ;
+}
+
+.edit-post {
+  display: none ;
+  position: fixed ;
+  z-index: 2 ;
+  top: 0 ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  background: hsla(210,20%,20%,.9);
+  text-align: left ;
+  padding: 70px 40px 40px 40px ;
+  overflow: auto ;
+}
+
+.edit-post-content {
+  box-sizing: border-box;
+  max-width: 1200px ;
+  margin-left: auto ;
+  margin-right: auto ;
+  padding: 40px ;
+  border-radius: 20px ;
+  background: white ;
+  border: solid 1px rgba(0,0,0,.2);
+}
+
+.edit-post-content h1 {
+  margin-top: 0 ;
+}
+
+.edit-post-content input, .edit-post-content select,.edit-post-content textarea {
+  box-sizing: border-box;
+  margin-bottom: 20px ;
+  font-size: 20px ;
+  padding: 10px ;
+  border-radius: 5px ;
+  border: solid 1px rgba(0,0,0,.2);
+  background: #EEE ;
+  color: #444 ;
+}
+
+.edit-post-content input:focus, .edit-post-content select:focus, .edit-post-content textarea:focus {
+  outline: none ;
+  box-shadow: 0 0 0px 3px hsla(190,50%,30%,.3) ;
+}
+
+.edit-post-content select {
+  border-radius: 5px ;
+}
+
+.edit-post-content input {
+  width: 100% ;
+  outline: none ;
+}
+
+
+.edit-post-content textarea {
+  display: block ;
+  font-size: 14px ;
+  height: 400px ;
+  width: 100% ;
+}
+
+.edit-post-buttons {
+  text-align: right ;
+}
+
+.edit-post-content .button {
+  display: inline-block ;
+  padding: 10px 20px ;
+  border-radius: 5px ;
+  background: hsl(190,40%,50%);
+  color: white ;
+  font-size: 20px ;
+  margin-left: 20px ;
+  cursor: pointer ;
+}
+
+.edit-post-content .button i {
+  margin-right: 10px ;
+}
+
+.edit-post-content .button.preview {
+  float: left ;
+  margin-left: 0 ;
+}
+
+.edit-post-content .button.cancel {
+  background: hsl(0,40%,50%);
+}
+
+.edit-post-content .button.post {
+  background: hsl(160,40%,50%);
+}
+
+.edit-reply-content {
+  border: none ;
+  padding: 0 ;
+}
+
+#edit-post-preview-area {
+  box-sizing: border-box ;
+  display: none ;
+  height: 400px ;
+  padding: 0 20px 0 0 ;
+  margin-bottom: 20px ;
+  overflow: auto ;
+}
+
+.edit-bar {
+  margin: 20px 0 ;
+  text-align: left ;
+}
+
+.edit-bar div {
+  display: inline-block ;
+  margin-right: 10px ;
+  border-radius: 5px ;
+  padding: 5px 10px ;
+  font-size: 14px ;
+  color: white ;
+  cursor: pointer ;
+}
+
+.edit-bar div.delete {
+  background: hsl(0,40%,50%) ;
+}
+
+.edit-bar div.edit {
+  background: hsl(190,40%,50%) ;
+}
+
+.edit-bar i {
+  margin-right: 5px ;
+}
+
+#edit-post-reserved {
+  display: none ;
+}
+
+#edit-post-reserved input {
+  width: 200px ;
+}
+#edit-post-reserved input[type=range] {
+  padding: 0 ;
+}
+
+#validate-your-email {
+  position: fixed ;
+  display: none ;
+  bottom: 10px ;
+  left: 0 ;
+  right: 0 ;
+  text-align: center ;
+}
+
+#validate-your-email div {
+  display: inline-block ;
+  padding: 5px 10px ;
+  background: hsl(190,40%,50%) ;
+  border-radius: 5px ;
+  color: white ;
+  box-shadow: 0 0 20px 4px #FFF ;
+}
+#validate-your-email i {
+  margin-right: 5px ;
+}
+
+/* DARK MODE */
+
+body.dark {
+  background: hsl(190,10%,20%) ;
+  color: #DDD ;
+}
+
+body.dark .theme {
+  background: #CCC ;
+  color: #333 ;
+}
+
+body.dark .post-top .title {
+  color: #DDD ;
+}
+
+body.dark .post {
+  border-bottom: solid 1px rgba(255,255,255,.2) ;
+}
+
+body.dark .post-replies, body.dark .post-views, body.dark .post-activity {
+  background: #888 ;
+}
+
+body.dark .categories {
+  background: rgba(255,255,255,.1) ;
+}
+body.dark .category {
+  color: #111 ;
+}
+body.dark .category.selected {
+  color: white ;
+}
+
+body.dark .languages {
+  color: #DDD ;
+  background: rgba(255,255,255,.2) ;
+}
+
+body.dark .create-post {
+  box-shadow: 0 0 10px 0px #000 ;
+}
+
+body.dark .edit-post-content {
+  background: hsl(190,10%,20%) ;
+}
+
+body.dark .edit-post-content input, body.dark .edit-post-content select, body.dark .edit-post-content textarea {
+  background: #333 ;
+  color: #DDD ;
+  border: solid 2px rgba(255,255,255,.2);
+}
+
+body.dark .md {
+  color: rgba(255,255,255,.8) ;
+}
+
+body.dark .md h1,body.dark .md h2,body.dark .md h3,body.dark .md h4,body.dark .md h5,body.dark .md h6 {
+  color: rgba(255,255,255,.8);
+  font-family: Helvetica,sans-serif;
+}
+
+body.dark .md pre code, body.dark .md code {
+  background: hsl(200,20%,15%);
+}
+
+body.dark .md blockquote {
+  border-left: solid 4px rgba(255,255,255,.2);
+  background: rgba(255,255,255,.1);
+}
+
+body.dark .md th {
+  background: rgba(255,255,255,.1);
+}
+
+body.dark .md tr,body.dark .md td,body.dark .md th {
+  border: solid 1px rgba(255,255,255,.1);
+}
+
+body.dark .md a {
+  color: hsla(200,100%,75%,.8);
+}
+
+body.dark .md hr {
+    margin: 40px 0;
+    border: solid 2px rgba(255,255,255,.2);
+}
+
+body.dark .category:hover {
+  color: rgba(255,255,255,.8);
+  box-shadow: 0 0 10px 0px #000 ;
+}
+
+body.dark .edit-post {
+  background: rgba(255,255,255,.2);
+}
+
+body.dark .post-content {
+  border-bottom: solid 1px rgba(255,255,255,.2) ;
+}
+
+iframe {
+  max-width: 100% ;
+  width: 100vmin ;
+  height: 56.25vmin ;
+  border: none ;
+  border-radius: 5px ;
+  margin: 10px 0 ;
+}

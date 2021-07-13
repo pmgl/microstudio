@@ -1,0 +1,5 @@
+{
+  "realm": "local",
+  "dev-domain": "localhost:8080",
+  "run-domain": "localhost:8080"
+}
