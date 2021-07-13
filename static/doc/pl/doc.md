@@ -595,34 +595,6 @@ The random object is used to generate pseudo-random numbers. It is possible to i
 |```list.removeElement(element)```|Removes from the list ```element```, if it can be found in the list|
 |```list1.concat(list2)```|Returns a new list obtained by appending list2 to list1|
 
-## Sorting a list
-
-You can sort the elements of a list using the function ```list.sortList(compareFunction)```. The ```compareFunction``` you provide has to accept two arguments (which we will call ```a``` and ```b```) and should return:
-|Return value|when|
-|-|-|
-|a negative number|when ```a``` must be sorted before ```b```(a is less than b)|
-|zero|when ```a``` and ```b``` have an equal position regarding to the desired ordering criterion|
-|a positive number|when ```a``` must be sorted after ```b``` (a is greater than b)|
-
-##### example
-
-The example below assumes that the list contains *points*, each point having an ```x``` coordinate field. We want to sort the points from the lesser value of point.x to the greater value of point.x:
-
-```
-compare = function(point1,point2)
-  return point1.x - point2.x
-end
-
-list.sortList(compare)
-```
-
-Note that you could make the code above shorter:
-
-```
-list.sortList(function(point1,point2) point1.x - point2.x end)
-```
-
-Whenever a comparison function is not provided, the elements of the list will be sorted according to the alphabetical order.
 
 ## Comments
 
@@ -765,8 +737,8 @@ The color is defined by a string of characters, so between quotation marks "". I
 
 ### Clear screen
 <!--- suggest_start screen.clear --->
-##### screen.clear(color)
-Clears the screen (fills it with the provided color, or with black if no color is passed as argument).
+##### screen.clear()
+Clears the screen (fills it with black color).
 <!--- suggest_end --->
 
 ### Drawing shapes
@@ -827,26 +799,10 @@ Draws a polygon outline, defined by the list of point coordinates passed as argu
 
 The function can also accept an array as first argument and a color as second argument. In that case, the array is expected to hold the points coordinates like this: ```screen.drawPolygon( [ x1, y1 , x2, y2, x3, y3 ... ], color )```.
 
-<!--- suggest_start screen.drawPolyline --->
-##### screen.drawPolyline( x1, y1, x2, y2, x3, y3, ... , color )
-Same as `drawPolygon` except that the drawing path will not be automatically closed.
-<!--- suggest_end --->
-
 <!--- suggest_start screen.setLineWidth --->
 ##### screen.setLineWidth( width )
 Sets the line width for all subsequent line draw operation (drawLine, drawPolygon, drawRect etc.). The default line width is 1.
 <!--- suggest_end --->
-
-<!--- suggest_start screen.setLineDash --->
-##### screen.setLineDash( array_of_values )
-Sets the line dash style for all subsequent line draw operation (drawLine, drawPolygon, drawRect etc.). The argument must be an array of positive values, defining the length of lines and gaps.
-
-#### example
-```
-screen.setLineDash([2,4])
-```
-<!--- suggest_end --->
-
 
 ### Display sprites and maps
 
@@ -908,15 +864,6 @@ Draws text on the screen. The first parameter is the text to be displayed, then 
 
 ```
 screen.drawText("Hello!",0,0,30, "#FFF")
-```
-
-<!--- suggest_start screen.drawTextOutline --->
-##### screen.drawTextOutline( text, x, y, size, &lt;color&gt; )
-Draws the outline of the text. Drawing an outline in a different color can be done after a ```drawText``` to increase the contrast. The thickness of the outline can be set with ```screen.setLineWidth```.
-<!--- suggest_end --->
-
-```
-screen.drawTextOutline("Hello!",0,0,30, "#F00")
 ```
 
 ---
@@ -1050,12 +997,6 @@ screen.setDrawAnchor(-1,0) // useful to align text on the left
 screen.setDrawAnchor(-1,-1) // your drawing coordinates are now interpreted as the bottom left corner of your shape.
 screen.setDrawAnchor(0,0) // default value, all shapes will be drawn centered on your coordinates
 ```
-
-<!--- suggest_start screen.setDrawAnchor --->
-##### screen.setBlending( blending )
-Defines how subsequent drawing operations will be composed with the underlying, already drawn image. Can be set to `normal` or `additive`.
-
-You can also use any of the compositing modes defined in the HTML5 Canvas specification with `setBlending`, for reference see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
 
 <!--- suggest_start screen.width --->
 ##### screen.width
@@ -1208,67 +1149,7 @@ In the same way as for keyboard key presses, you can use ```gamepad.press.<BUTTO
 
 ## Sounds
 
-*microStudio* currently allows you to play sounds and music you have imported to your project (as WAV files and MP3 files) or to create sounds programmatically using the legacy *beeper*.
-
-### Play Sound
-<!--- suggest_start audio.playSound --->
-##### audio.playSound( name, volume, pitch, pan, loop )
-Plays the given sound, with optional given playback settings.
-<!--- suggest_end --->
-
-##### arguments
-|Argument|Description|
-|-|-|
-|name|The name of the sound (from the sounds tab of your project) to play|
-|volume|[optional] The output volume for this sound playback, ranging from 0 to 1|
-|pitch|[optional] The output pitch for this sound playback, 1 is the default pitch|
-|pan|[optional] The pan setting for this sound playback, ranging from -1 (left) to 1 (right)|
-|loop|[optional] Set to 1 (true) if you want the sound to loop indefinitely|
-
-The function call returns an object. This object allows you to control the playback settings while the sound is being played:
-
-##### example
-```
-my_sound = audio.playSound("soundname")
-my_sound.setVolume(0.5)
-```
-
-|Control functions|description|
-|-|-|
-|my_sound.setVolume(volume)|Changes the playback volume of the sound (value ranging from 0 to 1)|
-|my_sound.setPitch(pitch)|Changes the pitch of the sound (1 is default pitch)|
-|my_sound.setPan(pan)|Changes the pan setting of the sound (value ranging from -1 to 1)|
-|my_sound.stop()|Stops the playback of that sound|
-
-### Play Music
-<!--- suggest_start audio.playMusic --->
-##### audio.playMusic( name, volume, loop )
-Plays the given music, with optional given playback settings.
-<!--- suggest_end --->
-
-##### arguments
-|Argument|Description|
-|-|-|
-|name|The name of the music (from the music tab of your project) to play|
-|volume|[optional] The output volume for this music playback, ranging from 0 to 1|
-|loop|[optional] Set to 1 (true) if you want the music to loop indefinitely|
-
-The function call returns an object. This object allows you to control the playback settings while the music is being played:
-
-##### example
-```
-my_music = audio.playMusic("musicname")
-my_music.setVolume(0.5)
-```
-
-|Control functions|description|
-|-|-|
-|my_music.setVolume(volume)|Changes the playback volume of the music (value ranging from 0 to 1)|
-|my_music.stop()|Stops the playback of that music|
-|my_music.play()|Resumes the playback is you stopped it before|
-|my_music.getPosition()|Returns the current playback position in seconds|
-|my_music.getDuration()|Returns the total music duration in seconds|
-
+*microStudio* will soon have a dedicated section to create sounds and music. In the meantime, it is possible to use the *beeper* to add sound to your creations in a simple way.
 
 <!--- suggest_start audio.beep --->
 ### audio.beep

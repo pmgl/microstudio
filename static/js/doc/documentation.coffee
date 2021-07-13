@@ -16,13 +16,13 @@ class @Documentation
 
     switch @app.translator.lang
       when "fr"
-        req.open "GET","https://raw.githubusercontent.com/pmgl/microstudio-documentation/master/microstudio_doc_fr.md"
+        req.open "GET","/doc/fr/doc.md"
       when "de"
-        req.open "GET","https://raw.githubusercontent.com/pmgl/microstudio-documentation/master/microstudio_doc_de.md"
+        req.open "GET","/doc/de/doc.md"
       when "pl"
-        req.open "GET","https://raw.githubusercontent.com/pmgl/microstudio-documentation/master/microstudio_doc_pl.md"
+        req.open "GET","/doc/pl/doc.md"
       else
-        req.open "GET","https://raw.githubusercontent.com/pmgl/microstudio-documentation/master/microstudio_doc_en.md"
+        req.open "GET","/doc/en/doc.md"
 
     req.send()
 

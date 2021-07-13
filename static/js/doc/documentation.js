@@ -27,16 +27,16 @@ this.Documentation = (function() {
     })(this);
     switch (this.app.translator.lang) {
       case "fr":
-        req.open("GET", "https://raw.githubusercontent.com/pmgl/microstudio-documentation/master/microstudio_doc_fr.md");
+        req.open("GET", "/doc/fr/doc.md");
         break;
       case "de":
-        req.open("GET", "https://raw.githubusercontent.com/pmgl/microstudio-documentation/master/microstudio_doc_de.md");
+        req.open("GET", "/doc/de/doc.md");
         break;
       case "pl":
-        req.open("GET", "https://raw.githubusercontent.com/pmgl/microstudio-documentation/master/microstudio_doc_pl.md");
+        req.open("GET", "/doc/pl/doc.md");
         break;
       default:
-        req.open("GET", "https://raw.githubusercontent.com/pmgl/microstudio-documentation/master/microstudio_doc_en.md");
+        req.open("GET", "/doc/en/doc.md");
     }
     return req.send();
   };

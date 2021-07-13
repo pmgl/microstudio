@@ -283,7 +283,7 @@ print(liste[2])
 On peut aussi facilement parcourir une liste avec une boucle ```for``` :
 
 ```
-for element in list
+for element in liste
   print(element)
 end
 ```
@@ -462,7 +462,7 @@ L'exemple ci-dessus affiche dans la console les nombres de 0 à 10 en avançant 
 
 ```
 liste = [2,3,5,7,11]
-for nombre in list
+for nombre in liste
   print(nombre)
 end
 ```
@@ -590,6 +590,36 @@ L'objet random permet de générer des nombre pseudo-aléatoires. Il est possibl
 |```liste.removeAt(index)```|Retire de la liste l'élément se trouvant à la position ```index```|
 |```liste.removeElement(element)```|Retire l'élément ```element```, s'il se trouve quelque part dans la liste|
 |```liste1.concat(liste2)```|Renvoie une nouvelle liste, qui est la concaténation de liste1 et liste 2|
+
+## Ordonner une liste
+
+Vous pouvez trier les éléments d'une liste en utilisant la fonction ```liste.sortList(compareFunction)```. La fonction ```compareFunction``` que vous fournissez doit accepter deux arguments (que nous appellerons ```a``` et ```b```) et doit renvoyer :
+
+|Valeur renvoyée|quand|
+|-|-|
+|un nombre négatif|quand ```a``` doit être classé avant ```b``` (a est moins que b)|
+|zéro|quand ```a``` et ```b``` ont une position équivalente du point de vue du critère de tri choisi|
+|un nombre positif|quand ```a``` doit être classé après ```b``` (a est plus que b)|
+
+##### exemple
+
+L'exemple ci-dessous considère que la liste contient des *points*, chaque point ayant un champ coordonnée ```x```. Nous voulons ordonner les points de la plus petite valeur de point.x jusqu'à la plus grande valeur de point.x :
+
+```
+compare = function(point1,point2)
+  return point1.x - point2.x
+end
+
+liste.sortList(compare)
+```
+
+Notez que nous pouvons écrire le même code de façon plus concise :
+
+```
+liste.sortList(function(point1,point2) point1.x - point2.x end)
+```
+
+Lorsque la fonction de comparaison n'est pas fournie, les éléments seront ordonnés selon l'ordre alphabétique.
 
 ## Commentaires
 Les commentaires en *microScript* peuvent être ajoutés après un double-slash : ```//``` ; tout ce qui suit jusqu'au prochain retour à la ligne est ignoré lors de l'analyse du programme.
@@ -732,8 +762,8 @@ La couleur est définie par une chaîne de caractères, donc entre guillemets ""
 
 ### Effacer l'écran
 <!--- suggest_start screen.clear --->
-##### screen.clear()
-Efface l'écran (le remplit de noir).
+##### screen.clear( couleur )
+Efface l'écran en le remplissant soit de la couleur passée en paramètre, soit de noir si aucune couleur n'est passée en paramètre.
 <!--- suggest_end --->
 
 ### Dessiner des formes
@@ -859,6 +889,16 @@ Dessine du texte à l'écran. Le premier paramètre est le texte à afficher, pu
 
 ```
 screen.drawText("Bonjour !",0,0,30,"#FFF")
+```
+
+
+<!--- suggest_start screen.drawTextOutline --->
+##### screen.drawTextOutline( text, x, y, size, &lt;color&gt; )
+Dessine le contour du texte. On peut dessiner le contour dans une couleur différente, après un ```drawText``` pour augmenter le contraste. L'épaisseur du contour peut être réglée avec ```screen.setLineWidth```.
+<!--- suggest_end --->
+
+```
+screen.drawTextOutline("Hello!",0,0,30, "#F00")
 ```
 
 ---
@@ -1143,7 +1183,66 @@ enfoncé ou ```gamepad.release.<BOUTON>```pour savoir si un bouton vient juste d
 
 ## Sons (```audio```)
 
-*microStudio* disposera bientôt d'une section dédiée pour créer des sons et de la musique. En attendant, il est possible d'utiliser le *beeper* pour sonoriser vos créations de façon simple.
+*microStudio* vous permet maintenant de jouer des sons et musiques que vous avez importées dans votre projet (sous la forme de fichiers WAV ou MP3). Vous pouvez aussi créer des sons avec du code en utilisant le *beeper*.
+
+### Jouer un son
+<!--- suggest_start audio.playSound --->
+##### audio.playSound( nom, volume, vitesse, panoramique, boucle )
+Joue le son donné, avec les éventuels paramètres optionnels.
+<!--- suggest_end --->
+
+##### paramètres
+|Paramètre|Description|
+|-|-|
+|nom|Le nom du son à jouer (son identifiant dans l'onglet Sons de votre projet)|
+|volume|[optionnel] Le volume de sortie de 0 à 1|
+|vitesse|[optionnel] La vitesse de lecture du son, 1 étant la vitesse par défaut|
+|panoramique|[optionnel] Le réglage de panoramique, variant de -1 (gauche) à 1 (droite)|
+|boucle|[optionnel] Réglez à 1 (vrai) si vous voulez que le son soit joué en boucle|
+
+L'appel de fonction renvoie un objet. Cet objet permet de contrôler la lecture du son pendant qu'il est joué :
+
+##### exemple
+```
+mon_son = audio.playSound("monson")
+mon_son.setVolume(0.5)
+```
+
+|Fonction de contrôle|description|
+|-|-|
+|mon_son.setVolume(volume)|Modifie le volume de lecture du son (entre 0 et 1)|
+|mon_son.setPitch(vitesse)|Modifie la vitesse de lecture du son (1 est la vitesse normale)|
+|mon_son.setPan(pan)|Modifie le panoramique (de -1 à 1)|
+|mon_son.stop()|Stoppe la lecture du son|
+
+### Jouer une musique
+<!--- suggest_start audio.playMusic --->
+##### audio.playMusic( nom, volume, boucle )
+Joue la musique donnée, avec les réglages optionnels.
+<!--- suggest_end --->
+
+##### paramètres
+|Paramètre|Description|
+|-|-|
+|nom|Le nom de la musique (son identifiant dans l'onglet musique de votre projet)|
+|volume|[optionnel] Le volume de lecture, entre 0 et 1|
+|boucle|[optionnel] Réglez à 1 (vrai) si vous voulez que la musique soit jouée en boucle|
+
+L'appel de fonction renvoie un objet. Cet objet permet de contrôler la lecture de la musique pendant qu'elle est jouée :
+
+##### exemple
+```
+ma_musique = audio.playMusic("mamusique")
+ma_musique.setVolume(0.5)
+```
+
+|Fonction de contrôle|description|
+|-|-|
+|ma_musique.setVolume(volume)|Modifie le volume de lecture de la musique (entre 0 et 1)|
+|ma_musique.stop()|Stoppe la musique|
+|ma_musique.play()|Reprend la lecture, si vous l'aviez stoppée avant|
+|ma_musique.getPosition()|Renvoie la position de lecture actuelle en secondes|
+|ma_musique.getDuration()|Renvoie la durée totale de la musique, en secondes|
 
 <!--- suggest_start audio.beep --->
 ### audio.beep
@@ -1224,7 +1323,7 @@ Renvoie le temps écoulé en millisecondes (depuis le 1er janvier 1970)
 <!--- suggest_end --->
 
 ## Stockage
-L'objet ```storage``` permet de stocker des données de manière permanente. Voud pouvez ainsi sauvegarder le progrès du joueur, une liste des meilleurs scores ou toute autre information sur l'état de votre jeu ou projet.
+L'objet ```storage``` permet de stocker des données de manière permanente. Vous pouvez ainsi sauvegarder le progrès du joueur, une liste des meilleurs scores ou toute autre information sur l'état de votre jeu ou projet.
 
 <!--- suggest_start storage.set --->
 ### storage.set( nom , valeur )
