@@ -7,7 +7,7 @@ class @DB
     @save_list = []
 
     if not fs.existsSync(@folder)
-      fs.mkdir(@folder,=>)
+      fs.mkdir @folder,=>@load()
     else
       @load()
 

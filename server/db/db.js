@@ -12,7 +12,9 @@ this.DB = (function() {
     this.save_list = [];
     if (!fs.existsSync(this.folder)) {
       fs.mkdir(this.folder, (function(_this) {
-        return function() {};
+        return function() {
+          return _this.load();
+        };
       })(this));
     } else {
       this.load();
