@@ -166,6 +166,10 @@ class @ProjectDetails
     a.href = "/#{@project.owner}/#{@project.slug}/export/sprites/"
     a.download = "#{@project.slug}_sprites.zip"
 
+    a = document.querySelector("#project-details-exportbutton")
+    a.href = "/#{@project.owner}/#{@project.slug}/export/project/"
+    a.download = "#{@project.slug}_files.zip"
+
   updateCredentials:()->
     if @app.user?
       document.getElementById("login-to-post-comment").style.display = "none"

@@ -198,7 +198,10 @@ this.ProjectDetails = (function() {
     this.updateCredentials();
     a = document.querySelector("#project-contents-view .sprites .export-panel a");
     a.href = "/" + this.project.owner + "/" + this.project.slug + "/export/sprites/";
-    return a.download = this.project.slug + "_sprites.zip";
+    a.download = this.project.slug + "_sprites.zip";
+    a = document.querySelector("#project-details-exportbutton");
+    a.href = "/" + this.project.owner + "/" + this.project.slug + "/export/project/";
+    return a.download = this.project.slug + "_files.zip";
   };
 
   ProjectDetails.prototype.updateCredentials = function() {

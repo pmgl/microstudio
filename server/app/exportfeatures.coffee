@@ -9,6 +9,97 @@ class @ExportFeatures
   constructor:(@webapp)->
     @addSpritesExport()
     @addPublishHTML()
+    @addProjectFilesExport()
+
+  addProjectFilesExport:()->
+    # /user/project[/code]/export/project/
+    @webapp.app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?export\/project\/$/,(req,res)=>
+      access = @webapp.getProjectAccess req,res
+      return if not access?
+
+      user = access.user
+      project = access.project
+      manager = @webapp.getProjectManager(project)
+      folders = @getFoldersWithTypes()
+      projectInfo = @prepareExportProjectInfo(project)
+
+      zip = new JSZip
+
+      queue = new JobQueue ()=>
+        zip.generateAsync({type:"nodebuffer"}).then (content)=>
+          res.setHeader("Content-Type", "application/zip")
+          res.setHeader("Content-Disposition","attachement; filename=\"#{project.slug}_files.zip\"")
+          res.send content
+
+      zip.file("project.meta.json", JSON.stringify projectInfo)
+      for f in folders
+        do (f) =>
+          @enqueueFolderZipping(zip, queue, manager, user, project, f.name, f.fileType)
+
+      queue.start()
+
+  enqueueFolderZipping:(zip, queue, manager, user, project, folder, fileType) ->
+      queue.add ()=>
+        manager.listFiles folder,(files)=>
+          for f in files
+            do (f)=>
+              queue.add ()=>
+                console.info "reading: "+JSON.stringify f
+                @webapp.server.content.files.read "#{user.id}/#{project.id}/#{folder}/#{f.file}",fileType,(content)=>
+                  if content?
+                    zip.folder(folder).file(f.file,content)
+                    zip.folder(folder).file("#{f.file}.meta.json", JSON.stringify f)
+                  queue.next()
+          queue.next()
+
+  getFoldersWithTypes:()->
+    folders = [
+        {
+          name: "sprites",
+          fileType: "binary"
+        },
+        {
+          name: "ms",
+          fileType: "text"
+        },
+        {
+          name: "doc",
+          fileType: "text"
+        },
+        {
+          name: "maps",
+          fileType: "text"
+        },
+        {
+          name: "sounds",
+          fileType: "binary"
+        },
+        {
+          name: "music",
+          fileType: "binary"
+        },
+        {
+          name: "assets",
+          fileType: "binary"
+        }
+      ]
+
+  prepareExportProjectInfo:(project)->
+    projectInfo = {
+        owner: project.owner.nick
+        id: project.id,
+        title: project.title,
+        slug: project.slug,
+        tags: project.tags,
+        orientation: project.orientation,
+        aspect: project.aspect,
+        platforms: project.platforms,
+        controls: project.controls,
+        type: project.type,
+        date_created: project.date_created,
+        last_modified: project.last_modified,
+        first_published: project.first_published
+      }
 
   addSpritesExport:()->
     # /user/project[/code]/export/sprites/
