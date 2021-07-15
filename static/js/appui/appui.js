@@ -53,7 +53,8 @@ AppUI = (function() {
     this.createLoginFunctions();
     this.setAction("create-project-button", (function(_this) {
       return function() {
-        return _this.show("create-project-overlay");
+        _this.show("create-project-overlay");
+        return _this.focus("create-project-title");
       };
     })(this));
     this.setAction("create-project-window", (function(_this) {
@@ -395,6 +396,10 @@ AppUI = (function() {
 
   AppUI.prototype.setDisplay = function(element, value) {
     return document.getElementById(element).style.display = value;
+  };
+
+  AppUI.prototype.focus = function(element) {
+    return document.getElementById(element).focus();
   };
 
   AppUI.prototype.get = function(id) {

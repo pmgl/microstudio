@@ -53,6 +53,7 @@ class AppUI
 
     @setAction "create-project-button",()=>
       @show "create-project-overlay"
+      @focus "create-project-title"
 
     @setAction "create-project-window",(event)=>
       event.stopPropagation()
@@ -301,6 +302,9 @@ class AppUI
 
   setDisplay:(element,value)->
     document.getElementById(element).style.display = value
+
+  focus:(element)->
+    document.getElementById(element).focus()
 
   get:(id)->
     document.getElementById(id)
