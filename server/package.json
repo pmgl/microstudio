@@ -1,5 +1,5 @@
 {
-  "name": "sonicpad-server",
+  "name": "microstudio",
   "version": "1.0.0",
   "description": "Web server",
   "main": "server.js",

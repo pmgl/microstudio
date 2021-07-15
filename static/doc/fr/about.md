@@ -2,6 +2,8 @@
 
 **microStudio** est un environnement gratuit pour développer des jeux vidéo. Il vise aussi à être une plateforme d'apprentissage et d'échange.
 
+**microStudio** est un projet open-source, distribué sous licence MIT : https://github.com/pmgl/microstudio/
+
 Consulter le changelog pour plus d'information sur les mises à jour.
 
 <br />

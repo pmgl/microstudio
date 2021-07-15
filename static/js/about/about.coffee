@@ -33,11 +33,10 @@ class @About
           @loaded[section] = req.responseText
           callback(@loaded[section]) if callback?
 
-    switch @app.translator.lang
-      when "fr"
-        req.open "GET",location.origin+"/doc/fr/#{section}.md"
-      else
-        req.open "GET",location.origin+"/doc/en/#{section}.md"
+    if @app.translator.lang == "fr" and section != "changelog"
+      req.open "GET",location.origin+"/doc/fr/#{section}.md"
+    else
+      req.open "GET",location.origin+"/doc/en/#{section}.md"
 
     req.send()
 

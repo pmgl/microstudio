@@ -92,11 +92,7 @@ header li {
 }
 
 header li i {
-  margin-right: 5px ;
   font-size: 18px ;
-/*  background: rgba(255,255,255,.2);
-  padding: 7px ;
-  border-radius: 15px ;*/
 }
 
 header li.selected, header li:hover {

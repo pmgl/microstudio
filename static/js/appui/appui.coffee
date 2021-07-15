@@ -76,6 +76,7 @@ class AppUI
       if title.length>0 and slug.length>0
         @app.createProject(title,slug)
         @hide "create-project-overlay"
+        @get("create-project-title").value = ""
 
     @doc_splitbar = new SplitBar("doc-section","horizontal")
     @code_splitbar = new SplitBar("code-section","horizontal")

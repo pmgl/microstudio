@@ -2,6 +2,8 @@
 
 **microStudio** is a free game development environment. It also aims to be a platform for learning and sharing.
 
+**microStudio** is an open source project, distributed under the MIT License: https://github.com/pmgl/microstudio/
+
 See changelog for information on updates.
 
 <br />
