@@ -1,5 +1,12 @@
 ## Changelog
 
+### Update 2021-07-15
+* microStudio is now officially open source! Check https://github.com/pmgl/microstudio
+* auto-focus title field when creating new project
+* empty title field after project is created
+* slight UI fixes
+* added several npm run scripts
+
 ### Update 2021-06-30
 * slight UI refresh (see home page and project pages!)
 * Profile image and profile description (/bio) ; note that the profile pic does not show everywhere yet, will be improved soon

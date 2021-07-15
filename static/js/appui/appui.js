@@ -89,7 +89,8 @@ AppUI = (function() {
         slug = RegexLib.slugify(title);
         if (title.length > 0 && slug.length > 0) {
           _this.app.createProject(title, slug);
-          return _this.hide("create-project-overlay");
+          _this.hide("create-project-overlay");
+          return _this.get("create-project-title").value = "";
         }
       };
     })(this));

@@ -64,12 +64,10 @@ this.About = (function() {
         }
       };
     })(this);
-    switch (this.app.translator.lang) {
-      case "fr":
-        req.open("GET", location.origin + ("/doc/fr/" + section + ".md"));
-        break;
-      default:
-        req.open("GET", location.origin + ("/doc/en/" + section + ".md"));
+    if (this.app.translator.lang === "fr" && section !== "changelog") {
+      req.open("GET", location.origin + ("/doc/fr/" + section + ".md"));
+    } else {
+      req.open("GET", location.origin + ("/doc/en/" + section + ".md"));
     }
     return req.send();
   };
