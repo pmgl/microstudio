@@ -12,5 +12,5 @@ for your team or classroom. You will find instructions below.
 * clone this repository
 * `cd microstudio/server`
 * `npm install`
-* `node server.js`
+* `npm run dev` for active development or `npm start` just for hosting
 * Open browser on `http://localhost:8080`
