@@ -680,7 +680,7 @@ this.Session = (function() {
     if (!this.server.rate_limiter.accept("import_project_user", this.user.id)) {
       return;
     }
-    buffer = new Buffer(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
+    buffer = new Buffer.from(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
     queue = new JobQueue((function(_this) {
       return function() {
         var zip;
@@ -689,39 +689,62 @@ this.Session = (function() {
           return zip.file("project.meta").async("string").then(function(text) {
             var projectInfo;
             projectInfo = JSON.parse(text);
-            console.log(projectInfo);
             return _this.content.createProject(_this.user, projectInfo, function(project) {
-              var filename, ref, results, value;
-              _this.send({
-                name: "project_created",
-                id: project.id,
-                request_id: data.request_id
-              });
+              var filename, files, funk, ref, value;
+              files = [];
               ref = contents.files;
-              results = [];
               for (filename in ref) {
                 value = ref[filename];
-                results.push((function(filename, value) {
-                  if (!value.dir) {
-                    if (!filename.endsWith(".meta")) {
-                      if (filename.endsWith(".json")) {
-                        return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string");
-                      } else if (filename.endsWith(".ms")) {
-                        return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string");
-                      } else if (filename.endsWith(".md")) {
-                        return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string");
-                      } else if (filename.startsWith("sounds_th")) {
-                        return _this.unzipAndCreateFile(zip, filename, project, data, "base64");
-                      } else if (filename.startsWith("music_th")) {
-                        return _this.unzipAndCreateFile(zip, filename, project, data, "base64");
-                      } else {
-                        return _this.unzipAndWriteProjectFile(zip, filename, project, data, "base64");
-                      }
-                    }
-                  }
-                })(filename, value));
+                files.push(filename);
               }
-              return results;
+              console.log("[ZIP] Files added the list. Amount of files: " + files.length);
+              funk = function() {
+                console.log("[ZIP] Files to process: " + files.length);
+                if (files.length > 0) {
+                  filename = files.splice(0, 1)[0];
+                  value = contents.files[filename];
+                  return (function(filename, value) {
+                    console.log("[ZIP] Processing file: " + filename);
+                    if (value.dir) {
+                      return funk();
+                    } else if (filename.endsWith(".meta")) {
+                      return funk();
+                    } else if (filename.endsWith(".json")) {
+                      return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string", function() {
+                        return funk();
+                      });
+                    } else if (filename.endsWith(".ms")) {
+                      return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string", function() {
+                        return funk();
+                      });
+                    } else if (filename.endsWith(".md")) {
+                      return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string", function() {
+                        return funk();
+                      });
+                    } else if (filename.startsWith("sounds_th")) {
+                      return _this.unzipAndCreateFile(zip, filename, project, data, "base64", function() {
+                        return funk();
+                      });
+                    } else if (filename.startsWith("music_th")) {
+                      return _this.unzipAndCreateFile(zip, filename, project, data, "base64", function() {
+                        return funk();
+                      });
+                    } else {
+                      return _this.unzipAndWriteProjectFile(zip, filename, project, data, "base64", function() {
+                        return funk();
+                      });
+                    }
+                  })(filename, value);
+                } else {
+                  console.log("[ZIP] All files processed!");
+                  return _this.send({
+                    name: "project_imported",
+                    id: project.id,
+                    request_id: data.request_id
+                  });
+                }
+              };
+              return funk();
             });
           });
         });
@@ -730,7 +753,7 @@ this.Session = (function() {
     return queue.start();
   };
 
-  Session.prototype.unzipAndWriteProjectFile = function(zip, filename, project, data, type) {
+  Session.prototype.unzipAndWriteProjectFile = function(zip, filename, project, data, type, callback) {
     var err;
     console.log(filename);
     try {
@@ -745,11 +768,14 @@ this.Session = (function() {
                 project: project.id,
                 file: filename,
                 content: fileContent,
-                request_id: data.request_id,
+                request_id: -data.request_id,
                 properties: metaJson.properties
               };
-              console.log(filename);
-              return _this.writeProjectFile(writeData);
+              _this.writeProjectFile(writeData);
+              console.log("Unzipped and written file: " + filename);
+              if (callback != null) {
+                return callback();
+              }
             });
           } catch (error1) {
             err = error1;
@@ -765,7 +791,7 @@ this.Session = (function() {
     }
   };
 
-  Session.prototype.unzipAndCreateFile = function(zip, filename, project, data, type) {
+  Session.prototype.unzipAndCreateFile = function(zip, filename, project, data, type, callback) {
     var err;
     console.log(filename);
     try {
@@ -773,8 +799,12 @@ this.Session = (function() {
         return function(fileContent) {
           var buffer;
           buffer = Buffer.from(fileContent, "base64");
-          _this.content.files.write(_this.user.id + "/" + project.id + "/" + filename, buffer);
-          return console.log(filename);
+          return _this.content.files.write(_this.user.id + "/" + project.id + "/" + filename, buffer, function() {
+            console.log("Unzipped and created file: " + filename);
+            if (callback != null) {
+              return callback();
+            }
+          });
         };
       })(this));
     } catch (error1) {

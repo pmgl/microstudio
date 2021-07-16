@@ -155,10 +155,25 @@ class App
           console.info "processing #{file.name}"
           reader = new FileReader()
           reader.addEventListener "load",()=>
-            @client.sendRequest
+            @client.sendRequest {
               name: "import_project"
               user: @nick
               zip_data: reader.result
+            },(msg)=>
+              console.log "[ZIP] #{msg.name}"
+              switch msg.name
+                when "error"
+                  console.error msg.error
+                  alert @translator.get(msg.error) if msg.error?
+
+                when "project_imported"
+                  @getProjectList (list)=>
+                    @projects = list
+                    @appui.updateProjects()
+                    # for p in list
+                    #   if p.id == msg.id
+                    #     @openProject p
+                    #     callback() if callback?
 
           reader.readAsDataURL(file)
       funk()

@@ -380,38 +380,50 @@ class @Session
   importProject:(data)->
     return @sendError("not connected") if not @user?
     return if not @server.rate_limiter.accept("import_project_user",@user.id)
-    buffer = new Buffer(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
+    buffer = new Buffer.from(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
     queue = new JobQueue ()=>
       zip = new JSZip
       zip.loadAsync(buffer).then (contents) =>
         zip.file("project.meta").async("string").then (text) =>
           projectInfo = JSON.parse(text)
-          console.log projectInfo
           @content.createProject @user,projectInfo,(project)=>
-            @send
-              name:"project_created"
-              id: project.id
-              request_id: data.request_id
+            files = []
             for filename, value of contents.files
-              do(filename, value) =>
-                if not value.dir
-                  if not filename.endsWith ".meta"
-                    if filename.endsWith ".json" 
-                      @unzipAndWriteProjectFile(zip, filename, project, data, "string")
-                    else if filename.endsWith ".ms"
-                      @unzipAndWriteProjectFile(zip, filename, project, data, "string")
-                    else if filename.endsWith ".md"
-                      @unzipAndWriteProjectFile(zip, filename, project, data, "string")
-                    else if filename.startsWith "sounds_th"
-                      @unzipAndCreateFile(zip, filename, project, data, "base64")
-                    else if filename.startsWith "music_th"
-                      @unzipAndCreateFile(zip, filename, project, data, "base64")
-                    else 
-                      @unzipAndWriteProjectFile(zip, filename, project, data, "base64")
-
+              files.push filename
+            console.log "[ZIP] Files added the list. Amount of files: #{files.length}"
+            funk = () =>
+              console.log "[ZIP] Files to process: #{files.length}"
+              if files.length > 0
+                filename = files.splice(0,1)[0]
+                value = contents.files[filename]
+                do(filename, value) =>
+                  console.log "[ZIP] Processing file: #{filename}"
+                  if value.dir
+                    funk()
+                  else if filename.endsWith ".meta"
+                    funk()
+                  else if filename.endsWith ".json"
+                    @unzipAndWriteProjectFile(zip, filename, project, data, "string", ()=> funk())
+                  else if filename.endsWith ".ms"
+                    @unzipAndWriteProjectFile(zip, filename, project, data, "string", ()=> funk())
+                  else if filename.endsWith ".md"
+                    @unzipAndWriteProjectFile(zip, filename, project, data, "string", ()=> funk())
+                  else if filename.startsWith "sounds_th"
+                    @unzipAndCreateFile(zip, filename, project, data, "base64", ()=> funk())
+                  else if filename.startsWith "music_th"
+                    @unzipAndCreateFile(zip, filename, project, data, "base64", ()=> funk())
+                  else
+                    @unzipAndWriteProjectFile(zip, filename, project, data, "base64", ()=> funk())
+              else
+                console.log "[ZIP] All files processed!"
+                @send
+                  name:"project_imported"
+                  id: project.id
+                  request_id: data.request_id
+            funk()
     queue.start()
 
-  unzipAndWriteProjectFile:(zip, filename, project, data, type)->
+  unzipAndWriteProjectFile:(zip, filename, project, data, type, callback)->
     console.log filename
     try
       zip.file(filename).async(type).then (fileContent) =>
@@ -422,11 +434,12 @@ class @Session
               project: project.id
               file: filename
               content: fileContent
-              request_id: data.request_id
+              request_id: -data.request_id
               properties: metaJson.properties
             }
-            console.log filename
             @writeProjectFile(writeData)
+            console.log "Unzipped and written file: #{filename}"
+            callback() if callback?
         catch err
           console.error err
           console.log "#{filename}.meta"
@@ -434,13 +447,14 @@ class @Session
       console.error err
       console.log filename
 
-  unzipAndCreateFile:(zip, filename, project, data, type)->
+  unzipAndCreateFile:(zip, filename, project, data, type, callback)->
     console.log filename
     try
       zip.file(filename).async(type).then (fileContent) =>
         buffer = Buffer.from(fileContent, "base64");
-        @content.files.write "#{@user.id}/#{project.id}/#{filename}", buffer
-        console.log filename
+        @content.files.write "#{@user.id}/#{project.id}/#{filename}", buffer, () ->
+          console.log "Unzipped and created file: #{filename}"
+          callback() if callback?
     catch err
       console.error err
       console.log filename

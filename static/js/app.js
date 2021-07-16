@@ -220,6 +220,21 @@ App = (function() {
                 name: "import_project",
                 user: _this.nick,
                 zip_data: reader.result
+              }, function(msg) {
+                console.log("[ZIP] " + msg.name);
+                switch (msg.name) {
+                  case "error":
+                    console.error(msg.error);
+                    if (msg.error != null) {
+                      return alert(_this.translator.get(msg.error));
+                    }
+                    break;
+                  case "project_imported":
+                    return _this.getProjectList(function(list) {
+                      _this.projects = list;
+                      return _this.appui.updateProjects();
+                    });
+                }
               });
             });
             return reader.readAsDataURL(file);
