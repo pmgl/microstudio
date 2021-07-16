@@ -31,7 +31,7 @@ class @ExportFeatures
           res.setHeader("Content-Disposition","attachement; filename=\"#{project.slug}_files.zip\"")
           res.send content
 
-      zip.file("project.meta.json", JSON.stringify projectInfo)
+      zip.file("project.meta", JSON.stringify projectInfo)
       for f in folders
         do (f) =>
           @enqueueFolderZipping(zip, queue, manager, user, project, f.name, f.fileType)
@@ -48,7 +48,7 @@ class @ExportFeatures
                 @webapp.server.content.files.read "#{user.id}/#{project.id}/#{folder}/#{f.file}",fileType,(content)=>
                   if content?
                     zip.folder(folder).file(f.file,content)
-                    zip.folder(folder).file("#{f.file}.meta.json", JSON.stringify f)
+                    zip.folder(folder).file("#{f.file}.meta", JSON.stringify f)
                   queue.next()
           queue.next()
 

@@ -39,7 +39,7 @@ this.ExportFeatures = (function() {
             return res.send(content);
           });
         });
-        zip.file("project.meta.json", JSON.stringify(projectInfo));
+        zip.file("project.meta", JSON.stringify(projectInfo));
         fn = function(f) {
           return _this.enqueueFolderZipping(zip, queue, manager, user, project, f.name, f.fileType);
         };
@@ -63,7 +63,7 @@ this.ExportFeatures = (function() {
               return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/" + folder + "/" + f.file, fileType, function(content) {
                 if (content != null) {
                   zip.folder(folder).file(f.file, content);
-                  zip.folder(folder).file(f.file + ".meta.json", JSON.stringify(f));
+                  zip.folder(folder).file(f.file + ".meta", JSON.stringify(f));
                 }
                 return queue.next();
               });
