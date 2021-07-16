@@ -155,6 +155,7 @@ class App
           console.info "processing #{file.name}"
           reader = new FileReader()
           reader.addEventListener "load",()=>
+            return if not reader.result.startsWith("data:application/x-zip-compressed;base64,")
             @client.sendRequest {
               name: "import_project"
               user: @nick

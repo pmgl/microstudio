@@ -380,6 +380,7 @@ class @Session
   importProject:(data)->
     return @sendError("not connected") if not @user?
     return if not @server.rate_limiter.accept("import_project_user",@user.id)
+    return if not data.zip_data.startsWith("data:application/x-zip-compressed;base64,")
     buffer = new Buffer.from(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
     queue = new JobQueue ()=>
       zip = new JSZip

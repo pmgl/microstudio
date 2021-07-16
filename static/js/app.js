@@ -216,6 +216,9 @@ App = (function() {
             console.info("processing " + file.name);
             reader = new FileReader();
             reader.addEventListener("load", function() {
+              if (!reader.result.startsWith("data:application/x-zip-compressed;base64,")) {
+                return;
+              }
               return _this.client.sendRequest({
                 name: "import_project",
                 user: _this.nick,

@@ -680,6 +680,9 @@ this.Session = (function() {
     if (!this.server.rate_limiter.accept("import_project_user", this.user.id)) {
       return;
     }
+    if (!data.zip_data.startsWith("data:application/x-zip-compressed;base64,")) {
+      return;
+    }
     buffer = new Buffer.from(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
     queue = new JobQueue((function(_this) {
       return function() {
