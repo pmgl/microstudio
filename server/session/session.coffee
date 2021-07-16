@@ -432,25 +432,25 @@ class @Session
     console.log filename
     try
       zip.file(filename).async(type).then (fileContent) =>
-         writeUnziipedFile = (properties) =>
-          writeData = {
-            project: project.id
-            file: filename
-            content: fileContent
-            request_id: -data.request_id
-            properties: properties
-          }
-          @writeProjectFile(writeData)
-          console.log "Unzipped and written file: #{filename}"
-          callback() if callback?
         try
+          writeUnzippedFile = (properties) =>
+            writeData = {
+              project: project.id
+              file: filename
+              content: fileContent
+              request_id: -data.request_id
+              properties: properties
+            }
+            @writeProjectFile(writeData)
+            console.log "Unzipped and written file: #{filename}"
+            callback() if callback?
           if zip.file("#{filename}.meta")?
             zip.file("#{filename}.meta").async("string").then (meta) =>
               metaJson = JSON.parse(meta)
-              writeUnziipedFile(metaJson.properties)
+              writeUnzippedFile(metaJson.properties)
           else
             console.log "Meta file for file #{filename} does not exist, no properties added to the file"
-            writeUnziipedFile({})
+            writeUnzippedFile({})
         catch err
           console.error err
           console.log "#{filename}.meta"

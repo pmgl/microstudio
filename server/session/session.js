@@ -764,44 +764,42 @@ this.Session = (function() {
     var err;
     console.log(filename);
     try {
-      zip.file(filename).async(type).then((function(_this) {
+      return zip.file(filename).async(type).then((function(_this) {
         return function(fileContent) {
-          var writeUnziipedFile;
-          return writeUnziipedFile = function(properties) {
-            var writeData;
-            writeData = {
-              project: project.id,
-              file: filename,
-              content: fileContent,
-              request_id: -data.request_id,
-              properties: properties
+          var err, writeUnzippedFile;
+          try {
+            writeUnzippedFile = function(properties) {
+              var writeData;
+              writeData = {
+                project: project.id,
+                file: filename,
+                content: fileContent,
+                request_id: -data.request_id,
+                properties: properties
+              };
+              _this.writeProjectFile(writeData);
+              console.log("Unzipped and written file: " + filename);
+              if (callback != null) {
+                return callback();
+              }
             };
-            _this.writeProjectFile(writeData);
-            console.log("Unzipped and written file: " + filename);
-            if (callback != null) {
-              return callback();
+            if (zip.file(filename + ".meta") != null) {
+              return zip.file(filename + ".meta").async("string").then(function(meta) {
+                var metaJson;
+                metaJson = JSON.parse(meta);
+                return writeUnzippedFile(metaJson.properties);
+              });
+            } else {
+              console.log("Meta file for file " + filename + " does not exist, no properties added to the file");
+              return writeUnzippedFile({});
             }
-          };
+          } catch (error1) {
+            err = error1;
+            console.error(err);
+            return console.log(filename + ".meta");
+          }
         };
       })(this));
-      try {
-        if (zip.file(filename + ".meta") != null) {
-          return zip.file(filename + ".meta").async("string").then((function(_this) {
-            return function(meta) {
-              var metaJson;
-              metaJson = JSON.parse(meta);
-              return writeUnziipedFile(metaJson.properties);
-            };
-          })(this));
-        } else {
-          console.log("Meta file for file " + filename + " does not exist, no properties added to the file");
-          return writeUnziipedFile({});
-        }
-      } catch (error1) {
-        err = error1;
-        console.error(err);
-        return console.log(filename + ".meta");
-      }
     } catch (error1) {
       err = error1;
       console.error(err);
