@@ -109,7 +109,7 @@ App = (function() {
       password: password
     }, (function(_this) {
       return function(msg) {
-        var i, len, n, ref;
+        var j, len, n, ref;
         switch (msg.name) {
           case "error":
             console.error(msg.error);
@@ -129,8 +129,8 @@ App = (function() {
             };
             if ((msg.notifications != null) && msg.notifications.length > 0) {
               ref = msg.notifications;
-              for (i = 0, len = ref.length; i < len; i++) {
-                n = ref[i];
+              for (j = 0, len = ref.length; j < len; j++) {
+                n = ref[j];
                 _this.appui.showNotification(n);
               }
             }
@@ -176,12 +176,12 @@ App = (function() {
             break;
           case "project_created":
             _this.getProjectList(function(list) {
-              var i, len, p, results;
+              var j, len, p, results;
               _this.projects = list;
               _this.appui.updateProjects();
               results = [];
-              for (i = 0, len = list.length; i < len; i++) {
-                p = list[i];
+              for (j = 0, len = list.length; j < len; j++) {
+                p = list[j];
                 if (p.id === msg.id) {
                   _this.openProject(p);
                   if (callback != null) {
@@ -200,17 +200,50 @@ App = (function() {
     })(this));
   };
 
+  App.prototype.importProject = function(files) {
+    var err, funk, i, j, len, list;
+    try {
+      list = [];
+      for (j = 0, len = files.length; j < len; j++) {
+        i = files[j];
+        list.push(i.getAsFile());
+      }
+      funk = (function(_this) {
+        return function() {
+          var file, reader;
+          if (list.length > 0) {
+            file = list.splice(0, 1)[0];
+            console.info("processing " + file.name);
+            reader = new FileReader();
+            reader.addEventListener("load", function() {
+              return _this.client.sendRequest({
+                name: "import_project",
+                user: _this.nick,
+                zip_data: reader.result
+              });
+            });
+            return reader.readAsDataURL(file);
+          }
+        };
+      })(this);
+      return funk();
+    } catch (error) {
+      err = error;
+      return console.error(err);
+    }
+  };
+
   App.prototype.updateProjectList = function(open_when_fetched) {
     return this.getProjectList((function(_this) {
       return function(list) {
-        var i, len, p, ref, results;
+        var j, len, p, ref, results;
         _this.projects = list;
         _this.appui.updateProjects();
         if (open_when_fetched != null) {
           ref = _this.projects;
           results = [];
-          for (i = 0, len = ref.length; i < len; i++) {
-            p = ref[i];
+          for (j = 0, len = ref.length; j < len; j++) {
+            p = ref[j];
             if (p.id === open_when_fetched) {
               _this.openProject(p);
               break;
@@ -289,13 +322,13 @@ App = (function() {
   };
 
   App.prototype.projectTitleExists = function(title) {
-    var i, len, p, ref;
+    var j, len, p, ref;
     if (!this.projects) {
       return false;
     }
     ref = this.projects;
-    for (i = 0, len = ref.length; i < len; i++) {
-      p = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      p = ref[j];
       if (p.title === title) {
         return true;
       }

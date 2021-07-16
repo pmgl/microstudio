@@ -143,6 +143,28 @@ class App
 
       return
 
+  importProject:(files)->
+    try
+      list = []
+      for i in files
+        list.push i.getAsFile()
+
+      funk = ()=>
+        if list.length>0
+          file = list.splice(0,1)[0]
+          console.info "processing #{file.name}"
+          reader = new FileReader()
+          reader.addEventListener "load",()=>
+            @client.sendRequest
+              name: "import_project"
+              user: @nick
+              zip_data: reader.result
+
+          reader.readAsDataURL(file)
+      funk()
+    catch err
+      console.error err
+
   updateProjectList:(open_when_fetched)->
     @getProjectList (list)=>
       @projects = list

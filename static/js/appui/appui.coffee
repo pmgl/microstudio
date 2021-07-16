@@ -138,29 +138,7 @@ class AppUI
 
     document.getElementById("myprojects").addEventListener "drop",(event)=>
       event.preventDefault()
-      try
-        list = []
-        for i in event.dataTransfer.items
-          list.push i.getAsFile()
-
-        funk = ()=>
-          if list.length>0
-            file = list.splice(0,1)[0]
-            console.info "processing #{file.name}"
-            
-            reader = new FileReader()
-            reader.addEventListener "load",()=>
-              @app.client.sendRequest
-                name: "import_project"
-                user: @app.nick
-                zip_data: reader.result
-
-            reader.readAsDataURL(file)
- 
-        funk()
-
-      catch err
-        console.error err
+      @app.importProject(event.dataTransfer.items)
 
     setInterval (()=>@checkActivity()),10000
 
