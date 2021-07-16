@@ -385,6 +385,10 @@ class @Session
     queue = new JobQueue ()=>
       zip = new JSZip
       zip.loadAsync(buffer).then (contents) =>
+        if not zip.file("project.meta")?
+          console.log "[ZIP] Missing project.meta; import aborted"
+          return
+
         zip.file("project.meta").async("string").then (text) =>
           projectInfo = JSON.parse(text)
           @content.createProject @user,projectInfo,(project)=>

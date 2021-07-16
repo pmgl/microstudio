@@ -689,6 +689,10 @@ this.Session = (function() {
         var zip;
         zip = new JSZip;
         return zip.loadAsync(buffer).then(function(contents) {
+          if (zip.file("project.meta") == null) {
+            console.log("[ZIP] Missing project.meta; import aborted");
+            return;
+          }
           return zip.file("project.meta").async("string").then(function(text) {
             var projectInfo;
             projectInfo = JSON.parse(text);
