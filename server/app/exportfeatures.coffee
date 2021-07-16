@@ -75,7 +75,15 @@ class @ExportFeatures
           fileType: "binary"
         },
         {
+          name: "sounds_th",
+          fileType: "binary"
+        },
+        {
           name: "music",
+          fileType: "binary"
+        },
+        {
+          name: "music_th",
           fileType: "binary"
         },
         {
