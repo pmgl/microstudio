@@ -133,6 +133,35 @@ class AppUI
       #document.querySelector("#home-section .part1").style["padding-top"] = "#{160-scroll}px"
 
 
+    document.getElementById("myprojects").addEventListener "dragover",(event)=>
+      event.preventDefault()
+
+    document.getElementById("myprojects").addEventListener "drop",(event)=>
+      event.preventDefault()
+      try
+        list = []
+        for i in event.dataTransfer.items
+          list.push i.getAsFile()
+
+        funk = ()=>
+          if list.length>0
+            file = list.splice(0,1)[0]
+            console.info "processing #{file.name}"
+            
+            reader = new FileReader()
+            reader.addEventListener "load",()=>
+              @app.client.sendRequest
+                name: "import_project"
+                user: @app.nick
+                zip_data: reader.result
+
+            reader.readAsDataURL(file)
+ 
+        funk()
+
+      catch err
+        console.error err
+
     setInterval (()=>@checkActivity()),10000
 
     @reboot_date = 1622710800000

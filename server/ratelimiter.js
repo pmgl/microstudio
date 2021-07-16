@@ -11,6 +11,7 @@ this.RateLimiter = (function() {
     this.map.send_mail_user = new RateLimiterClass(this, 5, 5);
     this.map.create_account_ip = new RateLimiterClass(this, 30, 30);
     this.map.create_project_user = new RateLimiterClass(this, 60, 10);
+    this.map.import_project_user = new RateLimiterClass(this, 60, 10);
     this.map.create_file_user = new RateLimiterClass(this, 5, 40);
     this.map.post_comment_user = new RateLimiterClass(this, 10, 10);
     this.map.create_forum_post = new RateLimiterClass(this, 60, 10);

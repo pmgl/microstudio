@@ -1,4 +1,4 @@
-var ForumSession, ProjectManager, RegexLib, SHA256;
+var ForumSession, JSZip, JobQueue, ProjectManager, RegexLib, SHA256;
 
 SHA256 = require("crypto-js/sha256");
 
@@ -7,6 +7,10 @@ ProjectManager = require(__dirname + "/projectmanager.js");
 RegexLib = require(__dirname + "/../../static/js/util/regexlib.js");
 
 ForumSession = require(__dirname + "/../forum/forumsession.js");
+
+JSZip = require("jszip");
+
+JobQueue = require(__dirname + "/../app/jobqueue.js");
 
 this.Session = (function() {
   function Session(server, socket) {
@@ -120,6 +124,11 @@ this.Session = (function() {
     this.register("create_project", (function(_this) {
       return function(msg) {
         return _this.createProject(msg);
+      };
+    })(this));
+    this.register("import_project", (function(_this) {
+      return function(msg) {
+        return _this.importProject(msg);
       };
     })(this));
     this.register("set_project_option", (function(_this) {
@@ -661,6 +670,95 @@ this.Session = (function() {
       error: error,
       request_id: request_id
     });
+  };
+
+  Session.prototype.importProject = function(data) {
+    var buffer, queue;
+    if (this.user == null) {
+      return this.sendError("not connected");
+    }
+    if (!this.server.rate_limiter.accept("import_project_user", this.user.id)) {
+      return;
+    }
+    buffer = new Buffer(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
+    queue = new JobQueue((function(_this) {
+      return function() {
+        var zip;
+        zip = new JSZip;
+        return zip.loadAsync(buffer).then(function(contents) {
+          return zip.file("project.meta").async("string").then(function(text) {
+            var projectInfo;
+            projectInfo = JSON.parse(text);
+            console.log(projectInfo);
+            return _this.content.createProject(_this.user, projectInfo, function(project) {
+              var filename, ref, results, value;
+              _this.send({
+                name: "project_created",
+                id: project.id,
+                request_id: data.request_id
+              });
+              ref = contents.files;
+              results = [];
+              for (filename in ref) {
+                value = ref[filename];
+                results.push((function(filename, value) {
+                  if (!value.dir) {
+                    if (!filename.endsWith(".meta")) {
+                      if (filename.endsWith(".json")) {
+                        return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string");
+                      } else if (filename.endsWith(".ms")) {
+                        return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string");
+                      } else if (filename.endsWith(".md")) {
+                        return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string");
+                      } else {
+                        return _this.unzipAndWriteProjectFile(zip, filename, project, data, "base64");
+                      }
+                    }
+                  }
+                })(filename, value));
+              }
+              return results;
+            });
+          });
+        });
+      };
+    })(this));
+    return queue.start();
+  };
+
+  Session.prototype.unzipAndWriteProjectFile = function(zip, filename, project, data, type) {
+    var err;
+    console.log(filename);
+    try {
+      return zip.file(filename).async(type).then((function(_this) {
+        return function(fileContent) {
+          var err;
+          try {
+            return zip.file(filename + ".meta").async("string").then(function(meta) {
+              var metaJson, writeData;
+              metaJson = JSON.parse(meta);
+              writeData = {
+                project: project.id,
+                file: filename,
+                content: fileContent,
+                request_id: data.request_id,
+                properties: metaJson.properties
+              };
+              console.log(filename);
+              return _this.writeProjectFile(writeData);
+            });
+          } catch (error1) {
+            err = error1;
+            console.error(err);
+            return console.log(filename + ".meta");
+          }
+        };
+      })(this));
+    } catch (error1) {
+      err = error1;
+      console.error(err);
+      return console.log(filename);
+    }
   };
 
   Session.prototype.createProject = function(data) {

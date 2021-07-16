@@ -172,6 +172,45 @@ AppUI = (function() {
         return document.querySelector("#home-header-background").style.height = scroll + "px";
       };
     })(this));
+    document.getElementById("myprojects").addEventListener("dragover", (function(_this) {
+      return function(event) {
+        return event.preventDefault();
+      };
+    })(this));
+    document.getElementById("myprojects").addEventListener("drop", (function(_this) {
+      return function(event) {
+        var err, funk, i, l, len2, list, ref2;
+        event.preventDefault();
+        try {
+          list = [];
+          ref2 = event.dataTransfer.items;
+          for (l = 0, len2 = ref2.length; l < len2; l++) {
+            i = ref2[l];
+            list.push(i.getAsFile());
+          }
+          funk = function() {
+            var file, reader;
+            if (list.length > 0) {
+              file = list.splice(0, 1)[0];
+              console.info("processing " + file.name);
+              reader = new FileReader();
+              reader.addEventListener("load", function() {
+                return _this.app.client.sendRequest({
+                  name: "import_project",
+                  user: _this.app.nick,
+                  zip_data: reader.result
+                });
+              });
+              return reader.readAsDataURL(file);
+            }
+          };
+          return funk();
+        } catch (error) {
+          err = error;
+          return console.error(err);
+        }
+      };
+    })(this));
     setInterval(((function(_this) {
       return function() {
         return _this.checkActivity();

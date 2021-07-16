@@ -2,6 +2,8 @@ SHA256 = require("crypto-js/sha256")
 ProjectManager = require __dirname+"/projectmanager.js"
 RegexLib = require __dirname+"/../../static/js/util/regexlib.js"
 ForumSession = require __dirname+"/../forum/forumsession.js"
+JSZip = require "jszip"
+JobQueue = require __dirname+"/../app/jobqueue.js"
 
 class @Session
   constructor:(@server,@socket)->
@@ -51,6 +53,7 @@ class @Session
     @register "set_user_profile",(msg)=>@setUserProfile(msg)
 
     @register "create_project",(msg)=>@createProject(msg)
+    @register "import_project",(msg)=>@importProject(msg)
     @register "set_project_option",(msg)=>@setProjectOption(msg)
     @register "set_project_public",(msg)=>@setProjectPublic(msg)
     @register "set_project_tags",(msg)=>@setProjectTags(msg)
@@ -373,6 +376,59 @@ class @Session
       name: "error"
       error: error
       request_id: request_id
+
+  importProject:(data)->
+    return @sendError("not connected") if not @user?
+    return if not @server.rate_limiter.accept("import_project_user",@user.id)
+    buffer = new Buffer(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
+    queue = new JobQueue ()=>
+      zip = new JSZip
+      zip.loadAsync(buffer).then (contents) =>
+        zip.file("project.meta").async("string").then (text) =>
+          projectInfo = JSON.parse(text)
+          console.log projectInfo
+          @content.createProject @user,projectInfo,(project)=>
+            @send
+              name:"project_created"
+              id: project.id
+              request_id: data.request_id
+            for filename, value of contents.files
+              do(filename, value) =>
+                if not value.dir
+                  if not filename.endsWith ".meta"
+                    if filename.endsWith ".json" 
+                      @unzipAndWriteProjectFile(zip, filename, project, data, "string")
+                    else if filename.endsWith ".ms"
+                      @unzipAndWriteProjectFile(zip, filename, project, data, "string")
+                    else if filename.endsWith ".md"
+                      @unzipAndWriteProjectFile(zip, filename, project, data, "string")
+                    else 
+                      @unzipAndWriteProjectFile(zip, filename, project, data, "base64")
+
+    queue.start()
+
+  unzipAndWriteProjectFile:(zip, filename, project, data, type)->
+    console.log filename
+    try
+      zip.file(filename).async(type).then (fileContent) =>
+        try
+          zip.file("#{filename}.meta").async("string").then (meta) =>
+            metaJson = JSON.parse(meta)
+            writeData = {
+              project: project.id
+              file: filename
+              content: fileContent
+              request_id: data.request_id
+              properties: metaJson.properties
+            }
+            console.log filename
+            @writeProjectFile(writeData)
+        catch err
+          console.error err
+          console.log "#{filename}.meta"
+    catch err
+      console.error err
+      console.log filename
 
   createProject:(data)->
     return @sendError("not connected") if not @user?
