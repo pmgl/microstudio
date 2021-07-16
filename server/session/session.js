@@ -710,6 +710,10 @@ this.Session = (function() {
                         return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string");
                       } else if (filename.endsWith(".md")) {
                         return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string");
+                      } else if (filename.startsWith("sounds_th")) {
+                        return _this.unzipAndCreateFile(zip, filename, project, data, "base64");
+                      } else if (filename.startsWith("music_th")) {
+                        return _this.unzipAndCreateFile(zip, filename, project, data, "base64");
                       } else {
                         return _this.unzipAndWriteProjectFile(zip, filename, project, data, "base64");
                       }
@@ -752,6 +756,25 @@ this.Session = (function() {
             console.error(err);
             return console.log(filename + ".meta");
           }
+        };
+      })(this));
+    } catch (error1) {
+      err = error1;
+      console.error(err);
+      return console.log(filename);
+    }
+  };
+
+  Session.prototype.unzipAndCreateFile = function(zip, filename, project, data, type) {
+    var err;
+    console.log(filename);
+    try {
+      return zip.file(filename).async(type).then((function(_this) {
+        return function(fileContent) {
+          var buffer;
+          buffer = Buffer.from(fileContent, "base64");
+          _this.content.files.write(_this.user.id + "/" + project.id + "/" + filename, buffer);
+          return console.log(filename);
         };
       })(this));
     } catch (error1) {

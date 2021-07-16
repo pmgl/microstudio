@@ -402,6 +402,10 @@ class @Session
                       @unzipAndWriteProjectFile(zip, filename, project, data, "string")
                     else if filename.endsWith ".md"
                       @unzipAndWriteProjectFile(zip, filename, project, data, "string")
+                    else if filename.startsWith "sounds_th"
+                      @unzipAndCreateFile(zip, filename, project, data, "base64")
+                    else if filename.startsWith "music_th"
+                      @unzipAndCreateFile(zip, filename, project, data, "base64")
                     else 
                       @unzipAndWriteProjectFile(zip, filename, project, data, "base64")
 
@@ -426,6 +430,17 @@ class @Session
         catch err
           console.error err
           console.log "#{filename}.meta"
+    catch err
+      console.error err
+      console.log filename
+
+  unzipAndCreateFile:(zip, filename, project, data, type)->
+    console.log filename
+    try
+      zip.file(filename).async(type).then (fileContent) =>
+        buffer = Buffer.from(fileContent, "base64");
+        @content.files.write "#{@user.id}/#{project.id}/#{filename}", buffer
+        console.log filename
     catch err
       console.error err
       console.log filename
