@@ -5,6 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "postinstall": "cd server && npm install",
+    "compile": "cd server && npm run compile",
     "start": "cd server && npm start"
   },
   "author": "pmgl"
