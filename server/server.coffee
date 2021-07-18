@@ -43,7 +43,7 @@ class @Server
         @PORT = 443
         @PROD = true
       else
-        @PORT = @config.port or 8080
+        @PORT = process.env.PORT or @config.port or 8080
         @PROD = false
 
       @loadPlugins ()=>
