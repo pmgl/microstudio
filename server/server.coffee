@@ -46,6 +46,7 @@ class @Server
         @PORT = process.env.PORT or @config.port or 8080
         @PROD = false
 
+      console.info "Using port number #{@PORT}"
       @loadPlugins ()=>
         @create()
 
