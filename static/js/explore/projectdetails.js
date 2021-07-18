@@ -259,7 +259,7 @@ this.ProjectDetails = (function() {
         var div;
         _this.sources[file] = msg.content;
         div = document.createElement("div");
-        div.innerHTML = "<i class='fa fa-file'></i> " + (file.split(".")[0]);
+        div.innerHTML = "<i class='fa fa-file-code'></i> " + (file.split(".")[0]);
         document.querySelector("#project-contents-view .code-list").appendChild(div);
         div.id = "project-contents-view-source-" + file;
         div.addEventListener("click", function() {

@@ -642,7 +642,7 @@ this.Editor = (function() {
     this.selected_source = name;
     list = document.getElementById("source-list").childNodes;
     if (this.selected_source != null) {
-      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file'></i> " + this.selected_source;
+      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> " + this.selected_source;
       for (j = 0, len = list.length; j < len; j++) {
         e = list[j];
         if (e.getAttribute("id") === ("source-list-item-" + name)) {
@@ -777,7 +777,7 @@ this.Editor = (function() {
     element.appendChild(tools);
     i = document.createElement("i");
     i.classList.add("fa");
-    i.classList.add("fa-file");
+    i.classList.add("fa-file-code");
     element.appendChild(i);
     span = document.createElement("div");
     span.classList.add("filename");
