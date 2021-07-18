@@ -36,7 +36,7 @@
   "scripts": {
     "compile": "coffee -c --no-header -b ../.",
     "compile-and-watch": "coffee -c --no-header -b -w ../.",
-    "dev": "npm run compile && concurrently \"npm:compile-and-watch\" \"npm:start\"",
+    "dev": "concurrently \"npm:compile-and-watch\" \"npm:start\"",
     "start": "npm run compile && node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

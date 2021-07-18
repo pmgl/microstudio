@@ -6,6 +6,7 @@
   "scripts": {
     "postinstall": "cd server && npm install",
     "compile": "cd server && npm run compile",
+    "dev": "cd server && npm run dev",
     "start": "cd server && npm start"
   },
   "author": "pmgl"
