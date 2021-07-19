@@ -35,11 +35,11 @@ this.ExportFeatures = (function() {
             type: "nodebuffer"
           }).then(function(content) {
             res.setHeader("Content-Type", "application/zip");
-            res.setHeader("Content-Disposition", "attachement; filename=\"" + project.slug + "_files.zip\"");
+            res.setHeader("Content-Disposition", "attachement; filename=\"" + project.slug + "_archive.zip\"");
             return res.send(content);
           });
         });
-        zip.file("project.meta", JSON.stringify(projectInfo));
+        zip.file("project.json", JSON.stringify(projectInfo));
         fn = function(f) {
           return _this.enqueueFolderZipping(zip, queue, manager, user, project, f.name, f.fileType);
         };
@@ -59,11 +59,9 @@ this.ExportFeatures = (function() {
           var f, fn, i, len;
           fn = function(f) {
             return queue.add(function() {
-              console.info("reading: " + JSON.stringify(f));
               return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/" + folder + "/" + f.file, fileType, function(content) {
                 if (content != null) {
                   zip.folder(folder).file(f.file, content);
-                  zip.folder(folder).file(f.file + ".meta", JSON.stringify(f));
                 }
                 return queue.next();
               });
@@ -114,10 +112,8 @@ this.ExportFeatures = (function() {
   };
 
   ExportFeatures.prototype.prepareExportProjectInfo = function(project) {
-    var projectInfo;
-    return projectInfo = {
+    return {
       owner: project.owner.nick,
-      id: project.id,
       title: project.title,
       slug: project.slug,
       tags: project.tags,
@@ -128,7 +124,8 @@ this.ExportFeatures = (function() {
       type: project.type,
       date_created: project.date_created,
       last_modified: project.last_modified,
-      first_published: project.first_published
+      first_published: project.first_published,
+      files: project.files
     };
   };
 
@@ -158,7 +155,6 @@ this.ExportFeatures = (function() {
             var fn, i, len, s;
             fn = function(s) {
               return queue.add(function() {
-                console.info("reading: " + JSON.stringify(s));
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/sprites/" + s.file, "binary", function(content) {
                   if (content != null) {
                     zip.file(s.file, content);
@@ -179,7 +175,6 @@ this.ExportFeatures = (function() {
             var doc, fn, i, len;
             fn = function(doc) {
               return queue.add(function() {
-                console.info("reading: " + JSON.stringify(doc));
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/doc/" + doc.file, "text", function(content) {
                   if (content != null) {
                     zip.file(doc.file, content);
@@ -274,7 +269,6 @@ this.ExportFeatures = (function() {
             var fn, i, len, s;
             fn = function(s) {
               return queue.add(function() {
-                console.info("reading: " + JSON.stringify(s));
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/sprites/" + s.file, "binary", function(content) {
                   if (content != null) {
                     zip.file("sprites/" + s.file, content);
@@ -296,7 +290,6 @@ this.ExportFeatures = (function() {
             var fn, i, len, map;
             fn = function(map) {
               return queue.add(function() {
-                console.info("reading: " + JSON.stringify(map));
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/maps/" + map.file, "text", function(content) {
                   if (content != null) {
                     maps_dict[map.file.split(".")[0]] = content;
@@ -317,7 +310,6 @@ this.ExportFeatures = (function() {
             var fn, i, len, s;
             fn = function(s) {
               return queue.add(function() {
-                console.info("reading: " + JSON.stringify(s));
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/sounds/" + s.file, "binary", function(content) {
                   if (content != null) {
                     zip.file("sounds/" + s.file, content);
@@ -339,7 +331,6 @@ this.ExportFeatures = (function() {
             var fn, i, len, m;
             fn = function(m) {
               return queue.add(function() {
-                console.info("reading: " + JSON.stringify(m));
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/music/" + m.file, "binary", function(content) {
                   if (content != null) {
                     zip.file("music/" + m.file, content);
@@ -361,7 +352,6 @@ this.ExportFeatures = (function() {
             var asset, fn, i, len;
             fn = function(asset) {
               return queue.add(function() {
-                console.info("reading: " + JSON.stringify(asset));
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/assets/" + asset.file, "binary", function(content) {
                   if (content != null) {
                     zip.file("assets/" + asset.file, content);
@@ -383,7 +373,6 @@ this.ExportFeatures = (function() {
             var doc, fn, i, len;
             fn = function(doc) {
               return queue.add(function() {
-                console.info("reading: " + JSON.stringify(doc));
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/doc/" + doc.file, "text", function(content) {
                   if (content != null) {
                     zip.file(doc.file, content);
@@ -404,7 +393,6 @@ this.ExportFeatures = (function() {
             var fn, i, len, src;
             fn = function(src) {
               return queue.add(function() {
-                console.info("reading: " + JSON.stringify(src));
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/ms/" + src.file, "text", function(content) {
                   if (content != null) {
                     fullsource += content + "\n\n";
@@ -426,7 +414,6 @@ this.ExportFeatures = (function() {
                   fonts.push(font);
                   (function(font) {
                     return queue.add(function() {
-                      console.info("reading font: " + font);
                       return _this.webapp.fonts.read(font, function(data) {
                         if (data != null) {
                           zip.file("fonts/" + font + ".ttf", data);
