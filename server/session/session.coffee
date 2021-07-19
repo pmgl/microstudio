@@ -384,14 +384,16 @@ class @Session
     buffer = new Buffer.from(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
     queue = new JobQueue ()=>
       zip = new JSZip
+      projectFileName = "project.json"
       zip.loadAsync(buffer).then (contents) =>
-        if not zip.file("project.meta")?
-          console.log "[ZIP] Missing project.meta; import aborted"
+        if not zip.file(projectFileName)?
+          console.log "[ZIP] Missing #{projectFileName}; import aborted"
           return
 
-        zip.file("project.meta").async("string").then (text) =>
+        zip.file(projectFileName).async("string").then (text) =>
           projectInfo = JSON.parse(text)
           @content.createProject @user,projectInfo,(project)=>
+
             files = []
             for filename, value of contents.files
               files.push filename
@@ -401,24 +403,27 @@ class @Session
               if files.length > 0
                 filename = files.splice(0,1)[0]
                 value = contents.files[filename]
+                properties = {}
+                properties = projectInfo.files[filename].properties if projectInfo.files[filename]?
+
                 do(filename, value) =>
                   console.log "[ZIP] Processing file: #{filename}"
                   if value.dir
                     funk()
-                  else if filename.endsWith ".meta"
+                  else if filename == projectFileName
                     funk()
                   else if filename.endsWith ".json"
-                    @unzipAndWriteProjectFile(zip, filename, project, data, "string", ()=> funk())
+                    @unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", ()=> funk())
                   else if filename.endsWith ".ms"
-                    @unzipAndWriteProjectFile(zip, filename, project, data, "string", ()=> funk())
+                    @unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", ()=> funk())
                   else if filename.endsWith ".md"
-                    @unzipAndWriteProjectFile(zip, filename, project, data, "string", ()=> funk())
+                    @unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", ()=> funk())
                   else if filename.startsWith "sounds_th"
                     @unzipAndCreateFile(zip, filename, project, data, "base64", ()=> funk())
                   else if filename.startsWith "music_th"
                     @unzipAndCreateFile(zip, filename, project, data, "base64", ()=> funk())
                   else
-                    @unzipAndWriteProjectFile(zip, filename, project, data, "base64", ()=> funk())
+                    @unzipAndWriteProjectFile(zip, filename, project, properties, data, "base64", ()=> funk())
               else
                 console.log "[ZIP] All files processed!"
                 @send
@@ -428,32 +433,20 @@ class @Session
             funk()
     queue.start()
 
-  unzipAndWriteProjectFile:(zip, filename, project, data, type, callback)->
+  unzipAndWriteProjectFile:(zip, filename, project, properties, data, type, callback)->
     console.log filename
     try
       zip.file(filename).async(type).then (fileContent) =>
-        try
-          writeUnzippedFile = (properties) =>
-            writeData = {
-              project: project.id
-              file: filename
-              content: fileContent
-              request_id: -data.request_id
-              properties: properties
-            }
-            @writeProjectFile(writeData)
-            console.log "Unzipped and written file: #{filename}"
-            callback() if callback?
-          if zip.file("#{filename}.meta")?
-            zip.file("#{filename}.meta").async("string").then (meta) =>
-              metaJson = JSON.parse(meta)
-              writeUnzippedFile(metaJson.properties)
-          else
-            console.log "Meta file for file #{filename} does not exist, no properties added to the file"
-            writeUnzippedFile({})
-        catch err
-          console.error err
-          console.log "#{filename}.meta"
+        writeData = {
+          project: project.id
+          file: filename
+          content: fileContent
+          request_id: -data.request_id
+          properties: properties
+        }
+        @writeProjectFile(writeData)
+        console.log "Unzipped and written file: #{filename}"
+        callback() if callback?
     catch err
       console.error err
       console.log filename

@@ -686,14 +686,15 @@ this.Session = (function() {
     buffer = new Buffer.from(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
     queue = new JobQueue((function(_this) {
       return function() {
-        var zip;
+        var projectFileName, zip;
         zip = new JSZip;
+        projectFileName = "project.json";
         return zip.loadAsync(buffer).then(function(contents) {
-          if (zip.file("project.meta") == null) {
-            console.log("[ZIP] Missing project.meta; import aborted");
+          if (zip.file(projectFileName) == null) {
+            console.log("[ZIP] Missing " + projectFileName + "; import aborted");
             return;
           }
-          return zip.file("project.meta").async("string").then(function(text) {
+          return zip.file(projectFileName).async("string").then(function(text) {
             var projectInfo;
             projectInfo = JSON.parse(text);
             return _this.content.createProject(_this.user, projectInfo, function(project) {
@@ -706,26 +707,31 @@ this.Session = (function() {
               }
               console.log("[ZIP] Files added the list. Amount of files: " + files.length);
               funk = function() {
+                var properties;
                 console.log("[ZIP] Files to process: " + files.length);
                 if (files.length > 0) {
                   filename = files.splice(0, 1)[0];
                   value = contents.files[filename];
+                  properties = {};
+                  if (projectInfo.files[filename] != null) {
+                    properties = projectInfo.files[filename].properties;
+                  }
                   return (function(filename, value) {
                     console.log("[ZIP] Processing file: " + filename);
                     if (value.dir) {
                       return funk();
-                    } else if (filename.endsWith(".meta")) {
+                    } else if (filename === projectFileName) {
                       return funk();
                     } else if (filename.endsWith(".json")) {
-                      return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string", function() {
+                      return _this.unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", function() {
                         return funk();
                       });
                     } else if (filename.endsWith(".ms")) {
-                      return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string", function() {
+                      return _this.unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", function() {
                         return funk();
                       });
                     } else if (filename.endsWith(".md")) {
-                      return _this.unzipAndWriteProjectFile(zip, filename, project, data, "string", function() {
+                      return _this.unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", function() {
                         return funk();
                       });
                     } else if (filename.startsWith("sounds_th")) {
@@ -737,7 +743,7 @@ this.Session = (function() {
                         return funk();
                       });
                     } else {
-                      return _this.unzipAndWriteProjectFile(zip, filename, project, data, "base64", function() {
+                      return _this.unzipAndWriteProjectFile(zip, filename, project, properties, data, "base64", function() {
                         return funk();
                       });
                     }
@@ -760,43 +766,24 @@ this.Session = (function() {
     return queue.start();
   };
 
-  Session.prototype.unzipAndWriteProjectFile = function(zip, filename, project, data, type, callback) {
+  Session.prototype.unzipAndWriteProjectFile = function(zip, filename, project, properties, data, type, callback) {
     var err;
     console.log(filename);
     try {
       return zip.file(filename).async(type).then((function(_this) {
         return function(fileContent) {
-          var err, writeUnzippedFile;
-          try {
-            writeUnzippedFile = function(properties) {
-              var writeData;
-              writeData = {
-                project: project.id,
-                file: filename,
-                content: fileContent,
-                request_id: -data.request_id,
-                properties: properties
-              };
-              _this.writeProjectFile(writeData);
-              console.log("Unzipped and written file: " + filename);
-              if (callback != null) {
-                return callback();
-              }
-            };
-            if (zip.file(filename + ".meta") != null) {
-              return zip.file(filename + ".meta").async("string").then(function(meta) {
-                var metaJson;
-                metaJson = JSON.parse(meta);
-                return writeUnzippedFile(metaJson.properties);
-              });
-            } else {
-              console.log("Meta file for file " + filename + " does not exist, no properties added to the file");
-              return writeUnzippedFile({});
-            }
-          } catch (error1) {
-            err = error1;
-            console.error(err);
-            return console.log(filename + ".meta");
+          var writeData;
+          writeData = {
+            project: project.id,
+            file: filename,
+            content: fileContent,
+            request_id: -data.request_id,
+            properties: properties
+          };
+          _this.writeProjectFile(writeData);
+          console.log("Unzipped and written file: " + filename);
+          if (callback != null) {
+            return callback();
           }
         };
       })(this));
