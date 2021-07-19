@@ -454,7 +454,7 @@ class @Editor
     list = document.getElementById("source-list").childNodes
 
     if @selected_source?
-      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file'></i> "+@selected_source
+      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> "+@selected_source
       for e in list
         if e.getAttribute("id") == "source-list-item-#{name}"
           e.classList.add("selected")
@@ -569,7 +569,7 @@ class @Editor
 
     i = document.createElement "i"
     i.classList.add "fa"
-    i.classList.add "fa-file"
+    i.classList.add "fa-file-code"
     element.appendChild i
 
     span = document.createElement "div"
