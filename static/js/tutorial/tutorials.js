@@ -127,7 +127,7 @@ this.Tutorials = (function() {
     a.title = this.app.translator.get("View tutorial source code");
     code = document.createElement("i");
     code.classList.add("fas");
-    code.classList.add("fa-file");
+    code.classList.add("fa-file-code");
     a.appendChild(code);
     li.appendChild(a);
     a.addEventListener("click", (function(_this) {

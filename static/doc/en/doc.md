@@ -963,7 +963,7 @@ screen.setAlpha(1) // the default value, total opacity
 ---
 
 <!--- suggest_start screen.setLinearGradient --->
-##### screen.setLinearGradient( x1, y1, x2, x2, y2, color1, color 2)
+##### screen.setLinearGradient(x1, y1, x2, y2, color1, color2)
 Defines the drawing color as a linear gradient of color, i. e. a gradient. ```x1 and y1``` are the coordinates of the starting point of the gradient. ```x2 and y2``` are the coordinates of the ending point of the gradient. ```color1``` is the starting color (see ```setColor``` for the color values). "Color2" is the arrival color.
 <!--- suggest_end --->
 

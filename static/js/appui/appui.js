@@ -759,7 +759,7 @@ AppUI = (function() {
   };
 
   AppUI.prototype.createProjectBox = function(p) {
-    var buttons, clone_button, delete_button, element, icon, title;
+    var buttons, clone_button, delete_button, element, export_button, export_href, icon, title;
     element = document.createElement("div");
     element.classList.add("project-box");
     element.id = "project-box-" + p.slug;
@@ -769,6 +769,17 @@ AppUI = (function() {
     buttons = document.createElement("div");
     buttons.classList.add("buttons");
     element.appendChild(buttons);
+    export_href = "/" + p.owner.nick + "/" + p.slug + "/" + p.code + "/export/project/";
+    export_button = document.createElement("div");
+    export_button.classList.add("export");
+    export_button.innerHTML = "<a href='" + export_href + "' download='" + p.slug + "_files.zip'><i class='fa fa-download'></i> " + (this.app.translator.get("Export")) + "</a>";
+    buttons.appendChild(export_button);
+    export_button.addEventListener("click", (function(_this) {
+      return function(event) {
+        event.stopPropagation();
+        return event.stopImmediatePropagation();
+      };
+    })(this));
     clone_button = document.createElement("div");
     clone_button.classList.add("clone");
     clone_button.innerHTML = "<i class='fa fa-copy'></i> " + (this.app.translator.get("Clone"));

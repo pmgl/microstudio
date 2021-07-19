@@ -13,7 +13,124 @@ this.ExportFeatures = (function() {
     this.webapp = webapp;
     this.addSpritesExport();
     this.addPublishHTML();
+    this.addProjectFilesExport();
   }
+
+  ExportFeatures.prototype.addProjectFilesExport = function() {
+    return this.webapp.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?export\/project\/$/, (function(_this) {
+      return function(req, res) {
+        var access, f, fn, folders, i, len, manager, project, projectInfo, queue, user, zip;
+        access = _this.webapp.getProjectAccess(req, res);
+        if (access == null) {
+          return;
+        }
+        user = access.user;
+        project = access.project;
+        manager = _this.webapp.getProjectManager(project);
+        folders = _this.getFoldersWithTypes();
+        projectInfo = _this.prepareExportProjectInfo(project);
+        zip = new JSZip;
+        queue = new JobQueue(function() {
+          return zip.generateAsync({
+            type: "nodebuffer"
+          }).then(function(content) {
+            res.setHeader("Content-Type", "application/zip");
+            res.setHeader("Content-Disposition", "attachement; filename=\"" + project.slug + "_files.zip\"");
+            return res.send(content);
+          });
+        });
+        zip.file("project.meta", JSON.stringify(projectInfo));
+        fn = function(f) {
+          return _this.enqueueFolderZipping(zip, queue, manager, user, project, f.name, f.fileType);
+        };
+        for (i = 0, len = folders.length; i < len; i++) {
+          f = folders[i];
+          fn(f);
+        }
+        return queue.start();
+      };
+    })(this));
+  };
+
+  ExportFeatures.prototype.enqueueFolderZipping = function(zip, queue, manager, user, project, folder, fileType) {
+    return queue.add((function(_this) {
+      return function() {
+        return manager.listFiles(folder, function(files) {
+          var f, fn, i, len;
+          fn = function(f) {
+            return queue.add(function() {
+              console.info("reading: " + JSON.stringify(f));
+              return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/" + folder + "/" + f.file, fileType, function(content) {
+                if (content != null) {
+                  zip.folder(folder).file(f.file, content);
+                  zip.folder(folder).file(f.file + ".meta", JSON.stringify(f));
+                }
+                return queue.next();
+              });
+            });
+          };
+          for (i = 0, len = files.length; i < len; i++) {
+            f = files[i];
+            fn(f);
+          }
+          return queue.next();
+        });
+      };
+    })(this));
+  };
+
+  ExportFeatures.prototype.getFoldersWithTypes = function() {
+    var folders;
+    return folders = [
+      {
+        name: "sprites",
+        fileType: "binary"
+      }, {
+        name: "ms",
+        fileType: "text"
+      }, {
+        name: "doc",
+        fileType: "text"
+      }, {
+        name: "maps",
+        fileType: "text"
+      }, {
+        name: "sounds",
+        fileType: "binary"
+      }, {
+        name: "sounds_th",
+        fileType: "binary"
+      }, {
+        name: "music",
+        fileType: "binary"
+      }, {
+        name: "music_th",
+        fileType: "binary"
+      }, {
+        name: "assets",
+        fileType: "binary"
+      }
+    ];
+  };
+
+  ExportFeatures.prototype.prepareExportProjectInfo = function(project) {
+    var projectInfo;
+    return projectInfo = {
+      owner: project.owner.nick,
+      id: project.id,
+      title: project.title,
+      slug: project.slug,
+      tags: project.tags,
+      orientation: project.orientation,
+      aspect: project.aspect,
+      platforms: project.platforms,
+      controls: project.controls,
+      type: project.type,
+      date_created: project.date_created,
+      last_modified: project.last_modified,
+      first_published: project.first_published
+    };
+  };
 
   ExportFeatures.prototype.addSpritesExport = function() {
     return this.webapp.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?export\/sprites\/$/, (function(_this) {
