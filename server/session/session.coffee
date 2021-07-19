@@ -390,10 +390,11 @@ class @Session
           console.log "[ZIP] Missing #{projectFileName}; import aborted"
           return
 
+        request_id = data.request_id
         zip.file(projectFileName).async("string").then (text) =>
           projectInfo = JSON.parse(text)
           @content.createProject @user,projectInfo,(project)=>
-
+            project_id = project.id
             files = []
             for filename, value of contents.files
               files.push filename
@@ -407,61 +408,65 @@ class @Session
                 properties = projectInfo.files[filename].properties if projectInfo.files[filename]?
 
                 do(filename, value) =>
+                  import_data = {
+                    project_id:project_id,
+                    filename: filename,
+                    properties: properties,
+                    request_id: request_id
+                  }
                   console.log "[ZIP] Processing file: #{filename}"
                   if value.dir
                     funk()
                   else if filename == projectFileName
                     funk()
                   else if filename.endsWith ".json"
-                    @unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", ()=> funk())
+                    @unzipAndWriteProjectFile(zip, import_data, "string", ()=> funk())
                   else if filename.endsWith ".ms"
-                    @unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", ()=> funk())
+                    @unzipAndWriteProjectFile(zip, import_data, "string", ()=> funk())
                   else if filename.endsWith ".md"
-                    @unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", ()=> funk())
+                    @unzipAndWriteProjectFile(zip, import_data, "string", ()=> funk())
                   else if filename.startsWith "sounds_th"
-                    @unzipAndCreateFile(zip, filename, project, data, "base64", ()=> funk())
+                    @unzipAndCreateFile(zip, import_data, "base64", ()=> funk())
                   else if filename.startsWith "music_th"
-                    @unzipAndCreateFile(zip, filename, project, data, "base64", ()=> funk())
+                    @unzipAndCreateFile(zip, import_data, "base64", ()=> funk())
                   else
-                    @unzipAndWriteProjectFile(zip, filename, project, properties, data, "base64", ()=> funk())
+                    @unzipAndWriteProjectFile(zip, import_data, "base64", ()=> funk())
               else
                 console.log "[ZIP] All files processed!"
                 @send
                   name:"project_imported"
-                  id: project.id
-                  request_id: data.request_id
+                  id: project_id
+                  request_id: request_id
             funk()
     queue.start()
 
-  unzipAndWriteProjectFile:(zip, filename, project, properties, data, type, callback)->
-    console.log filename
+  unzipAndWriteProjectFile:(zip, import_data, type, callback)->
     try
-      zip.file(filename).async(type).then (fileContent) =>
+      zip.file(import_data.filename).async(type).then (fileContent) =>
         writeData = {
-          project: project.id
-          file: filename
+          project: import_data.project_id
+          file: import_data.filename
           content: fileContent
-          request_id: -data.request_id
-          properties: properties
+          request_id: -import_data.request_id
+          properties: import_data.properties
         }
         @writeProjectFile(writeData)
-        console.log "Unzipped and written file: #{filename}"
+        console.log "Unzipped and written file: #{import_data.filename}"
         callback() if callback?
     catch err
       console.error err
-      console.log filename
+      console.log import_data.filename
 
-  unzipAndCreateFile:(zip, filename, project, data, type, callback)->
-    console.log filename
+  unzipAndCreateFile:(zip, import_data, type, callback)->
     try
-      zip.file(filename).async(type).then (fileContent) =>
+      zip.file(import_data.filename).async(type).then (fileContent) =>
         buffer = Buffer.from(fileContent, "base64");
-        @content.files.write "#{@user.id}/#{project.id}/#{filename}", buffer, () ->
-          console.log "Unzipped and created file: #{filename}"
+        @content.files.write "#{@user.id}/#{import_data.project_id}/#{import_data.filename}", buffer, () ->
+          console.log "Unzipped and created file: #{import_data.filename}"
           callback() if callback?
     catch err
       console.error err
-      console.log filename
+      console.log import_data.filename
 
   createProject:(data)->
     return @sendError("not connected") if not @user?

@@ -690,15 +690,18 @@ this.Session = (function() {
         zip = new JSZip;
         projectFileName = "project.json";
         return zip.loadAsync(buffer).then(function(contents) {
+          var request_id;
           if (zip.file(projectFileName) == null) {
             console.log("[ZIP] Missing " + projectFileName + "; import aborted");
             return;
           }
+          request_id = data.request_id;
           return zip.file(projectFileName).async("string").then(function(text) {
             var projectInfo;
             projectInfo = JSON.parse(text);
             return _this.content.createProject(_this.user, projectInfo, function(project) {
-              var filename, files, funk, ref, value;
+              var filename, files, funk, project_id, ref, value;
+              project_id = project.id;
               files = [];
               ref = contents.files;
               for (filename in ref) {
@@ -717,33 +720,40 @@ this.Session = (function() {
                     properties = projectInfo.files[filename].properties;
                   }
                   return (function(filename, value) {
+                    var import_data;
+                    import_data = {
+                      project_id: project_id,
+                      filename: filename,
+                      properties: properties,
+                      request_id: request_id
+                    };
                     console.log("[ZIP] Processing file: " + filename);
                     if (value.dir) {
                       return funk();
                     } else if (filename === projectFileName) {
                       return funk();
                     } else if (filename.endsWith(".json")) {
-                      return _this.unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", function() {
+                      return _this.unzipAndWriteProjectFile(zip, import_data, "string", function() {
                         return funk();
                       });
                     } else if (filename.endsWith(".ms")) {
-                      return _this.unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", function() {
+                      return _this.unzipAndWriteProjectFile(zip, import_data, "string", function() {
                         return funk();
                       });
                     } else if (filename.endsWith(".md")) {
-                      return _this.unzipAndWriteProjectFile(zip, filename, project, properties, data, "string", function() {
+                      return _this.unzipAndWriteProjectFile(zip, import_data, "string", function() {
                         return funk();
                       });
                     } else if (filename.startsWith("sounds_th")) {
-                      return _this.unzipAndCreateFile(zip, filename, project, data, "base64", function() {
+                      return _this.unzipAndCreateFile(zip, import_data, "base64", function() {
                         return funk();
                       });
                     } else if (filename.startsWith("music_th")) {
-                      return _this.unzipAndCreateFile(zip, filename, project, data, "base64", function() {
+                      return _this.unzipAndCreateFile(zip, import_data, "base64", function() {
                         return funk();
                       });
                     } else {
-                      return _this.unzipAndWriteProjectFile(zip, filename, project, properties, data, "base64", function() {
+                      return _this.unzipAndWriteProjectFile(zip, import_data, "base64", function() {
                         return funk();
                       });
                     }
@@ -752,8 +762,8 @@ this.Session = (function() {
                   console.log("[ZIP] All files processed!");
                   return _this.send({
                     name: "project_imported",
-                    id: project.id,
-                    request_id: data.request_id
+                    id: project_id,
+                    request_id: request_id
                   });
                 }
               };
@@ -766,22 +776,21 @@ this.Session = (function() {
     return queue.start();
   };
 
-  Session.prototype.unzipAndWriteProjectFile = function(zip, filename, project, properties, data, type, callback) {
+  Session.prototype.unzipAndWriteProjectFile = function(zip, import_data, type, callback) {
     var err;
-    console.log(filename);
     try {
-      return zip.file(filename).async(type).then((function(_this) {
+      return zip.file(import_data.filename).async(type).then((function(_this) {
         return function(fileContent) {
           var writeData;
           writeData = {
-            project: project.id,
-            file: filename,
+            project: import_data.project_id,
+            file: import_data.filename,
             content: fileContent,
-            request_id: -data.request_id,
-            properties: properties
+            request_id: -import_data.request_id,
+            properties: import_data.properties
           };
           _this.writeProjectFile(writeData);
-          console.log("Unzipped and written file: " + filename);
+          console.log("Unzipped and written file: " + import_data.filename);
           if (callback != null) {
             return callback();
           }
@@ -790,20 +799,19 @@ this.Session = (function() {
     } catch (error1) {
       err = error1;
       console.error(err);
-      return console.log(filename);
+      return console.log(import_data.filename);
     }
   };
 
-  Session.prototype.unzipAndCreateFile = function(zip, filename, project, data, type, callback) {
+  Session.prototype.unzipAndCreateFile = function(zip, import_data, type, callback) {
     var err;
-    console.log(filename);
     try {
-      return zip.file(filename).async(type).then((function(_this) {
+      return zip.file(import_data.filename).async(type).then((function(_this) {
         return function(fileContent) {
           var buffer;
           buffer = Buffer.from(fileContent, "base64");
-          return _this.content.files.write(_this.user.id + "/" + project.id + "/" + filename, buffer, function() {
-            console.log("Unzipped and created file: " + filename);
+          return _this.content.files.write(_this.user.id + "/" + import_data.project_id + "/" + import_data.filename, buffer, function() {
+            console.log("Unzipped and created file: " + import_data.filename);
             if (callback != null) {
               return callback();
             }
@@ -813,7 +821,7 @@ this.Session = (function() {
     } catch (error1) {
       err = error1;
       console.error(err);
-      return console.log(filename);
+      return console.log(import_data.filename);
     }
   };
 
