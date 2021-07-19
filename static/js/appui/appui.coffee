@@ -559,6 +559,17 @@ class AppUI
     buttons.classList.add "buttons"
     element.appendChild buttons
 
+    export_href = "/#{p.owner.nick}/#{p.slug}/#{p.code}/export/project/"
+    export_button = document.createElement "div"
+    export_button.classList.add "export"
+    export_button.innerHTML = "<a href='#{export_href}' download='#{p.slug}_files.zip'><i class='fa fa-download'></i> #{@app.translator.get("Export")}</a>"
+
+    buttons.appendChild export_button
+
+    export_button.addEventListener "click",(event)=>
+      event.stopPropagation()
+      event.stopImmediatePropagation()
+
     clone_button = document.createElement "div"
     clone_button.classList.add "clone"
     clone_button.innerHTML = "<i class='fa fa-copy'></i> #{@app.translator.get("Clone")}"

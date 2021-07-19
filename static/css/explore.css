@@ -307,6 +307,17 @@
   color: #FFF ;
   font-size: 18px ;
 }
+#project-details-exportbutton {
+  border-radius: 5px ;
+/*  position: absolute ;
+  top: 280px ;
+  right: 40px ;*/
+  padding: 8px 20px ;
+  background: hsl(160,50%,40%);
+  text-decoration: none ;
+  color: #FFF ;
+  font-size: 18px ;
+}
 #project-details-tags {
 }
 #project-details-tags div {
