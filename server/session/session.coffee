@@ -398,9 +398,8 @@ class @Session
             files = []
             for filename, value of contents.files
               files.push filename
-            console.log "[ZIP] Files added the list. Amount of files: #{files.length}"
+
             funk = () =>
-              console.log "[ZIP] Files to process: #{files.length}"
               if files.length > 0
                 filename = files.splice(0,1)[0]
                 value = contents.files[filename]
@@ -414,7 +413,7 @@ class @Session
                     properties: properties,
                     request_id: request_id
                   }
-                  console.log "[ZIP] Processing file: #{filename}"
+
                   if value.dir
                     funk()
                   else if filename == projectFileName
@@ -432,7 +431,6 @@ class @Session
                   else
                     @unzipAndWriteProjectFile(zip, import_data, "base64", ()=> funk())
               else
-                console.log "[ZIP] All files processed!"
                 @send
                   name:"project_imported"
                   id: project_id
@@ -451,7 +449,6 @@ class @Session
           properties: import_data.properties
         }
         @writeProjectFile(writeData)
-        console.log "Unzipped and written file: #{import_data.filename}"
         callback() if callback?
     catch err
       console.error err
@@ -462,7 +459,6 @@ class @Session
       zip.file(import_data.filename).async(type).then (fileContent) =>
         buffer = Buffer.from(fileContent, "base64");
         @content.files.write "#{@user.id}/#{import_data.project_id}/#{import_data.filename}", buffer, () ->
-          console.log "Unzipped and created file: #{import_data.filename}"
           callback() if callback?
     catch err
       console.error err

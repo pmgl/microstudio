@@ -708,10 +708,8 @@ this.Session = (function() {
                 value = ref[filename];
                 files.push(filename);
               }
-              console.log("[ZIP] Files added the list. Amount of files: " + files.length);
               funk = function() {
                 var properties;
-                console.log("[ZIP] Files to process: " + files.length);
                 if (files.length > 0) {
                   filename = files.splice(0, 1)[0];
                   value = contents.files[filename];
@@ -727,7 +725,6 @@ this.Session = (function() {
                       properties: properties,
                       request_id: request_id
                     };
-                    console.log("[ZIP] Processing file: " + filename);
                     if (value.dir) {
                       return funk();
                     } else if (filename === projectFileName) {
@@ -759,7 +756,6 @@ this.Session = (function() {
                     }
                   })(filename, value);
                 } else {
-                  console.log("[ZIP] All files processed!");
                   return _this.send({
                     name: "project_imported",
                     id: project_id,
@@ -790,7 +786,6 @@ this.Session = (function() {
             properties: import_data.properties
           };
           _this.writeProjectFile(writeData);
-          console.log("Unzipped and written file: " + import_data.filename);
           if (callback != null) {
             return callback();
           }
@@ -811,7 +806,6 @@ this.Session = (function() {
           var buffer;
           buffer = Buffer.from(fileContent, "base64");
           return _this.content.files.write(_this.user.id + "/" + import_data.project_id + "/" + import_data.filename, buffer, function() {
-            console.log("Unzipped and created file: " + import_data.filename);
             if (callback != null) {
               return callback();
             }
