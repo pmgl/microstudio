@@ -172,6 +172,17 @@ AppUI = (function() {
         return document.querySelector("#home-header-background").style.height = scroll + "px";
       };
     })(this));
+    document.getElementById("myprojects").addEventListener("dragover", (function(_this) {
+      return function(event) {
+        return event.preventDefault();
+      };
+    })(this));
+    document.getElementById("myprojects").addEventListener("drop", (function(_this) {
+      return function(event) {
+        event.preventDefault();
+        return _this.app.importProject(event.dataTransfer.items);
+      };
+    })(this));
     setInterval(((function(_this) {
       return function() {
         return _this.checkActivity();

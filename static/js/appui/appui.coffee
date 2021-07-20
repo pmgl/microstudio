@@ -133,6 +133,13 @@ class AppUI
       #document.querySelector("#home-section .part1").style["padding-top"] = "#{160-scroll}px"
 
 
+    document.getElementById("myprojects").addEventListener "dragover",(event)=>
+      event.preventDefault()
+
+    document.getElementById("myprojects").addEventListener "drop",(event)=>
+      event.preventDefault()
+      @app.importProject(event.dataTransfer.items)
+
     setInterval (()=>@checkActivity()),10000
 
     @reboot_date = 1622710800000
