@@ -7,6 +7,10 @@ class @Client
 
     @listeners = {}
 
+    @listen "error",(msg)=>
+      if msg.error?
+        @app.appui.showNotification @app.translator.get msg.error
+
   start:()->
     @token = localStorage.getItem "token"
     if @token?

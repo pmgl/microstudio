@@ -1,10 +1,12 @@
-var FILE_TYPES;
+var FILE_TYPES,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 FILE_TYPES = require(__dirname + "/../file_types.js");
 
 this.ProjectManager = (function() {
   function ProjectManager(project) {
     this.project = project;
+    this.importFiles = bind(this.importFiles, this);
     this.users = [];
     this.listeners = [];
     this.files = {};
@@ -604,6 +606,47 @@ this.ProjectManager = (function() {
         return function() {};
       })(this));
     }
+  };
+
+  ProjectManager.prototype.importFiles = function(contents, callback) {
+    var filename, files, funk;
+    files = [];
+    for (filename in contents.files) {
+      files.push(filename);
+    }
+    funk = (function(_this) {
+      return function() {
+        var err, ref, type, value;
+        if (files.length > 0) {
+          filename = files.splice(0, 1)[0];
+          value = contents.files[filename];
+          if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(filename)) {
+            type = (ref = filename.split(".")[1]) === "ms" || ref === "json" || ref === "md" ? "string" : "nodebuffer";
+            try {
+              return contents.file(filename).async(type).then((function(fileContent) {
+                if (fileContent != null) {
+                  return _this.project.content.files.write(_this.project.owner.id + "/" + _this.project.id + "/" + filename, fileContent, funk);
+                } else {
+                  return funk();
+                }
+              }), function() {
+                return funk();
+              });
+            } catch (error) {
+              err = error;
+              console.error(err);
+              console.log(filename);
+              return funk();
+            }
+          } else {
+            return funk();
+          }
+        } else {
+          return callback();
+        }
+      };
+    })(this);
+    return funk();
   };
 
   return ProjectManager;

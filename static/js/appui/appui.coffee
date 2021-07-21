@@ -55,6 +55,18 @@ class AppUI
       @show "create-project-overlay"
       @focus "create-project-title"
 
+    @setAction "import-project-button",()=>
+      input = document.createElement "input"
+      input.type = "file"
+      input.accept = "application/zip"
+      input.addEventListener "change",(event)=>
+        files = event.target.files
+        if files.length>=1
+          f = files[0]
+          @app.importProject f
+
+      input.click()
+
     @setAction "create-project-window",(event)=>
       event.stopPropagation()
 
@@ -138,7 +150,8 @@ class AppUI
 
     document.getElementById("myprojects").addEventListener "drop",(event)=>
       event.preventDefault()
-      @app.importProject(event.dataTransfer.items)
+      if event.dataTransfer.items and event.dataTransfer.items[0]?
+        @app.importProject(event.dataTransfer.items[0].getAsFile())
 
     setInterval (()=>@checkActivity()),10000
 

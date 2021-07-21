@@ -109,7 +109,7 @@ App = (function() {
       password: password
     }, (function(_this) {
       return function(msg) {
-        var j, len, n, ref;
+        var i, len, n, ref;
         switch (msg.name) {
           case "error":
             console.error(msg.error);
@@ -129,8 +129,8 @@ App = (function() {
             };
             if ((msg.notifications != null) && msg.notifications.length > 0) {
               ref = msg.notifications;
-              for (j = 0, len = ref.length; j < len; j++) {
-                n = ref[j];
+              for (i = 0, len = ref.length; i < len; i++) {
+                n = ref[i];
                 _this.appui.showNotification(n);
               }
             }
@@ -176,12 +176,12 @@ App = (function() {
             break;
           case "project_created":
             _this.getProjectList(function(list) {
-              var j, len, p, results;
+              var i, len, p, results;
               _this.projects = list;
               _this.appui.updateProjects();
               results = [];
-              for (j = 0, len = list.length; j < len; j++) {
-                p = list[j];
+              for (i = 0, len = list.length; i < len; i++) {
+                p = list[i];
                 if (p.id === msg.id) {
                   _this.openProject(p);
                   if (callback != null) {
@@ -200,68 +200,49 @@ App = (function() {
     })(this));
   };
 
-  App.prototype.importProject = function(files) {
-    var err, funk, i, j, len, list;
-    try {
-      list = [];
-      for (j = 0, len = files.length; j < len; j++) {
-        i = files[j];
-        list.push(i.getAsFile());
-      }
-      funk = (function(_this) {
-        return function() {
-          var file, reader;
-          if (list.length > 0) {
-            file = list.splice(0, 1)[0];
-            console.info("processing " + file.name);
-            reader = new FileReader();
-            reader.addEventListener("load", function() {
-              if (!reader.result.startsWith("data:application/x-zip-compressed;base64,")) {
-                return;
+  App.prototype.importProject = function(file) {
+    var reader;
+    console.info("processing " + file.name);
+    reader = new FileReader();
+    reader.addEventListener("load", (function(_this) {
+      return function() {
+        if (!file.name.toLowerCase().endsWith(".zip")) {
+          return;
+        }
+        return _this.client.sendRequest({
+          name: "import_project",
+          user: _this.nick,
+          zip_data: reader.result
+        }, function(msg) {
+          console.log("[ZIP] " + msg.name);
+          switch (msg.name) {
+            case "error":
+              console.error(msg.error);
+              if (msg.error != null) {
+                return alert(_this.translator.get(msg.error));
               }
-              return _this.client.sendRequest({
-                name: "import_project",
-                user: _this.nick,
-                zip_data: reader.result
-              }, function(msg) {
-                console.log("[ZIP] " + msg.name);
-                switch (msg.name) {
-                  case "error":
-                    console.error(msg.error);
-                    if (msg.error != null) {
-                      return alert(_this.translator.get(msg.error));
-                    }
-                    break;
-                  case "project_imported":
-                    return _this.getProjectList(function(list) {
-                      _this.projects = list;
-                      return _this.appui.updateProjects();
-                    });
-                }
-              });
-            });
-            return reader.readAsDataURL(file);
+              break;
+            case "project_imported":
+              _this.updateProjectList(msg.id);
+              return _this.appui.showNotification(_this.translator.get("Project imported successfully"));
           }
-        };
-      })(this);
-      return funk();
-    } catch (error) {
-      err = error;
-      return console.error(err);
-    }
+        });
+      };
+    })(this));
+    return reader.readAsDataURL(file);
   };
 
   App.prototype.updateProjectList = function(open_when_fetched) {
     return this.getProjectList((function(_this) {
       return function(list) {
-        var j, len, p, ref, results;
+        var i, len, p, ref, results;
         _this.projects = list;
         _this.appui.updateProjects();
         if (open_when_fetched != null) {
           ref = _this.projects;
           results = [];
-          for (j = 0, len = ref.length; j < len; j++) {
-            p = ref[j];
+          for (i = 0, len = ref.length; i < len; i++) {
+            p = ref[i];
             if (p.id === open_when_fetched) {
               _this.openProject(p);
               break;
@@ -340,13 +321,13 @@ App = (function() {
   };
 
   App.prototype.projectTitleExists = function(title) {
-    var j, len, p, ref;
+    var i, len, p, ref;
     if (!this.projects) {
       return false;
     }
     ref = this.projects;
-    for (j = 0, len = ref.length; j < len; j++) {
-      p = ref[j];
+    for (i = 0, len = ref.length; i < len; i++) {
+      p = ref[i];
       if (p.title === title) {
         return true;
       }

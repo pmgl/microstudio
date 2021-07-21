@@ -57,6 +57,23 @@ AppUI = (function() {
         return _this.focus("create-project-title");
       };
     })(this));
+    this.setAction("import-project-button", (function(_this) {
+      return function() {
+        var input;
+        input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/zip";
+        input.addEventListener("change", function(event) {
+          var f, files;
+          files = event.target.files;
+          if (files.length >= 1) {
+            f = files[0];
+            return _this.app.importProject(f);
+          }
+        });
+        return input.click();
+      };
+    })(this));
     this.setAction("create-project-window", (function(_this) {
       return function(event) {
         return event.stopPropagation();
@@ -180,7 +197,9 @@ AppUI = (function() {
     document.getElementById("myprojects").addEventListener("drop", (function(_this) {
       return function(event) {
         event.preventDefault();
-        return _this.app.importProject(event.dataTransfer.items);
+        if (event.dataTransfer.items && (event.dataTransfer.items[0] != null)) {
+          return _this.app.importProject(event.dataTransfer.items[0].getAsFile());
+        }
       };
     })(this));
     setInterval(((function(_this) {

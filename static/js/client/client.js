@@ -10,6 +10,13 @@ this.Client = (function() {
       };
     })(this)), 1000);
     this.listeners = {};
+    this.listen("error", (function(_this) {
+      return function(msg) {
+        if (msg.error != null) {
+          return _this.app.appui.showNotification(_this.app.translator.get(msg.error));
+        }
+      };
+    })(this));
   }
 
   Client.prototype.start = function() {

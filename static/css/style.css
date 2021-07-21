@@ -913,16 +913,27 @@ padding-left: 2px ;
 }
 #create-project-button {
   display: inline-block ;
-  margin: 0 40px ;
+  margin: 0 20px 0 40px ;
   padding: 7px 30px ;
-  background: hsl(160,70%,35%);
+  background: hsl(160,50%,40%);
   font-size: 18px ;
   border-radius: 2px;
   cursor: pointer ;
   color: #FFF ;
   vertical-align: middle ;
 }
-#create-project-button i {
+#import-project-button {
+  display: inline-block ;
+  margin: 0 10px 0 0 ;
+  padding: 7px 30px ;
+  background: hsl(200,50%,40%);
+  font-size: 18px ;
+  border-radius: 2px;
+  cursor: pointer ;
+  color: #FFF ;
+  vertical-align: middle ;
+}
+#create-project-button i, #import-project-button i {
   margin-right: 5px;
 }
 #create-project-window {
