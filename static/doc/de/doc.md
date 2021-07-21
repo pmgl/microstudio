@@ -913,7 +913,7 @@ screen.setAlpha(1) // der Standardwert, totale Deckkraft
 ---
 
 <!--- suggest_start screen.setLinearGradient --->
-##### screen.setLinearGradient( x1, y1, x2, x2, y2, color1, color 2)
+##### screen.setLinearGradient(x1, y1, x2, y2, color1, color2)
 Definiert die Zeichenfarbe als linearen Farbverlauf, d. h. einen Gradienten. ```x1 und y1`` sind die Koordinaten des Startpunktes des Farbverlaufs. ```x2 und y2`` sind die Koordinaten des Endpunktes des Farbverlaufs. ```Farbe1`` ist die Startfarbe (siehe ```setColor``` für die Farbwerte). "Farbe2" ist die Ankunftsfarbe.
 <!--- suggest_end --->
 

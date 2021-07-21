@@ -1,4 +1,4 @@
-var ForumSession, ProjectManager, RegexLib, SHA256;
+var ForumSession, JSZip, JobQueue, ProjectManager, RegexLib, SHA256;
 
 SHA256 = require("crypto-js/sha256");
 
@@ -7,6 +7,10 @@ ProjectManager = require(__dirname + "/projectmanager.js");
 RegexLib = require(__dirname + "/../../static/js/util/regexlib.js");
 
 ForumSession = require(__dirname + "/../forum/forumsession.js");
+
+JSZip = require("jszip");
+
+JobQueue = require(__dirname + "/../app/jobqueue.js");
 
 this.Session = (function() {
   function Session(server, socket) {
@@ -120,6 +124,11 @@ this.Session = (function() {
     this.register("create_project", (function(_this) {
       return function(msg) {
         return _this.createProject(msg);
+      };
+    })(this));
+    this.register("import_project", (function(_this) {
+      return function(msg) {
+        return _this.importProject(msg);
       };
     })(this));
     this.register("set_project_option", (function(_this) {
@@ -661,6 +670,153 @@ this.Session = (function() {
       error: error,
       request_id: request_id
     });
+  };
+
+  Session.prototype.importProject = function(data) {
+    var buffer, queue;
+    if (this.user == null) {
+      return this.sendError("not connected");
+    }
+    if (!this.server.rate_limiter.accept("import_project_user", this.user.id)) {
+      return;
+    }
+    if (!data.zip_data.startsWith("data:application/x-zip-compressed;base64,")) {
+      return;
+    }
+    buffer = new Buffer.from(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
+    queue = new JobQueue((function(_this) {
+      return function() {
+        var projectFileName, zip;
+        zip = new JSZip;
+        projectFileName = "project.json";
+        return zip.loadAsync(buffer).then(function(contents) {
+          var request_id;
+          if (zip.file(projectFileName) == null) {
+            console.log("[ZIP] Missing " + projectFileName + "; import aborted");
+            return;
+          }
+          request_id = data.request_id;
+          return zip.file(projectFileName).async("string").then(function(text) {
+            var projectInfo;
+            projectInfo = JSON.parse(text);
+            return _this.content.createProject(_this.user, projectInfo, function(project) {
+              var filename, files, funk, project_id, ref, value;
+              project_id = project.id;
+              files = [];
+              ref = contents.files;
+              for (filename in ref) {
+                value = ref[filename];
+                files.push(filename);
+              }
+              funk = function() {
+                var properties;
+                if (files.length > 0) {
+                  filename = files.splice(0, 1)[0];
+                  value = contents.files[filename];
+                  properties = {};
+                  if (projectInfo.files[filename] != null) {
+                    properties = projectInfo.files[filename].properties;
+                  }
+                  return (function(filename, value) {
+                    var import_data;
+                    import_data = {
+                      project_id: project_id,
+                      filename: filename,
+                      properties: properties,
+                      request_id: request_id
+                    };
+                    if (value.dir) {
+                      return funk();
+                    } else if (filename === projectFileName) {
+                      return funk();
+                    } else if (filename.endsWith(".json")) {
+                      return _this.unzipAndWriteProjectFile(zip, import_data, "string", function() {
+                        return funk();
+                      });
+                    } else if (filename.endsWith(".ms")) {
+                      return _this.unzipAndWriteProjectFile(zip, import_data, "string", function() {
+                        return funk();
+                      });
+                    } else if (filename.endsWith(".md")) {
+                      return _this.unzipAndWriteProjectFile(zip, import_data, "string", function() {
+                        return funk();
+                      });
+                    } else if (filename.startsWith("sounds_th")) {
+                      return _this.unzipAndCreateFile(zip, import_data, "base64", function() {
+                        return funk();
+                      });
+                    } else if (filename.startsWith("music_th")) {
+                      return _this.unzipAndCreateFile(zip, import_data, "base64", function() {
+                        return funk();
+                      });
+                    } else {
+                      return _this.unzipAndWriteProjectFile(zip, import_data, "base64", function() {
+                        return funk();
+                      });
+                    }
+                  })(filename, value);
+                } else {
+                  return _this.send({
+                    name: "project_imported",
+                    id: project_id,
+                    request_id: request_id
+                  });
+                }
+              };
+              return funk();
+            });
+          });
+        });
+      };
+    })(this));
+    return queue.start();
+  };
+
+  Session.prototype.unzipAndWriteProjectFile = function(zip, import_data, type, callback) {
+    var err;
+    try {
+      return zip.file(import_data.filename).async(type).then((function(_this) {
+        return function(fileContent) {
+          var writeData;
+          writeData = {
+            project: import_data.project_id,
+            file: import_data.filename,
+            content: fileContent,
+            request_id: -import_data.request_id,
+            properties: import_data.properties
+          };
+          _this.writeProjectFile(writeData);
+          if (callback != null) {
+            return callback();
+          }
+        };
+      })(this));
+    } catch (error1) {
+      err = error1;
+      console.error(err);
+      return console.log(import_data.filename);
+    }
+  };
+
+  Session.prototype.unzipAndCreateFile = function(zip, import_data, type, callback) {
+    var err;
+    try {
+      return zip.file(import_data.filename).async(type).then((function(_this) {
+        return function(fileContent) {
+          var buffer;
+          buffer = Buffer.from(fileContent, "base64");
+          return _this.content.files.write(_this.user.id + "/" + import_data.project_id + "/" + import_data.filename, buffer, function() {
+            if (callback != null) {
+              return callback();
+            }
+          });
+        };
+      })(this));
+    } catch (error1) {
+      err = error1;
+      console.error(err);
+      return console.log(import_data.filename);
+    }
   };
 
   Session.prototype.createProject = function(data) {

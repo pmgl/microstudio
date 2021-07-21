@@ -291,7 +291,7 @@
   top: 280px ;
   right: 40px ;*/
   padding: 8px 20px ;
-  background: hsl(160,50%,40%);
+  background: hsl(20,50%,50%);
   text-decoration: none ;
   color: #FFF ;
   font-size: 18px ;
@@ -302,7 +302,18 @@
   top: 280px ;
   right: 40px ;*/
   padding: 8px 20px ;
-  background: hsl(0,50%,50%);
+  background: hsl(160,50%,40%);
+  text-decoration: none ;
+  color: #FFF ;
+  font-size: 18px ;
+}
+#project-details-exportbutton {
+  border-radius: 5px ;
+/*  position: absolute ;
+  top: 280px ;
+  right: 40px ;*/
+  padding: 8px 20px ;
+  background: hsl(200,50%,40%);
   text-decoration: none ;
   color: #FFF ;
   font-size: 18px ;

@@ -13,6 +13,7 @@ class @RateLimiter
     @map.create_account_ip = new RateLimiterClass(@,30,30) # 30 comptes pour 30 minutes => classroom check
 
     @map.create_project_user = new RateLimiterClass(@,60,10) # max 10 projects per hour
+    @map.import_project_user = new RateLimiterClass(@,60,10) # max 10 projects per hour
 
     @map.create_file_user = new RateLimiterClass(@,5,40) # max 40 new files per 5 minutes
     #@map.change_file_user = new RateLimiterClass(@,10,200)

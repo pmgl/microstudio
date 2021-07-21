@@ -143,6 +143,44 @@ class App
 
       return
 
+  importProject:(files)->
+    try
+      list = []
+      for i in files
+        list.push i.getAsFile()
+
+      funk = ()=>
+        if list.length>0
+          file = list.splice(0,1)[0]
+          console.info "processing #{file.name}"
+          reader = new FileReader()
+          reader.addEventListener "load",()=>
+            return if not reader.result.startsWith("data:application/x-zip-compressed;base64,")
+            @client.sendRequest {
+              name: "import_project"
+              user: @nick
+              zip_data: reader.result
+            },(msg)=>
+              console.log "[ZIP] #{msg.name}"
+              switch msg.name
+                when "error"
+                  console.error msg.error
+                  alert @translator.get(msg.error) if msg.error?
+
+                when "project_imported"
+                  @getProjectList (list)=>
+                    @projects = list
+                    @appui.updateProjects()
+                    # for p in list
+                    #   if p.id == msg.id
+                    #     @openProject p
+                    #     callback() if callback?
+
+          reader.readAsDataURL(file)
+      funk()
+    catch err
+      console.error err
+
   updateProjectList:(open_when_fetched)->
     @getProjectList (list)=>
       @projects = list

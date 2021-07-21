@@ -992,7 +992,15 @@ padding-left: 2px ;
 }
 
 .project-box .buttons div.clone {
+  background: hsl(160,50%,40%);
+}
+
+.project-box .buttons div.export {
   background: hsl(200,50%,40%);
+}
+.project-box .buttons div.export a {
+  text-decoration: none ;
+  color: #FFF ;
 }
 
 .project-box .buttons div i {

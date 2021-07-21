@@ -133,6 +133,13 @@ class AppUI
       #document.querySelector("#home-section .part1").style["padding-top"] = "#{160-scroll}px"
 
 
+    document.getElementById("myprojects").addEventListener "dragover",(event)=>
+      event.preventDefault()
+
+    document.getElementById("myprojects").addEventListener "drop",(event)=>
+      event.preventDefault()
+      @app.importProject(event.dataTransfer.items)
+
     setInterval (()=>@checkActivity()),10000
 
     @reboot_date = 1622710800000
@@ -558,6 +565,17 @@ class AppUI
     buttons = document.createElement "div"
     buttons.classList.add "buttons"
     element.appendChild buttons
+
+    export_href = "/#{p.owner.nick}/#{p.slug}/#{p.code}/export/project/"
+    export_button = document.createElement "div"
+    export_button.classList.add "export"
+    export_button.innerHTML = "<a href='#{export_href}' download='#{p.slug}_files.zip'><i class='fa fa-download'></i> #{@app.translator.get("Export")}</a>"
+
+    buttons.appendChild export_button
+
+    export_button.addEventListener "click",(event)=>
+      event.stopPropagation()
+      event.stopImmediatePropagation()
 
     clone_button = document.createElement "div"
     clone_button.classList.add "clone"

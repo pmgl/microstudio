@@ -166,6 +166,10 @@ class @ProjectDetails
     a.href = "/#{@project.owner}/#{@project.slug}/export/sprites/"
     a.download = "#{@project.slug}_sprites.zip"
 
+    a = document.querySelector("#project-details-exportbutton")
+    a.href = "/#{@project.owner}/#{@project.slug}/export/project/"
+    a.download = "#{@project.slug}_files.zip"
+
   updateCredentials:()->
     if @app.user?
       document.getElementById("login-to-post-comment").style.display = "none"
@@ -208,7 +212,7 @@ class @ProjectDetails
     },(msg)=>
       @sources[file] = msg.content
       div = document.createElement "div"
-      div.innerHTML = "<i class='fa fa-file'></i> #{file.split(".")[0]}"
+      div.innerHTML = "<i class='fa fa-file-code'></i> #{file.split(".")[0]}"
       document.querySelector("#project-contents-view .code-list").appendChild div
       div.id = "project-contents-view-source-#{file}"
       div.addEventListener "click",()=>@setSelectedSource(file)

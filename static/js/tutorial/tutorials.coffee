@@ -103,7 +103,7 @@ class @Tutorials
 
     code = document.createElement "i"
     code.classList.add "fas"
-    code.classList.add "fa-file"
+    code.classList.add "fa-file-code"
     a.appendChild code
     li.appendChild a
 

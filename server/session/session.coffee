@@ -2,6 +2,8 @@ SHA256 = require("crypto-js/sha256")
 ProjectManager = require __dirname+"/projectmanager.js"
 RegexLib = require __dirname+"/../../static/js/util/regexlib.js"
 ForumSession = require __dirname+"/../forum/forumsession.js"
+JSZip = require "jszip"
+JobQueue = require __dirname+"/../app/jobqueue.js"
 
 class @Session
   constructor:(@server,@socket)->
@@ -51,6 +53,7 @@ class @Session
     @register "set_user_profile",(msg)=>@setUserProfile(msg)
 
     @register "create_project",(msg)=>@createProject(msg)
+    @register "import_project",(msg)=>@importProject(msg)
     @register "set_project_option",(msg)=>@setProjectOption(msg)
     @register "set_project_public",(msg)=>@setProjectPublic(msg)
     @register "set_project_tags",(msg)=>@setProjectTags(msg)
@@ -373,6 +376,93 @@ class @Session
       name: "error"
       error: error
       request_id: request_id
+
+  importProject:(data)->
+    return @sendError("not connected") if not @user?
+    return if not @server.rate_limiter.accept("import_project_user",@user.id)
+    return if not data.zip_data.startsWith("data:application/x-zip-compressed;base64,")
+    buffer = new Buffer.from(data.zip_data.replace("data:application/x-zip-compressed;base64,", ""), 'base64');
+    queue = new JobQueue ()=>
+      zip = new JSZip
+      projectFileName = "project.json"
+      zip.loadAsync(buffer).then (contents) =>
+        if not zip.file(projectFileName)?
+          console.log "[ZIP] Missing #{projectFileName}; import aborted"
+          return
+
+        request_id = data.request_id
+        zip.file(projectFileName).async("string").then (text) =>
+          projectInfo = JSON.parse(text)
+          @content.createProject @user,projectInfo,(project)=>
+            project_id = project.id
+            files = []
+            for filename, value of contents.files
+              files.push filename
+
+            funk = () =>
+              if files.length > 0
+                filename = files.splice(0,1)[0]
+                value = contents.files[filename]
+                properties = {}
+                properties = projectInfo.files[filename].properties if projectInfo.files[filename]?
+
+                do(filename, value) =>
+                  import_data = {
+                    project_id:project_id,
+                    filename: filename,
+                    properties: properties,
+                    request_id: request_id
+                  }
+
+                  if value.dir
+                    funk()
+                  else if filename == projectFileName
+                    funk()
+                  else if filename.endsWith ".json"
+                    @unzipAndWriteProjectFile(zip, import_data, "string", ()=> funk())
+                  else if filename.endsWith ".ms"
+                    @unzipAndWriteProjectFile(zip, import_data, "string", ()=> funk())
+                  else if filename.endsWith ".md"
+                    @unzipAndWriteProjectFile(zip, import_data, "string", ()=> funk())
+                  else if filename.startsWith "sounds_th"
+                    @unzipAndCreateFile(zip, import_data, "base64", ()=> funk())
+                  else if filename.startsWith "music_th"
+                    @unzipAndCreateFile(zip, import_data, "base64", ()=> funk())
+                  else
+                    @unzipAndWriteProjectFile(zip, import_data, "base64", ()=> funk())
+              else
+                @send
+                  name:"project_imported"
+                  id: project_id
+                  request_id: request_id
+            funk()
+    queue.start()
+
+  unzipAndWriteProjectFile:(zip, import_data, type, callback)->
+    try
+      zip.file(import_data.filename).async(type).then (fileContent) =>
+        writeData = {
+          project: import_data.project_id
+          file: import_data.filename
+          content: fileContent
+          request_id: -import_data.request_id
+          properties: import_data.properties
+        }
+        @writeProjectFile(writeData)
+        callback() if callback?
+    catch err
+      console.error err
+      console.log import_data.filename
+
+  unzipAndCreateFile:(zip, import_data, type, callback)->
+    try
+      zip.file(import_data.filename).async(type).then (fileContent) =>
+        buffer = Buffer.from(fileContent, "base64");
+        @content.files.write "#{@user.id}/#{import_data.project_id}/#{import_data.filename}", buffer, () ->
+          callback() if callback?
+    catch err
+      console.error err
+      console.log import_data.filename
 
   createProject:(data)->
     return @sendError("not connected") if not @user?
