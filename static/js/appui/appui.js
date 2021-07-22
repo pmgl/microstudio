@@ -1120,6 +1120,17 @@ AppUI = (function() {
     return div;
   };
 
+  AppUI.prototype.setImportProgress = function(progress) {
+    document.getElementById("import-project-button").innerHTML = "<i class=\"fa fa-upload\"></i> Uploading... ";
+    progress = Math.round(progress);
+    return document.getElementById("import-project-button").style.background = "linear-gradient(90deg,hsl(200,50%,40%) 0%,hsl(200,50%,40%) " + progress + "%,hsl(200,20%,20%) " + progress + "%)";
+  };
+
+  AppUI.prototype.resetImportButton = function() {
+    document.getElementById("import-project-button").innerHTML = "<i class=\"fa fa-upload\"></i> " + (this.app.translator.get("Import Project"));
+    return document.getElementById("import-project-button").style.removeProperty("background");
+  };
+
   return AppUI;
 
 })();

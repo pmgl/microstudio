@@ -354,7 +354,7 @@ class @WebApp
       folder = s[s.length-2]
       asset = s[s.length-1]
 
-      console.info "loading #{user.id}/#{project.id}/#{folder}/#{asset}"
+      #console.info "loading #{user.id}/#{project.id}/#{folder}/#{asset}"
 
       @server.content.files.read "#{user.id}/#{project.id}/#{folder}/#{asset}","binary",(content)=>
         if content?

@@ -202,34 +202,38 @@ App = (function() {
 
   App.prototype.importProject = function(file) {
     var reader;
-    console.info("processing " + file.name);
+    if (this.importing) {
+      return;
+    }
+    console.info("importing " + file.name);
     reader = new FileReader();
     reader.addEventListener("load", (function(_this) {
       return function() {
         if (!file.name.toLowerCase().endsWith(".zip")) {
           return;
         }
-        return _this.client.sendRequest({
-          name: "import_project",
-          user: _this.nick,
-          zip_data: reader.result
-        }, function(msg) {
+        _this.importing = true;
+        return _this.client.sendUpload({
+          name: "import_project"
+        }, reader.result, (function(msg) {
           console.log("[ZIP] " + msg.name);
           switch (msg.name) {
             case "error":
-              console.error(msg.error);
-              if (msg.error != null) {
-                return alert(_this.translator.get(msg.error));
-              }
-              break;
+              _this.appui.showNotification(_this.translator.get(msg.error));
+              _this.appui.resetImportButton();
+              return _this.importing = false;
             case "project_imported":
               _this.updateProjectList(msg.id);
-              return _this.appui.showNotification(_this.translator.get("Project imported successfully"));
+              _this.appui.showNotification(_this.translator.get("Project imported successfully"));
+              _this.appui.resetImportButton();
+              return _this.importing = false;
           }
+        }), function(progress) {
+          return _this.appui.setImportProgress(progress);
         });
       };
     })(this));
-    return reader.readAsDataURL(file);
+    return reader.readAsArrayBuffer(file);
   };
 
   App.prototype.updateProjectList = function(open_when_fetched) {

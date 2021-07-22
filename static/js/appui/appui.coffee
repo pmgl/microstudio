@@ -860,3 +860,12 @@ class AppUI
       div.appendChild icon
 
     div
+
+  setImportProgress:(progress)->
+    document.getElementById("import-project-button").innerHTML = """<i class="fa fa-upload"></i> Uploading... """
+    progress = Math.round(progress)
+    document.getElementById("import-project-button").style.background = "linear-gradient(90deg,hsl(200,50%,40%) 0%,hsl(200,50%,40%) #{progress}%,hsl(200,20%,20%) #{progress}%)"
+
+  resetImportButton:()->
+    document.getElementById("import-project-button").innerHTML = """<i class="fa fa-upload"></i> #{@app.translator.get("Import Project")}"""
+    document.getElementById("import-project-button").style.removeProperty "background"

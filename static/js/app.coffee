@@ -144,28 +144,34 @@ class App
       return
 
   importProject:(file)->
-    console.info "processing #{file.name}"
+    return if @importing
+    console.info "importing #{file.name}"
     reader = new FileReader()
     reader.addEventListener "load",()=>
       # return if not reader.result.startsWith("data:application/x-zip-compressed;base64,")
       # mime-type returned by browser may vary ; let's just check ZIP extension
       return if not file.name.toLowerCase().endsWith(".zip")
-      @client.sendRequest {
+      @importing = true
+
+      @client.sendUpload {
         name: "import_project"
-        user: @nick
-        zip_data: reader.result
-      },(msg)=>
+      },reader.result,((msg)=>
         console.log "[ZIP] #{msg.name}"
         switch msg.name
           when "error"
-            console.error msg.error
-            alert @translator.get(msg.error) if msg.error?
+            @appui.showNotification @translator.get msg.error
+            @appui.resetImportButton()
+            @importing = false
 
           when "project_imported"
             @updateProjectList(msg.id)
             @appui.showNotification @translator.get "Project imported successfully"
+            @appui.resetImportButton()
+            @importing = false
+      ),(progress)=>
+        @appui.setImportProgress(progress)
 
-    reader.readAsDataURL(file)
+    reader.readAsArrayBuffer(file)
 
   updateProjectList:(open_when_fetched)->
     @getProjectList (list)=>

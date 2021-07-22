@@ -18,7 +18,11 @@ class @Session
 
     @socket.on "message",(msg)=>
       #console.info "received msg: #{msg}"
-      @messageReceived msg
+      if typeof msg == "string"
+        @messageReceived msg
+      else
+        @bufferReceived msg
+
       @last_active = Date.now()
 
     @socket.on "close",()=>
@@ -94,6 +98,8 @@ class @Session
 
     @register "start_builder",(msg)=>@startBuilder(msg)
     @register "backup_complete",(msg)=>@backupComplete(msg)
+
+    @register "upload_request",(msg)=>@uploadRequest(msg)
 
     for plugin in @server.plugins
       if plugin.registerSessionMessages?
@@ -377,22 +383,23 @@ class @Session
       request_id: request_id
 
   importProject:(data)->
-    return @sendError("not connected") if not @user?
-    return @sendError("email not validated") if not @user.flags.validated
-    return if not @server.rate_limiter.accept("import_project_user",@user.id)
-    return @sendError("wrong data") if not data.zip_data? or typeof data.zip_data != "string"
+    return @sendError("Bad request") if not data.request_id?
+    return @sendError("not connected",data.request_id) if not @user?
+    return @sendError("Email validation is required",data.request_id) if @server.PROD and not @user.flags.validated
+    return @sendError("Rate limited",data.request_id) if not @server.rate_limiter.accept("import_project_user",@user.id)
+    #return @sendError("wrong data") if not data.zip_data? or typeof data.zip_data != "string"
 
-    split = data.zip_data.split(",")
-    return @sendError("unrecognized data") if not split[1]?
-    buffer = Buffer.from(split[1],'base64')
+    #split = data.zip_data.split(",")
+    #return @sendError("unrecognized data") if not split[1]?
+    buffer = data.data #Buffer.from(split[1],'base64')
 
-    return @sendError("storage space exceeded") if buffer.byteLength>@user.max_storage-@user.getTotalSize()
+    return @sendError("storage space exceeded",data.request_id) if buffer.byteLength>@user.max_storage-@user.getTotalSize()
 
     zip = new JSZip
     projectFileName = "project.json"
     zip.loadAsync(buffer).then ((contents) =>
       if not zip.file(projectFileName)?
-        @sendError("[ZIP] Missing #{projectFileName}; import aborted")
+        @sendError("[ZIP] Missing #{projectFileName}; import aborted",data.request_id)
         console.log "[ZIP] Missing #{projectFileName}; import aborted"
         return
 
@@ -400,7 +407,7 @@ class @Session
         try
           projectInfo = JSON.parse(text)
         catch err
-          @sendError("Incorrect JSON data")
+          @sendError("Incorrect JSON data",data.request_id)
           console.error err
           return
 
@@ -414,9 +421,9 @@ class @Session
               request_id: data.request_id
           ),true
       ),()=>
-        @sendError("Malformed ZIP file")
+        @sendError("Malformed ZIP file",data.request_id)
     ),()=>
-      @sendError("Malformed ZIP file")
+      @sendError("Malformed ZIP file",data.request_id)
 
   createProject:(data)->
     return @sendError("not connected") if not @user?
@@ -1091,6 +1098,10 @@ class @Session
       @server.sessionClosed @
       @socket.terminate()
 
+    if @upload_request_activity? and Date.now()>@upload_request_activity+60000
+      @upload_request_id = -1
+      @upload_request_buffers = []
+
   startBuilder:(msg)->
     if msg.target?
       if msg.key == @server.config["builder-key"]
@@ -1101,5 +1112,58 @@ class @Session
     if msg.key == @server.config["backup-key"]
       @server.sessionClosed @
       @server.last_backup_time = Date.now()
+
+  uploadRequest:(msg)=>
+    return if not @user?
+    return @sendError "Bad request" if not msg.size?
+    return @sendError "Bad request" if not msg.request_id?
+    return @sendError "Bad request" if not msg.request?
+    return @sendError("Rate limited",msg.request_id) if not @server.rate_limiter.accept("file_upload_user",@user.id)
+    return @sendError "File size limit exceeded" if msg.size>100000000 # 100 Mb max
+
+    @upload_request_id = msg.request_id
+    @upload_request_size = msg.size
+    @upload_uploaded = 0
+    @upload_request_buffers = []
+    @upload_request_request = msg.request
+    @upload_request_activity = Date.now()
+
+    @send
+      name:"upload_request"
+      request_id: msg.request_id
+
+  bufferReceived:(buffer)=>
+    if buffer.byteLength>=4
+      id = buffer.readInt32LE(0)
+      if id == @upload_request_id
+        len = buffer.byteLength-4
+
+        if len>0 and @upload_uploaded<@upload_request_size
+          buf = Buffer.alloc(len)
+          buffer.copy buf,0,4,buffer.byteLength
+          @upload_request_buffers.push buf
+          @upload_uploaded += len
+          @upload_request_activity = Date.now()
+
+        if @upload_uploaded >= @upload_request_size
+          msg = @upload_request_request
+          buf = Buffer.alloc @upload_request_size
+          count = 0
+          for b in @upload_request_buffers
+            b.copy buf,count,0,b.byteLength
+            count += b.byteLength
+
+          msg.data = buf
+          msg.request_id = id
+          try
+            if msg.name?
+              c = @commands[msg.name]
+              c(msg) if c?
+          catch error
+            console.error error
+        else
+          @send
+            name:"next_chunk"
+            request_id: id
 
 module.exports = @Session

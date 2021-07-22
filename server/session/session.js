@@ -1,4 +1,5 @@
-var ForumSession, JSZip, ProjectManager, RegexLib, SHA256;
+var ForumSession, JSZip, ProjectManager, RegexLib, SHA256,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 SHA256 = require("crypto-js/sha256");
 
@@ -12,9 +13,11 @@ JSZip = require("jszip");
 
 this.Session = (function() {
   function Session(server, socket) {
-    var j, len, plugin, ref;
+    var j, len1, plugin, ref;
     this.server = server;
     this.socket = socket;
+    this.bufferReceived = bind(this.bufferReceived, this);
+    this.uploadRequest = bind(this.uploadRequest, this);
     this.content = this.server.content;
     if (this.content == null) {
       return this.socket.close();
@@ -26,7 +29,11 @@ this.Session = (function() {
     this.last_active = Date.now();
     this.socket.on("message", (function(_this) {
       return function(msg) {
-        _this.messageReceived(msg);
+        if (typeof msg === "string") {
+          _this.messageReceived(msg);
+        } else {
+          _this.bufferReceived(msg);
+        }
         return _this.last_active = Date.now();
       };
     })(this));
@@ -304,8 +311,13 @@ this.Session = (function() {
         return _this.backupComplete(msg);
       };
     })(this));
+    this.register("upload_request", (function(_this) {
+      return function(msg) {
+        return _this.uploadRequest(msg);
+      };
+    })(this));
     ref = this.server.plugins;
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len1 = ref.length; j < len1; j++) {
       plugin = ref[j];
       if (plugin.registerSessionMessages != null) {
         plugin.registerSessionMessages(this);
@@ -671,33 +683,29 @@ this.Session = (function() {
   };
 
   Session.prototype.importProject = function(data) {
-    var buffer, projectFileName, split, zip;
-    if (this.user == null) {
-      return this.sendError("not connected");
+    var buffer, projectFileName, zip;
+    if (data.request_id == null) {
+      return this.sendError("Bad request");
     }
-    if (!this.user.flags.validated) {
-      return this.sendError("email not validated");
+    if (this.user == null) {
+      return this.sendError("not connected", data.request_id);
+    }
+    if (this.server.PROD && !this.user.flags.validated) {
+      return this.sendError("Email validation is required", data.request_id);
     }
     if (!this.server.rate_limiter.accept("import_project_user", this.user.id)) {
-      return;
+      return this.sendError("Rate limited", data.request_id);
     }
-    if ((data.zip_data == null) || typeof data.zip_data !== "string") {
-      return this.sendError("wrong data");
-    }
-    split = data.zip_data.split(",");
-    if (split[1] == null) {
-      return this.sendError("unrecognized data");
-    }
-    buffer = Buffer.from(split[1], 'base64');
+    buffer = data.data;
     if (buffer.byteLength > this.user.max_storage - this.user.getTotalSize()) {
-      return this.sendError("storage space exceeded");
+      return this.sendError("storage space exceeded", data.request_id);
     }
     zip = new JSZip;
     projectFileName = "project.json";
     return zip.loadAsync(buffer).then(((function(_this) {
       return function(contents) {
         if (zip.file(projectFileName) == null) {
-          _this.sendError("[ZIP] Missing " + projectFileName + "; import aborted");
+          _this.sendError("[ZIP] Missing " + projectFileName + "; import aborted", data.request_id);
           console.log("[ZIP] Missing " + projectFileName + "; import aborted");
           return;
         }
@@ -707,7 +715,7 @@ this.Session = (function() {
             projectInfo = JSON.parse(text);
           } catch (error1) {
             err = error1;
-            _this.sendError("Incorrect JSON data");
+            _this.sendError("Incorrect JSON data", data.request_id);
             console.error(err);
             return;
           }
@@ -723,12 +731,12 @@ this.Session = (function() {
             });
           }), true);
         }), function() {
-          return _this.sendError("Malformed ZIP file");
+          return _this.sendError("Malformed ZIP file", data.request_id);
         });
       };
     })(this)), (function(_this) {
       return function() {
-        return _this.sendError("Malformed ZIP file");
+        return _this.sendError("Malformed ZIP file", data.request_id);
       };
     })(this));
   };
@@ -784,8 +792,8 @@ this.Session = (function() {
             if (folders.length > 0) {
               folder = folders.splice(0, 1)[0];
               return man.listFiles(folder, function(list) {
-                var f, j, len;
-                for (j = 0, len = list.length; j < len; j++) {
+                var f, j, len1;
+                for (j = 0, len1 = list.length; j < len1; j++) {
                   f = list[j];
                   files.push({
                     file: f.file,
@@ -850,8 +858,8 @@ this.Session = (function() {
               if (folders.length > 0) {
                 folder = folders.splice(0, 1)[0];
                 return man.listFiles(folder, function(list) {
-                  var f, j, len;
-                  for (j = 0, len = list.length; j < len; j++) {
+                  var f, j, len1;
+                  for (j = 0, len1 = list.length; j < len1; j++) {
                     f = list[j];
                     files.push({
                       file: f.file,
@@ -1032,13 +1040,13 @@ this.Session = (function() {
   };
 
   Session.prototype.getProjectList = function(data) {
-    var j, k, len, len1, link, list, p, source;
+    var j, k, len1, len2, link, list, p, source;
     if (this.user == null) {
       return this.sendError("not connected");
     }
     source = this.user.listProjects();
     list = [];
-    for (j = 0, len = source.length; j < len; j++) {
+    for (j = 0, len1 = source.length; j < len1; j++) {
       p = source[j];
       if (!p.deleted) {
         list.push({
@@ -1067,7 +1075,7 @@ this.Session = (function() {
       }
     }
     source = this.user.listProjectLinks();
-    for (k = 0, len1 = source.length; k < len1; k++) {
+    for (k = 0, len2 = source.length; k < len2; k++) {
       link = source[k];
       if (!link.project.deleted) {
         p = link.project;
@@ -1258,7 +1266,7 @@ this.Session = (function() {
   };
 
   Session.prototype.getPublicProjects = function(data) {
-    var i, j, len, list, p, source;
+    var i, j, len1, list, p, source;
     switch (data.ranking) {
       case "new":
         source = this.content.new_projects;
@@ -1270,7 +1278,7 @@ this.Session = (function() {
         source = this.content.hot_projects;
     }
     list = [];
-    for (i = j = 0, len = source.length; j < len; i = ++j) {
+    for (i = j = 0, len1 = source.length; j < len1; i = ++j) {
       p = source[i];
       if (list.length >= 300) {
         break;
@@ -1345,12 +1353,12 @@ this.Session = (function() {
   };
 
   Session.prototype.acceptInvite = function(data) {
-    var j, k, len, len1, li, link, ref, ref1;
+    var j, k, len1, len2, li, link, ref, ref1;
     if (this.user == null) {
       return this.sendError("not connected");
     }
     ref = this.user.project_links;
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len1 = ref.length; j < len1; j++) {
       link = ref[j];
       if (link.project.id === data.project) {
         link.accept();
@@ -1359,7 +1367,7 @@ this.Session = (function() {
           link.project.manager.propagateUserListChange();
         }
         ref1 = this.user.listeners;
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
+        for (k = 0, len2 = ref1.length; k < len2; k++) {
           li = ref1[k];
           li.getProjectList();
         }
@@ -1368,7 +1376,7 @@ this.Session = (function() {
   };
 
   Session.prototype.removeProjectUser = function(data) {
-    var j, k, len, len1, li, link, project, ref, ref1, user;
+    var j, k, len1, len2, li, link, project, ref, ref1, user;
     if (this.user == null) {
       return this.sendError("not connected");
     }
@@ -1388,7 +1396,7 @@ this.Session = (function() {
       return;
     }
     ref = project.users;
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len1 = ref.length; j < len1; j++) {
       link = ref[j];
       if (link.user === user) {
         link.remove();
@@ -1404,7 +1412,7 @@ this.Session = (function() {
           project.manager.propagateUserListChange();
         }
         ref1 = user.listeners;
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
+        for (k = 0, len2 = ref1.length; k < len2; k++) {
           li = ref1[k];
           li.getProjectList();
         }
@@ -1738,7 +1746,11 @@ this.Session = (function() {
     if (Date.now() > this.last_active + 5 * 60000) {
       this.socket.close();
       this.server.sessionClosed(this);
-      return this.socket.terminate();
+      this.socket.terminate();
+    }
+    if ((this.upload_request_activity != null) && Date.now() > this.upload_request_activity + 60000) {
+      this.upload_request_id = -1;
+      return this.upload_request_buffers = [];
     }
   };
 
@@ -1755,6 +1767,83 @@ this.Session = (function() {
     if (msg.key === this.server.config["backup-key"]) {
       this.server.sessionClosed(this);
       return this.server.last_backup_time = Date.now();
+    }
+  };
+
+  Session.prototype.uploadRequest = function(msg) {
+    if (this.user == null) {
+      return;
+    }
+    if (msg.size == null) {
+      return this.sendError("Bad request");
+    }
+    if (msg.request_id == null) {
+      return this.sendError("Bad request");
+    }
+    if (msg.request == null) {
+      return this.sendError("Bad request");
+    }
+    if (!this.server.rate_limiter.accept("file_upload_user", this.user.id)) {
+      return this.sendError("Rate limited", msg.request_id);
+    }
+    if (msg.size > 100000000) {
+      return this.sendError("File size limit exceeded");
+    }
+    this.upload_request_id = msg.request_id;
+    this.upload_request_size = msg.size;
+    this.upload_uploaded = 0;
+    this.upload_request_buffers = [];
+    this.upload_request_request = msg.request;
+    this.upload_request_activity = Date.now();
+    return this.send({
+      name: "upload_request",
+      request_id: msg.request_id
+    });
+  };
+
+  Session.prototype.bufferReceived = function(buffer) {
+    var b, buf, c, count, error, id, j, len, len1, msg, ref;
+    if (buffer.byteLength >= 4) {
+      id = buffer.readInt32LE(0);
+      if (id === this.upload_request_id) {
+        len = buffer.byteLength - 4;
+        if (len > 0 && this.upload_uploaded < this.upload_request_size) {
+          buf = Buffer.alloc(len);
+          buffer.copy(buf, 0, 4, buffer.byteLength);
+          this.upload_request_buffers.push(buf);
+          this.upload_uploaded += len;
+          this.upload_request_activity = Date.now();
+        }
+        if (this.upload_uploaded >= this.upload_request_size) {
+          msg = this.upload_request_request;
+          buf = Buffer.alloc(this.upload_request_size);
+          count = 0;
+          ref = this.upload_request_buffers;
+          for (j = 0, len1 = ref.length; j < len1; j++) {
+            b = ref[j];
+            b.copy(buf, count, 0, b.byteLength);
+            count += b.byteLength;
+          }
+          msg.data = buf;
+          msg.request_id = id;
+          try {
+            if (msg.name != null) {
+              c = this.commands[msg.name];
+              if (c != null) {
+                return c(msg);
+              }
+            }
+          } catch (error1) {
+            error = error1;
+            return console.error(error);
+          }
+        } else {
+          return this.send({
+            name: "next_chunk",
+            request_id: id
+          });
+        }
+      }
     }
   };
 
