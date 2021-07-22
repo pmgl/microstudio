@@ -427,7 +427,6 @@ this.WebApp = (function() {
         project = access.project;
         folder = s[s.length - 2];
         asset = s[s.length - 1];
-        console.info("loading " + user.id + "/" + project.id + "/" + folder + "/" + asset);
         return _this.server.content.files.read(user.id + "/" + project.id + "/" + folder + "/" + asset, "binary", function(content) {
           if (content != null) {
             res.setHeader("Content-Type", "image/png");

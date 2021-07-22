@@ -10,6 +10,13 @@ this.Client = (function() {
       };
     })(this)), 1000);
     this.listeners = {};
+    this.listen("error", (function(_this) {
+      return function(msg) {
+        if (msg.error != null) {
+          return _this.app.appui.showNotification(_this.app.translator.get(msg.error));
+        }
+      };
+    })(this));
   }
 
   Client.prototype.start = function() {
@@ -55,7 +62,7 @@ this.Client = (function() {
       token: this.token
     }, (function(_this) {
       return function(msg) {
-        var i, len, n, ref;
+        var i, len1, n, ref;
         switch (msg.name) {
           case "error":
             console.error(msg.error);
@@ -73,7 +80,7 @@ this.Client = (function() {
             };
             if ((msg.notifications != null) && msg.notifications.length > 0) {
               ref = msg.notifications;
-              for (i = 0, len = ref.length; i < len; i++) {
+              for (i = 0, len1 = ref.length; i < len1; i++) {
                 n = ref[i];
                 _this.app.appui.showNotification(n);
               }
@@ -91,15 +98,16 @@ this.Client = (function() {
     this.extend();
     this.socket.onmessage = (function(_this) {
       return function(msg) {
-        var err;
+        var c, err;
         msg = msg.data;
         console.info("received: " + msg);
         try {
           msg = JSON.parse(msg);
           if (msg.request_id != null) {
             if (_this.pending_requests[msg.request_id] != null) {
-              _this.pending_requests[msg.request_id](msg);
-              return delete _this.pending_requests[msg.request_id];
+              c = _this.pending_requests[msg.request_id];
+              delete _this.pending_requests[msg.request_id];
+              return c(msg);
             }
           } else {
             if ((msg.name != null) && (_this.listeners[msg.name] != null)) {
@@ -154,6 +162,47 @@ this.Client = (function() {
     msg.request_id = this.request_id++;
     this.pending_requests[msg.request_id] = callback;
     return this.send(msg);
+  };
+
+  Client.prototype.sendUpload = function(msg, data, callback, progress_callback) {
+    var request_id;
+    request_id = this.request_id;
+    return this.sendRequest({
+      name: "upload_request",
+      size: data.byteLength,
+      request: msg
+    }, (function(_this) {
+      return function(response) {
+        var count, funk;
+        count = 0;
+        if (response.name === "error") {
+          return callback(response);
+        }
+        funk = function(res) {
+          var buffer, len;
+          if ((res != null) && res.name === "error") {
+            return callback(res);
+          }
+          if (progress_callback != null) {
+            progress_callback(count / data.byteLength * 100);
+          }
+          _this.pending_requests[request_id] = funk;
+          len = Math.min(100000, data.byteLength - count);
+          if (len > 0) {
+            buffer = new ArrayBuffer(len + 4);
+            new Uint8Array(buffer, 4, len).set(new Uint8Array(data, count, len));
+            count += len;
+            new DataView(buffer).setUint32(0, request_id, true);
+            console.info("sending " + len + " bytes");
+            return _this.socket.send(buffer);
+          } else {
+            console.info(res);
+            return callback(res);
+          }
+        };
+        return funk();
+      };
+    })(this));
   };
 
   Client.prototype.check = function() {};

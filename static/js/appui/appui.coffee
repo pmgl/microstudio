@@ -55,6 +55,18 @@ class AppUI
       @show "create-project-overlay"
       @focus "create-project-title"
 
+    @setAction "import-project-button",()=>
+      input = document.createElement "input"
+      input.type = "file"
+      input.accept = "application/zip"
+      input.addEventListener "change",(event)=>
+        files = event.target.files
+        if files.length>=1
+          f = files[0]
+          @app.importProject f
+
+      input.click()
+
     @setAction "create-project-window",(event)=>
       event.stopPropagation()
 
@@ -138,7 +150,8 @@ class AppUI
 
     document.getElementById("myprojects").addEventListener "drop",(event)=>
       event.preventDefault()
-      @app.importProject(event.dataTransfer.items)
+      if event.dataTransfer.items and event.dataTransfer.items[0]?
+        @app.importProject(event.dataTransfer.items[0].getAsFile())
 
     setInterval (()=>@checkActivity()),10000
 
@@ -847,3 +860,12 @@ class AppUI
       div.appendChild icon
 
     div
+
+  setImportProgress:(progress)->
+    document.getElementById("import-project-button").innerHTML = """<i class="fa fa-upload"></i> Uploading... """
+    progress = Math.round(progress)
+    document.getElementById("import-project-button").style.background = "linear-gradient(90deg,hsl(200,50%,40%) 0%,hsl(200,50%,40%) #{progress}%,hsl(200,20%,20%) #{progress}%)"
+
+  resetImportButton:()->
+    document.getElementById("import-project-button").innerHTML = """<i class="fa fa-upload"></i> #{@app.translator.get("Import Project")}"""
+    document.getElementById("import-project-button").style.removeProperty "background"

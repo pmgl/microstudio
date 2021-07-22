@@ -14,6 +14,7 @@ class @RateLimiter
 
     @map.create_project_user = new RateLimiterClass(@,60,10) # max 10 projects per hour
     @map.import_project_user = new RateLimiterClass(@,60,10) # max 10 projects per hour
+    @map.file_upload_user = new RateLimiterClass(@,10,10) # max 10 large file uploads per ten minutes
 
     @map.create_file_user = new RateLimiterClass(@,5,40) # max 40 new files per 5 minutes
     #@map.change_file_user = new RateLimiterClass(@,10,200)

@@ -57,6 +57,23 @@ AppUI = (function() {
         return _this.focus("create-project-title");
       };
     })(this));
+    this.setAction("import-project-button", (function(_this) {
+      return function() {
+        var input;
+        input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/zip";
+        input.addEventListener("change", function(event) {
+          var f, files;
+          files = event.target.files;
+          if (files.length >= 1) {
+            f = files[0];
+            return _this.app.importProject(f);
+          }
+        });
+        return input.click();
+      };
+    })(this));
     this.setAction("create-project-window", (function(_this) {
       return function(event) {
         return event.stopPropagation();
@@ -180,7 +197,9 @@ AppUI = (function() {
     document.getElementById("myprojects").addEventListener("drop", (function(_this) {
       return function(event) {
         event.preventDefault();
-        return _this.app.importProject(event.dataTransfer.items);
+        if (event.dataTransfer.items && (event.dataTransfer.items[0] != null)) {
+          return _this.app.importProject(event.dataTransfer.items[0].getAsFile());
+        }
       };
     })(this));
     setInterval(((function(_this) {
@@ -1099,6 +1118,17 @@ AppUI = (function() {
       div.appendChild(icon);
     }
     return div;
+  };
+
+  AppUI.prototype.setImportProgress = function(progress) {
+    document.getElementById("import-project-button").innerHTML = "<i class=\"fa fa-upload\"></i> Uploading... ";
+    progress = Math.round(progress);
+    return document.getElementById("import-project-button").style.background = "linear-gradient(90deg,hsl(200,50%,40%) 0%,hsl(200,50%,40%) " + progress + "%,hsl(200,20%,20%) " + progress + "%)";
+  };
+
+  AppUI.prototype.resetImportButton = function() {
+    document.getElementById("import-project-button").innerHTML = "<i class=\"fa fa-upload\"></i> " + (this.app.translator.get("Import Project"));
+    return document.getElementById("import-project-button").style.removeProperty("background");
   };
 
   return AppUI;

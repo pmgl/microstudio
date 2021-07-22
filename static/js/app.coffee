@@ -143,43 +143,35 @@ class App
 
       return
 
-  importProject:(files)->
-    try
-      list = []
-      for i in files
-        list.push i.getAsFile()
+  importProject:(file)->
+    return if @importing
+    console.info "importing #{file.name}"
+    reader = new FileReader()
+    reader.addEventListener "load",()=>
+      # return if not reader.result.startsWith("data:application/x-zip-compressed;base64,")
+      # mime-type returned by browser may vary ; let's just check ZIP extension
+      return if not file.name.toLowerCase().endsWith(".zip")
+      @importing = true
 
-      funk = ()=>
-        if list.length>0
-          file = list.splice(0,1)[0]
-          console.info "processing #{file.name}"
-          reader = new FileReader()
-          reader.addEventListener "load",()=>
-            return if not reader.result.startsWith("data:application/x-zip-compressed;base64,")
-            @client.sendRequest {
-              name: "import_project"
-              user: @nick
-              zip_data: reader.result
-            },(msg)=>
-              console.log "[ZIP] #{msg.name}"
-              switch msg.name
-                when "error"
-                  console.error msg.error
-                  alert @translator.get(msg.error) if msg.error?
+      @client.sendUpload {
+        name: "import_project"
+      },reader.result,((msg)=>
+        console.log "[ZIP] #{msg.name}"
+        switch msg.name
+          when "error"
+            @appui.showNotification @translator.get msg.error
+            @appui.resetImportButton()
+            @importing = false
 
-                when "project_imported"
-                  @getProjectList (list)=>
-                    @projects = list
-                    @appui.updateProjects()
-                    # for p in list
-                    #   if p.id == msg.id
-                    #     @openProject p
-                    #     callback() if callback?
+          when "project_imported"
+            @updateProjectList(msg.id)
+            @appui.showNotification @translator.get "Project imported successfully"
+            @appui.resetImportButton()
+            @importing = false
+      ),(progress)=>
+        @appui.setImportProgress(progress)
 
-          reader.readAsDataURL(file)
-      funk()
-    catch err
-      console.error err
+    reader.readAsArrayBuffer(file)
 
   updateProjectList:(open_when_fetched)->
     @getProjectList (list)=>

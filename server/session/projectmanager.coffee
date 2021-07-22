@@ -414,4 +414,36 @@ class @ProjectManager
       f = f.join("/")
       @project.content.files.delete f,()=>
 
+  importFiles:(contents,callback)=>
+    files = []
+    for filename of contents.files
+      files.push filename
+
+    funk = () =>
+      if files.length > 0
+        filename = files.splice(0,1)[0]
+        value = contents.files[filename]
+
+        if /^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(filename)
+          type = if filename.split(".")[1] in ["ms","json","md"] then "string" else "nodebuffer"
+          try
+            contents.file(filename).async(type).then ((fileContent)=>
+              if fileContent?
+                @project.content.files.write "#{@project.owner.id}/#{@project.id}/#{filename}", fileContent, funk
+              else
+                funk()
+            ),()=>
+              funk()
+              
+          catch err
+            console.error err
+            console.log filename
+            funk()
+
+        else
+          funk()
+      else
+        callback()
+    funk()
+
 module.exports = @ProjectManager
