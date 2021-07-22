@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2021-07-22
+Special thanks to @FeniX for doing most of the hard work for this update
+* Export your project (creates a ZIP archive which can serve as backup or to transfer the project to another install of microStudio)
+* Import a project (from a previously exported ZIP archive)
+
 ### Update 2021-07-15
 * microStudio is now officially open source! Check https://github.com/pmgl/microstudio
 * auto-focus title field when creating new project
