@@ -12,5 +12,8 @@ for your team or classroom. You will find instructions below.
 * clone this repository
 * `cd microstudio/server`
 * `npm install`
-* `npm run dev` for active development or `npm start` just for hosting
+* `npm start`
 * Open browser on `http://localhost:8080`
+
+For active development use:
+* `npm run dev` instead of `npm start`
