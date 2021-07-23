@@ -18,10 +18,8 @@ class @Session
 
     @socket.on "message",(msg)=>
       #console.info "received msg: #{msg}"
-      if typeof msg == "string"
-        @messageReceived msg
-      else
-        @bufferReceived msg
+
+      @messageReceived msg
 
       @last_active = Date.now()
 
@@ -170,6 +168,9 @@ class @Session
       @project.manager.addUser @
 
   messageReceived:(msg)->
+    if typeof msg != "string"
+      return @bufferReceived msg
+
     #console.info msg
     try
       msg = JSON.parse msg

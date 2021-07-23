@@ -29,11 +29,7 @@ this.Session = (function() {
     this.last_active = Date.now();
     this.socket.on("message", (function(_this) {
       return function(msg) {
-        if (typeof msg === "string") {
-          _this.messageReceived(msg);
-        } else {
-          _this.bufferReceived(msg);
-        }
+        _this.messageReceived(msg);
         return _this.last_active = Date.now();
       };
     })(this));
@@ -410,6 +406,9 @@ this.Session = (function() {
 
   Session.prototype.messageReceived = function(msg) {
     var c, err;
+    if (typeof msg !== "string") {
+      return this.bufferReceived(msg);
+    }
     try {
       msg = JSON.parse(msg);
       if (msg.name != null) {
