@@ -1,3 +1,5 @@
+![microstudiologo](https://user-images.githubusercontent.com/53819287/127369868-2d325cb1-2691-41af-ac05-eb9085289053.png)
+
 microStudio is a free, open source game engine online.
 It is also a platform to learn and practise programming.
 
