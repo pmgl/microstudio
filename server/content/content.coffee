@@ -274,6 +274,8 @@ class @Content
       last_modified: Date.now()
       deleted: false
       owner: owner.id
+      orientation: data.orientation
+      aspect: data.aspect
 
     record = @db.create "projects",d
     project = @loadProject record

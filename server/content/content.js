@@ -374,7 +374,9 @@ this.Content = (function() {
       date_created: Date.now(),
       last_modified: Date.now(),
       deleted: false,
-      owner: owner.id
+      owner: owner.id,
+      orientation: data.orientation,
+      aspect: data.aspect
     };
     record = this.db.create("projects", d);
     project = this.loadProject(record);
