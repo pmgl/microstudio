@@ -51,7 +51,6 @@ header {
   font-size: 18px;
   text-align: center ;
   vertical-align: top ;
-  width: 120px ;
 }
 
 .projectbox .icon {
@@ -67,6 +66,48 @@ header {
   font-family: "Ubuntu" ;
   margin-top: 10px ;
   text-shadow: 0 0 3px #000 ;
+}
+
+.projectbox a {
+  text-decoration: none ;
+}
+
+.projectbox .appicon {
+  display: inline-block ;
+  width: 120px ;
+  vertical-align: top ;
+}
+
+.projectbox .buttons {
+  display: inline-block ;
+  vertical-align: top ;
+  text-align: left ;
+}
+
+.projectbox .buttons a {
+  font-size: 14px ;
+  border-radius: 5px ;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  background: hsl(200,50%,40%);
+  display: block ;
+}
+
+.projectbox .buttons a i {
+  margin-right: 5px ;
+}
+
+.projectbox .buttons a.runbutton {
+  background: hsl(160,50%,40%);
+}
+
+@media screen and (max-device-width: 800px) {
+  .projectbox .buttons a span {
+    display: none ;
+  }
+  .projectbox .buttons a i {
+    margin-right: 0 ;
+  }
 }
 
 a {

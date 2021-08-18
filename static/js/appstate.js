@@ -58,7 +58,7 @@ this.AppState = (function() {
       } else if (history.state.name === "project_details") {
         if (history.state.project != null) {
           this.app.explore.openProject(history.state.project);
-          return this.app.setMainSection("explore");
+          return this.app.appui.setMainSection("explore");
         } else {
           s = location.pathname.split("/");
           if ((s[2] != null) && (s[3] != null)) {
@@ -66,7 +66,7 @@ this.AppState = (function() {
               p = this.app.explore.findProject(s[2], s[3]);
               if (p) {
                 this.app.explore.openProject(p);
-                return this.app.setMainSection("explore");
+                return this.app.appui.setMainSection("explore");
               }
             } else {
               return this.app.explore.update((function(_this) {
@@ -74,7 +74,7 @@ this.AppState = (function() {
                   p = _this.app.explore.findProject(s[2], s[3]);
                   if (p) {
                     _this.app.explore.openProject(p);
-                    return _this.app.setMainSection("explore");
+                    return _this.app.appui.setMainSection("explore");
                   }
                 };
               })(this));

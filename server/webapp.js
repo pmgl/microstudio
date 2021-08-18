@@ -642,7 +642,7 @@ this.WebApp = (function() {
   };
 
   WebApp.prototype.getUserPublicPage = function(req, res) {
-    var funk, projects, s, user;
+    var funk, lang, projects, s, user;
     s = req.path.split("/");
     user = s[1];
     user = this.server.content.findUserByNick(user);
@@ -653,6 +653,7 @@ this.WebApp = (function() {
     projects.sort(function(a, b) {
       return b.last_modified - a.last_modified;
     });
+    lang = this.getLanguage(req);
     funk = pug.compileFile("../templates/play/userpage.pug");
     return res.send(funk({
       user: user.nick,
@@ -660,7 +661,8 @@ this.WebApp = (function() {
       description: sanitizeHTML(marked(user.description), {
         allowedTags: allowedTags
       }),
-      projects: projects
+      projects: projects,
+      translator: this.server.content.translator.getTranslator(lang)
     }));
   };
 

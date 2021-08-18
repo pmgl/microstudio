@@ -35,7 +35,7 @@ class @AppState
       else if history.state.name == "project_details"
         if history.state.project?
           @app.explore.openProject(history.state.project)
-          @app.setMainSection "explore"
+          @app.appui.setMainSection "explore"
         else
           s = location.pathname.split("/")
           if s[2]? and s[3]?
@@ -43,13 +43,13 @@ class @AppState
               p = @app.explore.findProject(s[2],s[3])
               if p
                 @app.explore.openProject(p)
-                @app.setMainSection "explore"
+                @app.appui.setMainSection "explore"
             else
               @app.explore.update ()=>
                 p = @app.explore.findProject(s[2],s[3])
                 if p
                   @app.explore.openProject(p)
-                  @app.setMainSection "explore"
+                  @app.appui.setMainSection "explore"
 
 
   initState:()->

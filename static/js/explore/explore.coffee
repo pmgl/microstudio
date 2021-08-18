@@ -369,33 +369,46 @@ class @Explore
     return
 
   update:(callback)->
+    if @list_received
+      callback() if callback?
+      return
+      
     if not @initialized and location.pathname.startsWith "/i/"
       document.getElementById("explore-section").style.opacity = 0
 
     contents = document.getElementById "explore-box-list"
     contents.innerHTML = ""
 
-    @app.client.sendRequest {
-      name:"get_public_projects"
-      ranking: "hot"
-      tags: []
-    },(msg)=>
-      @projects = msg.list
-      #console.info "PUBLIC PROJECTS SIZE: "+(JSON.stringify(@projects)).length
-      @boxes = {}
-      @createTags()
-      @loadProjects()
+    if not @initialized and location.pathname.startsWith "/i/"
+      @initialized = true
+      owner = location.pathname.split("/")[2]
+      project = location.pathname.split("/")[3]
+      @app.client.sendRequest {
+        name:"get_public_project"
+        owner: owner
+        project: project
+      },(msg)=>
+        project = msg.project
+        if project?
+          @openProject project
+          document.getElementById("explore-section").style.opacity = 1
+          return
+    else
+      @app.client.sendRequest {
+        name:"get_public_projects"
+        ranking: "hot"
+        tags: []
+      },(msg)=>
+        @projects = msg.list
+        @list_received = true
+        #console.info "PUBLIC PROJECTS SIZE: "+(JSON.stringify(@projects)).length
+        @boxes = {}
+        @createTags()
+        @loadProjects()
 
-      if not @initialized
-        @initialized = true
-        document.getElementById("explore-section").style.opacity = 1
-        if location.pathname.startsWith "/i/"
-          owner = location.pathname.split("/")[2]
-          project = location.pathname.split("/")[3]
-          for p in msg.list
-            if p.owner == owner and p.slug == project
-              @openProject p
-              return
+        if not @initialized
+          @initialized = true
+          document.getElementById("explore-section").style.opacity = 1
 
           #@app.setHomeState()
       callback() if callback?

@@ -232,6 +232,11 @@ this.Session = (function() {
         return _this.getPublicProjects(msg);
       };
     })(this));
+    this.register("get_public_project", (function(_this) {
+      return function(msg) {
+        return _this.getPublicProject(msg);
+      };
+    })(this));
     this.register("clone_project", (function(_this) {
       return function(msg) {
         return _this.cloneProject(msg);
@@ -1306,6 +1311,41 @@ this.Session = (function() {
       list: list,
       request_id: data.request_id
     });
+  };
+
+  Session.prototype.getPublicProject = function(msg) {
+    var owner, p, project, res;
+    owner = msg.owner;
+    project = msg.project;
+    if ((owner != null) && (project != null)) {
+      owner = this.content.findUserByNick(owner);
+      if (owner != null) {
+        p = owner.findProjectBySlug(project);
+        if ((p != null) && p["public"]) {
+          res = {
+            id: p.id,
+            title: p.title,
+            description: p.description,
+            type: p.type,
+            tags: p.tags,
+            slug: p.slug,
+            owner: p.owner.nick,
+            owner_info: {
+              tier: p.owner.flags.tier
+            },
+            likes: p.likes,
+            liked: (this.user != null) && this.user.isLiked(p.id),
+            tags: p.tags,
+            date_published: p.first_published
+          };
+          return this.send({
+            name: "get_public_project",
+            project: res,
+            request_id: msg.request_id
+          });
+        }
+      }
+    }
   };
 
   Session.prototype.toggleLike = function(data) {

@@ -460,44 +460,57 @@ this.Explore = (function() {
   };
 
   Explore.prototype.update = function(callback) {
-    var contents;
+    var contents, owner, project;
+    if (this.list_received) {
+      if (callback != null) {
+        callback();
+      }
+      return;
+    }
     if (!this.initialized && location.pathname.startsWith("/i/")) {
       document.getElementById("explore-section").style.opacity = 0;
     }
     contents = document.getElementById("explore-box-list");
     contents.innerHTML = "";
-    return this.app.client.sendRequest({
-      name: "get_public_projects",
-      ranking: "hot",
-      tags: []
-    }, (function(_this) {
-      return function(msg) {
-        var i, len, owner, p, project, ref;
-        _this.projects = msg.list;
-        _this.boxes = {};
-        _this.createTags();
-        _this.loadProjects();
-        if (!_this.initialized) {
-          _this.initialized = true;
-          document.getElementById("explore-section").style.opacity = 1;
-          if (location.pathname.startsWith("/i/")) {
-            owner = location.pathname.split("/")[2];
-            project = location.pathname.split("/")[3];
-            ref = msg.list;
-            for (i = 0, len = ref.length; i < len; i++) {
-              p = ref[i];
-              if (p.owner === owner && p.slug === project) {
-                _this.openProject(p);
-                return;
-              }
-            }
+    if (!this.initialized && location.pathname.startsWith("/i/")) {
+      this.initialized = true;
+      owner = location.pathname.split("/")[2];
+      project = location.pathname.split("/")[3];
+      return this.app.client.sendRequest({
+        name: "get_public_project",
+        owner: owner,
+        project: project
+      }, (function(_this) {
+        return function(msg) {
+          project = msg.project;
+          if (project != null) {
+            _this.openProject(project);
+            document.getElementById("explore-section").style.opacity = 1;
           }
-        }
-        if (callback != null) {
-          callback();
-        }
-      };
-    })(this));
+        };
+      })(this));
+    } else {
+      this.app.client.sendRequest({
+        name: "get_public_projects",
+        ranking: "hot",
+        tags: []
+      }, (function(_this) {
+        return function(msg) {
+          _this.projects = msg.list;
+          _this.list_received = true;
+          _this.boxes = {};
+          _this.createTags();
+          _this.loadProjects();
+          if (!_this.initialized) {
+            _this.initialized = true;
+            return document.getElementById("explore-section").style.opacity = 1;
+          }
+        };
+      })(this));
+      if (callback != null) {
+        callback();
+      }
+    }
   };
 
   return Explore;

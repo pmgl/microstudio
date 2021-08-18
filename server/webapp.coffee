@@ -540,12 +540,15 @@ class @WebApp
     projects = user.listPublicProjects()
     projects.sort (a,b)-> b.last_modified-a.last_modified
 
+    lang = @getLanguage req
+
     funk = pug.compileFile "../templates/play/userpage.pug"
     res.send funk
       user: user.nick
       profile_image: user.flags.profile_image == true
       description: sanitizeHTML marked(user.description),{allowedTags:allowedTags}
       projects: projects
+      translator: @server.content.translator.getTranslator(lang)
 
   getLanguage:(request)->
     if request.cookies.language?

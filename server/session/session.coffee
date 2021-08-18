@@ -77,6 +77,7 @@ class @Session
     @register "remove_project_user",(msg)=>@removeProjectUser(msg)
 
     @register "get_public_projects",(msg)=>@getPublicProjects(msg)
+    @register "get_public_project",(msg)=>@getPublicProject(msg)
     @register "clone_project",(msg)=>@cloneProject(msg)
     @register "clone_public_project",(msg)=>@clonePublicProject(msg)
     @register "toggle_like",(msg)=>@toggleLike(msg)
@@ -812,6 +813,34 @@ class @Session
       name: "public_projects"
       list: list
       request_id: data.request_id
+
+  getPublicProject:(msg)->
+    owner = msg.owner
+    project = msg.project
+    if owner? and project?
+      owner = @content.findUserByNick(owner)
+      if owner?
+        p = owner.findProjectBySlug(project)
+        if p? and p.public
+          res =
+            id: p.id
+            title: p.title
+            description: p.description
+            type: p.type
+            tags: p.tags
+            slug: p.slug
+            owner: p.owner.nick
+            owner_info:
+              tier: p.owner.flags.tier
+            likes: p.likes
+            liked: @user? and @user.isLiked(p.id)
+            tags: p.tags
+            date_published: p.first_published
+
+          @send
+            name: "get_public_project"
+            project: res
+            request_id: msg.request_id
 
   toggleLike:(data)->
     return @sendError("not connected") if not @user?
