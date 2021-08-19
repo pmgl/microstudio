@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2021-08-18
+* Orientation and aspect are now set when importing a project
+* Fixed bug: impossible to explore a public project page once it leaves the top 300
+* Added links to explore a user's public projects when visiting their public page
+
 ### Update 2021-07-22
 Special thanks to @FeniX for doing most of the hard work for this update
 * Export your project (creates a ZIP archive which can serve as backup or to transfer the project to another install of microStudio)
