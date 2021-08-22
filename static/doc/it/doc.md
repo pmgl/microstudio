@@ -187,10 +187,10 @@ Le opzioni *piastrella* e simmetria vi aiuteranno a creare sprites "ripetibili" 
 È possibile importare file di immagini nel vostro progetto microStudio. Per farlo, trascinate e rilasciate i file PNG o JPG (fino a 256x256 pixel di dimensione) nell'elenco degli sprites.
 
 ## Mappe
-Una mappa in microStudio è una griglia per assemblare gli sprites. Permette di assemblare una decorazione o di creare un livello.
+Una mappa in microStudio è una griglia per assemblare gli sprites. Permette di costruire una decorazione o di creare un livello.
 
 ### Creare una mappa
-Le mappe possono essere create e rinominate proprio come gli sprites. È possibile modificare la dimensione della griglia (in numero di celle). Ogni cella può essere dipinta con uno sprite. È possibile modificare la dimensione in pixel di ogni cella, che dovrebbe generalmente riflettere la dimensione degli sprite utilizzati per dipingere la griglia.
+Le mappe possono essere create e rinominate proprio come gli sprites. È possibile modificare la dimensione della griglia (in numero di celle). Ogni cella può essere disegnata con uno sprite. È possibile modificare la dimensione in pixel di ogni cella, che dovrebbe generalmente riflettere la dimensione degli sprite utilizzati per disegnare la griglia.
 
 
 ## Impostazioni
@@ -199,13 +199,13 @@ La scheda *Impostazioni* ti permette di personalizzare alcuni elementi del tuo p
 ### Opzioni
 Puoi definire il titolo del tuo progetto, il suo identificatore (usato per creare il suo URL, cioè il suo indirizzo internet).
 
-Potete specificare se il vostro progetto deve essere utilizzato in modalità verticale o orizzontale. Questa scelta sarà presa in considerazione quando si installa l'applicazione su uno smartphone o tablet.
+Potete specificare se il vostro progetto deve essere utilizzato in modalità verticale o orizzontale. Questa scelta sarà attiva quando si installa l'applicazione su uno smartphone o tablet.
 
 Potete anche specificare le proporzioni desiderate per l'area di visualizzazione sullo schermo. Questa è un'opzione per garantire che l'applicazione abbia sempre un bell'aspetto quando viene installata su dispositivi con schermi di proporzioni diverse.
 
 ### Utenti
 
-La sezione utenti ti permette di invitare gli amici a partecipare al tuo progetto. Devi conoscere il nickname dell'amico che vuoi invitare. Una volta che un'amica è invitata, se accetta il tuo invito, avrà pieno accesso al tuo progetto e potrà fare tutte le modifiche che vuole (modificare, aggiungere, cancellare sprites, mappe, codice ecc.) Tuttavia, la modifica delle opzioni del progetto e la lista dei partecipanti è riservata al proprietario del progetto.
+La sezione utenti ti permette di invitare gli amici a partecipare al tuo progetto. Devi conoscere il nickname dell'amico che vuoi invitare. Una volta che un amico è invitato, se accetta il tuo invito, avrà pieno accesso al tuo progetto e potrà fare tutte le modifiche che vuole (modificare, aggiungere, cancellare sprites, mappe, codice ecc.) Tuttavia, la modifica delle opzioni del progetto e la lista dei partecipanti è riservata al proprietario del progetto.
 
 ## Pubblica
 
@@ -213,23 +213,24 @@ La sezione utenti ti permette di invitare gli amici a partecipare al tuo progett
 
 ### Rendere il progetto pubblico
 
-Per rendere il tuo progetto accessibile a tutti (sola lettura), clicca su "Make my project public". Una volta che il tuo progetto è pubblico, sarà visualizzato nella scheda di esplorazione del sito microstudio. Qualsiasi visitatore sarà in grado di eseguire il gioco, visualizzare e riutilizzare il codice sorgente e altri componenti del tuo progetto.
+Per rendere il tuo progetto accessibile a tutti (sola lettura), clicca su "Rendi il mio progetto pubblico". Una volta che il tuo progetto è pubblico, sarà visualizzato nella scheda di esplorazione del sito microstudio. Qualsiasi visitatore sarà in grado di eseguire il gioco, visualizzare e riutilizzare il codice sorgente e altri componenti del tuo progetto.
 
-Il tuo gioco ha un URL permanente nella forma ``https://microstudio.io/author_nickname/game_id/``. Puoi naturalmente distribuire il link a chiunque o puoi aggiungere il tuo gioco al tuo sito web esistente incorporandolo in un iframe.
+Il tuo gioco ha un URL permanente nella forma 
+```https://microstudio.io/author_nickname/game_id/```. Puoi naturalmente distribuire il link a chiunque o puoi aggiungere il tuo gioco al tuo sito web esistente incorporandolo in un iframe.
 
 ### Esportazione in HTML5
 
-Per esportare il tuo progetto completo in un'app HTML5 standalone, clicca su "Export to HTML5". Questo innesca il download di un archivio ZIP, contenente tutti i file necessari per eseguire il tuo gioco: sprites, alcuni file JavaScript, icone e un file HTML principale "index.html". Il tuo gioco può essere eseguito localmente (doppio clic sul file index.html) o puoi caricarlo sul tuo sito web esistente. È anche pronto per essere pubblicato su molte piattaforme di distribuzione di giochi online che accettano giochi HTML5 (ne suggeriamo alcune nel pannello di esportazione HTML5).
+Per esportare il tuo progetto completo in un'app HTML5 standalone, clicca su "Esporta in HTML5". Questo attiva il download di un archivio ZIP, contenente tutti i file necessari per eseguire il tuo gioco: sprites, alcuni file JavaScript, icone e un file HTML principale "index.html". Il tuo gioco può essere eseguito localmente (doppio clic sul file index.html) o puoi caricarlo sul tuo sito web esistente. È anche pronto per essere pubblicato su molte piattaforme di distribuzione di giochi online che accettano giochi HTML5 (ne suggeriamo alcune nel pannello di esportazione HTML5).
 
 # microScript
 
 **microScript** è un semplice linguaggio ispirato a Lua. Ecco alcuni principi generali utilizzati da microScript:
 
-Le variabili sono globali per impostazione predefinita. Per definire una variabile locale, usate la parola chiave "local".
-Le interruzioni di riga non hanno un significato particolare, sono considerate come spazi.
-In microScript non esiste il valore ``null```, ``nil`` o ``undefined```. Qualsiasi variabile non definita o nulla è uguale a ``0``.
-In microScript, non esiste un tipo booleano. ``0``` è falso e tutto ciò che non è ``0``` è vero.
-Non ci sono errori di esecuzione o eccezioni in microScript. Qualsiasi variabile che non è definita restituisce ``0```. Invocare un valore che non è una funzione come funzione restituisce il valore stesso.
+* Le variabili sono globali per impostazione predefinita. Per definire una variabile locale, usate la parola chiave "local".
+* Le interruzioni di riga non hanno un significato particolare, sono considerate come spazi.
+* In microScript non esiste il valore ```null```, ```nil``` o ```undefined```. Qualsiasi variabile non definita o nulla è uguale a ```0```.
+* In microScript, non esiste un tipo booleano. ```0``` è falso e tutto ciò che non è ```0``` è vero.
+* Non ci sono errori di esecuzione o eccezioni in microScript. Qualsiasi variabile che non è definita restituisce ```0```. Invocare un valore che non è una funzione come funzione restituisce il valore stesso.
 
 ## Variabili
 
@@ -237,7 +238,7 @@ Una variabile è un nome (o "identificatore") al quale si decide di assegnare un
 
 ### Dichiarazione
 
-Le variabili in microScript non hanno bisogno di essere dichiarate. Qualsiasi variabile che non è ancora stata usata può essere considerata esistente e ha il valore ``0``.
+Le variabili in microScript non hanno bisogno di essere dichiarate. Qualsiasi variabile che non è ancora stata usata può essere considerata esistente e ha il valore ```0```.
 
 Per iniziare a usare una variabile, basta assegnarle un valore con il segno di uguale:
 
@@ -251,7 +252,7 @@ Il valore di x è ora 1.
 *microScript* riconosce cinque tipi di valori: numeri, stringhe (testo), liste, oggetti e funzioni.
 
 #### Numero
-I valori di tipo Number in *microScript* possono essere numeri interi o decimali.
+I valori di tipo Numero in *microScript* possono essere numeri interi o decimali.
 
 ```
 pi = 3,1415
