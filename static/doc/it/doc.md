@@ -257,7 +257,7 @@ I valori di tipo Numero in *microScript* possono essere numeri interi o decimali
 ```
 pi = 3,1415
 x = 1
-metà = 1/2
+mezzo = 1/2
 ```
 
 #### Stringa di caratteri
@@ -272,38 +272,38 @@ Le liste possono contenere un certo numero di valori:
 
 ```
 elenco_vuoto = []
-prime_numbers =[2,3,5,5,7,11,13,17,19]
+numeri_primi =[2,3,5,5,7,11,13,17,19]
 elenco_misto =[1, "gatto",[1,2,3]]
 ```
 
 Si può accedere agli elementi di una lista tramite il loro indice, cioè la loro posizione nella lista da 0 :
 
 ```
-elenco = ["gatto", "cane", "topo"]
-stampa(elenco[0])
-stampa(elenco[1])
-stampa(elenco[2])
+lista = ["gatto", "cane", "topo"]
+print(elenco[0])
+print(elenco[1])
+print(elenco[2])
 ```
 
-È anche facile scorrere una lista con un ``for loop``:
+È anche facile scorrere gli elementi di una lista tramite un ciclo for ```for loop```:
 
 ```
-per elemento in lista
-  stampa(elemento)
-fine
+for elemento in lista
+  print(elemento)
+end
 ```
 
 #### Oggetto
-Un oggetto in *microScript* è una forma di lista associativa. L'oggetto ha uno o più "campi" che hanno una chiave e un valore. La chiave è una stringa di caratteri, il valore può essere qualsiasi valore *microScript*. La definizione di un oggetto inizia con la parola chiave "object" e finisce con la parola chiave "end". Tra i due possono essere definiti diversi campi. Esempio :
+Un oggetto in *microScript* è un tipo di lista associativa. L'oggetto ha uno o più "campi" che hanno una chiave e un valore. La chiave è una stringa di caratteri, il valore può essere qualsiasi valore valido in  *microScript*. La definizione di un oggetto inizia con la parola chiave "object" e finisce con la parola chiave "end". Tra i due delimitatori possono essere definiti diversi campi. Esempio :
 
 ```
-mio_oggetto = oggetto
+mio_oggetto = object
   x = 0
   y = 0
   nome = "oggetto 1"
 fine
 ```
-Potete accedere ai campi di un oggetto con l'operatore ```. ```. La definizione di cui sopra può quindi anche essere scritta:
+Potete accedere ai campi di un oggetto con l'operatore ```. ```. La definizione di cui sopra può quindi anche essere riscritta come:
 
 ```
 mio_oggetto.x = 0
@@ -311,7 +311,7 @@ mio_oggetto.y = 0
 mio_oggetto.nome = "oggetto 1"
 ```
 
-Si può anche accedere con le parentesi ``[]``. La definizione di cui sopra può quindi anche essere scritta:
+Si può anche accedere ai campi tramite parentesi ```[]```. La definizione di cui sopra è quindi equivalente a:
 
 ```
 mio_oggetto["x"] = 0
@@ -319,27 +319,27 @@ mio_oggetto["y"] = 0
 mio_oggetto["nome"] = "oggetto 1"
 ```
 
-Potete sfogliare la lista dei campi di un oggetto con un ciclo ``for``:
+Potete sfogliare la lista dei campi di un oggetto tramite ciclo ```for```:
 
 ```
-per campo in my_object
-  print(field +" = " + " + my_object[field])
-fine
+for campo in my_object
+  print(campo +" = " + " + my_object[field])
+end
 ```
 
-Vedere "Classi" per una copertura più approfondita dell'oggetto
+Vedere "Classi" per una copertura più approfondita degli oggetti
 
 #### Valore della funzione
 
-Un valore può essere di tipo funzione. Quando si scrive ``draw = function() ... end```, viene creato un valore di funzione e assegnato alla variabile ``draw``` (vedi la sezione sulle funzioni più avanti).
+Un valore può essere di tipo funzione. Quando si scrive ```draw = function() ... end```, viene creato un valore di funzione e assegnato alla variabile ```draw``` (vedi la sezione sulle funzioni più avanti).
 
 #### Variabili locali
 
 Per default, le variabili dichiarate con l'assegnazione sono globali. È possibile definire una variabile locale, come parte di una funzione, usando la parola chiave "local":
 
 ```
-maFunction = funzione()
-  locale i = 0
+myFunction = function()
+  local i = 0
 fine
 ```
 
@@ -352,15 +352,15 @@ Una funzione è una sotto-sequenza di operazioni, che esegue un lavoro, un calco
 Una funzione viene definita con la parola chiave "function" e termina con la parola chiave "end".
 
 ```
-nextNumber = funzione(s)
+numeroSucessivo = function(x)
   x+1
 fine
 ```
 
-### Invoca una funzione
+### Invocare una funzione
 
 ```
-stampa(numero successivo(10))
+print(numeroSucessivo(10))
 ```
 
 Quando si invoca un valore che non è una funzione come una funzione, essa restituisce semplicemente il suo valore. Esempio :
@@ -370,18 +370,18 @@ x = 1
 x(0)
 ```
 
-Il codice qui sopra restituisce il valore 1, senza generare un errore. Così potete anche invocare una funzione che non è ancora definita (vale allora ``0``), senza che si generi un errore. Questo vi permette di iniziare a strutturare il vostro programma molto presto con delle sottofunzioni, su cui lavorerete in seguito. Per esempio:
+Il codice qui sopra restituisce il valore 1, senza generare un errore. Così potete anche invocare una funzione che non è ancora definita (vale allora ```0```), senza che si generi un errore. Questo vi permette di iniziare a strutturare il vostro programma fin da subito con delle sottofunzioni, su cui lavorerete in seguito. Per esempio:
 
 ```
-disegnare = funzione()
-  disegnare il cielo()
-  drawClouds()
-  drawTrees()
-  drawEnemies()
-  drawHero()
-fine
+draw = function()
+  disegnaCielo()
+  disegnaNuvole()
+  disegnaAlberi()
+  disegnaNemici()
+  disegnaErore()
+end
 
-// Posso implementare le funzioni di cui sopra al mio ritmo.
+// Posso implementare le funzioni cui sopra al mio ritmo, senza generare errori
 ```
 
 ## Condizioni
@@ -390,119 +390,119 @@ fine
 Una dichiarazione condizionale permette al programma di testare un'ipotesi ed eseguire diverse operazioni a seconda del risultato del test. In *microScript*, le condizioni sono scritte come segue:
 
 ```
-se età<18 allora
-  stampa("bambino")
+if anni<18 then
+  print("bambino")
 else
-  stampa("adulto")
-fine
+  print("adulto")
+end
 ```
-"se" significa "se";
-"allora" significa "allora";
+"if" significa "se";
+"then" significa "allora";
 "else" significa "altrimenti";
-"fine" significa "fine"
+"end" significa "fine"
 
-Nell'esempio qui sopra, **se** il valore della variabile age è inferiore a 18, **allora** sarà eseguita l'istruzione ``print("child")``, **altrimenti** sarà eseguita l'istruzione ``print("adult")``.
+Nell'esempio qui sopra, **se** il valore della variabile anni è inferiore a 18, **allora** sarà eseguita l'istruzione ```print("bambino")```, **altrimenti** sarà eseguita l'istruzione ```print("adulto")```.
 
 ### Operatori di confronto binario
 Ecco gli operatori binari che possono essere usati per i confronti:
 
-Operatore|Descrizione
+|Operatore|Descrizione|
 |-|-|
-|==|``a == b``` è vero solo se a è uguale a b|
-|!=||``a != b``` è vero solo se è diverso da b|
-A < b> è vero solo se a è strettamente inferiore a b
-A > b" è vero solo se a è strettamente maggiore di b".
-|<=||``a <= b``` è vero solo se a è minore o uguale a b
-|>=||``a >= b``` è vero solo se a è maggiore o uguale a b
+|==|```a == b``` è vero solo se a è uguale a b|
+|!=|```a != b``` è vero solo se è diverso da b|
+|<| ```a < b``` è vero solo se a è strettamente inferiore a b
+|>| ```a > b``` è vero solo se a è strettamente maggiore di b".
+|<=|```a <= b``` è vero solo se a è minore o uguale a b
+|>=|```a >= b``` è vero solo se a è maggiore o uguale a b
 
 ### Operatori booleani
-Operatore|Descrizione
+|Operatore|Descrizione|
 |-|-|
-AND logico: ``a e b``` è vero solo se a e b sono veri
-OR logico: "a o b" è vero solo se a è vero o b è vero
-Non: non a è vero se a è falso e falso se a è vero.
+|and| E logico: ```a and b``` è vero solo se a e b sono entrambi veri
+|or| O logico: ```a or b``` è vero solo se a è vero o b è vero
+|not|: NON logico: ```not a``` è vero se a è falso e falso se a è vero.
 
 ### Valori booleani
-In microScript, non esiste un tipo booleano. ``0``` è considerato falso e qualsiasi altro valore è vero. Gli operatori di confronto restituiscono ``1``` per true o ``0``` per false. Per comodità, microScript permette anche di usare queste due variabili predefinite:
+In microScript, non esiste un tipo booleano. ```0``` è considerato falso e qualsiasi altro valore è vero. Gli operatori di confronto restituiscono ```1``` quando vero o ```0``` per il falso. Per comodità, microScript permette anche di usare queste due variabili predefinite:
 
-Variabile/Valore
+|Variabile|Valore|
 |-|-|
-vero|1|
-0
+|true|1|
+|false|0|
 
 
 ### Condizioni multiple
 
 È possibile testare più ipotesi usando la parola chiave "elsif" (contrazione di "else if")
 ```
-se età<10 allora
-  stampa("bambino")
-elsif età<18 allora
-  stampa("adolescente")
-elsif età<30 allora
-  stampa("giovane adulto")
+if anni<10 then
+  print("bambino")
+elsif anni<18 then
+  print("adolescente")
+elsif anni<30 then
+  print("giovane adulto")
 else
-  stampa("età molto rispettabile")
-fine
+  print("età molto rispettabile")
+end
 ```
 
 ## Loop
-I loop permettono di eseguire trattamenti ripetuti.
+I loop permettono di eseguire operazioni ripetute.
 
 ### For loop
-Il ciclo ``for`` è molto usato nella programmazione. Permette di effettuare lo stesso trattamento su tutti gli elementi di una lista o di una serie di valori.
+Il ciclo ```for``` è molto usato nella programmazione. Permette di effettuare la stessa operazione su tutti gli elementi di una lista o di una serie di valori.
 
 ```
-per i=1 a 10
-  stampa(i)
-fine
+for i=1 a 10
+  print(i)
+end
 ```
 L'esempio precedente mostra nella console ogni numero da 1 a 10.
 
 ```
-per i=0 a 10 per 2
-  stampa(i)
-fine
+for i=0 a 10 by 2
+  print(i)
+end
 ```
 L'esempio precedente mostra i numeri da 0 a 10 nella console in passi di 2.
 
 ```
 lista =[2,3,5,5,7,11]
-per il numero nella lista
-  stampa(numero)
-fine
+for numero in lista
+  print(numero)
+end
 ```
-L'esempio qui sopra definisce una lista e poi visualizza ogni elemento della lista.
+L'esempio qui sopra definisce una lista e poi visualizza ogni elemento della lista nella console.
 
 ### While loop
-Il ciclo ``while``` permette di eseguire ripetutamente delle operazioni fino ad ottenere un risultato soddisfacente.
+Il ciclo ```while``` permette di eseguire ripetutamente delle operazioni fino ad ottenere un risultato soddisfacente.
 
 ```
 x = 1
-mentre x*x<100
-  stampa(x*x)
+while x*x<100
+  print(x*x)
   x = x+1
-fine
+end
 ```
-L'esempio precedente stampa il quadrato di x, poi incrementa x (cioè aggiunge 1 a x), finché il quadrato di x è inferiore a 100.
+L'esempio precedente stampa il quadrato di x, poi incrementa x (cioè aggiunge 1 a x), fintanto che il quadrato di x è inferiore a 100.
 
 ### Interruzione o continuazione del ciclo
 Potete uscire prematuramente da un ciclo `for` o `while` con l'istruzione `break`. Esempio:
 
 ```
-mentre vero
+while true
   x = x+1
-  se x>= 100 allora break end
-fine
+  if x>= 100 then break end
+end
 ```
 
 Potete saltare le operazioni rimanenti di un ciclo e continuare alla prossima iterazione del ciclo con l'istruzione `continue`. Esempio:
 
 ```
-per i=0 a 10000
+for i=0 to 10000
   if i%10 == 0 then continue end // questo salterà l'elaborazione dei multipli di 10
-  doSomeProcessing(i)
-fine
+  faiQualcheOperazione(i)
+end
 ```
 
 ## Operatori
@@ -511,29 +511,29 @@ Ecco la lista degli operatori binari in *microScript* (esclusi i confronti, già
 
 Descrizione
 |-|-|
-++|Aggiungi un appuntamento per la prossima settimana.
-Sottrazione
-Moltiplicazione
-Divisione.
-|%|Modulo: ``x % y`` è uguale al resto della divisione di x per y|
-Potenza: ``x ^ y``` è uguale a x elevato a potenza y è ``pow(x,y)```
+|+|Addizione|
+|-|Sottrazione|
+|*|Moltiplicazione|
+|/|Divisione|
+|%|Modulo : ```x % y``` è uguale al resto della divisione di x per y|
+|^|Potenza: ```x ^ y``` è uguale a x elevato alla potenza di y oppure ```pow(x,y)```|
 
 ## Funzioni predefinite
 
 ### Funzioni
-Funzione e descrizione
+|Funzione|Descrizione|
 |-|-|
-restituisce il numero più grande di a o b
-Restituisce il numero più piccolo di a o b
-Ritorna il valore a arrotondato al valore intero più vicino
-restituisce il valore a arrotondato per difetto al numero intero inferiore
-restituisce il valore a arrotondato per eccesso
-Restituisce il valore assoluto di a
-Restituisce la radice quadrata di a
-Restituisce a alla potenza di b (altra notazione possibile: ``a ^ b``)|
-La costante è uguale al numero Pi
-Restituisce il logaritmo naturale di a
-Restituisce il numero di Eulero elevato alla potenza di a
+|max(a,b)|Restituisce il numero più grande tra a e b|
+|min(a,b)|Restituisce il numero più piccolo tra a e b|
+|round(a)|Ritorna il valore a arrotondato al valore intero più vicino|
+|floor(a)|Restituisce il valore a arrotondato per difetto al numero intero inferiore|
+|ceil(a)|Restituisce il valore a arrotondato per eccesso|
+|abs(a)|Restituisce il valore assoluto di a|
+|sqrt(a)|Restituisce la radice quadrata di a|
+|pow(a,b)|Restituisce a alla potenza di b (altra notazione possibile: ```a ^ b```)|
+|PI|Costante è uguale al numero Pi|
+|log(a)|Restituisce il logaritmo naturale di a|
+|exp(a)|Restituisce il numero di Eulero elevato alla potenza di a|
 
 #### Funzioni di trigonometria in radianti
 Funzione e descrizione
