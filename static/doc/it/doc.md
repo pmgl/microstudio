@@ -535,214 +535,214 @@ Descrizione
 |log(a)|Restituisce il logaritmo naturale di a|
 |exp(a)|Restituisce il numero di Eulero elevato alla potenza di a|
 
-#### Funzioni di trigonometria in radianti
-Funzione e descrizione
+#### Funzioni trigonometriche in radianti
+|Funzione|Descrizione|
 |-|-|
-Restituisce il seno di a (a in radianti)
+|sin(a)|Restituisce il seno di a (a in radianti)|
 |cos(a)|Ritorna il coseno di a (a in radianti)|
-Restituisce la tangente di a (a in radianti)
-restituisce l'arco coseno di a (risultato in radianti)
-Restituisce il seno dell'arco di a (risultato in radianti)
-Restituisce l'arco tangente di a (risultato in radianti)
-Latan2(y,x)|Ritorna l'arco tangente di y/x (risultato in radianti)
+|tan(a)|Restituisce la tangente di a (a in radianti)|
+|acos(a)|Restituisce l'arcocoseno di a (risultato in radianti)|
+|asin(a)|Restituisce l'arcoseno di a (risultato in radianti)|
+|atan(a)|Restituisce l'arcotangente di a (risultato in radianti)|
+|atan2(y,x)|Ritorna l'arcotangente di y/x (risultato in radianti)|
 
-#### Funzioni di trigonometria in gradi
-Funzione e descrizione
+#### Funzioni trigonometriche in gradi
+|Function|Description|
 |-|-|
-restituisce il seno di a (a in gradi)
+|sind(a)|Restituisce il seno di a (a in gradi)|
 |cosd(a)|Ritorna il coseno di a (a in gradi)|
-Restituisce la tangente di a (a in gradi)
-Restituisce l'arco coseno di a (risultato in gradi)
-Restituisce il seno dell'arco di a (risultato in gradi)
-restituisce l'arco tangente di a (risultato in gradi)
-Restituisce l'arco tangente di y/x (risultato in gradi).
+|tand(a)|Restituisce la tangente di a (a in gradi)|
+|acosd(a)|Restituisce l'arcocoseno di a (risultato in gradi)|
+|asind(a)|Restituisce l'arcoseno di a (risultato in gradi)|
+|atand(a)|Restituisce l'arcotangente di a (risultato in gradi)|
+|atan2d(y,x)|Restituisce l'arco tangente di y/x (risultato in gradi)|
 
 ### Numeri casuali
-L'oggetto random viene utilizzato per generare numeri pseudo-casuali. È possibile inizializzare il generatore con la funzione ``seed`` per ottenere la stessa sequenza di numeri ad ogni esecuzione, o al contrario una sequenza diversa ogni volta.
+L'oggetto random viene utilizzato per generare numeri pseudo-casuali. È possibile inizializzare il generatore con la funzione ```seed``` per ottenere la stessa sequenza di numeri ad ogni esecuzione, o al contrario una sequenza diversa ogni volta.
 
-Descrizione
+|Function|Description|
 |-|-|
-|```random.next()```Rimuove un nuovo numero casuale tra 0 e 1
-|```random.nextInt(a)`` restituisce un nuovo numero intero casuale tra 0 e a-1||
-|```random.seed(a)``||resetta la sequenza di numeri casuali usando il valore a ; se usate lo stesso valore di inizializzazione due volte, otterrete la stessa sequenza di numeri casuali. Se a == 0, il generatore di numeri casuali è inizializzato... in modo casuale e quindi non riproducibile
+|```random.next()```|Restituisce un nuovo numero casuale tra 0 e 1|
+|```random.nextInt(a)```|Restituisce un nuovo numero intero casuale tra 0 e a-1|
+|```random.seed(a)```|Resetta la sequenza di numeri casuali usando il valore a ; se usate lo stesso valore di inizializzazione due volte, otterrete la stessa sequenza di numeri casuali. Se a == 0, il generatore di numeri casuali è inizializzato... in modo casuale e quindi non riproducibile|
 
 ## Operazioni con le stringhe
 
-Operazione|Descrizione
+|Operazione|Descrizione|
 |-|-|
-L'operatore + può essere usato per concatenare stringhe.
-|```string.length```|Il campo mantiene la lunghezza della stringa.
-|```string.substring(i1,i2)``` Restituisce una sottostringa della stringa di caratteri, partendo dall'indice i1 e finendo all'indice i2|
-|```string.startsWith(s)``` Restituisce se la stringa inizia esattamente con ```s````
-Restituisce se la stringa finisce esattamente con "s".
-|```string.indexOf(s)``` restituisce l'indice della prima occorrenza di ```s``` in ``string``, o -1 se ``string``` non contiene alcuna occorrenza
-|```string.lastIndexOf(s)``` Restituisce l'indice dell'ultima occorrenza di ```s``` in ``stringa``, o -1 se ``stringa`` non contiene alcuna occorrenza
-|```string.replace(s1,s2)``` Restituisce una nuova stringa in cui la prima occorrenza di ``s1``` (se presente) è sostituita con ``s2```.
-|```string.toUpperCase()``` restituisce la stringa convertita in maiuscolo|
-|```string.toLowerCase()``` restituisce la stringa convertita in minuscolo|
-|``stringa.split(s)```La funzione split divide la stringa in una lista di sottostringhe, cercando la sottostringa separatrice data come argomento e restituisce tale lista|
+|```string1 + string2```|L'operatore + può essere usato per concatenare stringhe|
+|```string.length```|Il campo ```length``` contiene la lunghezza della stringa.|
+|```string.substring(i1,i2)```|Restituisce una sottostringa della stringa di caratteri, partendo dall'indice i1 e finendo all'indice i2|
+|```string.startsWith(s)``` |Ritorna true se la stringa inizia esattamente con ```s```|
+|```string.endsWith(s)```|Ritorna true se la stringa finisce esattamente con ```s```|
+|```string.indexOf(s)``` |Restituisce l'indice della prima occorrenza di ```s``` in ```string```, oppure -1 se ```string``` non contiene alcuna occorrenza|
+|```string.lastIndexOf(s)```|Restituisce l'indice dell'ultima occorrenza di ```s``` in ```string```, o -1 se ```stringa``` non ne contiene alcuna occorrenza|
+|```string.replace(s1,s2)```|Restituisce una nuova stringa in cui la prima occorrenza di ```s1``` (se presente) è sostituita con ```s2```|
+|```string.toUpperCase()```|Restituisce la stringa convertita in maiuscolo|
+|```string.toLowerCase()```|restituisce la stringa convertita in minuscolo|
+|```stringa.split(s)```|La funzione split divide la stringa in una lista di sottostringhe, utilizzando la sottostringa separatrice passata come argomento. Restituisce quindi una lista delle sottostringhe trovate|
 
 
 ## Operazioni di lista
-Operazione|Descrizione
+|Operazione|Descrizione|
 |-|-|
-|```list.length```|Rimane la lunghezza della lista (numero di elementi nella lista).
-|```list.push(element)`` aggiunge l'elemento alla fine della lista||
-|```list.insert(element)```Inserisce un elemento all'inizio della lista|
-|```list.insertAt(element,index)```Inserisce un elemento all'indice dato nella lista|
-|```list.indexOf(element)``` Restituisce la posizione dell'elemento nella lista (0 per il primo elemento, 1 per il secondo elemento ...). Restituisce -1 quando l'elemento non si trova nella lista.
-|```list.contains(element)``` restituisce 1 (true) quando ``elemento`` è nella lista, o 0 (false) quando l'elemento non può essere trovato nella lista|
-|```list.removeAt(index)```Rimuove dalla lista l'elemento alla posizione ``index```
-|```list.removeElement(element)```Rimuove dalla lista ``elemento``, se può essere trovato nella lista
-|```list1.concat(list2)``` Restituisce una nuova lista ottenuta aggiungendo list2 a list1|
+|```list.length```|Contiene la lunghezza della lista (numero di elementi nella lista).|
+|```list.push(elemento)```|Aggiunge un elemento alla fine della lista|
+|```list.insert(elemento)```|Inserisce un elemento all'inizio della lista|
+|```list.insertAt(elemento,indice)```|Inserisce un elemento nella lista all'indice dato|
+|```list.indexOf(elemento)```|Restituisce la posizione dell'elemento nella lista (0 per il primo elemento, 1 per il secondo elemento ...). Restituisce -1 quando l'elemento non si trova nella lista|
+|```list.contains(elemento)```|Restituisce 1 (true) quando ``elemento`` è nella lista, o 0 (false) quando l'elemento non può essere trovato nella lista|
+|```list.removeAt(indice)```|Rimuove dalla lista l'elemento nella posizione ```index```|
+|```list.removeElement(elemento)```|Rimuove dalla lista ```elemento```, se si trova nella lista|
+|```list1.concat(list2)```|Restituisce una nuova lista ottenuta concatenando list2 a list1|
 
 ## Ordinamento di un elenco
 
-Potete ordinare gli elementi di una lista usando la funzione ``list.sortList(compareFunction)``. La ``compareFunction``` che fornisci deve accettare due argomenti (che chiameremo ``a`` e ``b```) e deve restituire:
-Valore di ritorno quando
+Potete ordinare gli elementi di una lista usando la funzione ```list.sortList(funzioneDiConfronto)```. La ```funzioneDiConfronto``` che fornite deve accettare due argomenti (che chiameremo ```a``` e ```b```) e deve restituire:
+|Valore di ritorno|quando|
 |-|-|
-un numero negativo quando ``a`` deve essere ordinato prima di ``b``(a è minore di b)|
-quando ``a``` e ``b``` hanno una posizione uguale rispetto al criterio di ordinamento desiderato
-un numero positivo quando ``a`` deve essere ordinato dopo ``b``` (a è maggiore di b)|
+|un numero negativo|quando ```a``` deve essere ordinato prima di ```b``` (a è minore di b)|
+|zero|quando ```a``` e ```b``` hanno una posizione uguale rispetto al criterio di ordinamento desiderato|
+|un numero positivo|quando ```a``` deve essere ordinato dopo ```b``` (a è maggiore di b)|
 
 ##### esempio
 
-L'esempio che segue presuppone che la lista contenga *punti*, ogni punto con un campo di coordinate ``x```. Vogliamo ordinare i punti dal valore minore di point.x al valore maggiore di point.x:
+L'esempio che segue presuppone che la lista contenga *punti*, ogni punto con un campo di coordinate ```x```. Vogliamo ordinare i punti dal valore minore di punto.x al valore maggiore di punto.x:
 
 ```
-confrontare = funzione(punto1,punto2)
-  ritorna punto1.x - punto2.x
-fine
+confronto = function(punto1,punto2)
+  return punto1.x - punto2.x
+end
 
-list.sortList(compare)
+list.sortList(confronto)
 ```
 
-Notate che potreste accorciare il codice qui sopra:
+Nota che potreste accorciare il codice qui sopra in questo modo:
 
 ```
-list.sortList(function(point1,point2) point1.x - point2.x end)
+list.sortList(function(point1,point2) punto1.x - punto2.x end)
 ```
 
 Ogni volta che non viene fornita una funzione di confronto, gli elementi della lista saranno ordinati secondo l'ordine alfabetico.
 
 ## Commenti
 
-I commenti in *microScript* possono essere aggiunti dopo una doppia barra: ```//````; tutto ciò che segue fino alla prossima interruzione di riga viene ignorato quando si analizza il programma.
+I commenti in *microScript* possono essere aggiunti dopo una doppia barra: ```//```; tutto ciò che segue fino alla prossima interruzione di riga viene ignorato quando si analizza il programma per la compilazione.
 
 ##### esempio
 ```
 miaFunzione = ()
-  // le mie note sul ruolo della funzione myFunction
-fine
+  // le mie note sullo scopo della funzione miaFunzione
+end
 ```
 
 ## Classi
 
-Una classe in un linguaggio di programmazione si riferisce a una sorta di modello o template per la creazione di oggetti. Una classe definisce proprietà e funzioni di default che costituiscono lo stato e il comportamento di default di tutti gli oggetti che saranno creati da essa. È possibile creare istanze di oggetti derivati da una classe, che erediteranno tutte le proprietà della classe. L'uso delle classi e dei loro oggetti derivati in un programma è chiamato programmazione orientata agli oggetti (OOP).
+Una classe in un linguaggio di programmazione si riferisce a una sorta di modello o template per la creazione di oggetti. Una classe definisce proprietà e funzioni di default che costituiscono lo stato e il comportamento standard di tutti gli oggetti che saranno creati da essa. È possibile creare istanze di oggetti derivati da una classe, che erediteranno tutte le proprietà della classe. L'uso delle classi e dei loro oggetti derivati in un programma è chiamato programmazione orientata agli oggetti (OOP).
 
 Per illustrare questi concetti, vedremo come potete usare le classi per gestire i nemici nel vostro gioco:
 
 ### Definire una classe
 
-Inizieremo creando una classe ``Enemy`` che sarà condivisa da tutti i nostri oggetti nemici. Ogni nemico avrà una posizione (sullo schermo). Avrà punti salute ``hp```, si muoverà ad una certa ``velocità``:
+Inizieremo creando una classe ```Nemico``` che sarà condivisa da tutti i nostri oggetti nemici. Ogni nemico avrà una ```posizione``` (sullo schermo). Avrà punti salute ```vita```, si muoverà ad una certa velocità ```movimento```:
 
 ```
-Nemico = classe
-  costruttore = funzione(posizione)
-    this.position = posizione
-  fine
+Nemico = class
+  costruttore = function(posizione)
+    this.posizione = posizione
+  end
 
-  hp = 10
-  velocità = 1
+  vita = 10
+  movimento = 1
 
-  spostare = funzione()
-    posizione += velocità
-  fine
+  muovi = function()
+    posizione += movimento
+  end
 
-  colpire = funzione(danno)
-    hp -= danno
-  fine
-fine
+  colpito = function(danno)
+    vita -= danno
+  end
+end
 ```
 
-In microScript, le classi e gli oggetti sono concetti molto simili e possono essere usati quasi in modo intercambiabile. La definizione della classe termina quindi con la parola chiave ``end```. La prima proprietà che abbiamo definito nella classe sopra è la funzione "constructor". Questa funzione viene chiamata quando viene creata un'istanza dell'oggetto della classe. Imposta la proprietà *posizione* dell'oggetto. ``this`` si riferisce all'istanza dell'oggetto su cui la funzione sarà chiamata, quindi impostare ``this.position`` significa che l'oggetto imposta la proprietà position su se stesso.
+In microScript, le classi e gli oggetti sono concetti molto simili e possono essere usati quasi in modo intercambiabile. La definizione della classe termina quindi con la parola chiave ```end```. La prima proprietà che abbiamo definito nella classe qui sopra è la funzione "constructor". Questa funzione viene chiamata quando viene creata un'istanza dell'oggetto della classe. Imposta la proprietà *posizione* dell'oggetto. ```this``` si riferisce all'istanza dell'oggetto su cui la funzione sarà chiamata, quindi impostare ```this.posizione``` significa che l'oggetto imposta la proprietà posizione su se stesso.
 
 ### Creare istanze di oggetti da una classe
 
 Creiamo due oggetti nemici derivati dalla nostra classe:
 
 ```
-nemico_1 = nuovo nemico(50)
-nemico_2 = nuovo nemico(100)
+nemico_1 = new Nemico(50)
+nemico_2 = new Nemico(100)
 ```
 
-L'operatore ``new`` è usato per creare una nuova istanza di un oggetto derivato da una classe. L'argomento che passiamo qui sarà rivolto alla funzione costruttore della nostra classe. Abbiamo così creato un'istanza del nemico alla posizione 50 e un'altra istanza del nemico alla posizione 100.
+L'operatore ```new``` è usato per creare una nuova istanza di un oggetto derivato da una classe. L'argomento che passiamo qui sarà rivolto alla funzione costruttore della nostra classe. Abbiamo così creato un'istanza del nemico alla posizione 50 e un'altra istanza del nemico alla posizione 100.
 
-Entrambi i nemici condividono la stessa velocità o punti vita (hp). Tuttavia, possiamo scegliere di impostare una velocità diversa per il secondo nemico:
+Entrambi i nemici condividono la stessa velocità(movimento) e punti vita (vita). Tuttavia, possiamo scegliere di impostare una velocità di movimento diverso per il secondo nemico:
 
 ```
-nemico_2.velocità = 2
+nemico_2.movimento = 2
 ```
 
 Ora possiamo far muovere i nostri nemici chiamando:
 
 ```
-nemico_1.move()
-nemico_2.move()
+nemico_1.muovi()
+nemico_2.muovi()
 ```
 
-Il secondo nemico si muoverà due volte più velocemente perché abbiamo alterato la velocità della sua proprietà prima di chiamare la funzione move.
+Il secondo nemico si muoverà due volte più velocemente perché abbiamo alterato la velocità di movimento tramite la sua proprietà prima di chiamare la funzione movi.
 
 ### Eredità
 
 Possiamo fare in modo che una classe erediti da un'altra classe. Per esempio, se vogliamo creare una variante del nostro Nemico, potremmo fare come segue:
 
 ```
-Boss = classe che estende il nemico
-  costruttore = funzione(posizione)
+Boss = class extends Nemico
+  constructor = function(posizione)
     super(posizione)
-    hp = 50
-  fine
+    vita = 50
+  end
 
-  spostare = funzione()
+  muovi = function()
     super()
-    hp += 1
-  fine
-fine
+    vita += 1
+  end
+end
 ```
 
-Abbiamo creato una nuova classe ``Boss`` estendendo la classe ``Enemy``. La nostra nuova classe condivide tutte le proprietà di Enemy, tranne che sostituisce alcune di queste proprietà con i propri valori. Chiamando ``super(position)`` nel costruttore della nostra nuova classe ci assicuriamo che venga chiamato anche il costruttore della nostra classe madre Enemy.
+Abbiamo creato una nuova classe ```Boss``` estendendo la classe ```Nemico```. La nostra nuova classe condivide tutte le proprietà di Nemico, tranne che sostituisce alcune di queste proprietà con i propri valori. Chiamando ```super(posizione)``` nel costruttore della nostra nuova classe ci assicuriamo che venga chiamato anche il costruttore della nostra classe madre Nemico.
 
-Abbiamo creato un nuovo comportamento ``move`` per il nostro Boss, che sovrascrive il comportamento di default di Enemy. In questa nuova funzione, chiamiamo ```super()`` per mantenere il comportamento di default che è stato definito nella classe Enemy; poi incrementiamo il valore di ``hp```, che implica che i nostri Boss recupereranno punti salute quando si muovono.
+Abbiamo creato un nuovo comportamento ```muovi``` per il nostro Boss, che sovrascrive il comportamento di default di Nemico. In questa nuova funzione, chiamiamo ```super()``` per mantenere il comportamento di default che è stato definito nella classe Enemy; poi però incrementiamo il valore di ```vita```, cioò implica che i nostri Boss recupereranno punti salute mentre si muovono.
 
 Possiamo ora creare un'istanza del nostro Boss nella posizione 120:
 
 ```
-the_final_boss = nuovo Boss(120)
+boss_finale = new Boss(120)
 ```
 
 ##### note
 
-* spazio delle variabili: quando una funzione viene chiamata su un oggetto (come ``enemy_1.move()``), le variabili a cui si fa riferimento nel corpo delle funzioni chiamate sono le proprietà dell'oggetto. Per esempio, nel corpo della funzione move, ``position += 1``` incrementerà la proprietà ``position``` dell'oggetto stesso.
+* spazio delle variabili: quando una funzione viene chiamata su un oggetto (come ```nemico_1.muovi()```), le variabili a cui si fa riferimento nel corpo delle funzioni chiamate sono le proprietà dell'oggetto. Per esempio, nel corpo della funzione mouvi, ```posizione += 1``` incrementerà la proprietà ```posizione``` dell'oggetto stesso.
 
-* A volte è necessario usare ``this`` per assicurarsi che ci stiamo riferendo correttamente a una proprietà del nostro oggetto. Per questo, nel costruttore della nostra classe Enemy, usiamo ``this.position = position``, perché ```position``` si riferisce anche all'argomento della funzione e quindi "nasconde" la proprietà del nostro oggetto.
+* A volte è necessario usare ```this``` per assicurarsi che ci stiamo riferendo correttamente a una proprietà del nostro oggetto. Per questo, nel costruttore della nostra classe Nemico, usiamo ```this.posizione = posizione```, perché ```posizione``` si riferisce anche all'argomento della funzione e quindi "nasconde" la proprietà del nostro oggetto.
 
-* ```super()`` può essere usato in una funzione collegata a un oggetto o a una classe, per invocare la funzione con lo stesso nome della classe madre.
+* ```super()``` può essere usato in una funzione collegata a un oggetto o a una classe, per invocare la funzione con lo stesso nome della classe madre.
 
 
-# Riferimento alla funzione
+# Riferimento alle funzioni
 
-## Visualizza lo ``schermo``.
+## Visualizzare nello schermo ```screen```.
 
-In *microStudio* lo schermo è rappresentato dall'oggetto predefinito "screen". Per visualizzare forme o immagini sullo schermo, basta chiamare funzioni (chiamate anche *metodi*) su questo oggetto. Per esempio:
+In *microStudio* lo schermo è rappresentato dall'oggetto predefinito "screen". Per visualizzare forme o immagini sullo schermo, basta chiamare funzioni (chiamate anche *metodi*) di questo oggetto. Per esempio:
 
 ```
 screen.setColor("#FFF")
 screen.fillRect(0,0,100,100,100)
 ```
-Il codice sopra definisce il colore del disegno come ``#FFF``` cioè bianco (vedi spiegazioni sotto). Poi disegna un rettangolo riempito con questo colore, centrato sulle coordinate 0.0 dello schermo (cioè il centro dello schermo), di larghezza 100 e altezza 100.
+Il codice qui sopra definisce il colore del disegno come ``#FFF``` cioè bianco (vedi spiegazione più sotto). Poi disegna un rettangolo riempito di questo colore, centrato sulle coordinate 0.0 dello schermo (cioè il centro dello schermo), di larghezza 100 e altezza 100.
 
-Per facilitare il vostro lavoro, *microStudio* scala automaticamente le coordinate dello schermo, indipendentemente dalla risoluzione effettiva del display. Per convenzione, la dimensione più piccola dello schermo (larghezza in modalità verticale, altezza in modalità orizzontale) è 200. Essendo il punto di origine (0,0) il centro dello schermo, la dimensione più piccola è quindi graduata da -100 a +100. La dimensione più grande sarà graduata per esempio da -178 a +178 (schermo classico 16:9), da -200 a +200 (schermo 2:1, smartphone più lunghi e recenti) ecc.
+Per facilitare il vostro lavoro, *microStudio* scala automaticamente le coordinate dello schermo, indipendentemente dalla risoluzione effettiva del display. Per convenzione, la dimensione più piccola dello schermo (larghezza in modalità verticale, altezza in modalità orizzontale) è 200. Essendo il punto di origine (0,0) il centro dello schermo, la dimensione più piccola è quindi graduata da -100 a +100. La dimensione più grande sarà graduata per esempio da -178 a +178 (schermo classico 16:9), oppure da -200 a +200 (schermo 2:1, smartphone più lunghi e recenti) ecc.
 
 
 ![Coordinate dello schermo](/doc/img/screen_coordinates.png "Coordinate dello schermo")
@@ -752,11 +752,11 @@ Per facilitare il vostro lavoro, *microStudio* scala automaticamente le coordina
 
 ### Definire un colore
 <!--- suggest_start screen.setColor --->
-##### screen.setColor( color)
+##### screen.setColor( colore)
 
-Definisce il colore da usare per le future chiamate alle funzioni di disegno.
+Definisce il colore da usare per le sucessive chiamate alle funzioni di disegno.
 
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 Il colore è definito da una stringa di caratteri, quindi tra virgolette "". È generalmente descritto dalle sue componenti RGB, cioè una miscela di Rosso, Verde e Blu. Sono possibili diversi tipi di classificazione:
 
@@ -766,77 +766,77 @@ Il colore è definito da una stringa di caratteri, quindi tra virgolette "". È 
 
 ### Cancella lo schermo
 <!--- suggest_start screen.clear --->
-##### screen.clear(color)
+##### screen.clear(colore)
 Cancella lo schermo (lo riempie con il colore fornito, o con il nero se nessun colore è passato come argomento).
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ### Disegno di forme
 <!--- suggest_start screen.fillRect --->
 ##### screen.fillRect( x, y, larghezza, altezza, colore)
-Disegna un rettangolo riempito, centrato sulle coordinate x e y, con la larghezza e l'altezza specificate. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
-<!--- suggerire_fine --->
+Disegna un rettangolo riempito di colore, centrato sulle coordinate x e y, con la larghezza e l'altezza specificate. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
+<!--- suggest_end --->
 
 ---
 
 <!--- suggest_start screen.fillRoundRect --->
 ##### screen.fillRoundRect( x, y, larghezza, altezza, raggio, colore)
-Disegna un rettangolo arrotondato riempito, centrato sulle coordinate x e y, con la larghezza, l'altezza e il raggio di curvatura specificati. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
-<!--- suggerire_fine --->
+Disegna un rettangolo arrotondato riempito di colore, centrato sulle coordinate x e y, con la larghezza, l'altezza e il raggio di curvatura specificati. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
+<!--- suggest_end --->
 
 ---
 
 <!--- suggest_start screen.fillRound --->
 ##### screen.fillRound( x, y, larghezza, altezza, colore)
-Disegna una forma rotonda solida (un disco o un'ellisse a seconda delle dimensioni utilizzate), centrata nelle coordinate x e y, con la larghezza e l'altezza specificate. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
-<!--- suggerire_fine --->
+Disegna una forma rotonda solida (un disco o un'ellisse a seconda delle dimensioni utilizzate), centrata nelle coordinate x e y, con la larghezza e l'altezza specificate. Il colore di riempimento è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
+<!--- suggest_end --->
 
 <!--- suggest_start screen.drawRect --->
 ##### screen.drawRect( x, y, larghezza, altezza, colore)
 Disegna il contorno di un rettangolo, centrato sulle coordinate x e y, con la larghezza e l'altezza specificate. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ---
 
 <!--- suggest_start screen.drawRoundRect --->
 ##### screen.drawRoundRect( x, y, larghezza, altezza, raggio, colore)
 Disegna un contorno di rettangolo arrotondato, centrato sulle coordinate x e y, con la larghezza, l'altezza e il raggio di curvatura specificati. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ---
 
 <!--- suggest_start screen.drawRound --->
 ##### screen.drawRound( x, y, larghezza, altezza, colore)
 Disegna il contorno di una forma rotonda, centrata alle coordinate x e y, con la larghezza e l'altezza specificate. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 <!--- suggest_start screen.drawLine --->
 ##### screen.drawLine( x1, y1, x2, y2, colore )
 Disegna una linea che unisce i punti (x1,y1) e (x2,y2). Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore usato.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 <!--- suggest_start screen.fillPolygon --->
 ##### screen.fillPolygon( x1, y1, x2, y2, x3, y3, ... , colore )
 Riempie un poligono definito dall'elenco di coordinate di punti passati come argomenti. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
-La funzione può anche accettare un array come primo argomento e un colore come secondo argomento. In tal caso, ci si aspetta che l'array contenga le coordinate dei punti come questo: ``screen.fillPolygon( [ x1, y1 , x2, y2, x3, y3 ... ], color )``.
+La funzione può anche accettare un array come primo argomento e un colore come secondo argomento. In tal caso, ci si aspetta che l'array contenga le coordinate dei punti come in questo esempio: ```screen.fillPolygon( [ x1, y1 , x2, y2, x3, y3 ... ], color )```.
 
 <!--- suggest_start screen.drawPolygon --->
 ##### screen.drawPolygon( x1, y1, x2, y2, x3, y3, ... , colore )
 Disegna un contorno di poligono, definito dall'elenco di coordinate di punti passati come argomenti. Il colore è opzionale, se viene omesso, verrà riutilizzato l'ultimo colore utilizzato.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
-La funzione può anche accettare un array come primo argomento e un colore come secondo argomento. In tal caso, ci si aspetta che l'array contenga le coordinate dei punti come questo: ``screen.drawPolygon( [ x1, y1 , x2, y2, x3, y3 ... ], color )``.
+La funzione può anche accettare un array come primo argomento e un colore come secondo argomento. In tal caso, ci si aspetta che l'array contenga le coordinate dei punti come in questo esempio: ```screen.drawPolygon( [ x1, y1 , x2, y2, x3, y3 ... ], color )```.
 
 <!--- suggest_start screen.drawPolyline --->
 ##### screen.drawPolyline( x1, y1, x2, y2, x3, y3, ... , colore )
-Uguale a `drawPolygon`, eccetto che il percorso di disegno non sarà chiuso automaticamente.
-<!--- suggerire_fine --->
+Equivalente a `drawPolygon`, eccetto che il percorso di disegno non sarà chiuso automaticamente.
+<!--- suggest_end --->
 
 <!--- suggest_start screen.setLineWidth --->
 ##### screen.setLineWidth( width )
 Imposta la larghezza della linea per tutte le successive operazioni di disegno di linee (drawLine, drawPolygon, drawRect ecc.). La larghezza di linea predefinita è 1.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 <!--- suggest_start screen.setLineDash --->
 ##### screen.setLineDash( array_di_valori )
@@ -846,7 +846,7 @@ Imposta lo stile del tratto di linea per tutte le successive operazioni di diseg
 ```
 screen.setLineDash([2,4])
 ```
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 
 ### Visualizza sprites e mappe
@@ -855,7 +855,7 @@ screen.setLineDash([2,4])
 ##### screen.drawSprite( sprite, x, y, width, height)
 
 Disegna sullo schermo uno degli sprite che hai creato nella sezione *Sprites*. Il primo parametro è una stringa che corrisponde al nome dello sprite da visualizzare, per esempio ``"icona"``. Poi seguono le coordinate x,y dove visualizzare lo sprite (lo sprite sarà centrato su queste coordinate). Poi la larghezza e l'altezza della visualizzazione.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.drawSprite("icona",0,50,50,50)
@@ -881,11 +881,11 @@ L'esempio qui sopra disegna il fotogramma 0 dello sprite "sprite1".
 <!--- suggest_start screen.drawSpritePart --->
 ##### screen.drawSpritePart( sprite, part_x, part_y, part_width, part_height, x, y, width, height)
 
-Disegna parte di uno sprite sullo schermo. Il primo parametro è una stringa che corrisponde al nome dello sprite da visualizzare, per esempio ```"icona"``. I prossimi 4 parametri definiscono la coordinata di un sotto-rettangolo dello sprite da dipingere effettivamente sullo schermo (la coordinata 0,0 è l'angolo in alto a sinistra dello sprite). Gli ultimi 4 parametri sono gli stessi di ``drawSprite``.
-<!--- suggerire_fine --->
+Disegna parte di uno sprite sullo schermo. Il primo parametro è una stringa che corrisponde al nome dello sprite da visualizzare, per esempio ```"icona"```. I prossimi 4 parametri definiscono la coordinata di un sotto-rettangolo dello sprite da disegnare effettivamente sullo schermo (la coordinata 0,0 è l'angolo in alto a sinistra dello sprite). Gli ultimi 4 parametri sono gli stessi della funzione ```drawSprite```.
+<!--- suggest_end --->
 
 ```
-screen.drawSpritePart("icon",4,4,8,8,0,50,50,50)
+screen.drawSpritePart("icona",4,4,8,8,0,50,50,50)
 ```
 L'altezza può essere omessa, come nell'esempio precedente. In questo caso l'altezza sarà calcolata in base alla larghezza e alle proporzioni della parte di sprite.
 
@@ -893,8 +893,8 @@ L'altezza può essere omessa, come nell'esempio precedente. In questo caso l'alt
 
 <!--- suggest_start screen.drawMap --->
 ##### screen.drawMap( map , x , y , width , height )
-Disegna sullo schermo una delle mappe che hai creato nella sezione *Maps*. Il primo parametro è una stringa che corrisponde al nome della mappa da visualizzare, per esempio ``mappa1``. Poi seguono le coordinate x,y dove visualizzare la mappa (la mappa sarà centrata su queste coordinate). Poi la larghezza e l'altezza della visualizzazione.
-<!--- suggerire_fine --->
+Disegna sullo schermo una delle mappe che hai creato nella sezione *Maps*. Il primo parametro è una stringa che corrisponde al nome della mappa da visualizzare, per esempio ``mappa1``. Poi seguono le coordinate x,y dove visualizzare la mappa (la mappa sarà centrata su queste coordinate). In sucessione poi, la larghezza e l'altezza della visualizzazione.
+<!--- suggest_end --->
 
 ```
 screen.drawMap("map1",0,0,300,200)
@@ -905,7 +905,7 @@ screen.drawMap("map1",0,0,300,200)
 <!--- suggest_start screen.drawText --->
 ##### screen.drawText( testo, x, y, dimensione, &lt;colore&gt; )
 Disegna un testo sullo schermo. Il primo parametro è il testo da visualizzare, poi le coordinate x e y dove il testo sarà centrato, poi la dimensione (altezza) del testo. L'ultimo parametro è il colore del disegno, può essere omesso, in questo caso verrà riutilizzato l'ultimo colore definito.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.drawText("Ciao!",0,0,30, "#FFF")
@@ -914,7 +914,7 @@ screen.drawText("Ciao!",0,0,30, "#FFF")
 <!--- suggest_start screen.drawTextOutline --->
 ##### screen.drawTextOutline( text, x, y, size, &lt;color&gt; )
 Disegna il contorno del testo. Disegnare un contorno in un colore diverso può essere fatto dopo un ``drawText`` per aumentare il contrasto. Lo spessore del contorno può essere impostato con ``screen.setLineWidth``.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.drawTextOutline("Ciao!",0,0,30, "#F00")
@@ -927,7 +927,7 @@ screen.drawTextOutline("Ciao!",0,0,30, "#F00")
 Definisce il font da usare per le future chiamate a ``drawText```.
 
 **Fonts disponibili nella versione corrente**: AESystematic, Alkhemikal, AlphaBeta, Arpegius, Awesome, BitCell, Blocktopia, Comicoro, Commodore64, DigitalDisco, Edunline, EnchantedSword, EnterCommand, Euxoi, FixedBold, GenericMobileSystem, GrapeSoda, JupiterCrash, Kapel, KiwiSoda, Litebulb8bit, LycheeSoda, MisterPixel, ModernDos, NokiaCellPhone, PearSoda, PixAntiqua, PixChicago, PixelArial, PixelOperator, Pixellari, Pixolde, PlanetaryContact, PressStart2P, RainyHearts, RetroGaming, Revolute, Romulus, Scriptorium, Squarewave, Thixel, Unbalanced, UpheavalPro, VeniceClassic, ZXSpectrum, Zepto
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.setFont("BitCell")
@@ -939,7 +939,7 @@ screen.setFont("BitCell")
 <!--- suggest_start screen.textWidth --->
 ##### screen.textWidth( testo, dimensione )
 Restituisce la larghezza del testo dato quando viene disegnato sullo schermo con le dimensioni date.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 larghezza = screen.textWidth( "Il mio testo", 20 )
@@ -949,7 +949,7 @@ larghezza = screen.textWidth( "Il mio testo", 20 )
 <!--- suggest_start screen.setAlpha --->
 ##### screen.setAlpha
 Definisce il livello di opacità generale per tutte le funzioni di disegno richiamate in seguito. Il valore 0 equivale a una trasparenza totale (elementi invisibili) e il valore 1 corrisponde a un'opacità totale (gli elementi disegnati nascondono totalmente ciò che sta sotto).
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.setAlpha(0.5) // i prossimi elementi disegnati saranno semi-trasparenti
@@ -966,7 +966,7 @@ screen.setAlpha(1) // il valore predefinito, opacità totale
 <!--- suggest_start screen.setLinearGradient --->
 ##### screen.setLinearGradient(x1, y1, x2, y2, color1, color2)
 Definisce il colore del disegno come un gradiente lineare di colore, cioè un gradiente. ``x1 e y1``` sono le coordinate del punto di partenza del gradiente. ``x2 e y2``` sono le coordinate del punto finale del gradiente. ``colore1``` è il colore di partenza (vedi ``setColor`` per i valori del colore). "``colore2`` è il colore di arrivo.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.setLinearGradient(0,100,0,-100, "#FFF", "#F00")
@@ -979,7 +979,7 @@ L'esempio precedente crea un gradiente dal bianco al rosso, dall'alto al basso d
 <!--- suggest_start screen.setRadialGradient --->
 ##### screen.setRadialGradient( x, y, radius, color1, color2)
 Definisce il colore del disegno come un gradiente radiale di colore, cioè un gradiente a forma di cerchio. ``x``` e ``y``` sono le coordinate del centro del cerchio. ``radius`` è il raggio del cerchio. ``color1``` è il colore al centro del cerchio (vedi ``setColor`` per i valori dei colori). ``color2`` è il colore sul perimetro del cerchio.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.setRadialGradient(0,0,100, "#FFF", "#F00")
@@ -992,7 +992,7 @@ L'esempio precedente crea un gradiente di bianco al centro dello schermo, verso 
 <!--- suggest_start screen.setTranslation --->
 ##### screen.setTranslation( tx, ty )
 Definisce la traslazione delle coordinate dello schermo per le successive operazioni di disegno.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.setTranslation(50,50)
@@ -1008,7 +1008,7 @@ screen.setTranslation(0,0)
 <!--- suggest_start screen.setDrawRotation --->
 ##### screen.setDrawRotation( angolo)
 Definisce un angolo di rotazione per le prossime operazioni di disegno. L'angolo è espresso in gradi.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.setDrawRotation(45)
@@ -1024,7 +1024,7 @@ screen.setDrawRotation(0) // restituisce l'angolo di rotazione al suo valore pre
 <!--- suggest_start screen.setDrawScale --->
 ##### screen.setDrawScale( x, y)
 Definisce un fattore di scala per disegnare i prossimi elementi sullo schermo. ``x``` definisce il fattore di scala sull'asse x e ```y``` il fattore di scala sull'asse y. Un valore di 2 visualizzerà il doppio. Un valore di -1 permette, per esempio, di capovolgere uno sprite (specchio), orizzontalmente (x) o verticalmente (y).
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ```
 screen.setDrawScale(1,-1)
@@ -1042,7 +1042,7 @@ screen.setDrawScale(1,1) // restituisce il fattore di scala al suo valore predef
 Per impostazione predefinita, tutte le operazioni di disegno considerano le vostre coordinate come il centro della forma da disegnare. Puoi cambiare questo chiamando
 screen.setDrawAnchor( anchor_x, anchor_y )`per specificare un punto di ancoraggio diverso per disegnare le forme.
 
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 Sull'asse x, il punto di ancoraggio può essere impostato a -1 (lato sinistro della tua forma), 0 (centro della tua forma), 1 (lato destro della tua forma) o qualsiasi valore intermedio. Sull'asse y, il punto di ancoraggio può essere impostato a -1 (lato inferiore della tua forma), 0 (centro della tua forma), 1 (parte superiore della tua forma) o qualsiasi valore intermedio.
 
 Esempi
@@ -1061,17 +1061,17 @@ Puoi anche usare qualsiasi modalità di composizione definita nella specifica HT
 <!--- suggest_start screen.width --->
 ##### screen.width
 Il campo "width" dell'oggetto schermo ha come valore la larghezza attuale dello schermo (sempre 200 se lo schermo è in modalità verticale, vedi *coordinate schermo*).
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 <!--- suggest_start screen.height --->
 ###### screen.height
 Il campo "altezza" dell'oggetto schermo ha come valore l'altezza attuale dello schermo (sempre 200 se lo schermo è in modalità paesaggio, vedi *coordinate schermo*).
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 <!--- suggest_start screen.setCursorVisible --->
 ##### screen.setCursorVisible( visible )
 Potete usare questa funzione per mostrare o nascondere il cursore del mouse.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 
 ## Ingressi, controllo
@@ -1092,7 +1092,7 @@ Campo Valore
 ### Ingressi da tastiera
 <!--- suggest_start keyboard --->
 Gli input da tastiera possono essere testati usando l'oggetto ``keyboard``.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ##### esempio
 ```
@@ -1148,7 +1148,7 @@ fine
 ### Ingressi touch
 
 Gli input tattili possono essere testati con l'oggetto "touch" (che riporta anche lo stato del mouse).
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 Campo Valore
 |-|-|
@@ -1180,7 +1180,7 @@ L'esempio qui sopra mostra l'icona del progetto in ogni punto di contatto attivo
 ### Ingressi del mouse
 
 Gli input del mouse possono essere testati con l'oggetto ``mouse`` (che riporta anche eventi touch).
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 Campo Valore
 |-|-|
@@ -1196,7 +1196,7 @@ vero se un pulsante del mouse è stato appena rilasciato
 ### Ingressi del controller (gamepad)
 <!--- suggest_start gamepad --->
 Lo stato dei pulsanti e dei joystick del controller (gamepad) può essere testato utilizzando l'oggetto "gamepad".
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ##### esempio
 ```
@@ -1215,7 +1215,7 @@ Come per la pressione dei tasti della tastiera, puoi usare ``gamepad.press.<BUTT
 <!--- suggest_start audio.playSound --->
 ##### audio.playSound( nome, volume, pitch, pan, loop )
 Riproduce il suono dato, con le impostazioni di riproduzione opzionali date.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ##### argomenti
 Argomento
@@ -1245,7 +1245,7 @@ Il mio_suono.stop()|Fermano la riproduzione di quel suono|
 <!--- suggest_start audio.playMusic --->
 ##### audio.playMusic( nome, volume, loop )
 Riproduce la musica data, con le impostazioni di riproduzione opzionali date.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ##### argomenti
 Argomento
@@ -1278,7 +1278,7 @@ Riproduce un suono descritto dalla stringa passata come parametro.
 ```
 audio.beep("C E G")
 ```
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 Esempio più dettagliato e spiegazioni nella tabella sottostante:
 ```
 "sega durata 100 span 50 durata 500 volume 50 span 50 loop 4 C2 C F G G F fine"
@@ -1297,7 +1297,7 @@ C o D, E, F ecc. indica una nota da suonare. È possibile indicare anche l'ottav
 <!--- suggest_start audio.cancelBeeps --->
 ### audio.cancelBeeps
 Annulla tutti i suoni riprodotti dal *beeper*. Utile per silenziare il suono dopo aver avviato dei loop musicali.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ## Metodi di sprite
 Il tuo programma può accedere agli sprites del tuo progetto, che sono memorizzati in un oggetto predefinito ``sprites```:
@@ -1346,7 +1346,7 @@ L'oggetto ``system`` permette di accedere alla funzione ``time``, che restituisc
 <!--- suggest_start system.time --->
 ### system.time()
 Restituisce il tempo trascorso in millisecondi (dal 1 gennaio 1970)
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 ## Storage
 L'oggetto ``storage`` permette la memorizzazione permanente dei dati della tua applicazione. Puoi usarlo per memorizzare i progressi degli utenti, i punteggi più alti o altre informazioni di stato sul tuo gioco o progetto.
@@ -1354,11 +1354,11 @@ L'oggetto ``storage`` permette la memorizzazione permanente dei dati della tua a
 <!--- suggest_start storage.set --->
 ### storage.set( nome , valore )
 Memorizza il valore in modo permanente, referenziato dalla stringa ``nome``. Il valore può essere qualsiasi numero, stringa, lista o oggetto strutturato.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 <!--- suggest_start storage.get --->
 ### storage.get( name )
 Restituisce il valore registrato in modo permanente sotto la stringa di riferimento ``nome``. Restituisce ``0``` quando tale record non esiste.
-<!--- suggerire_fine --->
+<!--- suggest_end --->
 
 
