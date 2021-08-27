@@ -912,8 +912,8 @@ screen.drawText("Ciao!",0,0,30, "#FFF")
 ```
 
 <!--- suggest_start screen.drawTextOutline --->
-##### screen.drawTextOutline( text, x, y, size, &lt;color&gt; )
-Disegna il contorno del testo. Disegnare un contorno in un colore diverso può essere fatto dopo un ``drawText`` per aumentare il contrasto. Lo spessore del contorno può essere impostato con ``screen.setLineWidth``.
+##### screen.drawTextOutline( text, x, y, size, &lt;colore&gt; )
+Disegna il contorno del testo. Il disegnare il contorno di un colore diverso può essere fatto dopo un ``drawText`` per aumentare il contrasto del testo stesso. Lo spessore del contorno può essere impostato con ``screen.setLineWidth``.
 <!--- suggest_end --->
 
 ```
@@ -938,7 +938,7 @@ screen.setFont("BitCell")
 
 <!--- suggest_start screen.textWidth --->
 ##### screen.textWidth( testo, dimensione )
-Restituisce la larghezza del testo dato quando viene disegnato sullo schermo con le dimensioni date.
+Restituisce la larghezza del testo impostato quando verrà disegnato sullo schermo con la dimensione data.
 <!--- suggest_end --->
 
 ```
@@ -955,7 +955,7 @@ Definisce il livello di opacità generale per tutte le funzioni di disegno richi
 screen.setAlpha(0.5) // i prossimi elementi disegnati saranno semi-trasparenti
 ```
 
-Quando usate questa funzione per disegnare alcuni elementi con un po' di trasparenza, non dimenticate di resettare il parametro alfa al suo valore predefinito:
+Quando usate questa funzione per disegnare alcuni elementi con un po' di trasparenza, non dimenticate di resettare il parametro alfa al suo valore predefinito quando non è più necessario:
 
 ```
 screen.setAlpha(1) // il valore predefinito, opacità totale
@@ -965,7 +965,7 @@ screen.setAlpha(1) // il valore predefinito, opacità totale
 
 <!--- suggest_start screen.setLinearGradient --->
 ##### screen.setLinearGradient(x1, y1, x2, y2, color1, color2)
-Definisce il colore del disegno come un gradiente lineare di colore, cioè un gradiente. ``x1 e y1``` sono le coordinate del punto di partenza del gradiente. ``x2 e y2``` sono le coordinate del punto finale del gradiente. ``colore1``` è il colore di partenza (vedi ``setColor`` per i valori del colore). "``colore2`` è il colore di arrivo.
+Definisce il colore del disegno come un gradiente lineare di colore, cioè un gradiente. ```x1 e y1``` sono le coordinate del punto di partenza del gradiente. ```x2 e y2``` sono le coordinate del punto finale del gradiente. ```colore1``` è il colore di partenza (vedi ```setColor``` per i valori del colore). ```colore2``` è il colore di arrivo.
 <!--- suggest_end --->
 
 ```
