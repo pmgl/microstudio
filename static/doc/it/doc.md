@@ -854,11 +854,11 @@ screen.setLineDash([2,4])
 <!--- suggest_start screen.drawSprite --->
 ##### screen.drawSprite( sprite, x, y, width, height)
 
-Disegna sullo schermo uno degli sprite che hai creato nella sezione *Sprites*. Il primo parametro è una stringa che corrisponde al nome dello sprite da visualizzare, per esempio ``"icona"``. Poi seguono le coordinate x,y dove visualizzare lo sprite (lo sprite sarà centrato su queste coordinate). Poi la larghezza e l'altezza della visualizzazione.
+Disegna sullo schermo uno degli sprite che hai creato nella sezione *Sprites*. Il primo parametro è una stringa che corrisponde al nome dello sprite da visualizzare, per esempio ``"icon"``. Poi seguono le coordinate x,y dove visualizzare lo sprite (lo sprite sarà centrato su queste coordinate). Poi la larghezza e l'altezza della visualizzazione.
 <!--- suggest_end --->
 
 ```
-screen.drawSprite("icona",0,50,50,50)
+screen.drawSprite("icon",0,50,50,50)
 ```
 L'altezza può essere omessa, come nell'esempio precedente. In questo caso l'altezza sarà calcolata in base alla larghezza e alle proporzioni dello sprite.
 
@@ -881,11 +881,11 @@ L'esempio qui sopra disegna il fotogramma 0 dello sprite "sprite1".
 <!--- suggest_start screen.drawSpritePart --->
 ##### screen.drawSpritePart( sprite, part_x, part_y, part_width, part_height, x, y, width, height)
 
-Disegna parte di uno sprite sullo schermo. Il primo parametro è una stringa che corrisponde al nome dello sprite da visualizzare, per esempio ```"icona"```. I prossimi 4 parametri definiscono la coordinata di un sotto-rettangolo dello sprite da disegnare effettivamente sullo schermo (la coordinata 0,0 è l'angolo in alto a sinistra dello sprite). Gli ultimi 4 parametri sono gli stessi della funzione ```drawSprite```.
+Disegna parte di uno sprite sullo schermo. Il primo parametro è una stringa che corrisponde al nome dello sprite da visualizzare, per esempio ```"icon"```. I prossimi 4 parametri definiscono la coordinata di un sotto-rettangolo dello sprite da disegnare effettivamente sullo schermo (la coordinata 0,0 è l'angolo in alto a sinistra dello sprite). Gli ultimi 4 parametri sono gli stessi della funzione ```drawSprite```.
 <!--- suggest_end --->
 
 ```
-screen.drawSpritePart("icona",4,4,8,8,0,50,50,50)
+screen.drawSpritePart("icon",4,4,8,8,0,50,50,50)
 ```
 L'altezza può essere omessa, come nell'esempio precedente. In questo caso l'altezza sarà calcolata in base alla larghezza e alle proporzioni della parte di sprite.
 
@@ -933,7 +933,7 @@ Definisce il font da usare per le future chiamate a ``drawText```.
 screen.setFont("BitCell")
 ```
 
-**Tip**: la variabile globale ``fonts`` è un array di tutti i font disponibili in microStudio
+**Suggerimento**: la variabile globale ``fonts`` è un array di tutti i font disponibili in microStudio
 
 
 <!--- suggest_start screen.textWidth --->
@@ -947,7 +947,7 @@ larghezza = screen.textWidth( "Il mio testo", 20 )
 
 ### Parametri di disegno
 <!--- suggest_start screen.setAlpha --->
-##### screen.setAlpha
+##### screen.setAlpha(opacità)
 Definisce il livello di opacità generale per tutte le funzioni di disegno richiamate in seguito. Il valore 0 equivale a una trasparenza totale (elementi invisibili) e il valore 1 corrisponde a un'opacità totale (gli elementi disegnati nascondono totalmente ciò che sta sotto).
 <!--- suggest_end --->
 
@@ -964,7 +964,7 @@ screen.setAlpha(1) // il valore predefinito, opacità totale
 ---
 
 <!--- suggest_start screen.setLinearGradient --->
-##### screen.setLinearGradient(x1, y1, x2, y2, color1, color2)
+##### screen.setLinearGradient(x1, y1, x2, y2, colore1, colore2)
 Definisce il colore del disegno come un gradiente lineare di colore, cioè un gradiente. ```x1 e y1``` sono le coordinate del punto di partenza del gradiente. ```x2 e y2``` sono le coordinate del punto finale del gradiente. ```colore1``` è il colore di partenza (vedi ```setColor``` per i valori del colore). ```colore2``` è il colore di arrivo.
 <!--- suggest_end --->
 
@@ -977,8 +977,8 @@ L'esempio precedente crea un gradiente dal bianco al rosso, dall'alto al basso d
 ---
 
 <!--- suggest_start screen.setRadialGradient --->
-##### screen.setRadialGradient( x, y, radius, color1, color2)
-Definisce il colore del disegno come un gradiente radiale di colore, cioè un gradiente a forma di cerchio. ``x``` e ``y``` sono le coordinate del centro del cerchio. ``radius`` è il raggio del cerchio. ``color1``` è il colore al centro del cerchio (vedi ``setColor`` per i valori dei colori). ``color2`` è il colore sul perimetro del cerchio.
+##### screen.setRadialGradient( x, y, raggio, colore1, colore2)
+Definisce il colore del disegno come un gradiente radiale di colore, cioè un gradiente a forma di cerchio. ```x``` e ```y``` sono le coordinate del centro del cerchio. ```raggio``` è il raggio del cerchio. ``colore1``` è il colore al centro del cerchio (vedi ```setColor``` per i valori dei colori). ```colore2``` è il colore sul perimetro del cerchio.
 <!--- suggest_end --->
 
 ```
@@ -1000,47 +1000,47 @@ screen.fillRect(0,0,20,20)
 ```
 Il rettangolo nell'esempio precedente sarà disegnato con un offset di 50,50
 
-Non dimenticate di resettare la traslazione a 0,0 ogni volta che avete bisogno di interrompere la traslazione delle operazioni di disegno.
+Non dimenticate di resettare la traslazione a 0,0 ogni volta che avete bisogno di interrompere la traslazione delle sucessive operazioni di disegno.
 ```
 screen.setTranslation(0,0)
 ```
 
 <!--- suggest_start screen.setDrawRotation --->
-##### screen.setDrawRotation( angolo)
+##### screen.setDrawRotation(angolo)
 Definisce un angolo di rotazione per le prossime operazioni di disegno. L'angolo è espresso in gradi.
 <!--- suggest_end --->
 
 ```
 screen.setDrawRotation(45)
-screen.drawSprite ("icona",0,0,100)
+screen.drawSprite ("icon",0,0,100)
 ```
 L'esempio qui sopra mostra l'icona del progetto, inclinata di 45 gradi.
 
 Non dimenticare di resettare l'angolo di rotazione a 0 dopo averlo usato!
 ```
-screen.setDrawRotation(0) // restituisce l'angolo di rotazione al suo valore predefinito
+screen.setDrawRotation(0) // ripristina l'angolo di rotazione al suo valore predefinito
 ```
 
 <!--- suggest_start screen.setDrawScale --->
 ##### screen.setDrawScale( x, y)
-Definisce un fattore di scala per disegnare i prossimi elementi sullo schermo. ``x``` definisce il fattore di scala sull'asse x e ```y``` il fattore di scala sull'asse y. Un valore di 2 visualizzerà il doppio. Un valore di -1 permette, per esempio, di capovolgere uno sprite (specchio), orizzontalmente (x) o verticalmente (y).
+Definisce un fattore di scala per disegnare i prossimi elementi sullo schermo. ```x``` definisce il fattore di scala sull'asse x e ```y``` il fattore di scala sull'asse y. Un valore di 2 visualizzerà i disegni sucessivi con il doppio della dimensione. Un valore di -1 permette, per esempio, di capovolgere uno sprite (specchio), orizzontalmente (x) o verticalmente (y).
 <!--- suggest_end --->
 
 ```
 screen.setDrawScale(1,-1)
-screen.drawSprite ("icona",0,0,100)
+screen.drawSprite ("icon",0,0,100)
 ```
-L'esempio qui sopra mostra l'icona del progetto, riportata verticalmente.
+L'esempio qui sopra mostra l'icona del progetto, capovolta verticalmente.
 
 Non dimenticare di resettare il fattore di scala a 1.1 dopo averlo usato!
 ```
-screen.setDrawScale(1,1) // restituisce il fattore di scala al suo valore predefinito.
+screen.setDrawScale(1,1) // ripristina il fattore di scala al suo valore predefinito.
 ```
 
 <!--- suggest_start screen.setDrawAnchor --->
-##### screen.setDrawAnchor( anchor_x, anchor_y )
-Per impostazione predefinita, tutte le operazioni di disegno considerano le vostre coordinate come il centro della forma da disegnare. Puoi cambiare questo chiamando
-screen.setDrawAnchor( anchor_x, anchor_y )`per specificare un punto di ancoraggio diverso per disegnare le forme.
+##### screen.setDrawAnchor( ancoraggio_x, ancoraggio_y )
+Per impostazione predefinita, tutte le operazioni di disegno considerano le vostre coordinate come il centro della forma da disegnare. Puoi cambiare questo comportamento chiamando
+`screen.setDrawAnchor( ancoraggio_x, ancoraggio_y )`per specificare un punto di ancoraggio diverso per disegnare le forme.
 
 <!--- suggest_end --->
 Sull'asse x, il punto di ancoraggio può essere impostato a -1 (lato sinistro della tua forma), 0 (centro della tua forma), 1 (lato destro della tua forma) o qualsiasi valore intermedio. Sull'asse y, il punto di ancoraggio può essere impostato a -1 (lato inferiore della tua forma), 0 (centro della tua forma), 1 (parte superiore della tua forma) o qualsiasi valore intermedio.
@@ -1054,7 +1054,7 @@ screen.setDrawAnchor(0,0) // valore predefinito, tutte le forme saranno disegnat
 
 <!--- suggest_start screen.setDrawAnchor --->
 ##### screen.setBlending( blending )
-Definisce come le successive operazioni di disegno saranno composte con l'immagine sottostante, già disegnata. Può essere impostato su `normale` o `additivo`.
+Definisce come le successive operazioni di disegno saranno composte con l'immagine sottostante, già disegnata. Può essere impostato su `normal` (normale) o `additive` (additivo).
 
 Puoi anche usare qualsiasi modalità di composizione definita nella specifica HTML5 Canvas con `setBlending`, per riferimento vedi https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
 
@@ -1069,78 +1069,79 @@ Il campo "altezza" dell'oggetto schermo ha come valore l'altezza attuale dello s
 <!--- suggest_end --->
 
 <!--- suggest_start screen.setCursorVisible --->
-##### screen.setCursorVisible( visible )
+##### screen.setCursorVisible( visibile )
 Potete usare questa funzione per mostrare o nascondere il cursore del mouse.
 <!--- suggest_end --->
 
 
 ## Ingressi, controllo
 
-Per rendere il vostro programma interattivo, avete bisogno di sapere se e dove l'utente preme un tasto sulla tastiera, il joystick, tocca il touch screen. *microStudio* ti permette di conoscere lo stato di queste diverse interfacce di controllo, tramite gli oggetti ``keyboard`` (per la tastiera), ``touch`` (per il touch screen / mouse), ``mouse`` (per il puntatore del mouse / touch screen) ``gamepad`` (per il controller).
+Per rendere il vostro programma interattivo, avete bisogno di sapere se e dove l'utente preme un tasto sulla tastiera, il joystick, o i tocchi del touch screen. *microStudio* ti permette di conoscere lo stato di queste diverse interfacce di controllo, tramite gli oggetti ```keyboard``` (per la tastiera), ```touch``` (per il touch screen / mouse), ```mouse``` (per il puntatore del mouse / touch screen) ```gamepad``` (per il controller o joypad).
 
 ##### Nota
-L'oggetto ``system.inputs`` conserva informazioni utili su quali metodi di input sono disponibili sul sistema host:
+L'oggetto ```system.inputs``` contiene informazioni utili su quali metodi di input sono disponibili sul sistema host:
 
-Campo Valore
+|Campo|Valore|
 |-|-|
-1 se si ritiene che il sistema abbia una tastiera fisica, 0 altrimenti
-1 se il sistema ha un mouse, 0 altrimenti
-1 se il sistema ha un touch screen, 0 altrimenti
-1 se c'è almeno 1 gamepad collegato al sistema, 0 altrimenti (il gamepad può apparire collegato solo quando l'utente ha eseguito un'azione su di esso)|
+|system.inputs.keyboard|1 se si rileva che il sistema abbia una tastiera fisica, 0 altrimenti|
+|system.inputs.mouse|1 se il sistema ha un mouse, 0 altrimenti|
+|system.inputs.touch|1 se il sistema ha un touch screen, 0 altrimenti|
+|system.inputs.gamepad|1 se c'è almeno 1 gamepad collegato al sistema, 0 altrimenti (il gamepad appare collegato solo quando l'utente ha eseguito un'azione su di esso)|
 
 
 ### Ingressi da tastiera
 <!--- suggest_start keyboard --->
-Gli input da tastiera possono essere testati usando l'oggetto ``keyboard``.
+Gli input da tastiera possono essere testati usando l'oggetto ```keyboard```.
 <!--- suggest_end --->
 
 ##### esempio
 ```
-se tastiera.A allora
+if keyboard.A allora
   // il tasto A è attualmente premuto
-fine
+end
 ```
 
-Notate che quando testate il vostro progetto, affinché gli eventi della tastiera raggiungano la finestra di esecuzione, è necessario cliccare prima in essa.
+Notate che mentre provate il vostro progetto, affinché gli eventi della tastiera si propaghino fino alla finestra di esecuzione, è necessario cliccare prima su di essa.
 
 Il codice qui sotto mostra l'ID di ogni tasto della tastiera premuto. Può esservi utile per stabilire l'elenco degli identificatori di cui avrete bisogno per il vostro progetto.
 
 ```
-disegnare = funzione()
-  schermo.clear()
-  y locale = 80
-  per chiave nella tastiera
-    se tastiera[tasto] allora
+draw = function()
+  screen.clear()
+  local y = 80
+  for key in keyboard
+    if keyboard[key] then
       screen.drawText(key,0,y,15, "#FFF")
       y -= 20
-    fine
-  fine
-fine
+    end
+  end
+end
 ```
+
 *microStudio* crea per voi alcuni utili codici generici, come UP, DOWN, LEFT e RIGHT che reagiscono sia ai tasti freccia che a ZQSD / WASD a seconda del layout della vostra tastiera.
 
-Per testare i caratteri speciali come +, - o anche le parentesi, devi usare la seguente sintassi: ``keyboard["("]``, ``keyboard["-"]``.
+Per testare i caratteri speciali come +, - o anche le parentesi, devi usare la seguente sintassi: ```keyboard["("]```, ```keyboard["-"]```.
 
 ##### Verifica se un tasto è stato appena premuto
-Nel contesto della funzione ``update()``, potete controllare se un tasto della tastiera è stato appena premuto dall'utente usando ``keyboard.press.<KEY>``.
+Nel contesto della funzione ```update()```, potete controllare se un tasto della tastiera è stato appena premuto dall'utente usando ```keyboard.press.<KEY>```.
 
 Esempio:
 
 ```
-se keyboard.press.A allora
+if keyboard.press.A then
   // Fai qualcosa una volta, proprio quando l'utente preme il tasto A
-fine
+end
 ```
 
-##### Verificare se una chiave è stata appena rilasciata
-Nel contesto della funzione ``update()``, potete controllare se un tasto della tastiera è stato appena rilasciato dall'utente usando ``keyboard.release.<KEY>``.
+##### Verificare se un taso è stata appena rilasciata
+Nel contesto della funzione ```update()``, potete controllare se un tasto della tastiera è stato appena rilasciato dall'utente usando ```keyboard.release.<KEY>```.
 
 Esempio:
 
 ```
-se keyboard.release.A allora
+if keyboard.release.A then
   // Fai qualcosa una volta, proprio quando l'utente rilascia il tasto A
-fine
+end
 ```
 
 
@@ -1150,48 +1151,48 @@ fine
 Gli input tattili possono essere testati con l'oggetto "touch" (che riporta anche lo stato del mouse).
 <!--- suggest_end --->
 
-Campo Valore
+|Campo|Valore|
 |-|-|
-è vero se l'utente tocca lo schermo, falso se non lo tocca
-posizione x in cui lo schermo viene toccato
-Posizione y in cui lo schermo viene toccato
-|touch.touches|Nel caso in cui si debba tener conto di più punti di contatto simultaneamente, touch.touches è una lista di punti di contatto attualmente attivi|
-vero se un dito ha appena iniziato a toccare lo schermo
-vero se il dito ha appena lasciato lo schermo
+|touch.touching|è vero se l'utente sta toccando lo schermo, falso se non lo sta toccando|
+|touch.x|Posizione x in cui lo schermo viene toccato|
+|touch.y|Posizione y in cui lo schermo viene toccato|
+|touch.touches|Nel caso in cui si debba tener conto di più punti di contatto simultaneamente, touch.touches è una lista dei punti di contatto attualmente attivi|
+|touch.press|vero se un dito ha appena iniziato a toccare lo schermo|
+|touch.release|vero se il dito ha appena rilasciato lo schermo|
 
 ```
-se touch.touching
-  // l'utente tocca lo schermo
+if touch.touching
+  // l'utente sta toccando lo schermo
 else
- // l'utente non tocca lo schermo
-fine
+ // l'utente non sta toccando lo schermo
+end
 ```
 
 ```
-disegnare = funzione()
-  per t in touch.touches
-    screen.drawSprite("icona",t.x,t.y,50)
-  fine
-fine
+draw = function()
+  for t in touch.touches
+    screen.drawSprite("icon",t.x,t.y,50)
+  end
+end
 ```
 L'esempio qui sopra mostra l'icona del progetto in ogni punto di contatto attivo sullo schermo.  
 
 <!--- suggest_start mouse --->
 ### Ingressi del mouse
 
-Gli input del mouse possono essere testati con l'oggetto ``mouse`` (che riporta anche eventi touch).
+Gli input del mouse possono essere testati con l'oggetto ```mouse``` (che riporta anche eventi touch).
 <!--- suggest_end --->
 
-Campo Valore
+|Campo|Valore|
 |-|-|
-Posizione x del puntatore del mouse
-Posizione y del puntatore del mouse
-1 se un qualsiasi pulsante del mouse è premuto, 0 altrimenti
-1 se il tasto sinistro del mouse è premuto, 0 altrimenti
-1 se il tasto destro del mouse è premuto, 0 altrimenti
-1 se il pulsante centrale del mouse è premuto, 0 altrimenti
-vero se un pulsante del mouse è stato appena premuto
-vero se un pulsante del mouse è stato appena rilasciato
+|mouse.x|Posizione x del puntatore del mouse|
+|mouse.y|Posizione y del puntatore del mouse|
+|mouse.pressed|1 se un qualsiasi pulsante del mouse è premuto, 0 altrimenti|
+|mouse.left|1 se il tasto sinistro del mouse è premuto, 0 altrimenti|
+|mouse.right|1 se il tasto destro del mouse è premuto, 0 altrimenti|
+|mouse.middle|1 se il pulsante centrale del mouse è premuto, 0 altrimenti|
+|mouse.press|vero se un pulsante del mouse è stato appena premuto|
+|mouse.release|vero se un pulsante del mouse è stato appena rilasciato|
 
 ### Ingressi del controller (gamepad)
 <!--- suggest_start gamepad --->
@@ -1200,75 +1201,75 @@ Lo stato dei pulsanti e dei joystick del controller (gamepad) può essere testat
 
 ##### esempio
 ```
-se gamepad.UP allora y += 1 fine
+if gamepad.UP then y += 1 end
 ```
 
-**Tip**: Per ottenere una lista completa dei campi dell'oggetto "gamepad", digitate semplicemente "gamepad" nella console quando il vostro programma è in esecuzione.
+**Suggerimento**: Per ottenere una lista completa dei campi dell'oggetto "gamepad", digitate semplicemente "gamepad" nella console quando il vostro programma è in esecuzione.
 
-Come per la pressione dei tasti della tastiera, puoi usare ``gamepad.press.<BUTTON>`` per controllare se un pulsante è stato appena premuto o ``gamepad.release.<BUTTON>`` per controllare se un pulsante è stato appena rilasciato.
+Come per la pressione dei tasti della tastiera, puoi usare ```gamepad.press.<BUTTON>``` per controllare se un pulsante è stato appena premuto o ``gamepad.release.<BUTTON>`` per controllare se un pulsante è stato appena rilasciato.
 
 ## Suoni
 
-*microStudio* attualmente vi permette di riprodurre suoni e musica che avete importato nel vostro progetto (come file WAV e MP3) o di creare suoni programmaticamente usando il legacy *beeper*.
+*microStudio* attualmente vi permette di riprodurre suoni e musica che avete importato nel vostro progetto (come file WAV e MP3) o di creare suoni programmaticamente usando il tradizionale *beeper*.
 
-### Suona
+### Riproduci un suono
 <!--- suggest_start audio.playSound --->
-##### audio.playSound( nome, volume, pitch, pan, loop )
+##### audio.playSound( nome, volume, intonazione, panoramica, ripetizione )
 Riproduce il suono dato, con le impostazioni di riproduzione opzionali date.
 <!--- suggest_end --->
 
 ##### argomenti
-Argomento
+|Argomento|Descrizione|
 |-|-|
-Il nome del suono (dalla scheda sounds del tuo progetto) da riprodurre.
-volume|[opzionale] Il volume di uscita per questa riproduzione sonora, che va da 0 a 1
-|pitch|[opzionale] Il tono di uscita per questa riproduzione del suono, 1 è il tono predefinito|
-Pan|[opzionale] L'impostazione di pan per questa riproduzione del suono, che va da -1 (sinistra) a 1 (destra).
-impostare a 1 (true) se volete che il suono vada in loop all'infinito
+|nome|Il nome del suono (dalla scheda sounds del tuo progetto) da riprodurre|
+|volume|[opzionale] Il volume di uscita per questa riproduzione sonora, che va da 0 a 1|
+|intonazione|[opzionale] Il tono di uscita per questa riproduzione del suono, 1 è il tono predefinito|
+|panoramica|[opzionale] L'impostazione di pan per questa riproduzione del suono, che va da -1 (sinistra) a 1 (destra)|
+|ripetizione|Impostare a 1 (true) se volete che il suono venga ripetuto all'infinito|
 
 La chiamata alla funzione restituisce un oggetto. Questo oggetto vi permette di controllare le impostazioni di riproduzione mentre il suono viene riprodotto:
 
 ##### esempio
 ```
-my_sound = audio.playSound("soundname")
-my_sound.setVolume(0.5)
+mio_suono = audio.playSound("nomedelsuono")
+mio_suono.setVolume(0.5)
 ```
 
-Funzioni di controllo
+|Funzioni di controllo|Descrizione|
 |-|-|
-|my_sound.setVolume(volume)|Cambia il volume di riproduzione del suono (valore che va da 0 a 1)|
-|my_sound.setPitch(pitch)|Cambia il pitch del suono (1 è il pitch predefinito)|
-|my_sound.setPan(pan)|Cambia l'impostazione di pan del suono (valore che va da -1 a 1)|
-Il mio_suono.stop()|Fermano la riproduzione di quel suono|
+|mio_suono.setVolume(volume)|Cambia il volume di riproduzione del suono (valore che va da 0 a 1)|
+|mio_suono.setPitch(intonazione)|Cambia l'intonazione del suono (1 è il pitch predefinito)|
+|mio_suono.setPan(panoramica)|Cambia l'impostazione di panoramicità stereofonica del suono (valore che va da -1 a 1)|
+|mio_suono.stop()|Ferma la riproduzione di quel suono|
 
-### Play Music
+### Riproduci musica
 <!--- suggest_start audio.playMusic --->
-##### audio.playMusic( nome, volume, loop )
+##### audio.playMusic( nome, volume, ripetizione )
 Riproduce la musica data, con le impostazioni di riproduzione opzionali date.
 <!--- suggest_end --->
 
 ##### argomenti
-Argomento
+|Argomento|Descizione|
 |-|-|
-Il nome della musica (dalla scheda musicale del tuo progetto) da riprodurre.
-volume|[opzionale] Il volume di uscita per questa riproduzione musicale, che va da 0 a 1
-impostare a 1 (true) se vuoi che la musica vada in loop all'infinito
+|nome|Il nome della musica (dalla scheda musicale del tuo progetto) da riprodurre|
+|volume|[opzionale] Il volume di uscita per questa riproduzione musicale, che va da 0 a 1|
+|ripetizione|Impostare a 1 (true) se vuoi che la musica vada in loop all'infinito|
 
 La chiamata alla funzione restituisce un oggetto. Questo oggetto vi permette di controllare le impostazioni di riproduzione mentre la musica viene riprodotta:
 
 ##### esempio
 ```
-my_music = audio.playMusic("musicname")
-my_music.setVolume(0.5)
+mia_musica = audio.playMusic("nomedellamusica")
+mia_musica.setVolume(0.5)
 ```
 
-Funzioni di controllo
+|Funzioni di controllo|Descizione|
 |-|-|
-|my_music.setVolume(volume)|Cambia il volume di riproduzione della musica (valore che va da 0 a 1)|
-my_music.stop()|Ferma la riproduzione di quella musica|
-riprende la riproduzione se l'hai fermata prima.
-my_music.getPosition()|Ritorna la posizione corrente di riproduzione in secondi|
-my_music.getDuration()|Ritorna la durata totale della musica in secondi|
+|mia_musica.setVolume(volume)|Cambia il volume di riproduzione della musica (valore che va da 0 a 1)|
+|mia_musica.stop()|Ferma la riproduzione di quella musica|
+|mia_musica.play()|Riprende la riproduzione se l'hai fermata prima|
+|mia_musica.getPosition()|Ritorna la posizione corrente di riproduzione in secondi|
+|mia_musica.getDuration()|Ritorna la durata totale della musica in secondi|
 
 
 <!--- suggest_start audio.beep --->
@@ -1281,67 +1282,67 @@ audio.beep("C E G")
 <!--- suggest_end --->
 Esempio più dettagliato e spiegazioni nella tabella sottostante:
 ```
-"sega durata 100 span 50 durata 500 volume 50 span 50 loop 4 C2 C F G G F fine"
+"saw duration 100 tempo 220 span 50 volume 50 loop 4 C2 C F G G G F end"
 ```
 
-Comando e descrizione
+|Comando|Descrizione|
 |-|-|
-Indica il tipo di generatore di suono (colore del suono), valori possibili: sega, seno, quadrato, rumore
-La durata seguita da un numero di millisecondi indica la durata delle note.
-seguito da un numero di note al minuto, indica il tempo
-Seguito da un numero tra 1 e 100, indica la percentuale di mantenimento di ogni nota.
-seguito da un numero tra 0 e 100, imposta il volume
-C o D, E, F ecc. indica una nota da suonare. È possibile indicare anche l'ottava, ad esempio C5 per il C della quinta ottava della tastiera.
-|loop|seguito da un numero, indica il numero di volte che la seguente sequenza dovrà essere ripetuta. La sequenza termina con la parola chiave ``end``` esempio: ``loop 4 C4 E G end```; il numero 0 significa che il ciclo deve essere ripetuto indefinitamente.
+|saw|Indica il tipo di generatore di suono (colore del suono), valori possibili:saw (dente di sega), sine (sinosuidale), square (onda quadra), noise (rumore)|
+|duration|La durata seguita da un numero di millisecondi indica la durata delle note|
+|tempo|seguito da un numero di note al minuto, indica il tempo|
+|span|Seguito da un numero tra 1 e 100, indica la percentuale di mantenimento di ogni nota|
+|volume|seguito da un numero tra 0 e 100, imposta il volume|
+|C| oppure D, E, F ecc. indica una nota da suonare. È possibile indicare anche l'ottava, ad esempio C5 per il C della quinta ottava della tastiera|
+|loop|seguito da un numero, indica il numero di volte che la seguente sequenza dovrà essere ripetuta. La sequenza termina con la parola chiave ```end``` esempio: ```loop 4 C4 E G end```; il numero 0 significa che il ciclo deve essere ripetuto indefinitamente|
 
 <!--- suggest_start audio.cancelBeeps --->
 ### audio.cancelBeeps
 Annulla tutti i suoni riprodotti dal *beeper*. Utile per silenziare il suono dopo aver avviato dei loop musicali.
 <!--- suggest_end --->
 
-## Metodi di sprite
-Il tuo programma può accedere agli sprites del tuo progetto, che sono memorizzati in un oggetto predefinito ``sprites```:
+## Metodi per gli sprite
+Il tuo programma può accedere agli sprites del tuo progetto, che sono memorizzati in un oggetto predefinito ```sprites```:
 
 ```
-mysprite = sprites["icona"]
+mysprite = sprites["icon"]
 ```
 
 Potete quindi accedere a diversi campi e metodi del vostro sprite:
 
-campo/metodo/descrizione
+|campo/metodo|descrizione|
 |-|-|
-|```mysprite.width``` La larghezza dello sprite in pixel|
-|```mysprite.height``` L'altezza dello sprite in pixel|
-|```mysprite.ready```1 quando lo sprite è completamente caricato, 0 altrimenti|
-Nome dello sprite
+|```miosprite.width```|La larghezza dello sprite in pixel|
+|```miosprite.height```|L'altezza dello sprite in pixel|
+|```miosprite.ready```|1 quando lo sprite è completamente caricato, 0 altrimenti|
+|```miosprite.name```|Nome dello sprite|
 
-*Nota: altri campi e metodi nativi possono attualmente sembrare disponibili quando si ispeziona un oggetto sprite nella console. Tali campi e metodi non documentati potrebbero rompersi in futuro, quindi non fate troppo affidamento su di essi!
+*Nota: altri campi e metodi nativi potrebbero sembrare disponibili quando si ispeziona un oggetto sprite dalla console. Tali campi e metodi non documentati rischiano di essere tolti in futuro, quindi non fate troppo affidamento su di essi!*
 
 ## Metodi di mappa
-Il tuo programma può accedere alle mappe del tuo progetto, che sono memorizzate in un oggetto predefinito ``mappe``:
+Il tuo programma può accedere alle mappe del tuo progetto, che sono memorizzate in un oggetto predefinito ``maps``:
 
 ```
-mymap = maps["map1"]
+miamappa = maps["map1"]
 ```
 
 Potete quindi accedere a diversi campi e metodi della vostra mappa:
 
-campo/metodo/descrizione
+|campo/metodo|descrizione|
 |-|-|
-|```mymap.width``` La larghezza della mappa in celle
-|```mymap.height``` L'altezza della mappa in celle
-|```mymap.block_width``` La larghezza della cella della mappa in pixel|
-|```mymap.block_height``` L'altezza della cella della mappa in pixel|
-|```mymap.ready```1 quando la mappa è completamente caricata, 0 altrimenti|
-Nome della mappa
-|```mymap.get(x,y)``` restituisce il nome dello sprite nella cella (x,y); l'origine delle coordinate è (0,0), situata in basso a sinistra della mappa. Restituisce 0 se la cella è vuota|
-|```mymap.set(x,y,name)``|Imposta un nuovo sprite nella cella (x,y); l'origine delle coordinate è (0,0), situata in basso a sinistra della mappa. Il terzo parametro è il nome dello sprite.
+|```miamappa.width```|La larghezza della mappa in celle|
+|```miamappa.height```|L'altezza della mappa in celle|
+|```miamappa.block_width```|La larghezza della cella della mappa in pixel|
+|```miamappa.block_height```|L'altezza della cella della mappa in pixel|
+|```miamappa.ready```|1 quando la mappa è completamente caricata, 0 altrimenti|
+|```miamappa.name```|Nome della mappa|
+|```miamappa.get(x,y)```|Restituisce il nome dello sprite nella cella (x,y); l'origine delle coordinate è (0,0), situata in basso a sinistra della mappa. Restituisce 0 se la cella è vuota|
+|```miamappa.set(x,y,name)``|Imposta un nuovo sprite nella cella (x,y); l'origine delle coordinate è (0,0), situata in basso a sinistra della mappa. Il terzo parametro è il nome dello sprite.
 restituisce una nuova mappa che è una copia completa di mymap.|
 
 *Nota: altri campi e metodi nativi possono attualmente sembrare disponibili quando si ispeziona un oggetto mappa nella console. Tali campi e metodi non documentati potrebbero rompersi in futuro, quindi non fate troppo affidamento su di essi!
 
 ## Sistema
-L'oggetto ``system`` permette di accedere alla funzione ``time``, che restituisce il tempo trascorso in millisecondi (dal 1° gennaio 1970). Ma soprattutto, invocata in vari momenti, permette di misurare le differenze di tempo.
+L'oggetto ```system``` permette di accedere alla funzione ```time``` che restituisce il tempo trascorso in millisecondi (dal 1° gennaio 1970). Ma soprattutto, invocata in vari momenti, permette di misurare le differenze di tempo.
 
 <!--- suggest_start system.time --->
 ### system.time()
@@ -1349,16 +1350,16 @@ Restituisce il tempo trascorso in millisecondi (dal 1 gennaio 1970)
 <!--- suggest_end --->
 
 ## Storage
-L'oggetto ``storage`` permette la memorizzazione permanente dei dati della tua applicazione. Puoi usarlo per memorizzare i progressi degli utenti, i punteggi più alti o altre informazioni di stato sul tuo gioco o progetto.
+L'oggetto ```storage``` permette la memorizzazione permanente dei dati della tua applicazione. Puoi usarlo per memorizzare i progressi degli utenti, i punteggi più alti o altre informazioni di stato nel tuo gioco o progetto.
 
 <!--- suggest_start storage.set --->
 ### storage.set( nome , valore )
-Memorizza il valore in modo permanente, referenziato dalla stringa ``nome``. Il valore può essere qualsiasi numero, stringa, lista o oggetto strutturato.
+Memorizza il valore in modo permanente, referenziato dalla stringa ```nome```. Il valore può essere un qualsiasi numero, stringa, lista o oggetto strutturato.
 <!--- suggest_end --->
 
 <!--- suggest_start storage.get --->
 ### storage.get( name )
-Restituisce il valore registrato in modo permanente sotto la stringa di riferimento ``nome``. Restituisce ``0``` quando tale record non esiste.
+Restituisce il valore registrato in modo permanente sotto la stringa di riferimento ```nome```. Restituisce ```0``` quando tale record non esiste.
 <!--- suggest_end --->
 
 
