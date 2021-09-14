@@ -6,7 +6,4 @@ server/node_modules/
 files/
 data/
 .DS_Store
-/.vs/ProjectSettings.json
-/.vs/slnx.sqlite
-/.vs/microstudio/v16/.suo
-/.vs/VSWorkspaceState.json
+.vs/
