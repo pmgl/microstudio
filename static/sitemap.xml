@@ -8,6 +8,7 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://microstudio.dev/de/"/>
     <xhtml:link rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://microstudio.dev/it/"/>
   </url>
 
   <url>
@@ -16,6 +17,7 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://microstudio.dev/de/"/>
     <xhtml:link rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://microstudio.dev/it/"/>
   </url>
 
   <url>
@@ -24,6 +26,7 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://microstudio.dev/de/"/>
     <xhtml:link rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://microstudio.dev/it/"/>
   </url>
 
   <url>
@@ -32,6 +35,16 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://microstudio.dev/de/"/>
     <xhtml:link rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://microstudio.dev/it/"/>
+  </url>
+
+   <url>
+    <loc>https://microstudio.dev/it/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://microstudio.dev/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://microstudio.dev/de/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://microstudio.dev/it/"/>
   </url>
 
   <url>

@@ -35,6 +35,9 @@ this.Documentation = (function() {
       case "pl":
         req.open("GET", "/doc/pl/doc.md");
         break;
+      case "it":
+        req.open("GET", "/doc/it/doc.md");
+        break;
       default:
         req.open("GET", "/doc/en/doc.md");
     }

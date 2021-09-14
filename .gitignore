@@ -6,3 +6,4 @@ server/node_modules/
 files/
 data/
 .DS_Store
+.vs/

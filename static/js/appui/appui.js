@@ -617,6 +617,11 @@ AppUI = (function() {
         }
       };
     })(this));
+    document.querySelector("#language-choice-it").addEventListener("click", (function(_this) {
+      return function(event) {
+        return _this.setLanguage("it");
+      };
+    })(this));
     document.querySelector("#language-choice-de").addEventListener("click", (function(_this) {
       return function(event) {
         return _this.setLanguage("de");
@@ -635,6 +640,12 @@ AppUI = (function() {
     document.querySelector("#language-choice-en").addEventListener("click", (function(_this) {
       return function(event) {
         return _this.setLanguage("en");
+      };
+    })(this));
+    document.querySelector("#switch-to-it").addEventListener("click", (function(_this) {
+      return function(event) {
+        event.preventDefault();
+        return _this.setLanguage("it");
       };
     })(this));
     document.querySelector("#switch-to-de").addEventListener("click", (function(_this) {

@@ -33,7 +33,7 @@ class @WebApp
     @export_features = new ExportFeatures @
     @server.build_manager.createLinks(@app)
 
-    @languages = ["en","fr","pl","de"]
+    @languages = ["en","fr","pl","de","it"]
     home_exp = "^(\\/"
     for i in [1..@languages.length-1] by 1
       home_exp += "|\\/#{@languages[i]}\\/?"
