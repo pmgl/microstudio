@@ -1,5 +1,9 @@
 ## Changelog
 
+### Update 2021-09-18
+* Enabled Italian language! Special thanks to @HomineLudens ; translation is still a work in progress, you will see it improve in the coming days
+* Incorporated tutorials to the Github project ; they are working when running a local version of microStudio offline. They will also be easier to translate to other languages.
+
 ### Update 2021-08-18
 * Orientation and aspect are now set when importing a project
 * Fixed bug: impossible to explore a public project page once it leaves the top 300

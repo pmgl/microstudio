@@ -14,7 +14,10 @@ Soutenez le projet microStudio sur Patreon et recevez des avantages exclusifs !
 
 Merci beaucoup à tous les contributeurs et spécialement à nos merveilleux Fondateurs : Steven Landman, Code Club France
 
-Merci beaucoup à nos traducteurs : FeniXb3 (langue polonaise) et TinkerSmith (langue allemande) !
+Merci beaucoup à nos traducteurs :
+* FeniXb3 (langue polonaise)
+* TinkerSmith (langue allemande)
+* HomineLudens (langue italienne, en cours de traduction)
 
 <br />
 
