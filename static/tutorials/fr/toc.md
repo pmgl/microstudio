@@ -1,8 +1,8 @@
-# Tutorials EN
+# Tutorials FR
 
-## microStudio tour
+## Visite guidée
 
-Discover the main features of microStudio.
+Découvrez les principales fonctionnalités de microStudio.
 
 [Menu principal](/tutorials/fr/tour/1_menu.md)
 
@@ -11,9 +11,9 @@ Discover the main features of microStudio.
 [Premier projet](/tutorials/fr/tour/3_first_project.md)
 
 
-## Programming
+## Programmation
 
-Learn how to program in microScript, the easy yet powerful language in action in microStudio.
+Apprenez à programmer en microScript, le langage facile mais puissant mis en œuvre dans microStudio.
 
 [Introduction](/tutorials/fr/programming/1_intro.md)
 
@@ -29,9 +29,9 @@ Learn how to program in microScript, the easy yet powerful language in action in
 
 [Objets](/tutorials/fr/programming/7_objects.md)
 
-## Drawing
+## Dessiner
 
-This series teaches you how to draw content on screen from code. You will learn to draw shapes, draw lines, define colors, draw sprites, apply rotations, transparency etc.
+Cette série vous apprend à dessiner sur l'écran avec votre code. Vous apprendrez à dessiner des formes, des lignes, à définir des couleurs, dessiner des sprites, appliquer des rotations, la transparence etc.
 
 [Formes](/tutorials/fr/drawing/1_shapes.md)
 
@@ -49,9 +49,9 @@ This series teaches you how to draw content on screen from code. You will learn 
 
 
 
-## Create a game
+## Créer un jeu
 
-Create a simple yet fully working game in less than 70 lines of code!
+Créez un jeu simple, complètement fonctionnel, en moins de 70 lignes de code !
 
 [Héros](/tutorials/fr/game/1_hero.md)
 
