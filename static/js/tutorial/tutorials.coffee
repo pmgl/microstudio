@@ -11,6 +11,8 @@ class @Tutorials
     switch @app.translator.lang
       when "fr"
         req.open "GET",location.origin+"/tutorials/fr/toc.md"
+      when "it"
+        req.open "GET",location.origin+"/tutorials/it/toc.md"
       else
         req.open "GET",location.origin+"/tutorials/en/toc.md"
 
