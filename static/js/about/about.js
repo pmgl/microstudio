@@ -44,7 +44,7 @@ this.About = (function() {
   };
 
   About.prototype.load = function(section, callback) {
-    var req;
+    var ref, req;
     if (this.loaded[section] != null) {
       if (callback != null) {
         callback(this.loaded[section]);
@@ -64,8 +64,8 @@ this.About = (function() {
         }
       };
     })(this);
-    if (this.app.translator.lang === "fr" && section !== "changelog") {
-      req.open("GET", location.origin + ("/doc/fr/" + section + ".md"));
+    if (((ref = this.app.translator.lang) === "fr" || ref === "it") && section !== "changelog") {
+      req.open("GET", location.origin + ("/doc/" + this.app.translator.lang + "/" + section + ".md"));
     } else {
       req.open("GET", location.origin + ("/doc/en/" + section + ".md"));
     }

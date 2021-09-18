@@ -17,10 +17,10 @@ this.Tutorials = (function() {
     })(this);
     switch (this.app.translator.lang) {
       case "fr":
-        req.open("GET", location.origin + "/tutorials/tutorials_fr/list/doc/doc.md");
+        req.open("GET", location.origin + "/tutorials/fr/toc.md");
         break;
       default:
-        req.open("GET", location.origin + "/tutorials/tutorials_en/list/doc/doc.md");
+        req.open("GET", location.origin + "/tutorials/en/toc.md");
     }
     return req.send();
   };
