@@ -1,5 +1,9 @@
 ## Changelog
 
+### Update 2021-09-18
+* Enabled Italian language! Special thanks to @HomineLudens ; translation is still a work in progress, you will see it improve in the coming days
+* Incorporated tutorials to the Github project ; they are working when running a local version of microStudio offline. They will also be easier to translate to other languages.
+
 ### Update 2021-07-22
 Special thanks to @FeniX for doing most of the hard work for this update
 * Export your project (creates a ZIP archive which can serve as backup or to transfer the project to another install of microStudio)
