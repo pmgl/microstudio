@@ -32,7 +32,7 @@ https://microstudio.io/gilles/skaterun/
 
 Il nostro gioco ha bisogno di un Eroe. Vai alla scheda Sprites e clicca su "Add a sprite".
 
-Assicurati di rinominare il tuo sprite in "hero", questo ti sarà utile più tardi. Poi potete iniziare a disegnare il vostro sprite.
+Assicurati di rinominare il tuo sprite in "eroe", questo ti sarà utile più tardi. Poi potete iniziare a disegnare il vostro sprite.
 Puoi dedicare tutto il tempo che vuoi al tuo eroe. Potete anche renderlo animato, aprendo la barra degli strumenti Animazione
 nella parte inferiore della finestra e aggiungendo fotogrammi di animazione.
 
@@ -58,19 +58,19 @@ draw = function()
 end
 ```
 
-``init```, ``update`` e ``draw`` sono le tre funzioni chiave da conoscere in microStudio.
+```init```, ```update``` e ```draw``` sono le tre funzioni chiave da conoscere in microStudio.
 
-``init``` viene chiamata solo una volta, quando il gioco inizia. La useremo per inizializzare alcune variabili globali più tardi.
+```init``` viene chiamata solo una volta, quando il gioco inizia. La useremo per inizializzare alcune variabili globali più tardi.
 
-``update`` viene chiamata esattamente 60 volte al secondo mentre il gioco è in esecuzione. Lo useremo anche in seguito per aggiornare il gioco
+```update``` viene chiamata esattamente 60 volte al secondo mentre il gioco è in esecuzione. Lo useremo anche in seguito per aggiornare il gioco
 le animazioni, la fisica e la logica del gioco.
 
-``draw`` è chiamato ogni volta che lo schermo può essere ridisegnato. Inizieremo a lavorare sul corpo di questa funzione.
+```draw``` è chiamato ogni volta che lo schermo può essere ridisegnato. Inizieremo a lavorare sul corpo di questa funzione.
 
 
-## Dipingere lo sfondo
+## Disegnare lo sfondo
 
-### Dipingere lo sfondo
+### Disegnare lo sfondo
 
 Inseriamo una linea nel corpo della funzione draw:
 
@@ -86,7 +86,7 @@ end
 
 ### Esegui il programma
 
-Clicca sul pulsante run per avviare il tuo programma.
+Clicca sul pulsante esegui per avviare il tuo programma.
 
 La linea che abbiamo aggiunto riempie un rettangolo, centrato sul centro dello schermo, che si estende fino ai confini dello schermo.
 Il quinto parametro è il colore. Cliccate su di esso e tenete premuto CTRL per scegliere un altro colore con il color picker!
@@ -123,6 +123,6 @@ end
 
 ### Avanti
 
-Continuiamo con il prossimo tutorial dove creeremo un muro su cui il nostro eroe sta
-corre.
+Continuiamo con il prossimo tutorial dove creeremo un muro su cui 
+il nostro eroe sta correndo.
 

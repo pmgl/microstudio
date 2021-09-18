@@ -8,7 +8,7 @@
 
 ### microStudio
 
-microStudio è un ambiente di sviluppo di giochi integrato.
+microStudio è un ambiente di sviluppo giochi integrato.
 È anche un posto per imparare la programmazione divertendosi.
 
 Per continuare, clicca sulla freccia a destra qui sotto:
@@ -27,7 +27,7 @@ Il Menu principale ti permette di navigare attraverso diverse sezioni:
 * **Crea** : inizia un nuovo progetto e trova la lista dei tuoi progetti
 * **Tutorial** : imparare microStudio, programmazione, animazione, ecc.
 * **Documentazione** : la documentazione completa di microStudio
-* **About** : conoscere di più su microStudio
+* **Informazioni** : conoscere di più su microStudio
 
 ## Esplora
 
@@ -57,17 +57,17 @@ I tuoi progressi su ogni tutorial sono registrati e visualizzati su questa pagin
 :highlight header .titlemenu #menu-help
 
 Cliccate su "Documentazione": qui avete accesso alla documentazione completa di microStudio e
-il linguaggio di programmazione microScript. Mentre stai codificando, una finestra di aiuto contestuale
+il linguaggio di programmazione microScript. Mentre stai scrivendo codice, una finestra di aiuto contestuale
 mostrerà informazioni sulle caratteristiche che state usando e a volte vi offrirà di saltare
 alla sezione pertinente della documentazione.
 
-## A proposito di
+## Infomazioni
 
-### A proposito di
+### Infomazioni
 
 :highlight header .titlemenu #menu-about
 
-Fare clic su "About" se si desidera leggere ulteriori informazioni su microStudio.
+Fare clic su "Infomazioni" se si desidera leggere ulteriori dettagli su microStudio.
 
 ## Crea
 

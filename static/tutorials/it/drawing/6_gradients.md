@@ -35,7 +35,8 @@ colore in cui il gradiente si trasformerà nel punto p2.
 ### Gradienti di colore
 
 Una volta impostato un gradiente di colore, questo sarà usato come colore di disegno per tutte le successive chiamate alle funzioni di disegno,
-*a patto che tali chiamate alle funzioni omettano il loro argomento di colore*. Il vostro gradiente sarà scartato non appena imposterete il colore per una delle vostre chiamate di disegno
+*a patto che tali chiamate alle funzioni omettano il loro argomento di colore*. 
+Il vostro gradiente sarà scartato non appena imposterete il colore per una delle vostre chiamate di disegno
 (ad esempio ```screen.fillRect(0,0,50,50, "rgb(0,0,0)")```) o se usate ```screen.setColor```.
 
 ## Gradienti radiali

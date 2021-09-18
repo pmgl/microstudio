@@ -87,8 +87,8 @@ Giocatore_1 = 0
 
 // variabili errate :
 
-2_players = 2 // non puoi iniziare con un numero!
-my character = 3 // gli spazi non sono ammessi!
+2_Giocatoru = 2 // non puoi iniziare con un numero!
+mio protagonista = 3 // gli spazi non sono ammessi!
 ```
 
 ## Nome delle variabili

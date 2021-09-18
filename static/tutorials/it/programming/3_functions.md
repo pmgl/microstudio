@@ -1,182 +1,182 @@
 # Tutorial
 
-:project Programming
+:project Programmazione
 
-## Functions ##
+## Funzioni ##
 
 :overlay
 
-:position 30,30,40,40
+:posizione 30,30,40,40
 
 :navigate projects.code.console
 
-### Functions
+### Funzioni
 
-A function is a subprogram that performs a well-defined task and
-that may return a result. Functions allow you to better structure your
-program.
+Una funzione è un sottoprogramma che esegue un compito ben definito e
+che può restituire un risultato. Le funzioni vi permettono di strutturare meglio il vostro
+programma.
 
-During this tutorial, do not hesitate to copy the various examples in the console
-or to experiment with your own.
+Durante questo tutorial, non esitate a copiare i vari esempi nella console
+o a sperimentare il vostro codice.
 
-## Calling a function
+## Chiamare una funzione
 
 :navigate projects.code.console
 
 :position 55,30,40,40
 
-### Calling a function
+### Chiamare una funzione
 
-To call a function (i.e. to execute the subprogram), you write
-its identifier then a list of arguments in parentheses. For example,
-in microScript, the predefined function ```max``` returns the greater of two
-numbers:
+Per chiamare una funzione (cioè per eseguire il sottoprogramma), si scrive
+il suo identificatore poi un elenco di argomenti tra parentesi. Per esempio,
+in microScript, la funzione predefinita ```max``` restituisce il maggiore di due
+numeri:
 
 ```
 max(12,17)
 ```
 
-There are many other predefined functions, which you will find listed
-in the documentation.
+Ci sono molte altre funzioni predefinite, che troverete elencate
+nella documentazione.
 
-## Calling a function
+## Chiamare una funzione
 
 :navigate projects.code.console
 
 :position 55,30,40,40
 
-### The *print* function
+### La funzione *print*
 
-The ```print``` function writes to the console the value passed to it as an argument.
-It can be useful to verify that the program acts as expected and produces
-good results.
+La funzione ```print``` scrive sulla console il valore passato come argomento.
+Può essere utile per verificare che il programma si comporti come previsto e produca
+buoni risultati.
 
-For example:
+Per esempio:
 
 ```
-print( "The maximum between 12 and 17 is "+ max(12,17) )
+print( "Il massimo tra 12 e 17 è "+ max(12,17) )
 ```
 
-There are many other useful functions to know about. But first and foremost,
-we're going to learn how to create our own functions.
+Ci sono anche altre funzioni utili da conoscere. Ma prima di tutto
+impareremo come creare le nostre funzioni.
 
-## Create a function
+## Creare una funzione
 
 :navigate projects.code.console
 
-### Define a function
+### Definire una funzione
 
-Here's how to define a function yourself that you can use afterwards
-in your code. Write down:
+Ecco come definire da soli una funzione che potrete poi utilizzare
+nel vostro codice. Scrivete:
 
 ```
-average = function(x,y)
+media = function(x,y)
   return (x+y)/2
 end
 ```
 
-Above, we assign a value to the variable ```average```. This value is
-a function, which accepts two arguments ```x``` and ```y```. The subprogram is very simple,
-it returns the result of the calculation ```(x+y)/2```. To *close* the definition of the function, you must
-simply use the keyword ```end```.
+Sopra, assegniamo un valore alla variabile ```media```. Questo valore è
+una funzione, che accetta due argomenti ```x``` e ```y```. Il sottoprogramma è molto semplice,
+restituisce il risultato del calcolo ```(x+y)/2```. Per *terminare* la definizione della funzione, dovete
+semplicemente usare la parola chiave ```end```.
 
-## Using our function
-
-:navigate projects.code.console
-
-### Using our function
-
-We can now use our "average" function. Write:
-
-```
-average(14,16)
-```
-
-or
-
-```
-average(10,13)
-```
-
-## Arguments
+## Usare la nostra funzione
 
 :navigate projects.code.console
 
-### Values passed as arguments
+### Usare la nostra funzione
 
-Values passed as arguments to a function can be any *expression*,
-i.e. a number, a variable, a calculation, another function call. We can therefore write :
-
-```
-average( 10+2 , 8+5 )
-```
-
-or again:
+Ora possiamo usare la nostra funzione "media". Scrivete:
 
 ```
-average( average( 5,18 ) , average( 11,20 ) )
+media(14,16)
 ```
 
-## Local variables
+oppure
+
+```
+media(10,13)
+```
+
+## Argomenti
 
 :navigate projects.code.console
 
-### Local variable
+### Valori passati come argomenti
 
-A function can use local variables. As their name tell us, these variables only exist
-in the context of the function in which they are defined, and are probably unknown outside of it. Their *visibility*, or *scope*,
-is limited to the body of the function.
-
-For example:
+I valori passati come argomenti ad una funzione possono essere qualsiasi *espressione*,
+cioè un numero, una variabile, un calcolo, un'altra chiamata di funzione. Possiamo quindi scrivere :
 
 ```
-sumSquares = function(a,b)
-  local sum = 0
-  sum = sum + a*a
-  sum = sum + b*b
-  return sum
+media( 10+2 , 8+5 )
+```
+
+o ancora:
+
+```
+media( media( 5,18 ) , media( 11,20 ) )
+```
+
+## Variabili locali
+
+:navigate projects.code.console
+
+### Variabile locale
+
+Una funzione può usare variabili locali. Come ci dice il loro nome, queste variabili esistono solo
+nel contesto della funzione in cui sono definite, e sono probabilmente sconosciute al di fuori di essa. La loro *visibilità*, o *portata*,
+è limitata al corpo della funzione.
+
+Per esempio:
+
+```
+sommaQuadrati = function(a,b)
+  local somma = 0
+  somma = somma + a*a
+  somma = somma + b*b
+  return somma
 end
 ```
 
-## Local variables
+## Variabili locali
 
 :navigate projects.code.console
 
-### Local variable
+### Variabile locale
 
-Our function "sumSquares" returns the sum of the squared values of its two arguments. Let's try this:
-
-```
-sumSquares(3,4)
-```
-
-The result returned by the function is displayed. Now let's check the value of the variable ```sum``` :
+La nostra funzione "sommaQuadrati" restituisce la somma dei valori al quadrato dei suoi due argomenti. Proviamo così:
 
 ```
-sum
+sommaQuadrati(3,4)
 ```
 
-Having exited the execution context of the function, the local variable ```sum``` is no longer
-defined and therefore has the default value ```0```. It does not exist in the *global context*.
-Let's check that right now:
+Viene visualizzato il risultato restituito dalla funzione. Ora controlliamo il valore della variabile ```somma``` :
+
+```
+somma
+```
+
+Essendo usciti dal contesto di esecuzione della funzione, la variabile locale ```somma``` non è più
+definita e quindi ha il valore di default ```0```. Non esiste nel *contesto globale*.
+Controlliamo subito:
 
 ```
 global
 ```
 
-We have just displayed the global context, i.e. the content of the computer's memory.
-We can see there all the variables we have defined, in particular the functions that we
-have created in this tutorial.
+Abbiamo appena visualizzato il contesto globale, cioè il contenuto della memoria del computer.
+Possiamo vedere lì tutte le variabili che abbiamo definito, in particolare le funzioni che abbiamo
+abbiamo creato in questo tutorial.
 
-## End
+## Fine
 
 :navigate projects.code.console
 
-### Functions
+### Funzioni
 
-We have just learnt the basics about the functions! We will now discuss
-in the next chapters of this course:
+Abbiamo appena imparato le basi delle funzioni! Ora discuteremo
+nei prossimi capitoli di questo corso:
 
-* How to create and use lists
-* How to make choices with "if" conditions
-* How to repeat tasks with the "for" and "while" loops.
+* Come creare e usare le liste
+* Come fare scelte con le condizioni "if".
+* Come ripetere i compiti con i cicli "for" e "while".

@@ -11,8 +11,10 @@
 Ora aggiungeremo alcuni ostacoli che il nostro eroe deve evitare saltando. Li chiameremo
 lame, ma potete disegnarle come qualsiasi altra cosa, purché sembrino abbastanza pericolose!
 
-Aprite la scheda sprites, cliccate "Add a sprite" per creare un nuovo sprite, assicuratevi di rinominarlo "blade"
-per assicurarsi che funzioni correttamente con il resto di questa serie di tutorial. Disegna la tua lama pericolosa!
+Aprite la scheda sprites, cliccate "Aggiungi Sprite" per creare un nuovo sprite, assicuratevi di rinominarlo "lama"
+per assicurarsi che funzioni correttamente con il resto di questa serie di tutorial.
+
+Disegna la tua lama pericolosa!
 
 ## Inizializzazione delle lame
 
@@ -21,8 +23,8 @@ per assicurarsi che funzioni correttamente con il resto di questa serie di tutor
 Ora che il vostro sprite "lama" è pronto, creeremo una serie di lame per codice, le visualizzeremo,
 farle respawnare davanti all'eroe dopo che sono scomparse dietro di lui.
 
-Inizializzeremo due array nel corpo della funzione ```init```. Il primo array, ``blades`` sarà
-elencherà la posizione delle nostre 3 lame. Il secondo array, ```superato``` sarà usato per registrare quando una specifica lama
+Inizializzeremo due array nel corpo della funzione ```init```. Il primo array, ```lame``` sarà
+elencherà la posizione delle nostre 3 lame. Il secondo array, ```superate``` sarà usato per registrare quando una specifica lama
 è stata saltata con successo dal nostro eroe.
 
 ```
@@ -38,7 +40,7 @@ fine
 
 Mentre il nostro eroe corre sul muro, le lame sembreranno muoversi verso di lui e scomparire dietro di lui.
 Una volta scomparse, riutilizzeremo le stesse lame e le faremo riapparire davanti all'eroe in una posizione leggermente
-posizione randomizzata. Il codice qui sotto itera sulla nostra lista di lame e fa esattamente questo. Deve essere
+posizione casuale. Il codice qui sotto itera sulla nostra lista di lame e fa esattamente questo. Deve essere
 inserito nel corpo della funzione ```update```.
 
 ```
@@ -50,14 +52,14 @@ inserito nel corpo della funzione ```update```.
   end
 ```
 
-Quando respawniamo una lama davanti all'utente, azzeriamo anche il valore nella lista ``passato``,
+Quando facciamo comparire una lama davanti all'utente, azzeriamo anche il valore nella lista ```superate```,
 capirete più avanti perché.
 
 ## Visualizzazione delle lame
 
 ### Visualizzazione delle lame
 
-Ora dovremmo visualizzare le lame sullo schermo. Per farlo, aggiungiamo il codice qui sotto al corpo della nostra funzione ``draw``.
+Ora dovremmo visualizzare le lame sullo schermo. Per farlo, aggiungiamo il codice qui sotto al corpo della nostra funzione ```draw```.
 Questo codice itera sulle posizioni delle lame, e disegna lo sprite "blade" nella loro posizione. 
 
 ```
@@ -82,7 +84,7 @@ Ecco come questo si traduce in codice, da inserire nel *for loop* nel corpo dell
     if abs(posizione-lame[i])<10 then
       if eroe_y<10 then
         gameover = 1
-      elsif non passato[i] then
+      elsif not superate[i] then
         superate[i] = 1
         punteggio += 1
       end
@@ -104,7 +106,7 @@ Ecco il codice completo del *ciclo for* all'interno della funzione *update*:
     if abs(posizione-lame[i])<10 then
       se eroe_y<10 allora
         gameover = 1
-      elsif non passato[i] then
+      elsif not superate[i] then
         superate[i] = 1
         punteggio += 1
       end
@@ -128,7 +130,7 @@ al corpo della funzione *draw*:
 
 ### Avanti
 
-Il nostro gioco è quasi completo! Nel prossimo tutorial, gestiremo il caso del gioco e vedremo
+Il nostro gioco è quasi completo! Nel prossimo tutorial, gestiremo il caso di fine gioco e vedremo
 come riavviare una nuova partita. Ecco il codice completo come dovrebbe apparire per ora:
 
 ```
@@ -155,7 +157,7 @@ update = function()
     if abs(posizione-lame[i])<10 then
       if eroe_y<10 then
         gameover = 1
-      elsif not passed[i] then
+      elsif not superate[i] then
         superate[i] = 1
         punteggio += 1
       end

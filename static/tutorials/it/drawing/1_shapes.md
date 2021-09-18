@@ -20,10 +20,10 @@
 ### Disegno
 
 In microStudio, potete considerare lo schermo del computer come un tavolo da disegno.
-Sarete in grado di disegnare forme, testo, linee, poligoni, immagini (sprites) e
-mappe con il codice, chiamando funzioni predefinite.
+Sarete in grado di disegnare forme, testo, linee, poligoni, sprites (immagini) e
+mappe tramite codice, chiamando delle funzioni predefinite.
 
-Cominciamo a disegnare forme!
+Cominciamo a disegnare qualcosa!
 
 
 ## Rettangolo
@@ -33,7 +33,7 @@ Cominciamo a disegnare forme!
 posizione 50,50,40,40
 
 Per questo tutorial potete cancellare tutti i contenuti predefiniti del codice nella finestra del codice.
-Ora basta iniziare con la seguente linea di codice:
+Ora per iniziare, usate la seguente linea di codice:
 
 ```
 screen.fillRect(0,0,50,50,"#F00")
@@ -47,7 +47,7 @@ screen.fillRect(0,0,50,50,"#F00")
 
 :highlight #run-button
 
-Cliccate il pulsante "Run". Il tuo programma si avvia e vedrai che disegna un quadrato rosso
+Cliccate il pulsante "Esegui". Il tuo programma si avvia e vedrai che disegnerà un quadrato
 rosso al centro della finestra di esecuzione. Diamo un'occhiata più da vicino al codice:
 
 * ```screen``` è l'oggetto base che rappresenta lo schermo
@@ -74,8 +74,8 @@ Puoi anche cliccare sul colore ```"#F00"``` e tenere premuto CTRL per scegliere 
 ### Coordinate dello schermo
 
 In *microStudio*, il sistema di coordinate è basato sul centro dello schermo. Quindi il centro
-dello schermo ha le coordinate 0,0. In modalità ritratto, la coordinata x va da -100 (punto più a sinistra) a +100 (punto più a destra).
-In modalità paesaggio, anche la coordinata y andrà da -100 a 100. Questo è illustrato di seguito:
+dello schermo ha le coordinate 0,0. In modalità verticale, la coordinata x va da -100 (punto più a sinistra) a +100 (punto più a destra).
+In modalità orizzontale, anche la coordinata y andrà da -100 a 100. Questo è illustrato di seguito:
 
 ![Coordinate dello schermo](/doc/img/screen_coordinates.png "Coordinate dello schermo")
 
@@ -86,7 +86,7 @@ risoluzione fisica in pixel dello schermo.
 
 ### Disegno del contorno di un rettangolo
 
-posizione 50,50,40,40
+:position 50,50,40,40
 
 Puoi disegnare il contorno di un rettangolo cambiando il tuo codice in:
 
@@ -94,7 +94,7 @@ Puoi disegnare il contorno di un rettangolo cambiando il tuo codice in:
 screen.drawRect(0,0,50,50,"#F00")
 ```
 
-Quando prima di disegnare i contorni, potete usare ``screen.setLineWidth`` per definire lo
+Prima di disegnare i contorni, potete usare ``screen.setLineWidth`` per definire lo
 spessore delle linee. La larghezza predefinita delle linee è 1. Prova per esempio:
 
 ```
@@ -108,7 +108,7 @@ screen.drawRect(0,0,50,50,"#F00")
 
 :position 50,50,40,40
 
-Allo stesso modo, puoi disegnare una forma rotonda (cerchio, ellisse a seconda della dimensione usata) usando ``fillRound`` o
+Allo stesso modo, puoi disegnare una forma rotonda (cerchio, ellisse a seconda della dimensione usata) usando ```fillRound``` o
 ```drawRound```. Esempi:
 
 ```

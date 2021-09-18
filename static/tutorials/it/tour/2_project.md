@@ -12,7 +12,7 @@
 
 La finestra del progetto si apre quando si crea un nuovo progetto o si apre uno dei
 progetti esistenti. Qui è dove programmi, provi, crei sprites,
-mappe e impostare tutti i dettagli del tuo progetto.
+mappe e imposti tutti i dettagli del tuo progetto.
 
 ## Navigazione
 
@@ -108,14 +108,14 @@ Clicca su **Doc** per aprire l'editor di documenti.
 
 Questo è l'editor di doc (documentazione). Ogni volta che il tuo progetto è un plug-in che
 è destinato ad essere usato da altri, o una demo per la quale si vogliono aggiungere spiegazioni,
-puoi scrivere una documentazione qui usando il linguaggio markdown. gli stessi tutorial di microStudio
+puoi scrivere una documentazione qui usando il linguaggio markdown. Gli stessi tutorial di microStudio
 sono creati con questo editor!
 
 ## Sezione impostazioni
 
-### Impostazioni
+### Opzioni
 
-Clicca su **Impostazioni** per aprire le impostazioni del progetto.
+Clicca su **Opzioni** per aprire le impostazioni del progetto.
 
 :highlight #projectview .sidemenu #menuitem-options
 
@@ -125,13 +125,13 @@ Clicca su **Impostazioni** per aprire le impostazioni del progetto.
 
 :navigate projects.options
 
-### Impostazioni
+### Opzioni
 
 In questa sezione puoi modificare il titolo e l'URL del tuo progetto. Puoi anche
 cambiare la parola segreta usata per mantenere il tuo progetto privato mentre ti permette di testarlo su
-diversi dispositivi. Puoi impostare l'orientamento dello schermo adatto al tuo progetto. Infine,
-puoi invitare i tuoi amici a contribuire al tuo progetto. Tutto ciò che serve per inviare gli inviti è il loro
-nickname di microStudio.
+diversi dispositivi. Puoi impostare l'orientamento dello schermo più adatto al tuo progetto. Infine,
+puoi invitare i tuoi amici a contribuire al tuo progetto. Tutto ciò che serve per poter inviare gli inviti è il
+soprannome dei tuoi amici in microStudio.
 
 ## Pubblicare la sezione
 
@@ -149,9 +149,9 @@ Clicca su **Pubblica** per aprire il pannello delle opzioni di pubblicazione.
 
 ### Pubblica
 
-Quando il vostro progetto è completo, potete renderlo pubblicamente disponibile a tutti gli utenti di microStudio
-a tutti gli utenti di microStudio. Potete anche tenerlo privato ed esportarlo in HTML5, che vi permette di pubblicarlo
-sul tuo sito web o su una piattaforma di pubblicazione di giochi.
+Quando il vostro progetto è completo, potete renderlo pubblicamente disponibile a tutti gli utenti di microStudio.
+Potete anche tenerlo privato ed esportarlo in HTML5, cioò vi permetterà di pubblicarlo
+sul tuo sito web o su una piattaforma web di giochi.
 
 
 ## End

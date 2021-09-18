@@ -11,7 +11,7 @@
 ### Primo progetto
 
 Il tuo primo progetto è già stato creato! Creerai un personaggio e 
-programmare microStudio per visualizzarlo sullo schermo e fare in modo che possa essere spostato
+programmerai microStudio per visualizzarlo sullo schermo e fare in modo che possa essere spostato
 premendo i tasti freccia della tastiera del tuo computer.
 
 
@@ -113,7 +113,7 @@ Il tuo personaggio è ora visualizzato al centro della vista di esecuzione. La l
 che abbiamo aggiunto chiama la funzione ```drawSprite``` sull'oggetto
 ```screen```. La chiamata è fatta con dei parametri: il nome dello sprite da visualizzare ```sprite```
 (assicurati che sia effettivamente il nome dello sprite che hai creato), le coordinate x e y del punto
-dove visualizzarlo (0,0 è il centro dello schermo) e la dimensione cono cui visualizzarlo (20).
+dove visualizzarlo (0,0 è il centro dello schermo) e la dimensione con cui visualizzarlo (20).
 
 Puoi giocare con queste coordinate per cambiare la posizione di disegno dello sprite. Noterai
 che i tuoi cambiamenti si riflettono in tempo reale nella vista di esecuzione.
@@ -135,11 +135,11 @@ un colore grigio-blu. Clicca su di esso e poi tieni premuto CTRL, apparirà un s
 Scegli il colore che ti piace di più!
 
 
-## Controlla il carattere
+## Controlla il personaggio
 
 :navigate projects.code
 
-### Controlla il carattere
+### Controlla il personaggio
 
 Per controllare la posizione di disegno del personaggio, useremo due variabili, ```x``` e ```y```.
 Cambiamo la linea di codice che disegna lo sprite, come segue:
