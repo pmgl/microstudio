@@ -26,9 +26,9 @@ Puoi creare un nuovo progetto vuoto nella sezione Create, o scegliere un progett
 Una volta che il vostro progetto è stato creato, vi troverete nella sezione "Codice". Qui è dove puoi iniziare a programmare. Prova a copiare e incollare il codice qui sotto:
 
 ```
-draw = funzione()
+draw = function()
   screen.drawSprite ("icon",0,0,100,100)
-fine
+end
 ```
 
 ### Esegui
@@ -106,7 +106,7 @@ La funzione ```update``` viene invocata 60 volte al secondo. Il corpo di questa 
 
 ##### esempio
 ```
-update = funzione()
+update = function()
   if keyboard.UP then y = y+1 end
 end
 ```
@@ -301,7 +301,7 @@ mio_oggetto = object
   x = 0
   y = 0
   nome = "oggetto 1"
-fine
+end
 ```
 Potete accedere ai campi di un oggetto con l'operatore ```. ```. La definizione di cui sopra può quindi anche essere riscritta come:
 
@@ -340,7 +340,7 @@ Per default, le variabili dichiarate con l'assegnazione sono globali. È possibi
 ```
 myFunction = function()
   local i = 0
-fine
+end
 ```
 
 ## Funzioni
@@ -354,7 +354,7 @@ Una funzione viene definita con la parola chiave "function" e termina con la par
 ```
 numeroSucessivo = function(x)
   x+1
-fine
+end
 ```
 
 ### Invocare una funzione
