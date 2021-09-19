@@ -14,12 +14,12 @@ Include tutti gli strumenti necessari per creare il tuo primo videogioco!
 
 Puoi iniziare esplorando i progetti fatti da altri utenti, nella sezione *Explore*.
 
-Per iniziare a creare un gioco è necessario creare un account. Scegli un nickname (evita di usare
-il tuo vero nome), inserisci il tuo indirizzo e-mail (necessario in caso di smarrimento della password; inoltre deve essere convalidato per poter pubblicare) e andiamo!
+Per iniziare a creare un gioco è necessario creare un account. Scegli un soprannome (evita di usare
+il tuo vero nome), inserisci il tuo indirizzo e-mail (necessario in caso di smarrimento della password; inoltre deve essere convalidato per poter pubblicare) e partiamo!
 
 ## Primo progetto
 
-Puoi creare un nuovo progetto vuoto nella sezione Create, o scegliere un progetto esistente nella sezione Explorer e cliccare sul pulsante "Clona" per creare la tua copia e iniziare a personalizzarla.
+Puoi creare un nuovo progetto vuoto nella sezione Crea, o scegliere un progetto esistente nella sezione Esplora e cliccare sul pulsante "Clona" per creare la tua copia e iniziare a personalizzarla.
 
 ### Codice
 
@@ -59,16 +59,16 @@ Potete anche andare nella sezione Sprites, cliccare sull'elemento "icona" e iniz
 
 # Esplora
 
-La sezione principale *Explorer* ti permette di scoprire progetti creati da altri utenti. Puoi trovare esempi di giochi, modelli riutilizzabili, librerie di sprite in diversi stili e temi. Se ti interessa un progetto particolare, puoi clonarlo, cioè crearne una copia completa che potrai poi modificare e riutilizzare per i tuoi scopi.
+La sezione principale *Esplora* ti permette di scoprire progetti creati da altri utenti. Puoi trovare esempi di giochi, modelli riutilizzabili, librerie di sprite in diversi stili e temi. Se ti interessa un progetto particolare, puoi clonarlo, cioè crearne una copia completa che potrai poi modificare e riutilizzare per i tuoi scopi.
 
 Se hai precedentemente aperto uno dei tuoi progetti nella sezione Crea, sarai in grado di importare ogni sprite o file sorgente dei progetti che stai esplorando nel tuo progetto attuale. Questo ti permette di scegliere immagini o caratteristiche che ti interessano tra i progetti pubblici della comunità, e riutilizzarle per i tuoi scopi.
 
 # Creare un progetto
 
-Puoi creare un progetto vuoto nella sezione principale *Create*. Il tuo progetto ha diverse sezioni:
+Puoi creare un progetto vuoto nella sezione principale *Crea*. Il tuo progetto ha diverse sezioni:
 
 * **Codice** : qui è dove si creano i programmi e si inizia l'esecuzione del progetto per testarlo e debuggarlo.
-*Sprites**: Gli *sprites* sono immagini che puoi disegnare e modificare in questa sezione. Puoi facilmente fare riferimento ad esse per visualizzarle (incollarle sullo schermo) quando programmi il tuo gioco.
+* **Sprites**: Gli *sprites* sono immagini che puoi disegnare e modificare in questa sezione. Puoi facilmente fare riferimento ad esse per visualizzarle (incollarle sullo schermo) quando programmi il tuo gioco.
 * **Mappe**: Le mappe sono scene o livelli che puoi creare assemblando i tuoi sprites su una griglia. Potete facilmente visualizzarli sullo schermo nel vostro programma
 * **Doc** : qui puoi scrivere la documentazione per il tuo progetto; può essere un documento di design del gioco, un tutorial, una guida per riutilizzare il tuo progetto come modello ecc.
 * **Opzioni**: Qui puoi impostare varie opzioni per il tuo progetto; puoi anche invitare altri utenti a partecipare al tuo progetto con te.
@@ -205,7 +205,7 @@ Potete anche specificare le proporzioni desiderate per l'area di visualizzazione
 
 ### Utenti
 
-La sezione utenti ti permette di invitare gli amici a partecipare al tuo progetto. Devi conoscere il nickname dell'amico che vuoi invitare. Una volta che un amico è invitato, se accetta il tuo invito, avrà pieno accesso al tuo progetto e potrà fare tutte le modifiche che vuole (modificare, aggiungere, cancellare sprites, mappe, codice ecc.) Tuttavia, la modifica delle opzioni del progetto e la lista dei partecipanti è riservata al proprietario del progetto.
+La sezione utenti ti permette di invitare gli amici a partecipare al tuo progetto. Devi conoscere il soprannome dell'amico che vuoi invitare. Una volta che un amico è invitato, se accetta il tuo invito, avrà pieno accesso al tuo progetto e potrà fare tutte le modifiche che vuole (modificare, aggiungere, cancellare sprites, mappe, codice ecc.) Tuttavia, la modifica delle opzioni del progetto e la lista dei partecipanti è riservata al proprietario del progetto.
 
 ## Pubblica
 
@@ -216,11 +216,11 @@ La sezione utenti ti permette di invitare gli amici a partecipare al tuo progett
 Per rendere il tuo progetto accessibile a tutti (sola lettura), clicca su "Rendi il mio progetto pubblico". Una volta che il tuo progetto è pubblico, sarà visualizzato nella scheda di esplorazione del sito microstudio. Qualsiasi visitatore sarà in grado di eseguire il gioco, visualizzare e riutilizzare il codice sorgente e altri componenti del tuo progetto.
 
 Il tuo gioco ha un URL permanente nella forma 
-```https://microstudio.io/author_nickname/game_id/```. Puoi naturalmente distribuire il link a chiunque o puoi aggiungere il tuo gioco al tuo sito web esistente incorporandolo in un iframe.
+```https://microstudio.io/soprannome/game_id/```. Puoi naturalmente distribuire il link a chiunque o puoi aggiungere il tuo gioco al tuo sito web esistente incorporandolo in un iframe.
 
 ### Esportazione in HTML5
 
-Per esportare il tuo progetto completo in un'app HTML5 standalone, clicca su "Esporta in HTML5". Questo attiva il download di un archivio ZIP, contenente tutti i file necessari per eseguire il tuo gioco: sprites, alcuni file JavaScript, icone e un file HTML principale "index.html". Il tuo gioco può essere eseguito localmente (doppio clic sul file index.html) o puoi caricarlo sul tuo sito web esistente. È anche pronto per essere pubblicato su molte piattaforme di distribuzione di giochi online che accettano giochi HTML5 (ne suggeriamo alcune nel pannello di esportazione HTML5).
+Per esportare il tuo progetto completo in un'app HTML5 standalone, clicca su "Esporta in HTML5". Questo attiva il download di un archivio ZIP, contenente tutti i file necessari per eseguire il tuo gioco: sprites, alcuni file JavaScript, icone e un file HTML principale "index.html". Il tuo gioco può essere eseguito localmente (doppio clic sul file index.html) o puoi caricarlo su un altro sito web esistente. È già pronto per essere pubblicato su molte piattaforme di distribuzione di giochi online che accettano giochi HTML5 (ne suggeriamo alcune nel pannello di esportazione HTML5).
 
 # microScript
 
@@ -303,7 +303,7 @@ mio_oggetto = object
   nome = "oggetto 1"
 end
 ```
-Potete accedere ai campi di un oggetto con l'operatore ```. ```. La definizione di cui sopra può quindi anche essere riscritta come:
+Potete accedere ai campi di un oggetto con l'operatore ```.``` . La definizione di cui sopra può quindi anche essere riscritta come:
 
 ```
 mio_oggetto.x = 0
@@ -420,7 +420,7 @@ Ecco gli operatori binari che possono essere usati per i confronti:
 |-|-|
 |and| E logico: ```a and b``` è vero solo se a e b sono entrambi veri
 |or| O logico: ```a or b``` è vero solo se a è vero o b è vero
-|not|: NON logico: ```not a``` è vero se a è falso e falso se a è vero.
+|not| NO logico: ```not a``` è vero se a è falso e falso se a è vero.
 
 ### Valori booleani
 In microScript, non esiste un tipo booleano. ```0``` è considerato falso e qualsiasi altro valore è vero. Gli operatori di confronto restituiscono ```1``` quando vero o ```0``` per il falso. Per comodità, microScript permette anche di usare queste due variabili predefinite:
@@ -509,7 +509,8 @@ end
 
 Ecco la lista degli operatori binari in *microScript* (esclusi i confronti, già menzionati sopra)
 
-Descrizione
+### Operazioni
+|Funzione|Descrizione|
 |-|-|
 |+|Addizione|
 |-|Sottrazione|
@@ -599,6 +600,7 @@ L'oggetto random viene utilizzato per generare numeri pseudo-casuali. È possibi
 ## Ordinamento di un elenco
 
 Potete ordinare gli elementi di una lista usando la funzione ```list.sortList(funzioneDiConfronto)```. La ```funzioneDiConfronto``` che fornite deve accettare due argomenti (che chiameremo ```a``` e ```b```) e deve restituire:
+
 |Valore di ritorno|quando|
 |-|-|
 |un numero negativo|quando ```a``` deve essere ordinato prima di ```b``` (a è minore di b)|
@@ -1024,7 +1026,7 @@ screen.setDrawRotation(0) // ripristina l'angolo di rotazione al suo valore pred
 
 <!--- suggest_start screen.setDrawScale --->
 ##### screen.setDrawScale( x, y)
-Definisce un fattore di scala per disegnare i prossimi elementi sullo schermo. ```x``` definisce il fattore di scala sull'asse x e ```y``` il fattore di scala sull'asse y. Un valore di 2 visualizzerà i disegni sucessivi con il doppio della dimensione. Un valore di -1 permette, per esempio, di capovolgere uno sprite (specchio), orizzontalmente (x) o verticalmente (y).
+Definisce un fattore di scala per disegnare i prossimi elementi sullo schermo. ```x``` definisce il fattore di scala sull'asse ```x``` e ```y``` il fattore di scala sull'asse y. Un valore di 2 visualizzerà i disegni sucessivi con il doppio della dimensione. Un valore di -1 permette, per esempio, di capovolgere uno sprite (specchio), orizzontalmente (x) o verticalmente (y).
 <!--- suggest_end --->
 
 ```
@@ -1033,7 +1035,7 @@ screen.drawSprite ("icon",0,0,100)
 ```
 L'esempio qui sopra mostra l'icona del progetto, capovolta verticalmente.
 
-Non dimenticare di resettare il fattore di scala a 1.1 dopo averlo usato!
+Non dimenticare di resettare il fattore di scala a (1,1) dopo averlo usato!
 ```
 screen.setDrawScale(1,1) // ripristina il fattore di scala al suo valore predefinito.
 ```
@@ -1207,7 +1209,7 @@ if gamepad.UP then y += 1 end
 
 **Suggerimento**: Per ottenere una lista completa dei campi dell'oggetto "gamepad", digitate semplicemente "gamepad" nella console quando il vostro programma è in esecuzione.
 
-Come per la pressione dei tasti della tastiera, puoi usare ```gamepad.press.<BUTTON>``` per controllare se un pulsante è stato appena premuto o ```gamepad.release.<BUTTON>`` per controllare se un pulsante è stato appena rilasciato.
+Come per la pressione dei tasti della tastiera, puoi usare ```gamepad.press.<BUTTON>``` per controllare se un pulsante è stato appena premuto o ```gamepad.release.<BUTTON>``` per controllare se un pulsante è stato appena rilasciato.
 
 ## Suoni
 
