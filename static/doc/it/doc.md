@@ -591,7 +591,7 @@ L'oggetto random viene utilizzato per generare numeri pseudo-casuali. È possibi
 |```list.insert(elemento)```|Inserisce un elemento all'inizio della lista|
 |```list.insertAt(elemento,indice)```|Inserisce un elemento nella lista all'indice dato|
 |```list.indexOf(elemento)```|Restituisce la posizione dell'elemento nella lista (0 per il primo elemento, 1 per il secondo elemento ...). Restituisce -1 quando l'elemento non si trova nella lista|
-|```list.contains(elemento)```|Restituisce 1 (true) quando ``elemento`` è nella lista, o 0 (false) quando l'elemento non può essere trovato nella lista|
+|```list.contains(elemento)```|Restituisce 1 (true) quando ```elemento``` è nella lista, o 0 (false) quando l'elemento non può essere trovato nella lista|
 |```list.removeAt(indice)```|Rimuove dalla lista l'elemento nella posizione ```index```|
 |```list.removeElement(elemento)```|Rimuove dalla lista ```elemento```, se si trova nella lista|
 |```list1.concat(list2)```|Restituisce una nuova lista ottenuta concatenando list2 a list1|
@@ -834,7 +834,7 @@ Equivalente a `drawPolygon`, eccetto che il percorso di disegno non sarà chiuso
 <!--- suggest_end --->
 
 <!--- suggest_start screen.setLineWidth --->
-##### screen.setLineWidth( width )
+##### screen.setLineWidth( larghezza )
 Imposta la larghezza della linea per tutte le successive operazioni di disegno di linee (drawLine, drawPolygon, drawRect ecc.). La larghezza di linea predefinita è 1.
 <!--- suggest_end --->
 
@@ -852,7 +852,7 @@ screen.setLineDash([2,4])
 ### Visualizza sprites e mappe
 
 <!--- suggest_start screen.drawSprite --->
-##### screen.drawSprite( sprite, x, y, width, height)
+##### screen.drawSprite( sprite, x, y, larghezza, altezza)
 
 Disegna sullo schermo uno degli sprite che hai creato nella sezione *Sprites*. Il primo parametro è una stringa che corrisponde al nome dello sprite da visualizzare, per esempio ``"icon"``. Poi seguono le coordinate x,y dove visualizzare lo sprite (lo sprite sarà centrato su queste coordinate). Poi la larghezza e l'altezza della visualizzazione.
 <!--- suggest_end --->
@@ -879,7 +879,7 @@ screen.drawSprite("sprite1.0",0,50,50,50)
 L'esempio qui sopra disegna il fotogramma 0 dello sprite "sprite1".
 
 <!--- suggest_start screen.drawSpritePart --->
-##### screen.drawSpritePart( sprite, part_x, part_y, part_width, part_height, x, y, width, height)
+##### screen.drawSpritePart( sprite, part_x, part_y, part_width, part_height, x, y, larghezza, altezza)
 
 Disegna parte di uno sprite sullo schermo. Il primo parametro è una stringa che corrisponde al nome dello sprite da visualizzare, per esempio ```"icon"```. I prossimi 4 parametri definiscono la coordinata di un sotto-rettangolo dello sprite da disegnare effettivamente sullo schermo (la coordinata 0,0 è l'angolo in alto a sinistra dello sprite). Gli ultimi 4 parametri sono gli stessi della funzione ```drawSprite```.
 <!--- suggest_end --->
@@ -892,8 +892,9 @@ L'altezza può essere omessa, come nell'esempio precedente. In questo caso l'alt
 ---
 
 <!--- suggest_start screen.drawMap --->
-##### screen.drawMap( map , x , y , width , height )
-Disegna sullo schermo una delle mappe che hai creato nella sezione *Maps*. Il primo parametro è una stringa che corrisponde al nome della mappa da visualizzare, per esempio ``mappa1``. Poi seguono le coordinate x,y dove visualizzare la mappa (la mappa sarà centrata su queste coordinate). In sucessione poi, la larghezza e l'altezza della visualizzazione.
+##### screen.drawMap( map , x , y , larghezza , altezza )
+Disegna sullo schermo una delle mappe che hai creato nella sezione *Maps*. Il primo parametro è una stringa che corrisponde al nome della mappa da visualizzare,
+per esempio ```mappa1```. Poi seguono le coordinate x,y dove visualizzare la mappa (la mappa sarà centrata su queste coordinate). In sucessione poi, la larghezza e l'altezza della visualizzazione.
 <!--- suggest_end --->
 
 ```
@@ -913,7 +914,7 @@ screen.drawText("Ciao!",0,0,30, "#FFF")
 
 <!--- suggest_start screen.drawTextOutline --->
 ##### screen.drawTextOutline( text, x, y, size, &lt;colore&gt; )
-Disegna il contorno del testo. Il disegnare il contorno di un colore diverso può essere fatto dopo un ``drawText`` per aumentare il contrasto del testo stesso. Lo spessore del contorno può essere impostato con ``screen.setLineWidth``.
+Disegna il contorno del testo. Il disegnare il contorno di un colore diverso può essere fatto dopo un ```drawText``` per aumentare il contrasto del testo stesso. Lo spessore del contorno può essere impostato con ```screen.setLineWidth```.
 <!--- suggest_end --->
 
 ```
@@ -924,7 +925,7 @@ screen.drawTextOutline("Ciao!",0,0,30, "#F00")
 
 <!--- suggest_start screen.setFont --->
 ##### screen.setFont( font_name )
-Definisce il font da usare per le future chiamate a ``drawText```.
+Definisce il font da usare per le future chiamate a ```drawText```.
 
 **Fonts disponibili nella versione corrente**: AESystematic, Alkhemikal, AlphaBeta, Arpegius, Awesome, BitCell, Blocktopia, Comicoro, Commodore64, DigitalDisco, Edunline, EnchantedSword, EnterCommand, Euxoi, FixedBold, GenericMobileSystem, GrapeSoda, JupiterCrash, Kapel, KiwiSoda, Litebulb8bit, LycheeSoda, MisterPixel, ModernDos, NokiaCellPhone, PearSoda, PixAntiqua, PixChicago, PixelArial, PixelOperator, Pixellari, Pixolde, PlanetaryContact, PressStart2P, RainyHearts, RetroGaming, Revolute, Romulus, Scriptorium, Squarewave, Thixel, Unbalanced, UpheavalPro, VeniceClassic, ZXSpectrum, Zepto
 <!--- suggest_end --->
@@ -933,7 +934,7 @@ Definisce il font da usare per le future chiamate a ``drawText```.
 screen.setFont("BitCell")
 ```
 
-**Suggerimento**: la variabile globale ``fonts`` è un array di tutti i font disponibili in microStudio
+**Suggerimento**: la variabile globale ```fonts``` è un array di tutti i font disponibili in microStudio
 
 
 <!--- suggest_start screen.textWidth --->
@@ -978,7 +979,7 @@ L'esempio precedente crea un gradiente dal bianco al rosso, dall'alto al basso d
 
 <!--- suggest_start screen.setRadialGradient --->
 ##### screen.setRadialGradient( x, y, raggio, colore1, colore2)
-Definisce il colore del disegno come un gradiente radiale di colore, cioè un gradiente a forma di cerchio. ```x``` e ```y``` sono le coordinate del centro del cerchio. ```raggio``` è il raggio del cerchio. ``colore1``` è il colore al centro del cerchio (vedi ```setColor``` per i valori dei colori). ```colore2``` è il colore sul perimetro del cerchio.
+Definisce il colore del disegno come un gradiente radiale di colore, cioè un gradiente a forma di cerchio. ```x``` e ```y``` sono le coordinate del centro del cerchio. ```raggio``` è il raggio del cerchio. ```colore1``` è il colore al centro del cerchio (vedi ```setColor``` per i valori dei colori). ```colore2``` è il colore sul perimetro del cerchio.
 <!--- suggest_end --->
 
 ```
@@ -1206,7 +1207,7 @@ if gamepad.UP then y += 1 end
 
 **Suggerimento**: Per ottenere una lista completa dei campi dell'oggetto "gamepad", digitate semplicemente "gamepad" nella console quando il vostro programma è in esecuzione.
 
-Come per la pressione dei tasti della tastiera, puoi usare ```gamepad.press.<BUTTON>``` per controllare se un pulsante è stato appena premuto o ``gamepad.release.<BUTTON>`` per controllare se un pulsante è stato appena rilasciato.
+Come per la pressione dei tasti della tastiera, puoi usare ```gamepad.press.<BUTTON>``` per controllare se un pulsante è stato appena premuto o ```gamepad.release.<BUTTON>`` per controllare se un pulsante è stato appena rilasciato.
 
 ## Suoni
 
@@ -1319,7 +1320,7 @@ Potete quindi accedere a diversi campi e metodi del vostro sprite:
 *Nota: altri campi e metodi nativi potrebbero sembrare disponibili quando si ispeziona un oggetto sprite dalla console. Tali campi e metodi non documentati rischiano di essere tolti in futuro, quindi non fate troppo affidamento su di essi!*
 
 ## Metodi di mappa
-Il tuo programma può accedere alle mappe del tuo progetto, che sono memorizzate in un oggetto predefinito ``maps``:
+Il tuo programma può accedere alle mappe del tuo progetto, che sono memorizzate in un oggetto predefinito ```maps```:
 
 ```
 miamappa = maps["map1"]
@@ -1336,7 +1337,7 @@ Potete quindi accedere a diversi campi e metodi della vostra mappa:
 |```miamappa.ready```|1 quando la mappa è completamente caricata, 0 altrimenti|
 |```miamappa.name```|Nome della mappa|
 |```miamappa.get(x,y)```|Restituisce il nome dello sprite nella cella (x,y); l'origine delle coordinate è (0,0), situata in basso a sinistra della mappa. Restituisce 0 se la cella è vuota|
-|```miamappa.set(x,y,name)``|Imposta un nuovo sprite nella cella (x,y); l'origine delle coordinate è (0,0), situata in basso a sinistra della mappa. Il terzo parametro è il nome dello sprite.
+|```miamappa.set(x,y,name)```|Imposta un nuovo sprite nella cella (x,y); l'origine delle coordinate è (0,0), situata in basso a sinistra della mappa. Il terzo parametro è il nome dello sprite.
 restituisce una nuova mappa che è una copia completa di mymap.|
 
 *Nota: altri campi e metodi nativi possono attualmente sembrare disponibili quando si ispeziona un oggetto mappa nella console. Tali campi e metodi non documentati potrebbero rompersi in futuro, quindi non fate troppo affidamento su di essi!

@@ -18,8 +18,7 @@
 ### Disegno del testo
 
 Puoi disegnare del testo chiamando ```screen.drawText```. Poiché per disegnare il testo microStudio richiede che
-i font siano già stati caricati in background, disegneremo quindi
-il testo nella funzione draw():
+i font siano già stati caricati in background, disegneremo il testo nella funzione draw():
 
 ```
 draw = function()

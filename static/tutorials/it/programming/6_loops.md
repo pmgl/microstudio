@@ -129,10 +129,10 @@ e continua l'esecuzione del resto del programma.
 
 ### Attenzione
 
-When you write a ```for``` or ```while``` loop, don't forget to close it
-with the keyword ```end```. Also ask yourself about the stop condition:
-is my loop going to stop at some point? Be careful not to create an infinite loop,
-such as the one below:
+Quando scrivi un ciclo ```for``` o ```while```, non dimenticare di chiuderlo
+con la parola chiave ```end```. Chiedetevi anche la condizione di stop:
+il mio ciclo si fermerà ad un certo punto? Fate attenzione a non creare un ciclo infinito,
+come quello che segue:
 
 ```
 i = 1

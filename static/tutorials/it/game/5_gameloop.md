@@ -18,7 +18,7 @@ giocatore colpisce una lama. Una volta che *gameover* è impostato, abbiamo biso
 Fermeremo il gioco saltando tutto il nostro codice nella funzione *update*. Aspetteremo 5
 secondi incrementando il valore di gameover nella funzione update fino a raggiungere 300.
 Riavvieremo il gioco richiamando la funzione *init*, dopo esserci assicurati che abbia correttamente
-resettare tutto ciò di cui abbiamo bisogno.
+resettato tutto ciò di cui abbiamo bisogno.
 
 ## Game over
 
@@ -35,8 +35,8 @@ Modificheremo quindi il contenuto della funzione *update* come segue:
   end
 ```
 
-La funzione *init* è ora usata per riavviare il gioco 5 secondi dopo la fine della partita. Per servire questo
-correttamente, ha bisogno di azzerare il *score*, la *posizione* iniziale e di resettare il valore di *gameover*
+La funzione *init* è ora usata per riavviare il gioco 5 secondi dopo la fine della partita. Per fa funzionare questo
+correttamente, hai bisogno di azzerare il *punteggio*, la *posizione* iniziale e di resettare il valore di *gameover*
 a zero:
 
 ```
@@ -49,9 +49,9 @@ init = function()
 end
 ```
 
-## Gioco finito
+## Game Over
 
-### Gioco finito
+### Game Over
 
 Quando il gioco è finito, abbiamo bisogno di un feedback visivo su di esso! Disegneremo quindi un rettangolo semitrasparente
 che copre tutta l'interfaccia di gioco e disegneremo il testo GAME OVER. Aggiungiamo questo alla fine della nostra funzione *draw*:
@@ -83,17 +83,17 @@ Cambieremo poi la linea ```posizione = posizione + 2``` nel metodo *update* con 
   movimento = movimento + 0.001
 ```
 
-Stiamo quindi aumentando la movimento dell'eroe durante il gioco!
+Stiamo quindi aumentando la velocità di movimento dell'eroe durante il gioco!
 
 ## Fatto!
 
 ### Fatto!
 
 Abbiamo finito di creare il nostro gioco. Il codice completo è riportato di nuovo qui sotto. Se guardate attentamente, noterete che
-abbiamo aggiunto una variabile *esecuzione* il cui scopo è aspettare che il giocatore tocchi lo schermo / clic prima di
+abbiamo aggiunto una variabile *esecuzione* il cui scopo è aspettare che il giocatore tocchi lo schermo prima di
 iniziare il gioco.
 
-Abbiamo anche aggiunto alcuni suoni che vengono prodotti chiamando la funzione ``audio.beep()``. Puoi controllare anche questo nel
+Abbiamo anche aggiunto alcuni suoni che vengono prodotti chiamando la funzione ```audio.beep()```. Puoi verificare anche questo nel
 codice qui sotto.
 
 Puoi anche iniziare ad aggiungere altre caratteristiche al gioco. Perché non alcuni oggetti volanti che dovrebbero essere evitati
@@ -118,7 +118,7 @@ update = function()
     gameover = gameover+1
     if gameover>300 then init() end
   else esecuzione then
-    posizione = posizione+movimento
+    posizione = posizione + movimento
     movimento = movimento + 0.001
     
     if touch.touching and eroe_y == 0 then
@@ -168,7 +168,7 @@ draw = function()
     screen.fillRect(0,0,screen.width,screen.height, "rgba(255,0,0,.5)")
     screen.drawText("GAME OVER",0,0,50, "#FFF")
   elsif not esecuzione then
-    screen.drawText("READY?",0,30,50, "#FFF")
+    screen.drawText("PRONTO?",0,30,50, "#FFF")
   end
 end
 ```

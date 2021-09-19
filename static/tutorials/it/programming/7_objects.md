@@ -108,7 +108,7 @@ caratteri speciali sono ammessi nei loro nomi. Quindi va bene scrivere:
 miaSedia["% di legno"] = 50
 ```
 
-A causa di come funziona l'analisi della sintassi del codice, non vi sarebbe permesso di scrivere questo però:
+Ma per come funziona l'analisi della sintassi del codice, non vi sarebbe permesso di scrivere questo:
 
 ```
 miaSedia.% di legno = 50 // questo non ha senso per il parser di sintassi microScript

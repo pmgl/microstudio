@@ -21,7 +21,7 @@ Impara a programmare in microScript, il linguaggio facile ma potente in azione i
 
 [Funzioni](/tutorials/it/programming/3_functions.md)
 
-[Elenchi](/tutorials/it/programming/4_lists.md)
+[Liste](/tutorials/it/programming/4_lists.md)
 
 [Condizioni](/tutorials/it/programming/5_conditions.md)
 

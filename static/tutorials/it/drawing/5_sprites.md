@@ -55,12 +55,12 @@ draw = function()
 end
 ```
 
-## Impostazione del frame dell'animazione
+## Impostazione del fotogramma dell'animazione
 
-### Impostazione del frame dell'animazione
+### Impostazione del fotogramma dell'animazione
 
 La vostra animazione dello sprite andrà in loop continuamente, ma ad un certo punto potreste voler resettare l'animazione
-al primo frame. Puoi farlo con:
+al primo fotogramma. Puoi farlo con:
 
 ```
 draw = function()
@@ -70,14 +70,14 @@ draw = function()
 end
 ```
 
-Questo resetta l'animazione dello sprite "mio_sprite_animato" al frame 0 (che è il primo frame).
+Questo resetta l'animazione dello sprite "mio_sprite_animato" al fotogramma 0 (che è il primo fotogramma).
 
-## Disegno di un frame di animazione specificato
+## Disegno di un fotogramma di animazione specificato
 
-### Disegno di un frame di animazione specificato
+### Disegno di un fotogramma di animazione specificato
 
-Potete scegliere di disegnare uno specifico frame di animazione del vostro sprite. Per questo potete aggiungere "." e l'indice
-del fotogramma di animazione, al nome del vostro sprite. L'indice dei frame di animazione va da 0 a (numero_di_frames-1).
+Potete scegliere di disegnare uno specifico fotogramma di animazione del vostro sprite. Per questo potete aggiungere "." e l'indice
+del fotogramma di animazione, al nome del vostro sprite. L'indice dei fotogramma di animazione va da 0 a (numero_di_frames-1).
 
 ```
 draw = function()

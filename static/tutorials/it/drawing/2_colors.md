@@ -18,9 +18,9 @@
 ### Colori
 
 Lo schermo del tuo computer può visualizzare quasi tutti i colori mescolando un po' di rosso, un po' di
-Verde e un po' di Blu. Lo chiamiamo quindi il modello di colore RGB. In microStudio, un colore
-è dato come un valore di stringa, che può essere conforme a diversi formati. Cominciamo
-con questo:
+Verde e un po' di Blu. Lo chiamiamo quindi il modello di colore RGB (Red=Rosso, Green=Verde, Blue=Blu).
+In microStudio, un colore è dato come un valore stringa, che può essere conforme a diversi formati.
+Cominciamo con questo:
 
 ```
 screen.fillRect(0,0,50,50,"rgb(255,255,255)")

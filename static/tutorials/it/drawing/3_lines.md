@@ -54,15 +54,15 @@ punti = [-50,50,50,50,50,0,0,-50,50]
 screen.drawPolygon(punti, "rgb(0,255,255)")
 ```
 
-Questo può essere utile per esempio se vuoi animare il tuo poligono programmaticamente.
+Questo può essere utile per esempio se vuoi animare il tuo poligono da codice.
 
 
 ## Impostazione della larghezza della linea
 
 ### Impostazione della larghezza della linea
 
-Puoi impostare la larghezza o lo spessore della linea chiamando ``screen.setLineWidth``. Assicurati
-assicurati di chiamarlo prima delle tue chiamate a drawLine o drawPolygon:
+Puoi impostare la larghezza o lo spessore della linea chiamando ```screen.setLineWidth```.
+Assicurati di eseguirlo prima delle tue chiamate a drawLine o drawPolygon:
 
 ```
 screen.setLineWidth(4)
@@ -77,7 +77,7 @@ valori superiori a 5 per linee molto spesse.
 
 ### Poligono riempito
 
-Puoi chiamare ```screen.fillPolygon``` per disegnare un poligono riempito sullo schermo.
+Puoi chiamare ```screen.fillPolygon``` per disegnare un poligono riempito.
 Assicurati di "chiudere" il tuo poligono ripetendo il primo punto come ultimo punto, o
 potresti ottenere risultati inaspettati:
 
