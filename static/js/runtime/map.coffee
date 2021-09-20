@@ -1,5 +1,6 @@
 class @MicroMap
   constructor:(@width,@height,@block_width,@block_height,@sprites)->
+    @name = ""
     @map = []
     if @width? and typeof @width == "string"
       @ready = false
