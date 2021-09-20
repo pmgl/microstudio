@@ -82,6 +82,7 @@ class @Runtime
       for m in @resources.maps
         name = m.file.split(".")[0]
         @maps[name] = new MicroMap(@url+"maps/#{m.file}?v=#{m.version}",0,0,0,@sprites)
+        @maps[name] = name
         @maps[name].loaded = ()=>
           @checkStartReady()
 
