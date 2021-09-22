@@ -453,14 +453,14 @@ I loop permettono di eseguire operazioni ripetute.
 Il ciclo ```for``` è molto usato nella programmazione. Permette di effettuare la stessa operazione su tutti gli elementi di una lista o di una serie di valori.
 
 ```
-for i=1 a 10
+for i=1 to 10
   print(i)
 end
 ```
 L'esempio precedente mostra nella console ogni numero da 1 a 10.
 
 ```
-for i=0 a 10 by 2
+for i=0 to 10 by 2
   print(i)
 end
 ```
@@ -1136,8 +1136,8 @@ if keyboard.press.A then
 end
 ```
 
-##### Verificare se un taso è stata appena rilasciata
-Nel contesto della funzione ```update()``, potete controllare se un tasto della tastiera è stato appena rilasciato dall'utente usando ```keyboard.release.<KEY>```.
+##### Verificare se un tasto è stato appena rilasciato
+Nel contesto della funzione ```update()```, potete controllare se un tasto della tastiera è stato appena rilasciato dall'utente usando ```keyboard.release.<KEY>```.
 
 Esempio:
 
