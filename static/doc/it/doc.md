@@ -1136,8 +1136,8 @@ if keyboard.press.A then
 end
 ```
 
-##### Verificare se un taso è stata appena rilasciata
-Nel contesto della funzione ```update()``, potete controllare se un tasto della tastiera è stato appena rilasciato dall'utente usando ```keyboard.release.<KEY>```.
+##### Verificare se un tasto è stata appena rilasciato
+Nel contesto della funzione ```update()```, potete controllare se un tasto della tastiera è stato appena rilasciato dall'utente usando ```keyboard.release.<KEY>```.
 
 Esempio:
 
