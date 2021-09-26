@@ -650,7 +650,7 @@ Inizieremo creando una classe ```Nemico``` che sarà condivisa da tutti i nostri
 
 ```
 Nemico = class
-  costruttore = function(posizione)
+  constructor = function(posizione)
     this.posizione = posizione
   end
 
