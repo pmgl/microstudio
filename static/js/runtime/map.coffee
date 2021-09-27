@@ -39,8 +39,8 @@ class @MicroMap
       @needs_update = true
 
   get:(x,y)->
-    return "" if x<0 or y<0 or x>=@width or y>=@height
-    @map[x+y*@width] or ""
+    return 0 if x<0 or y<0 or x>=@width or y>=@height
+    @map[x+y*@width] or 0
 
   getCanvas:()->
     if not @canvas? or @needs_update

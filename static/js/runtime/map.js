@@ -55,9 +55,9 @@ this.MicroMap = (function() {
 
   MicroMap.prototype.get = function(x, y) {
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
-      return "";
+      return 0;
     }
-    return this.map[x + y * this.width] || "";
+    return this.map[x + y * this.width] || 0;
   };
 
   MicroMap.prototype.getCanvas = function() {
