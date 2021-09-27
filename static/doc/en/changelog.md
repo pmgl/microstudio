@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2021-09-27
+* Fixed code editor collapse / expand for class and object blocks
+* Fixed transpiler inconsistency (as reported here, thanks to @Abr00 https://microstudio.dev/i/Abr00/transpilerdetection/)
+* Map flood fill tool (use shift+click) ; thanks to HomineLudens for providing the base implementation
+* Maps now have a proper `name` field (fixes an inconsistency with what is said in the doc)
+
 ### Update 2021-09-18
 * Enabled Italian language! Special thanks to @HomineLudens ; translation is still a work in progress, you will see it improve in the coming days
 * Incorporated tutorials to the Github project ; they are working when running a local version of microStudio offline. They will also be easier to translate to other languages.
