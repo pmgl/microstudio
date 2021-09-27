@@ -1054,9 +1054,11 @@ this.Program.FunctionCall = (function() {
       if (typeof f === "function") {
         switch (this.args.length) {
           case 0:
-            return f.call(this.expression.parentObject) || 0;
+            res = f.call(this.expression.parentObject);
+            break;
           case 1:
-            return f.call(this.expression.parentObject, this.args[0].evaluate(context, true)) || 0;
+            res = f.call(this.expression.parentObject, this.args[0].evaluate(context, true));
+            break;
           default:
             argv = [];
             ref = this.args;
@@ -1064,7 +1066,12 @@ this.Program.FunctionCall = (function() {
               a = ref[j];
               argv.push(a.evaluate(context, true));
             }
-            return f.apply(this.expression.parentObject, argv) || 0;
+            res = f.apply(this.expression.parentObject, argv);
+        }
+        if (res !== null) {
+          return res;
+        } else {
+          return 0;
         }
       } else if (f instanceof Program.Function) {
         argv = [];

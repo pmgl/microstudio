@@ -453,14 +453,14 @@ I loop permettono di eseguire operazioni ripetute.
 Il ciclo ```for``` è molto usato nella programmazione. Permette di effettuare la stessa operazione su tutti gli elementi di una lista o di una serie di valori.
 
 ```
-for i=1 a 10
+for i=1 to 10
   print(i)
 end
 ```
 L'esempio precedente mostra nella console ogni numero da 1 a 10.
 
 ```
-for i=0 a 10 by 2
+for i=0 to 10 by 2
   print(i)
 end
 ```
@@ -650,7 +650,7 @@ Inizieremo creando una classe ```Nemico``` che sarà condivisa da tutti i nostri
 
 ```
 Nemico = class
-  costruttore = function(posizione)
+  constructor = function(posizione)
     this.posizione = posizione
   end
 
@@ -1136,7 +1136,7 @@ if keyboard.press.A then
 end
 ```
 
-##### Verificare se un tasto è stata appena rilasciato
+##### Verificare se un tasto è stato appena rilasciato
 Nel contesto della funzione ```update()```, potete controllare se un tasto della tastiera è stato appena rilasciato dall'utente usando ```keyboard.release.<KEY>```.
 
 Esempio:
@@ -1340,9 +1340,9 @@ Potete quindi accedere a diversi campi e metodi della vostra mappa:
 |```miamappa.name```|Nome della mappa|
 |```miamappa.get(x,y)```|Restituisce il nome dello sprite nella cella (x,y); l'origine delle coordinate è (0,0), situata in basso a sinistra della mappa. Restituisce 0 se la cella è vuota|
 |```miamappa.set(x,y,name)```|Imposta un nuovo sprite nella cella (x,y); l'origine delle coordinate è (0,0), situata in basso a sinistra della mappa. Il terzo parametro è il nome dello sprite.
-restituisce una nuova mappa che è una copia completa di mymap.|
+|```miamappa.clone()```|restituisce una nuova mappa che è una copia completa di miamappa.|
 
-*Nota: altri campi e metodi nativi possono attualmente sembrare disponibili quando si ispeziona un oggetto mappa nella console. Tali campi e metodi non documentati potrebbero rompersi in futuro, quindi non fate troppo affidamento su di essi!
+*Nota: altri campi e metodi nativi possono attualmente sembrare disponibili quando si ispeziona un oggetto mappa nella console. Tali campi e metodi non documentati rischiano di essere tolti in futuro, quindi non fate troppo affidamento su di essi!*
 
 ## Sistema
 L'oggetto ```system``` permette di accedere alla funzione ```time``` che restituisce il tempo trascorso in millisecondi (dal 1° gennaio 1970). Ma soprattutto, invocata in vari momenti, permette di misurare le differenze di tempo.

@@ -710,14 +710,16 @@ class @Program.FunctionCall
       if typeof f == "function"
         switch @args.length
           when 0
-            return f.call(@expression.parentObject) or 0
+            res = f.call(@expression.parentObject)
           when 1
-            return f.call(@expression.parentObject,@args[0].evaluate(context,true)) or 0
+            res = f.call(@expression.parentObject,@args[0].evaluate(context,true))
           else
             argv = []
             for a in @args
               argv.push a.evaluate(context,true)
-            return f.apply(@expression.parentObject,argv) or 0
+            res = f.apply(@expression.parentObject,argv)
+            
+        return if res != null then res else 0
 
       else if f instanceof Program.Function
         argv = []
