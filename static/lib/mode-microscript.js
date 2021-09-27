@@ -97,7 +97,7 @@ define("ace/mode/microscript_highlight_rules", ["require", "exports", "module", 
         u = t.FoldMode = function() {};
     r.inherits(u, i),
         function() {
-            this.foldingStartMarker = /\b(function|then|while|for|repeat)\b|{\s*$|(\[=*\[)/, this.foldingStopMarker = /\bend\b|^\s*}|\]=*\]/, this.getFoldWidget = function(e, t, n) {
+            this.foldingStartMarker = /\b(function|then|while|for|repeat|class|object)\b|{\s*$|(\[=*\[)/, this.foldingStopMarker = /\bend\b|^\s*}|\]=*\]/, this.getFoldWidget = function(e, t, n) {
                 var r = e.getLine(n),
                     i = this.foldingStartMarker.test(r),
                     s = this.foldingStopMarker.test(r);
@@ -136,7 +136,8 @@ define("ace/mode/microscript_highlight_rules", ["require", "exports", "module", 
                         end: -1,
                         "while": 1,
                         "for": 1,
-                        "object": 1
+                        "object": 1,
+                        "class": 1
                     },
                     a = i.getCurrentToken();
                 if (!a || a.type != "keyword") return;
