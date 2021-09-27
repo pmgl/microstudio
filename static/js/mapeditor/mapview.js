@@ -43,6 +43,26 @@ this.MapView = (function() {
     this.sprite = sprite;
   };
 
+  MapView.prototype.floodFillMap = function(clickedSprite, fillSprite, xs, ys) {
+    var clickSprite;
+    clickSprite = this.map.get(xs, this.map.height - 1 - ys);
+    if (clickSprite !== clickedSprite) {
+      return;
+    }
+    if (xs < 0 || xs > this.map.width - 1 || ys < 0 || ys > this.map.width - 1) {
+      return;
+    }
+    this.map.set(xs, this.map.height - 1 - ys, fillSprite);
+    this.floodFillMap(clickedSprite, fillSprite, xs - 1, ys - 1);
+    this.floodFillMap(clickedSprite, fillSprite, xs - 1, ys);
+    this.floodFillMap(clickedSprite, fillSprite, xs - 1, ys + 1);
+    this.floodFillMap(clickedSprite, fillSprite, xs, ys - 1);
+    this.floodFillMap(clickedSprite, fillSprite, xs, ys + 1);
+    this.floodFillMap(clickedSprite, fillSprite, xs + 1, ys - 1);
+    this.floodFillMap(clickedSprite, fillSprite, xs + 1, ys);
+    return this.floodFillMap(clickedSprite, fillSprite, xs + 1, ys + 1);
+  };
+
   MapView.prototype.windowResized = function() {
     var c, h, height, ratio, w, width;
     c = this.canvas.parentElement;
@@ -153,7 +173,7 @@ this.MapView = (function() {
   };
 
   MapView.prototype.mouseMove = function(event) {
-    var b, i, j, k, l, min, ref, ref1, s, sel, x, y;
+    var b, clickedSprite, i, j, k, l, min, ref, ref1, s, sel, x, y;
     if (!this.editable) {
       return;
     }
@@ -171,16 +191,27 @@ this.MapView = (function() {
       this.editor.setCoordinates(x, this.map.height - 1 - y);
     }
     if (this.mousepressed) {
+      clickedSprite = this.map.get(x, this.map.height - 1 - y);
       if ((this.editor.tilepicker.selection != null) && this.mode === "draw") {
         sel = this.editor.tilepicker.selection;
-        for (i = k = 0, ref = sel.w - 1; 0 <= ref ? k <= ref : k >= ref; i = 0 <= ref ? ++k : --k) {
-          for (j = l = 0, ref1 = sel.h - 1; 0 <= ref1 ? l <= ref1 : l >= ref1; j = 0 <= ref1 ? ++l : --l) {
-            s = this.sprite + ":" + (sel.x + i) + "," + (sel.y + j);
-            this.map.set(x + i, this.map.height - 1 - y - j, s);
+        if (event.shiftKey) {
+          s = this.sprite + ":" + sel.x + "," + sel.y;
+          this.floodFillMap(clickedSprite, s, x, y);
+        } else {
+          for (i = k = 0, ref = sel.w - 1; 0 <= ref ? k <= ref : k >= ref; i = 0 <= ref ? ++k : --k) {
+            for (j = l = 0, ref1 = sel.h - 1; 0 <= ref1 ? l <= ref1 : l >= ref1; j = 0 <= ref1 ? ++l : --l) {
+              s = this.sprite + ":" + (sel.x + i) + "," + (sel.y + j);
+              this.map.set(x + i, this.map.height - 1 - y - j, s);
+            }
           }
         }
       } else {
-        this.map.set(x, this.map.height - 1 - y, this.mode === "draw" ? this.sprite : null);
+        s = this.mode === "draw" ? this.sprite : null;
+        if (event.shiftKey) {
+          this.floodFillMap(clickedSprite, s, x, y);
+        } else {
+          this.map.set(x, this.map.height - 1 - y, s);
+        }
       }
       this.update();
       this.editor.mapChanged();

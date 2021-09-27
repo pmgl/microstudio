@@ -22,6 +22,22 @@ class @MapView
 
   setSprite:(@sprite)->
 
+  floodFillMap:(clickedSprite,fillSprite,xs,ys)->
+    clickSprite =  @map.get xs,@map.height-1-ys
+    return if clickSprite != clickedSprite
+    return if xs<0 || xs>@map.width-1 || ys<0 || ys>@map.width-1
+    @map.set xs,@map.height-1-ys,fillSprite
+    
+    @floodFillMap(clickedSprite,fillSprite,xs-1,ys-1)
+    @floodFillMap(clickedSprite,fillSprite,xs-1,ys)
+    @floodFillMap(clickedSprite,fillSprite,xs-1,ys+1)
+    @floodFillMap(clickedSprite,fillSprite,xs,ys-1)
+    @floodFillMap(clickedSprite,fillSprite,xs,ys+1)
+    @floodFillMap(clickedSprite,fillSprite,xs+1,ys-1)
+    @floodFillMap(clickedSprite,fillSprite,xs+1,ys)
+    @floodFillMap(clickedSprite,fillSprite,xs+1,ys+1)
+        
+
   windowResized: ()->
     c = @canvas.parentElement
     return if not c?
@@ -136,15 +152,25 @@ class @MapView
       @editor.setCoordinates x,@map.height-1-y
 
     if @mousepressed
+      clickedSprite = @map.get x,@map.height-1-y
       if @editor.tilepicker.selection? and @mode =="draw"
         sel = @editor.tilepicker.selection
 
-        for i in [0..sel.w-1]
-          for j in [0..sel.h-1]
-            s = "#{@sprite}:#{sel.x+i},#{sel.y+j}"
-            @map.set x+i,@map.height-1-y-j,s
+        if event.shiftKey
+          s = "#{@sprite}:#{sel.x},#{sel.y}"          
+          @floodFillMap(clickedSprite,s,x,y)    
+        else
+          for i in [0..sel.w-1]
+            for j in [0..sel.h-1]
+              s = "#{@sprite}:#{sel.x+i},#{sel.y+j}"
+              @map.set x+i,@map.height-1-y-j,s                   
       else
-        @map.set x,@map.height-1-y,if @mode == "draw" then @sprite else null
+        s = if @mode == "draw" then @sprite else null
+        if event.shiftKey
+          @floodFillMap(clickedSprite,s,x,y)
+        else
+          @map.set x,@map.height-1-y,s         
+
       @update()
       @editor.mapChanged()
 
@@ -164,3 +190,4 @@ class @MapView
   setMap:(@map)->
     @windowResized()
     @update()
+
