@@ -82,6 +82,7 @@ class @Runtime
       for m in @resources.maps
         name = m.file.split(".")[0]
         @maps[name] = new MicroMap(@url+"maps/#{m.file}?v=#{m.version}",0,0,0,@sprites)
+        @maps[name].name = name
         @maps[name].loaded = ()=>
           @checkStartReady()
 
@@ -242,6 +243,7 @@ class @Runtime
         m = new MicroMap(1,1,1,1,@sprites)
         m.load data,@sprites
         @maps[name] = m
+        @maps[name].name = name
     else
       url = @url+"maps/#{name}.json?v=#{version}"
       m = @maps[name]
@@ -249,6 +251,7 @@ class @Runtime
         m.loadFile(url)
       else
         @maps[name] = new MicroMap(url,0,0,0,@sprites)
+        @maps[name].name = name
 
   updateCode:(name,version,data)->
     if data?

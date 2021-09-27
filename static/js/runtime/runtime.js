@@ -108,6 +108,7 @@ this.Runtime = (function() {
         m = ref1[k];
         name = m.file.split(".")[0];
         this.maps[name] = new MicroMap(this.url + ("maps/" + m.file + "?v=" + m.version), 0, 0, 0, this.sprites);
+        this.maps[name].name = name;
         this.maps[name].loaded = (function(_this) {
           return function() {
             return _this.checkStartReady();
@@ -332,7 +333,8 @@ this.Runtime = (function() {
       } else {
         m = new MicroMap(1, 1, 1, 1, this.sprites);
         m.load(data, this.sprites);
-        return this.maps[name] = m;
+        this.maps[name] = m;
+        return this.maps[name].name = name;
       }
     } else {
       url = this.url + ("maps/" + name + ".json?v=" + version);
@@ -340,7 +342,8 @@ this.Runtime = (function() {
       if (m != null) {
         return m.loadFile(url);
       } else {
-        return this.maps[name] = new MicroMap(url, 0, 0, 0, this.sprites);
+        this.maps[name] = new MicroMap(url, 0, 0, 0, this.sprites);
+        return this.maps[name].name = name;
       }
     }
   };
