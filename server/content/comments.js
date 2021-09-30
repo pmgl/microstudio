@@ -46,7 +46,8 @@ this.Comments = (function() {
         res.push({
           user: c.user.nick,
           user_info: {
-            tier: c.user.flags.tier
+            tier: c.user.flags.tier,
+            profile_image: c.user.flags.profile_image
           },
           text: c.text,
           id: i,

@@ -804,6 +804,7 @@ class @Session
           owner: p.owner.nick
           owner_info:
             tier: p.owner.flags.tier
+            profile_image: p.owner.flags.profile_image
           likes: p.likes
           liked: @user? and @user.isLiked(p.id)
           tags: p.tags
@@ -832,6 +833,7 @@ class @Session
             owner: p.owner.nick
             owner_info:
               tier: p.owner.flags.tier
+              profile_image: p.owner.flags.profile_image
             likes: p.likes
             liked: @user? and @user.isLiked(p.id)
             tags: p.tags

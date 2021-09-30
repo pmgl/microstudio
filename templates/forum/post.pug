@@ -74,11 +74,14 @@ html(lang=language)
 
             div.post-users
               if post.author.flags.profile_image
-                img.user(src="/"+post.author.nick+".png" title=post.author.nick)
+                a(target="_blank" href="/"+post.author.nick+"/")
+                  img.user(src="/"+post.author.nick+".png" title=post.author.nick)
               else
-                div.user(data-colorize=post.author.nick) #{post.author.nick.substring(0,1).toUpperCase()}
+                a(target="_blank" href="/"+post.author.nick+"/")
+                  div.user(data-colorize=post.author.nick) #{post.author.nick.substring(0,1).toUpperCase()}
 
-            span.post-content-author #{post.author.nick}
+            a(target="_blank" href="/"+post.author.nick+"/")
+              span.post-content-author #{post.author.nick}
             a.post-category(href=post.category.path style="background:hsl("+post.category.hue+",40%,50%)") #{post.category.name}
             if post.progress>0
               div.post-progress(data-progress=post.progress) #{post.progress}%
@@ -102,10 +105,13 @@ html(lang=language)
 
                   div.post-users
                     if reply.author.flags.profile_image
-                      img.user(src="/"+reply.author.nick+".png" title=reply.author.nick)
+                      a(target="_blank" href="/"+reply.author.nick+"/")
+                        img.user(src="/"+reply.author.nick+".png" title=reply.author.nick)
                     else
-                      div.user( data-colorize=reply.author.nick) #{reply.author.nick.substring(0,1).toUpperCase()}
-                  span #{reply.author.nick}
+                      a(target="_blank" href="/"+reply.author.nick+"/")
+                        div.user( data-colorize=reply.author.nick) #{reply.author.nick.substring(0,1).toUpperCase()}
+                  a(target="_blank" href="/"+reply.author.nick+"/")
+                    span #{reply.author.nick}
 
                 div.post-text.md(data-author=reply.author.nick data-type="reply") !{reply.getHTMLText()}
             - i -= 1
@@ -121,10 +127,13 @@ html(lang=language)
 
                   div.post-users
                     if reply.author.flags.profile_image
-                      img.user(src="/"+reply.author.nick+".png" title=reply.author.nick)
+                      a(target="_blank" href="/"+reply.author.nick+"/")
+                        img.user(src="/"+reply.author.nick+".png" title=reply.author.nick)
                     else
-                      div.user( data-colorize=reply.author.nick) #{reply.author.nick.substring(0,1).toUpperCase()}
-                  span #{reply.author.nick}
+                      a(target="_blank" href="/"+reply.author.nick+"/")
+                        div.user( data-colorize=reply.author.nick) #{reply.author.nick.substring(0,1).toUpperCase()}
+                  a(target="_blank" href="/"+reply.author.nick+"/")
+                    span #{reply.author.nick}
 
                 div.post-text.md(data-author=reply.author.nick data-type="reply") !{reply.getHTMLText()}
 

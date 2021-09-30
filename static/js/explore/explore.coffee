@@ -116,11 +116,7 @@ class @Explore
     title.innerText = p.title
     infobox.appendChild title
 
-    # author = document.createElement "div"
-    # author.classList.add "explore-project-author"
-    # author.innerHTML = "<i class='fa fa-user'></i> " +p.owner
-
-    author = @app.appui.createUserTag p.owner,p.owner_info.tier
+    author = @app.appui.createUserTag p.owner,p.owner_info.tier,p.owner_info.profile_image
 
     infobox.appendChild author
 
@@ -195,7 +191,8 @@ class @Explore
     PixelatedImage.setURL @get("project-details-image"),location.origin+"/#{p.owner}/#{p.slug}/icon.png",200
     @get("project-details-title").innerText = p.title
     @get("project-details-description").innerHTML = DOMPurify.sanitize marked p.description
-    document.querySelector("#project-details-author span").innerText = p.owner
+    document.querySelector("#project-details-author").innerHTML = ""
+    document.querySelector("#project-details-author").appendChild @app.appui.createUserTag p.owner,p.owner_info.tier,p.owner_info.profile_image,12
 
     likes = @get("project-details-likes")
     likes.innerHTML = "<i class='fa fa-thumbs-up'></i> "+p.likes
@@ -372,7 +369,7 @@ class @Explore
     if @list_received
       callback() if callback?
       return
-      
+
     if not @initialized and location.pathname.startsWith "/i/"
       document.getElementById("explore-section").style.opacity = 0
 

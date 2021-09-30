@@ -1109,9 +1109,12 @@ AppUI = (function() {
     }
   };
 
-  AppUI.prototype.createUserTag = function(nick, tier) {
+  AppUI.prototype.createUserTag = function(nick, tier, pic, picmargin) {
     var div, i, icon, span;
-    div = document.createElement("div");
+    if (pic == null) {
+      pic = false;
+    }
+    div = document.createElement("a");
     div.classList.add("usertag");
     if (tier) {
       div.classList.add(tier);
@@ -1127,6 +1130,20 @@ AppUI = (function() {
       icon = PixelatedImage.create(location.origin + ("/microstudio/patreon/badges/sprites/" + tier + ".png"), 32);
       icon.alt = icon.title = this.app.getTierName(tier);
       div.appendChild(icon);
+    }
+    div.href = "/" + nick + "/";
+    div.target = "_blank";
+    div.addEventListener("click", function(event) {
+      return event.stopPropagation();
+    });
+    if (pic) {
+      pic = document.createElement("img");
+      pic.src = "/" + nick + ".png";
+      pic.classList.add("profile");
+      div.appendChild(pic);
+      if (picmargin) {
+        div.style["margin-left"] = picmargin + "px";
+      }
     }
     return div;
   };

@@ -37,9 +37,9 @@ html(lang='en')
       div.description.dark.md !{description}
       
       div.sections
-        div.selected#section-projects Public Projects
-        //div#section-progress Stats & Achievements
-        //div#section-forum Forum interactions
+        div.selected#section-projects #{translator.get("Public Projects")}
+        // div#section-progress Stats & Achievements
+        // div#section-forum #{translator.get("Forum Posts & Replies")}
 
       div.projects#projects
         each project in projects

@@ -1294,6 +1294,9 @@ padding-left: 2px ;
   padding: 2px 18px 2px 6px ;
   border-radius: 5px ;
   overflow: visible ;
+  text-decoration: none ;
+  color: rgba(255,255,255,.9);
+  font-size: 14px ;
 }
 .usertag img {
   vertical-align: middle ;
@@ -1301,20 +1304,30 @@ padding-left: 2px ;
   right: -16px ;
   top: 0px ;
 }
+.usertag img.profile {
+  vertical-align: middle ;
+  position: absolute ;
+  left: -13px ;
+  top: -4px ;
+  width: 32px ;
+  height: 32px ;
+  border-radius: 16px ;
+  box-shadow: 0 0 2px #000 ;
+}
 .usertag.founder {
-  background: hsl(0,50%,40%) ;
+  background: hsla(0,50%,40%,.5) ;
 }
 .usertag.pixel_master {
-  background: hsl(140,50%,40%) ;
+  background: hsla(140,50%,40%,.5) ;
 }
 .usertag.code_ninja {
-  background: hsl(180,50%,40%) ;
+  background: hsla(180,50%,40%,.5) ;
 }
 .usertag.gamedev_lord {
-  background: hsl(300,50%,40%) ;
+  background: hsla(300,50%,40%,.5) ;
 }
 .usertag.sponsor {
-  background: hsl(40,50%,40%) ;
+  background: hsla(40,50%,40%,.5) ;
 }
 
 .horizontal-splitbar {

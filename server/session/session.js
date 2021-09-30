@@ -1297,7 +1297,8 @@ this.Session = (function() {
           slug: p.slug,
           owner: p.owner.nick,
           owner_info: {
-            tier: p.owner.flags.tier
+            tier: p.owner.flags.tier,
+            profile_image: p.owner.flags.profile_image
           },
           likes: p.likes,
           liked: (this.user != null) && this.user.isLiked(p.id),
@@ -1331,7 +1332,8 @@ this.Session = (function() {
             slug: p.slug,
             owner: p.owner.nick,
             owner_info: {
-              tier: p.owner.flags.tier
+              tier: p.owner.flags.tier,
+              profile_image: p.owner.flags.profile_image
             },
             likes: p.likes,
             liked: (this.user != null) && this.user.isLiked(p.id),

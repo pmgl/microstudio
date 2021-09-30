@@ -152,7 +152,7 @@ this.Explore = (function() {
     title.classList.add("explore-project-title");
     title.innerText = p.title;
     infobox.appendChild(title);
-    author = this.app.appui.createUserTag(p.owner, p.owner_info.tier);
+    author = this.app.appui.createUserTag(p.owner, p.owner_info.tier, p.owner_info.profile_image);
     infobox.appendChild(author);
     likes = document.createElement("div");
     likes.classList.add("explore-project-likes");
@@ -248,7 +248,8 @@ this.Explore = (function() {
     PixelatedImage.setURL(this.get("project-details-image"), location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png"), 200);
     this.get("project-details-title").innerText = p.title;
     this.get("project-details-description").innerHTML = DOMPurify.sanitize(marked(p.description));
-    document.querySelector("#project-details-author span").innerText = p.owner;
+    document.querySelector("#project-details-author").innerHTML = "";
+    document.querySelector("#project-details-author").appendChild(this.app.appui.createUserTag(p.owner, p.owner_info.tier, p.owner_info.profile_image, 12));
     likes = this.get("project-details-likes");
     likes.innerHTML = "<i class='fa fa-thumbs-up'></i> " + p.likes;
     if (p.liked) {

@@ -627,7 +627,7 @@ this.ProjectDetails = (function() {
     span.innerText = c.user;
     author.appendChild(i);
     author.appendChild(span);
-    author = this.app.appui.createUserTag(c.user, c.user_info.tier);
+    author = this.app.appui.createUserTag(c.user, c.user_info.tier, c.user_info.profile_image, 12);
     time = document.createElement("div");
     time.classList.add("time");
     t = (Date.now() - c.time) / 60000;

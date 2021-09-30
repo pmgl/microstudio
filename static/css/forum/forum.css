@@ -4,6 +4,11 @@ html,body {
   margin: 0px;
 }
 
+a {
+  text-decoration: none ;
+  color: inherit ;
+}
+
 header {
   position: fixed ;
   background: hsl(170,40%,30%);

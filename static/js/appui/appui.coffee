@@ -468,7 +468,7 @@ class AppUI
 
     document.querySelector("#switch-to-en").addEventListener "click",(event)=>
       event.preventDefault()
-      @setLanguage("en")  
+      @setLanguage("en")
 
     @setAction "login-submit",()=>
       @app.login @get("login_nick").value,@get("login_password").value
@@ -844,8 +844,8 @@ class AppUI
     else
       return "#{(size/1000000000).toFixed(1)} #{@app.translator.get("Gb")}"
 
-  createUserTag:(nick,tier)->
-    div = document.createElement "div"
+  createUserTag:(nick,tier,pic=false,picmargin)->
+    div = document.createElement "a"
     div.classList.add "usertag"
     if tier
       div.classList.add tier
@@ -863,6 +863,20 @@ class AppUI
       icon = PixelatedImage.create location.origin+"/microstudio/patreon/badges/sprites/#{tier}.png",32
       icon.alt = icon.title = @app.getTierName tier
       div.appendChild icon
+
+    div.href = "/#{nick}/"
+    div.target = "_blank"
+
+    div.addEventListener "click",(event)->event.stopPropagation()
+
+    if pic
+      pic = document.createElement "img"
+      pic.src = "/#{nick}.png"
+      pic.classList.add "profile"
+      div.appendChild pic
+
+      if picmargin
+        div.style["margin-left"] = "#{picmargin}px"
 
     div
 

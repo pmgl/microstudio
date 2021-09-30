@@ -24,7 +24,6 @@
   padding: 10px ;
   display: inline-block ;
   cursor: pointer ;
-  overflow: hidden ;
   border-radius: 10px ;
   width: 200px ;
 }
@@ -79,6 +78,7 @@
   margin: 5px 0 15px 0 ;
   white-space: nowrap ;
   text-align: center ;
+  overflow: hidden ;
 }
 
 .explore-project-button {
@@ -269,6 +269,10 @@
 #project-details-author {
   font-size: 18px ;
   margin-bottom: 20px ;
+}
+#project-details-author a {
+  text-decoration: none ;
+  color: rgba(255,255,255,.9) ;
 }
 #project-details-author i {
   margin-right: 5px ;

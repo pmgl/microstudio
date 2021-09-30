@@ -99,7 +99,8 @@ html(lang=language)
                   span #{post.author.nick.substring(0,1).toUpperCase()}
 
               div.post-top
-                div.post-author #{post.author.nick}
+                a(target="_blank" href="/"+post.author.nick+"/")
+                  div.post-author #{post.author.nick}
                 a.title(href=post.getPath()) #{post.title}
 
               div.post-info

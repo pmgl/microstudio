@@ -29,6 +29,7 @@ class @Comments
           user: c.user.nick
           user_info:
             tier: c.user.flags.tier
+            profile_image: c.user.flags.profile_image
           text: c.text
           id: i
           time: c.time
