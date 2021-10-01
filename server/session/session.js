@@ -909,15 +909,30 @@ this.Session = (function() {
     if (data["public"] && !this.user.flags["validated"]) {
       return;
     }
-    project = this.user.findProject(data.project);
-    if (project != null) {
-      this.content.setProjectPublic(project, data["public"]);
-      return this.send({
-        name: "set_project_public",
-        id: project.id,
-        "public": project["public"],
-        request_id: data.request_id
-      });
+    if (data.project == null) {
+      if (this.user.flags.admin && data.id) {
+        project = this.content.projects[data.id];
+        if (project != null) {
+          this.content.setProjectPublic(project, data["public"]);
+          return this.send({
+            name: "set_project_public",
+            id: project.id,
+            "public": project["public"],
+            request_id: data.request_id
+          });
+        }
+      }
+    } else {
+      project = this.user.findProject(data.project);
+      if (project != null) {
+        this.content.setProjectPublic(project, data["public"]);
+        return this.send({
+          name: "set_project_public",
+          id: project.id,
+          "public": project["public"],
+          request_id: data.request_id
+        });
+      }
     }
   };
 

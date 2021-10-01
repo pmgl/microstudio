@@ -25,6 +25,25 @@ class @Publish
     @builders.push new AppBuild(@app,"linux")
     @builders.push new AppBuild(@app,"raspbian")
 
+    @checks = ["original","useful","icon","copyright","license"]
+    for c in @checks
+      document.getElementById("publish-check-#{c}").addEventListener "input",(event)=>@checkChecks()
+
+  checkChecks:()->
+    all = true
+    for c in @checks
+      if not document.getElementById("publish-check-#{c}").checked
+        all = false
+
+    if all
+      document.querySelector("#publish-box .publish-button").classList.remove "disabled"
+    else if @app.project.public
+      document.querySelector("#publish-box .publish-button").classList.remove "disabled"
+    else
+      document.querySelector("#publish-box .publish-button").classList.add "disabled"
+
+    return all
+
   loadProject:(project)->
     if project.public
       document.getElementById("publish-box").style.display = "none"
@@ -32,6 +51,11 @@ class @Publish
     else
       document.getElementById("publish-box").style.display = "block"
       document.getElementById("unpublish-box").style.display = "none"
+
+    document.getElementById("publish-checklist").style.display = "none"
+    for c in @checks
+      document.getElementById("publish-check-#{c}").checked = false
+    @checkChecks()
 
     document.getElementById("publish-validate-first").style.display = if @app.user.flags["validated"] then "none" else "block"
 
@@ -121,6 +145,14 @@ class @Publish
 
   setProjectPublic:(pub)->
     return if pub and not @app.user.flags["validated"]
+    if pub and not @checkChecks()
+      document.getElementById("publish-checklist").style.display = "block"
+      document.querySelector("#publish-box .publish-button").classList.add "disabled"
+      return
+
+    if pub
+      document.getElementById("publish-checklist").style.display = "none"
+
     @checkDescriptionSave(true)
     if @app.project?
       @app.client.sendRequest {

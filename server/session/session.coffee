@@ -537,14 +537,25 @@ class @Session
     return @sendError("not connected") if not @user?
     return if data.public and not @user.flags["validated"]
 
-    project = @user.findProject(data.project)
-    if project?
-      @content.setProjectPublic(project,data.public)
-      @send
-        name:"set_project_public"
-        id: project.id
-        public: project.public
-        request_id: data.request_id
+    if not data.project?
+      if @user.flags.admin and data.id
+        project = @content.projects[data.id]
+        if project?
+          @content.setProjectPublic(project,data.public)
+          @send
+            name:"set_project_public"
+            id: project.id
+            public: project.public
+            request_id: data.request_id
+    else
+      project = @user.findProject(data.project)
+      if project?
+        @content.setProjectPublic(project,data.public)
+        @send
+          name:"set_project_public"
+          id: project.id
+          public: project.public
+          request_id: data.request_id
 
   setProjectTags:(data)->
     return @sendError("not connected") if not @user?

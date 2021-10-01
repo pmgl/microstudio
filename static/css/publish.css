@@ -34,6 +34,7 @@
 .publish-box .action-box {
   float:right ;
   margin-left: 40px ;
+  margin-bottom: 20px ;
   width: 35%;
 }
 
@@ -44,6 +45,15 @@
   margin-bottom: 20px ;
   text-align: center ;
   cursor: pointer ;
+}
+
+#publish-checklist {
+  clear: both ;
+  margin-bottom: 20px ;
+  padding: 1px 20px 20px 20px ;
+  border-radius: 5px ;
+  background: rgba(255,255,255,.1) ;
+  display: none ;
 }
 
 .publish-button.disabled {

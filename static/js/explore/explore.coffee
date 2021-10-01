@@ -228,6 +228,25 @@ class @Explore
                   @openProject p
     if @app.user? and @app.user.flags.admin
       div = document.createElement "div"
+      div.innerText = "Unpublish"
+      div.style.padding = "10px"
+      div.style.background = "hsl(20,50%,50%)"
+      div.style.cursor = "pointer"
+      div.style.display = "inline-block"
+      div.style["border-radius"] = "5px"
+      div.addEventListener "click",()=>
+        if confirm("Really unpublish project?")
+          @app.client.sendRequest {
+            name:"set_project_public"
+            id: p.id
+            public: false
+          },(msg)=>
+            @closeDetails()
+            @app.appui.setMainSection "explore",true
+
+      document.getElementById("project-details-description").appendChild div
+
+      div = document.createElement "div"
       div.classList.add("tag")
       div.innerText = "+ add"
       div.style = "background: hsl(0,50%,50%)"

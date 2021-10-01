@@ -1,5 +1,6 @@
 this.Publish = (function() {
   function Publish(app) {
+    var c, j, len, ref;
     this.app = app;
     this.app.appui.setAction("publish-button", (function(_this) {
       return function() {
@@ -33,10 +34,40 @@ this.Publish = (function() {
     this.builders.push(new AppBuild(this.app, "macos"));
     this.builders.push(new AppBuild(this.app, "linux"));
     this.builders.push(new AppBuild(this.app, "raspbian"));
+    this.checks = ["original", "useful", "icon", "copyright", "license"];
+    ref = this.checks;
+    for (j = 0, len = ref.length; j < len; j++) {
+      c = ref[j];
+      document.getElementById("publish-check-" + c).addEventListener("input", (function(_this) {
+        return function(event) {
+          return _this.checkChecks();
+        };
+      })(this));
+    }
   }
 
+  Publish.prototype.checkChecks = function() {
+    var all, c, j, len, ref;
+    all = true;
+    ref = this.checks;
+    for (j = 0, len = ref.length; j < len; j++) {
+      c = ref[j];
+      if (!document.getElementById("publish-check-" + c).checked) {
+        all = false;
+      }
+    }
+    if (all) {
+      document.querySelector("#publish-box .publish-button").classList.remove("disabled");
+    } else if (this.app.project["public"]) {
+      document.querySelector("#publish-box .publish-button").classList.remove("disabled");
+    } else {
+      document.querySelector("#publish-box .publish-button").classList.add("disabled");
+    }
+    return all;
+  };
+
   Publish.prototype.loadProject = function(project) {
-    var b, build, j, len, ref;
+    var b, build, c, j, k, len, len1, ref, ref1;
     if (project["public"]) {
       document.getElementById("publish-box").style.display = "none";
       document.getElementById("unpublish-box").style.display = "block";
@@ -44,6 +75,13 @@ this.Publish = (function() {
       document.getElementById("publish-box").style.display = "block";
       document.getElementById("unpublish-box").style.display = "none";
     }
+    document.getElementById("publish-checklist").style.display = "none";
+    ref = this.checks;
+    for (j = 0, len = ref.length; j < len; j++) {
+      c = ref[j];
+      document.getElementById("publish-check-" + c).checked = false;
+    }
+    this.checkChecks();
     document.getElementById("publish-validate-first").style.display = this.app.user.flags["validated"] ? "none" : "block";
     document.querySelector("#publish-box-textarea").value = project.description;
     this.updateTags();
@@ -64,9 +102,9 @@ this.Publish = (function() {
         return window.location = loc + "publish/html/";
       };
     })(this);
-    ref = this.builders;
-    for (j = 0, len = ref.length; j < len; j++) {
-      build = ref[j];
+    ref1 = this.builders;
+    for (k = 0, len1 = ref1.length; k < len1; k++) {
+      build = ref1[k];
       build.loadProject(project);
     }
   };
@@ -172,6 +210,14 @@ this.Publish = (function() {
   Publish.prototype.setProjectPublic = function(pub) {
     if (pub && !this.app.user.flags["validated"]) {
       return;
+    }
+    if (pub && !this.checkChecks()) {
+      document.getElementById("publish-checklist").style.display = "block";
+      document.querySelector("#publish-box .publish-button").classList.add("disabled");
+      return;
+    }
+    if (pub) {
+      document.getElementById("publish-checklist").style.display = "none";
     }
     this.checkDescriptionSave(true);
     if (this.app.project != null) {
