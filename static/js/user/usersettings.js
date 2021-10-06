@@ -66,7 +66,7 @@ this.UserSettings = (function() {
       };
     })(this));
     this.email_validator.regex = RegexLib.email;
-    this.sections = ["settings", "profile"];
+    this.sections = ["settings", "profile", "progress"];
     this.initSections();
     document.getElementById("usersettings-profile").addEventListener("dragover", (function(_this) {
       return function(event) {
@@ -160,6 +160,9 @@ this.UserSettings = (function() {
         document.getElementById("usersettings-menu-" + s).classList.remove("selected");
         document.getElementById("usersettings-" + s).style.display = "none";
       }
+    }
+    if (this.current === "progress") {
+      this.app.user_progress.updateStatsPage();
     }
   };
 

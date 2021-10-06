@@ -1,4 +1,5 @@
-var Achievements, Levels;
+var Achievements, Levels,
+  hasProp = {}.hasOwnProperty;
 
 Levels = require(__dirname + "/levels.js");
 
@@ -12,7 +13,16 @@ this.UserProgress = (function() {
       level: 0
     };
     this.achievements = data.achievements || {};
+    this.stats = {
+      xp: 0,
+      level: 0
+    };
+    this.achievements = {};
     this.time_ids = {};
+    this.limited_time = {};
+    this.limited_value = {};
+    this.stats_update = 0;
+    this.achievements_update = 0;
   }
 
   UserProgress.prototype.recordTime = function(id) {
@@ -22,25 +32,22 @@ this.UserProgress = (function() {
       return;
     }
     this.time_ids[id] = t;
-    this.incrementStat(id, 1, false);
-    return this.incrementStat("xp", 60);
+    return this.incrementStat(id, 1, true);
   };
 
-  UserProgress.prototype.unlockAchievement = function(id, name, description, xp) {
-    if (xp == null) {
-      xp = 0;
-    }
+  UserProgress.prototype.unlockAchievement = function(id) {
+    var a;
     if (!this.hasAchievement(id)) {
       this.achievements[id] = {
         id: id,
-        name: name,
-        description: description,
-        xp: xp
+        date: Date.now()
       };
-      if (xp > 0) {
-        this.incrementStat("xp", xp);
+      a = Achievements.by_id[id];
+      if ((a != null) && (a.xp != null)) {
+        this.incrementStat("xp", a.xp);
       }
-      return this.saveAchievements();
+      this.saveAchievements();
+      return this.achievements_update += 1;
     }
   };
 
@@ -68,21 +75,44 @@ this.UserProgress = (function() {
       for (i = 0, len = achievements.length; i < len; i++) {
         a = achievements[i];
         if (this.stats[id] >= a.value && !this.hasAchievement(a.id)) {
-          this.unlockAchievement(a.id, a.name, a.description, a.xp);
+          this.unlockAchievement(a.id);
         }
       }
     }
     if (save) {
-      return this.saveStats();
+      this.saveStats();
+    }
+    return this.stats_update += 1;
+  };
+
+  UserProgress.prototype.incrementLimitedStat = function(id, value) {
+    var absolute, max, minutes, t;
+    minutes = 10;
+    max = 1200;
+    t = Math.floor(Date.now() / 60000 / minutes);
+    absolute = value;
+    if (t !== this.limited_time[id]) {
+      this.limited_time[id] = t;
+      this.limited_value[id] = 0;
+    }
+    value = Math.min(value, max - this.limited_value[id]);
+    this.limited_value[id] += value;
+    if (absolute > 0) {
+      this.incrementStat(id, absolute, false);
+    }
+    if (value > 0) {
+      return this.incrementStat("xp", value, false);
     }
   };
 
   UserProgress.prototype.saveStats = function() {
-    return this.user.record.set("stats", this.stats);
+    this.user.set("stats", this.stats);
+    return console.info("user stats " + JSON.stringify(this.stats));
   };
 
   UserProgress.prototype.saveAchievements = function() {
-    return this.user.record.set("achievements", this.achievements);
+    this.user.set("achievements", this.achievements);
+    return console.info("user achievements " + JSON.stringify(this.achievements));
   };
 
   UserProgress.prototype.get = function() {
@@ -90,6 +120,26 @@ this.UserProgress = (function() {
       stats: this.stats,
       achievements: this.achievements
     };
+  };
+
+  UserProgress.prototype.exportStats = function() {
+    return this.stats;
+  };
+
+  UserProgress.prototype.exportAchievements = function() {
+    var a, id, list, ref;
+    list = [];
+    ref = this.achievements;
+    for (id in ref) {
+      if (!hasProp.call(ref, id)) continue;
+      a = ref[id];
+      list.push({
+        id: a.id,
+        date: a.date,
+        info: Achievements.by_id[a.id]
+      });
+    }
+    return list;
   };
 
   return UserProgress;

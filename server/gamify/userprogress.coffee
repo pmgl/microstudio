@@ -6,27 +6,35 @@ class @UserProgress
     @stats = data.stats or { xp: 0 , level: 0 }
     @achievements = data.achievements or {}
 
+    @stats = { xp: 0 , level: 0 }
+    @achievements = {}
+
     @time_ids = {}
+    @limited_time = {}
+    @limited_value = {}
+
+    @stats_update = 0
+    @achievements_update = 0
 
   recordTime:(id)->
     t = Math.floor(Date.now()/60000)
 
     return if t == @time_ids[id]
     @time_ids[id] = t
-    @incrementStat(id,1,false)
-    @incrementStat("xp",60)
+    @incrementStat(id,1,true)
 
-  unlockAchievement:(id,name,description,xp=0)->
+  unlockAchievement:(id)->
     if not @hasAchievement(id)
       @achievements[id] =
         id: id
-        name: name
-        description: description
-        xp: xp
+        date: Date.now()
 
-      @incrementStat("xp",xp) if xp>0
+      a = Achievements.by_id[id]
+      if a? and a.xp?
+        @incrementStat("xp",a.xp)
 
       @saveAchievements()
+      @achievements_update += 1
 
   hasAchievement:(id)->
     @achievements[id]?
@@ -45,19 +53,56 @@ class @UserProgress
     if achievements?
       for a in achievements
         if @stats[id] >= a.value and not @hasAchievement(a.id)
-          @unlockAchievement a.id,a.name,a.description,a.xp
+          @unlockAchievement a.id
 
     @saveStats() if save
 
+    @stats_update += 1
+
+  incrementLimitedStat:(id,value)->
+    minutes = 10
+    max = 1200
+    t = Math.floor(Date.now()/60000/minutes) # 10 minutes
+
+    absolute = value
+
+    if t != @limited_time[id]
+      @limited_time[id] = t
+      @limited_value[id] = 0
+
+    value = Math.min(value,max-@limited_value[id])
+    @limited_value[id] += value
+
+    if absolute>0
+      @incrementStat(id,absolute,false)
+
+    if value>0
+      @incrementStat("xp",value,false)
+
   saveStats:()->
-    @user.record.set "stats",@stats
+    @user.set "stats",@stats
+    console.info "user stats "+JSON.stringify @stats
 
   saveAchievements:()->
-    @user.record.set "achievements",@achievements
+    @user.set "achievements",@achievements
+    console.info "user achievements "+JSON.stringify @achievements
 
   get:()->
     return
       stats: @stats
       achievements: @achievements
+
+  exportStats:()->
+    @stats
+
+  exportAchievements:()->
+    list = []
+    for own id,a of @achievements
+      list.push
+        id: a.id
+        date: a.date
+        info: Achievements.by_id[a.id]
+
+    list
 
 module.exports = @UserProgress

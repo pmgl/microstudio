@@ -259,3 +259,121 @@
 #usersettings-profile-image img:hover {
   border-radius: 10px ;
 }
+
+#usersettings-progress h2 {
+  text-align: center ;
+}
+
+#user-progress-statistics, #user-progress-level {
+  text-align: center ;
+  padding: 20px 0 ;
+  margin-bottom: 40px ;
+}
+
+.user-progress-stat {
+  display: inline-block ;
+  padding: 20px 40px ;
+  text-align: center ;
+}
+.user-progress-stat .unit {
+  font-size: 10px ;
+  color: rgba(255,255,255,.5);
+  position: absolute ;
+  margin-left: 5px ;
+  top: 29px ;
+}
+
+#user-progress-level .user-progress-stat {
+  background: hsl(160,50%,40%) ;
+  border-radius: 5px ;
+  margin: 5px 20px ;
+  width: 200px ;
+}
+
+.user-progress-stat-value {
+  font-size: 40px ;
+  position: relative ;
+  display: inline-block ;
+}
+.user-progress-stat-label {
+  font-size: 16px ;
+  font-weight: bold ;
+  color: rgba(255,255,255,.5) ;
+}
+
+#number-of-achievements {
+  margin-left: 10px ;
+  color: rgba(255,255,255,.5);
+  font-size: 16px ;  
+}
+
+.user-progress-achievement {
+  background: rgba(255,255,255,.1) ;
+  padding: 20px 20px 0 20px ;
+  margin: 2px 10px 0 0 ;
+}
+.user-progress-achievement img {
+  float: left ;
+  width: 96px ;
+  -ms-interpolation-mode: nearest-neighbor;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-pixelated;
+  image-rendering: pixelated;
+  margin: 0 20px 20px 0 ;
+}
+.user-progress-achievement .story {
+  font-style: italic ;
+  color: rgba(255,255,255,.5) ;
+}
+.user-progress-achievement .bonus {
+  float: right ;
+  background: hsl(300,50%,30%) ;
+  font-size: 16px ;
+  padding: 4px 15px ;
+  border-radius: 30px ;
+  color: rgba(255,255,255,.75);
+}
+
+#user-progress-notifications {
+  position: fixed ;
+  bottom: 100px ;
+  right: 20px ;
+  padding: 20px ;
+  z-index: 20 ;
+}
+
+.user-progress-notification {
+  margin-bottom: 20px ;
+  padding: 10px ;
+  width: 250px ;
+  background: hsl(30,70%,70%) ;
+  font-size: 16px ;
+  font-weight: bold ;
+  color: rgba(0,0,0,.9);
+  border-radius: 5px ;
+  box-shadow: 0 0 5px #000 ;
+  cursor: pointer ;
+  position: relative ;
+  transition-duration: .5s ;
+  transition-property: left ;
+  left: 400px ;
+}
+
+.user-progress-notification img {
+  width: 32px ;
+  float: left ;
+  margin: 0px 10px 0 0 ;
+}
+
+.user-progress-notification .close {
+  border-radius: 30px ;
+  padding: 5px 8px ;
+  color: #FFF ;
+  background: hsl(0,30%,50%);
+  font-size: 20px ;
+  cursor: pointer ;
+  position: absolute ;
+  right: -15px ;
+  top: -15px ;
+}

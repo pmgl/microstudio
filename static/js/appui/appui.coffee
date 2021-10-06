@@ -422,6 +422,14 @@ class AppUI
       @setMainSection("usersettings")
       @app.user_settings.setSection("profile")
 
+    document.querySelector(".usermenu .progress").addEventListener "click",(event)=>
+      @setMainSection("usersettings")
+      @app.user_settings.setSection("progress")
+
+    document.querySelector("#header-progress-summary").addEventListener "click",(event)=>
+      @setMainSection("usersettings")
+      @app.user_settings.setSection("progress")
+
     document.querySelector(".usermenu .create-account").addEventListener "click",(event)=>
       @showCreateAccountPanel()
 

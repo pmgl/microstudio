@@ -36,7 +36,9 @@ class @Session
       console.error err
 
     @commands = {}
-    @register "ping",(msg)=>@send({name:"pong"})
+    @register "ping",(msg)=>
+      @send({name:"pong"})
+      @checkUpdates()
 
     @register "create_account",(msg)=>@createAccount(msg)
     @register "create_guest",(msg)=>@createGuestAccount(msg)
@@ -338,12 +340,13 @@ class @Session
       @sendError "unknown user",data.request_id
 
   getUserInfo:()->
-    return {
+    return
       size: @user.getTotalSize()
       early_access: @user.early_access
       max_storage: @user.max_storage
       description: @user.description
-    }
+      stats: @user.progress.exportStats()
+      achievements: @user.progress.exportAchievements()
 
   sendPasswordRecovery:(data)->
     if data.email?
@@ -717,6 +720,23 @@ class @Session
       @setCurrentProject project
       project.manager.writeProjectFile(@,data)
 
+      if typeof data.file == "string"
+        if data.file.startsWith "ms/"
+          @user.progress.recordTime "time_coding"
+          if data.characters?
+            @user.progress.incrementLimitedStat "characters_typed",data.characters
+            @checkUpdates()
+        else if data.file.startsWith "sprites/"
+          @user.progress.recordTime "time_drawing"
+          if data.pixels?
+            @user.progress.incrementLimitedStat "pixels_drawn",data.pixels
+            @checkUpdates()
+        else if data.file.startsWith "maps/"
+          @user.progress.recordTime "time_mapping"
+          if data.cells?
+            @user.progress.incrementLimitedStat "map_cells_drawn",data.cells
+            @checkUpdates()
+
   renameProjectFile:(data)->
     return @sendError("not connected") if not @user?
 
@@ -867,6 +887,8 @@ class @Session
       else
         @user.addLike(project.id)
         project.likes++
+        if project.likes>=5
+          project.owner.progress.unlockAchievement("community/5_likes")
 
       @send
         name:"project_likes"
@@ -1105,6 +1127,29 @@ class @Session
             name: "edit_project_comment"
             request_id: data.request_id
 
+  checkUpdates:()->
+    if @user?
+      if @user.progress.achievements_update != @achievements_update
+        @achievements_update = @user.progress.achievements_update
+        @sendAchievements()
+
+      if @user.progress.stats_update != @stats_update
+        @stats_update = @user.progress.stats_update
+        @sendUserStats()
+
+  sendAchievements:()->
+    return if not @user?
+
+    @send
+      name: "achievements"
+      achievements: @user.progress.exportAchievements()
+
+  sendUserStats:()->
+    return if not @user?
+
+    @send
+      name: "user_stats"
+      stats: @user.progress.exportStats()
 
   buildProject:(msg)->
     return @sendError("not connected") if not @user?

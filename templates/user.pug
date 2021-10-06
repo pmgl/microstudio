@@ -5,8 +5,9 @@ div.usersettings#usersettings
     br
     div#usersettings-menu-profile #{translator.get("Profile")}
       i.fas.fa-user-circle
-    //- br
-    //- div#usersettings-menu-progress #{translator.get("Stats & Achievements")}
+    br
+    div#usersettings-menu-progress #{translator.get("Stats & Achievements")}
+      i.fas.fa-chart-bar
     
   div.usersettings-page#usersettings-settings
     h1 #{translator.get("User Settings")}
@@ -77,36 +78,17 @@ div.usersettings#usersettings
       div.tip #{translator.get("Your public page displays your nickname, description, profile image and a list of your public projects.")}
 
 
-  //- div.usersettings-page#usersettings-progress(style="display: none")
-  //-   h1 #{translator.get("Your Progress")}
-  //- 
-  //-   h2 #{translator.get("Level")}
-  //- 
-  //-   table
-  //-     tbody
-  //-       tr
-  //-         td Experience Points (XP)
-  //-         td 38583
-  //-       tr
-  //-         td Level
-  //-         td 4
-  //- 
-  //-   h2 #{translator.get("Statistics")}
-  //- 
-  //-   table
-  //-     tbody
-  //-       tr
-  //-         td Pixels Drawn
-  //-         td 38583
-  //-       tr
-  //-         td Code Characters typed
-  //-         td 48923
-  //- 
-  //-       tr
-  //-         td Code Lines Typed
-  //-         td 1234
-  //- 
-  //-   h2 #{translator.get("Achievements")}
+  div.usersettings-page#usersettings-progress(style="display: none")
+    h1 #{translator.get("Your Progress")}
+  
+    div#user-progress-level
+  
+    h2 #{translator.get("Statistics")}
+    div#user-progress-statistics
+  
+    h2 #{translator.get("Achievements")}
+      span#number-of-achievements 
+    div#user-progress-achievements
 
 div.usersettings#translation-app
   div

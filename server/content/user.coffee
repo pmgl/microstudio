@@ -1,3 +1,5 @@
+UserProgress = require __dirname+"/../gamify/userprogress.js"
+
 class @User
   constructor:(@content,@record)->
     data = @record.get()
@@ -16,6 +18,7 @@ class @User
     @notifications = []
     @description = data.description or ""
     @updateTier()
+    @progress = new UserProgress @,data
 
   updateTier:()->
     switch @flags.tier

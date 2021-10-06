@@ -185,11 +185,12 @@ this.ForumSession = (function() {
           }
         }
         post = this.forum.createPost(category.id, this.session.user.id, data.title, data.text);
-        return this.session.send({
+        this.session.send({
           name: "create_forum_post",
           request_id: data.request_id,
           id: post.id
         });
+        return this.session.user.progress.unlockAchievement("community/forum_post");
       }
     }
   };

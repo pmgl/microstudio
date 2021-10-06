@@ -583,6 +583,18 @@ AppUI = (function() {
         return _this.app.user_settings.setSection("profile");
       };
     })(this));
+    document.querySelector(".usermenu .progress").addEventListener("click", (function(_this) {
+      return function(event) {
+        _this.setMainSection("usersettings");
+        return _this.app.user_settings.setSection("progress");
+      };
+    })(this));
+    document.querySelector("#header-progress-summary").addEventListener("click", (function(_this) {
+      return function(event) {
+        _this.setMainSection("usersettings");
+        return _this.app.user_settings.setSection("progress");
+      };
+    })(this));
     document.querySelector(".usermenu .create-account").addEventListener("click", (function(_this) {
       return function(event) {
         return _this.showCreateAccountPanel();

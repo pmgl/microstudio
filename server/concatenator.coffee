@@ -81,6 +81,7 @@ class @Concatenator
       "/js/explore/projectdetails.js"
       "/js/user/usersettings.js"
       "/js/user/translationapp.js"
+      "/js/user/progress.js"
 
       "/js/spriteeditor/drawtool.js"
       "/js/spriteeditor/spritelist.js"

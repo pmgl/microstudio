@@ -21,6 +21,8 @@ class @Editor
     @save_time = 0
     setInterval (()=>@checkSave()),@save_delay/2
 
+    @keydown_count = 0
+
     @editor.getSession().on "change",()=>
       @editorContentsChanged()
 
@@ -66,6 +68,8 @@ class @Editor
         @liveHelp()
 
     document.addEventListener "keydown",(event)=>
+      @keydown_count += 1
+
       if event.keyCode != 17 and event.ctrlKey
         @cancelValueTool()
         @ignore_ctrl_up = true
@@ -175,10 +179,14 @@ class @Editor
   saveCode:(callback)->
     source = @app.project.getSource(@selected_source)
     saved = false
+    keycount = @keydown_count
+    @keydown_count = 0
+
     @app.client.sendRequest {
       name: "write_project_file"
       project: @app.project.id
       file: "ms/#{@selected_source}.ms"
+      characters: keycount
       content: @getCode()
     },(msg)=>
       saved = true

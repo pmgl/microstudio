@@ -92,6 +92,8 @@ class @ForumSession
           request_id: data.request_id
           id: post.id
 
+        @session.user.progress.unlockAchievement("community/forum_post")
+
 
   editForumPost:(data)->
     return if not @session.user?

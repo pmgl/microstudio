@@ -41,6 +41,7 @@ this.SpriteView = (function() {
     this.mouse_over = false;
     this.mouse_x = 0;
     this.mouse_y = 0;
+    this.pixels_drawn = 0;
     window.addEventListener("resize", (function(_this) {
       return function() {
         return _this.windowResized();
@@ -550,6 +551,7 @@ this.SpriteView = (function() {
     this.editor.tool.vsymmetry = this.vsymmetry;
     this.editor.tool.hsymmetry = this.hsymmetry;
     this.editor.tool.start(this.getFrame(), x, y, event.button);
+    this.pixels_drawn += 1;
     this.mouse_x = x;
     this.mouse_y = y;
     this.update();
@@ -650,6 +652,7 @@ this.SpriteView = (function() {
           return;
         }
         this.editor.tool.move(this.getFrame(), x, y, event.buttons);
+        this.pixels_drawn += 1;
         this.update();
         this.editor.spriteChanged();
       } else {
