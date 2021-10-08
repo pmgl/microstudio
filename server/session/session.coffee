@@ -1136,7 +1136,7 @@ class @Session
     return if not msg.id?
     @user.progress.unlockAchievement(msg.id)
     @checkUpdates()
-    
+
   checkUpdates:()->
     if @user?
       if @user.progress.achievements_update != @achievements_update

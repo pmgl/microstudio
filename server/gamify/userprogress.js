@@ -102,13 +102,11 @@ this.UserProgress = (function() {
   };
 
   UserProgress.prototype.saveStats = function() {
-    this.user.set("stats", this.stats);
-    return console.info("user stats " + JSON.stringify(this.stats));
+    return this.user.set("stats", this.stats);
   };
 
   UserProgress.prototype.saveAchievements = function() {
-    this.user.set("achievements", this.achievements);
-    return console.info("user achievements " + JSON.stringify(this.achievements));
+    return this.user.set("achievements", this.achievements);
   };
 
   UserProgress.prototype.get = function() {

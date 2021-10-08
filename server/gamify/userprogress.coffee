@@ -79,11 +79,9 @@ class @UserProgress
 
   saveStats:()->
     @user.set "stats",@stats
-    console.info "user stats "+JSON.stringify @stats
 
   saveAchievements:()->
     @user.set "achievements",@achievements
-    console.info "user achievements "+JSON.stringify @achievements
 
   get:()->
     return

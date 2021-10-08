@@ -1,5 +1,12 @@
 ## Changelog
 
+### Update 2021-10-08
+* User statistics and achievements!
+  * track how many lines of code you wrote, how many pixels you drew and more!
+  * receive XP points for working on your microStudio projects and level up!
+  * Be rewarded by unlocking achievements (already 43 achievements to unlock, more to come!)
+  * Compare your stats and achievements with other users by visiting their profile page
+
 ### Update 2021-09-27
 * Fixed code editor collapse / expand for class and object blocks
 * Fixed transpiler inconsistency (as reported here, thanks to @Abr00 https://microstudio.dev/i/Abr00/transpilerdetection/)
