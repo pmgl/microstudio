@@ -55,6 +55,18 @@ this.AppState = (function() {
         }
         this.app.appui.setMainSection("projects");
         return this.app.appui.setSection(s[2]);
+      } else if (history.state.name.startsWith("user.") && (s[1] != null)) {
+        switch (s[1]) {
+          case "settings":
+            this.app.appui.setMainSection("usersettings");
+            return this.app.user_settings.setSection("settings");
+          case "profile":
+            this.app.appui.setMainSection("usersettings");
+            return this.app.user_settings.setSection("profile");
+          case "progress":
+            this.app.appui.setMainSection("usersettings");
+            return this.app.user_settings.setSection("progress");
+        }
       } else if (history.state.name === "project_details") {
         if (history.state.project != null) {
           this.app.explore.openProject(history.state.project);
@@ -162,6 +174,18 @@ this.AppState = (function() {
           return history.replaceState({
             name: "project." + s[2] + "." + s[3]
           }, "", location.pathname);
+        } else if (location.pathname.startsWith("/user/") && s[2]) {
+          switch (s[2]) {
+            case "settings":
+              this.app.appui.setMainSection("usersettings");
+              return this.app.user_settings.setSection("settings");
+            case "profile":
+              this.app.appui.setMainSection("usersettings");
+              return this.app.user_settings.setSection("profile");
+            case "progress":
+              this.app.appui.setMainSection("usersettings");
+              return this.app.user_settings.setSection("progress");
+          }
         } else {
           this.app.appui.setMainSection("projects");
           return history.replaceState({

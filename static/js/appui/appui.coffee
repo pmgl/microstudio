@@ -415,12 +415,16 @@ class AppUI
       @app.disconnect()
 
     document.querySelector(".usermenu .settings").addEventListener "click",(event)=>
-      @setMainSection("usersettings")
-      @app.user_settings.setSection("settings")
+      @app.openUserSettings()
 
     document.querySelector(".usermenu .profile").addEventListener "click",(event)=>
-      @setMainSection("usersettings")
-      @app.user_settings.setSection("profile")
+      @app.openUserProfile()
+
+    document.querySelector(".usermenu .progress").addEventListener "click",(event)=>
+      @app.openUserProgress()
+
+    document.querySelector("#header-progress-summary").addEventListener "click",(event)=>
+      @app.openUserProgress()
 
     document.querySelector(".usermenu .create-account").addEventListener "click",(event)=>
       @showCreateAccountPanel()

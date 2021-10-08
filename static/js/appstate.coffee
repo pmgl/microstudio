@@ -32,6 +32,20 @@ class @AppState
 
         @app.appui.setMainSection "projects"
         @app.appui.setSection s[2]
+      else if history.state.name.startsWith("user.") and s[1]?
+        switch s[1]
+          when "settings"
+            @app.appui.setMainSection("usersettings")
+            @app.user_settings.setSection("settings")
+
+          when "profile"
+            @app.appui.setMainSection("usersettings")
+            @app.user_settings.setSection("profile")
+
+          when "progress"
+            @app.appui.setMainSection("usersettings")
+            @app.user_settings.setSection("progress")
+
       else if history.state.name == "project_details"
         if history.state.project?
           @app.explore.openProject(history.state.project)
@@ -103,6 +117,20 @@ class @AppState
           project = s[2]
           tab = s[3]
           history.replaceState {name:"project.#{s[2]}.#{s[3]}"},"",location.pathname
+        else if location.pathname.startsWith("/user/") and s[2]
+          switch s[2]
+            when "settings"
+              @app.appui.setMainSection("usersettings")
+              @app.user_settings.setSection("settings")
+
+            when "profile"
+              @app.appui.setMainSection("usersettings")
+              @app.user_settings.setSection("profile")
+
+            when "progress"
+              @app.appui.setMainSection("usersettings")
+              @app.user_settings.setSection("progress")
+
         else
           @app.appui.setMainSection("projects")
           history.replaceState {name:"projects"},"","/projects/"

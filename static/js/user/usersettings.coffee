@@ -47,7 +47,7 @@ class @UserSettings
 
     @email_validator.regex = RegexLib.email
 
-    @sections = ["settings","profile"] #,"progress"]
+    @sections = ["settings","profile","progress"]
     @initSections()
 
     document.getElementById("usersettings-profile").addEventListener "dragover",(event)=>
@@ -97,7 +97,11 @@ class @UserSettings
     for s in @sections
       do (s)=>
         document.getElementById("usersettings-menu-#{s}").addEventListener "click",()=>
-          @setSection(s)
+          switch s
+            when "settings" then @app.openUserSettings()
+            when "profile" then @app.openUserProfile()
+            when "progress" then @app.openUserProgress()
+
 
   setSection:(section)->
     @current = section
@@ -108,6 +112,9 @@ class @UserSettings
       else
         document.getElementById("usersettings-menu-#{s}").classList.remove "selected"
         document.getElementById("usersettings-#{s}").style.display = "none"
+
+    if @current == "progress"
+      @app.user_progress.updateStatsPage()
     return
 
   update:()->

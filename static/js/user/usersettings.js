@@ -66,7 +66,7 @@ this.UserSettings = (function() {
       };
     })(this));
     this.email_validator.regex = RegexLib.email;
-    this.sections = ["settings", "profile"];
+    this.sections = ["settings", "profile", "progress"];
     this.initSections();
     document.getElementById("usersettings-profile").addEventListener("dragover", (function(_this) {
       return function(event) {
@@ -139,7 +139,14 @@ this.UserSettings = (function() {
       results.push((function(_this) {
         return function(s) {
           return document.getElementById("usersettings-menu-" + s).addEventListener("click", function() {
-            return _this.setSection(s);
+            switch (s) {
+              case "settings":
+                return _this.app.openUserSettings();
+              case "profile":
+                return _this.app.openUserProfile();
+              case "progress":
+                return _this.app.openUserProgress();
+            }
           });
         };
       })(this)(s));
@@ -160,6 +167,9 @@ this.UserSettings = (function() {
         document.getElementById("usersettings-menu-" + s).classList.remove("selected");
         document.getElementById("usersettings-" + s).style.display = "none";
       }
+    }
+    if (this.current === "progress") {
+      this.app.user_progress.updateStatsPage();
     }
   };
 

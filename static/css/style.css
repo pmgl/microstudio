@@ -242,6 +242,32 @@ header li .pastille {
   float: right ;
   font-size: 18px ;
 }
+#header-progress-summary {
+  float: right ;
+  margin: 5px 15px 0 15px ;
+  text-align: center ;
+  cursor: pointer ;
+  border-radius: 3px ;
+  padding: 5px;
+}
+#header-progress-summary.hidden {
+  display: none ;
+}
+#header-progress-summary:hover {
+  background: rgba(255,255,255,.1);
+}
+#header-progress-level {
+  font-size: 14px ;
+  font-weight: bold ;
+}
+#header-progress-xp {
+  font-size: 10px ;
+  width: 150px ;
+  background: hsl(20,50%,40%);
+  border-radius: 3px ;
+  padding: 1px 10px ;
+}
+
 .login-info i {
   margin: 0 2px ;
 }

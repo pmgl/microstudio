@@ -13,6 +13,7 @@ App = (function() {
     this.appui = new AppUI(this);
     this.explore = new Explore(this);
     this.client = new Client(this);
+    this.user_progress = new UserProgress(this);
     this.about = new About(this);
     this.documentation = new Documentation(this);
     this.editor = new Editor(this);
@@ -387,7 +388,8 @@ App = (function() {
   App.prototype.userConnected = function(nick) {
     this.appui.userConnected(nick);
     this.updateProjectList();
-    return this.user_settings.update();
+    this.user_settings.update();
+    return this.user_progress.update();
   };
 
   App.prototype.disconnect = function() {
@@ -442,6 +444,19 @@ App = (function() {
         if ((this.project != null) && msg.project === this.project.id) {
           this.project.optionsUpdated(msg);
           return this.options.projectOpened();
+        }
+        break;
+      case "user_stats":
+        if (this.user != null) {
+          this.user.info.stats = msg.stats;
+          this.user_progress.update();
+          return this.user_progress.updateStatsPage();
+        }
+        break;
+      case "achievements":
+        if (this.user != null) {
+          this.user.info.achievements = msg.achievements;
+          return this.user_progress.checkAchievements();
         }
     }
   };
@@ -543,6 +558,24 @@ App = (function() {
         return "Standard";
     }
     return "";
+  };
+
+  App.prototype.openUserSettings = function() {
+    this.appui.setMainSection("usersettings");
+    this.user_settings.setSection("settings");
+    return this.app_state.pushState("user.settings", "/user/settings/");
+  };
+
+  App.prototype.openUserProfile = function() {
+    this.appui.setMainSection("usersettings");
+    this.user_settings.setSection("profile");
+    return this.app_state.pushState("user.profile", "/user/profile/");
+  };
+
+  App.prototype.openUserProgress = function() {
+    this.appui.setMainSection("usersettings");
+    this.user_settings.setSection("progress");
+    return this.app_state.pushState("user.progress", "/user/progress/");
   };
 
   return App;

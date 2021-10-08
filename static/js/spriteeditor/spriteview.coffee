@@ -21,6 +21,8 @@ class @SpriteView
     @mouse_x = 0
     @mouse_y = 0
 
+    @pixels_drawn = 0
+
     window.addEventListener "resize",()=>
       @windowResized()
 
@@ -458,6 +460,7 @@ class @SpriteView
     @editor.tool.vsymmetry = @vsymmetry
     @editor.tool.hsymmetry = @hsymmetry
     @editor.tool.start(@getFrame(),x,y,event.button)
+    @pixels_drawn += 1
     @mouse_x = x
     @mouse_y = y
     @update()
@@ -547,6 +550,7 @@ class @SpriteView
           return
 
         @editor.tool.move(@getFrame(),x,y,event.buttons)
+        @pixels_drawn += 1
         @update()
         @editor.spriteChanged()
       else

@@ -22,6 +22,8 @@ html(lang='en')
       link(rel="icon" type="image/png" href="/"+user+".png")
     else
       link(rel="icon" type="image/png" href="/img/favicon.png")
+        
+    script(src="/js/userpage/userpage.js")
 
   body.noselect.custom-cursor(oncontextmenu='return false;')
     header
@@ -38,14 +40,14 @@ html(lang='en')
       
       div.sections
         div.selected#section-projects #{translator.get("Public Projects")}
-        // div#section-progress Stats & Achievements
+        div#section-progress Stats & Achievements
         // div#section-forum #{translator.get("Forum Posts & Replies")}
 
-      div.projects#projects
+      div.section-content#projects
         each project in projects
           -var path = "/"+user+"/"+project.slug+"/"
           -var explore = "/i/"+user+"/"+project.slug+"/"
-          -var img = "/"+user+"/"+project.slug+"/icon72.png"
+          -var img = "/"+user+"/"+project.slug+"/sprites/icon.png"
           
           div.projectbox(id="#{project.slug}")
             a.appicon(href=path)
@@ -59,6 +61,40 @@ html(lang='en')
               a.explorebutton(href=explore title=translator.get("Explore"))
                 i.fa.fa-search
                 span #{translator.get("Explore")}
+                
+      div.section-content#progress
+        div#user-progress-level
+          div#user-progress-stat-level.user-progress-stat
+            div.user-progress-stat-value #{level}
+            div.user-progress-stat-label #{translator.get("Level")}
+          div#user-progress-stat-xp.user-progress-stat(style="background:linear-gradient(90deg, rgb(51, 119, 153) 0%, rgb(153, 51, 51) "+percent+"%, rgb(11, 13, 14) "+percent+"%)")
+            div.user-progress-stat-value #{xp}
+            div.user-progress-stat-label #{translator.get("XP")}
+            
+        h2 Statistics
+        div#user-progress-statistics
+          each s in stats
+            div.user-progress-stat
+              div.user-progress-stat-value #{s.value}
+                span.unit #{s.unit}
+              div.user-progress-stat-label #{s.name}
+              
+              
+        if achievements.length>0
+          h2 Achievements
+            span#number-of-achievements #{" "}(#{achievements.length})
+          div
+            each a in achievements
+              div.user-progress-achievement
+                img(src="/img/achievements/"+a.id+".png")
+                if a.info.xp>0
+                  div.bonus #{"XP bonus +"+a.info.xp}
+                h3 #{a.info.name}
+                p #{a.info.description}
+                if a.info.story != null
+                  p.story #{a.info.story}
+                div(style="clear:both")
+        
         
   
     

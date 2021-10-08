@@ -296,10 +296,14 @@ class @SpriteEditor
     data = @spriteview.sprite.saveData().split(",")[1]
     sprite = @spriteview.sprite
     saved = false
+    pixels = @spriteview.pixels_drawn
+    @spriteview.pixels_drawn = 0
+
     @app.client.sendRequest {
       name: "write_project_file"
       project: @app.project.id
       file: "sprites/#{@selected_sprite}.png"
+      pixels: pixels
       properties:
         frames: @spriteview.sprite.frames.length
         fps: @spriteview.sprite.fps

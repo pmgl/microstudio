@@ -1,3 +1,7 @@
+var UserProgress;
+
+UserProgress = require(__dirname + "/../gamify/userprogress.js");
+
 this.User = (function() {
   function User(content, record) {
     var data;
@@ -19,6 +23,7 @@ this.User = (function() {
     this.notifications = [];
     this.description = data.description || "";
     this.updateTier();
+    this.progress = new UserProgress(this, data);
   }
 
   User.prototype.updateTier = function() {

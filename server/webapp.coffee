@@ -40,7 +40,7 @@ class @WebApp
       if i==@languages.length-1
         home_exp += "|"
 
-    @reserved = ["explore","documentation","projects","about","login"]
+    @reserved = ["explore","documentation","projects","about","login","user"]
     @reserved_exact = ["tutorials"]
 
     for r in @reserved
@@ -541,13 +541,84 @@ class @WebApp
     projects.sort (a,b)-> b.last_modified-a.last_modified
 
     lang = @getLanguage req
+    translator = @server.content.translator.getTranslator(lang)
 
     funk = pug.compileFile "../templates/play/userpage.pug"
+
+    stats = user.progress.exportStats()
+
+    map =
+      pixels_drawn: "Pixels Drawn"
+      map_cells_drawn: "Map Cells Painted"
+      characters_typed: "Characters Typed"
+      lines_of_code: "Lines of Code"
+      time_coding: "Coding Time"
+      time_drawing: "Drawing Time"
+      time_mapping: "Map Editor Time"
+      xp: "XP"
+      level: "Level"
+
+    list = [
+      "level"
+      "xp"
+      "characters_typed"
+      "lines_of_code"
+      "pixels_drawn"
+      "map_cells_drawn"
+      "cells_drawn"
+      "time_coding"
+      "time_drawing"
+      "time_mapping"
+    ]
+
+    level = stats["level"] or 0
+    xp = stats["xp"] or 0
+
+    stat_list = []
+
+    displayNumber = (x)->
+      x = ""+x
+      li = []
+      while x.length>3
+        li.splice(0,0,x.substring(x.length-3,x.length))
+        x = x.substring(0,x.length-3)
+      li.splice(0,0,x)
+      return li.join(" ")
+
+    for key in list
+      value = stats[key]
+      continue if not value? or key == "xp" or key == "level"
+      unit = ""
+      if key.startsWith "time"
+        if value>=60
+          unit = translator.get("hours")
+          value = Math.floor(value/60)
+        else
+          unit = translator.get("minutes")
+
+      stat_list.push
+        name: if map[key] then translator.get(map[key]) else key
+        value: displayNumber(value)
+        unit: unit
+
+    xp1 = if level>0 then user.progress.levels.total_cost[level-1] else 0
+    xp2 = user.progress.levels.total_cost[level]
+    dxp = xp2-xp1
+    percent = Math.max(0,Math.min(99,Math.floor((xp-xp1)/dxp*100)))
+
+    achievements = user.progress.exportAchievements()
+    achievements.sort (a,b)-> b.date-a.date
+
     res.send funk
       user: user.nick
       profile_image: user.flags.profile_image == true
       description: sanitizeHTML marked(user.description),{allowedTags:allowedTags}
       projects: projects
+      stats: stat_list
+      level: level
+      xp: xp
+      percent: percent
+      achievements: achievements
       translator: @server.content.translator.getTranslator(lang)
 
   getLanguage:(request)->

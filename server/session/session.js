@@ -52,9 +52,10 @@ this.Session = (function() {
     this.commands = {};
     this.register("ping", (function(_this) {
       return function(msg) {
-        return _this.send({
+        _this.send({
           name: "pong"
         });
+        return _this.checkUpdates();
       };
     })(this));
     this.register("create_account", (function(_this) {
@@ -315,6 +316,11 @@ this.Session = (function() {
     this.register("upload_request", (function(_this) {
       return function(msg) {
         return _this.uploadRequest(msg);
+      };
+    })(this));
+    this.register("tutorial_completed", (function(_this) {
+      return function(msg) {
+        return _this.tutorialCompleted(msg);
       };
     })(this));
     ref = this.server.plugins;
@@ -630,7 +636,9 @@ this.Session = (function() {
       size: this.user.getTotalSize(),
       early_access: this.user.early_access,
       max_storage: this.user.max_storage,
-      description: this.user.description
+      description: this.user.description,
+      stats: this.user.progress.exportStats(),
+      achievements: this.user.progress.exportAchievements()
     };
   };
 
@@ -1154,7 +1162,31 @@ this.Session = (function() {
     }
     if (project != null) {
       this.setCurrentProject(project);
-      return project.manager.writeProjectFile(this, data);
+      project.manager.writeProjectFile(this, data);
+      if (typeof data.file === "string") {
+        if (data.file.startsWith("ms/")) {
+          this.user.progress.recordTime("time_coding");
+          if (data.characters != null) {
+            this.user.progress.incrementLimitedStat("characters_typed", data.characters);
+          }
+          if (data.lines != null) {
+            this.user.progress.incrementLimitedStat("lines_of_code", data.lines);
+          }
+          return this.checkUpdates();
+        } else if (data.file.startsWith("sprites/")) {
+          this.user.progress.recordTime("time_drawing");
+          if (data.pixels != null) {
+            this.user.progress.incrementLimitedStat("pixels_drawn", data.pixels);
+            return this.checkUpdates();
+          }
+        } else if (data.file.startsWith("maps/")) {
+          this.user.progress.recordTime("time_mapping");
+          if (data.cells != null) {
+            this.user.progress.incrementLimitedStat("map_cells_drawn", data.cells);
+            return this.checkUpdates();
+          }
+        }
+      }
     }
   };
 
@@ -1381,6 +1413,9 @@ this.Session = (function() {
       } else {
         this.user.addLike(project.id);
         project.likes++;
+        if (project.likes >= 5) {
+          project.owner.progress.unlockAchievement("community/5_likes");
+        }
       }
       return this.send({
         name: "project_likes",
@@ -1745,6 +1780,50 @@ this.Session = (function() {
         }
       }
     }
+  };
+
+  Session.prototype.tutorialCompleted = function(msg) {
+    if (this.user == null) {
+      return;
+    }
+    if (msg.id == null) {
+      return;
+    }
+    this.user.progress.unlockAchievement(msg.id);
+    return this.checkUpdates();
+  };
+
+  Session.prototype.checkUpdates = function() {
+    if (this.user != null) {
+      if (this.user.progress.achievements_update !== this.achievements_update) {
+        this.achievements_update = this.user.progress.achievements_update;
+        this.sendAchievements();
+      }
+      if (this.user.progress.stats_update !== this.stats_update) {
+        this.stats_update = this.user.progress.stats_update;
+        return this.sendUserStats();
+      }
+    }
+  };
+
+  Session.prototype.sendAchievements = function() {
+    if (this.user == null) {
+      return;
+    }
+    return this.send({
+      name: "achievements",
+      achievements: this.user.progress.exportAchievements()
+    });
+  };
+
+  Session.prototype.sendUserStats = function() {
+    if (this.user == null) {
+      return;
+    }
+    return this.send({
+      name: "user_stats",
+      stats: this.user.progress.exportStats()
+    });
   };
 
   Session.prototype.buildProject = function(msg) {

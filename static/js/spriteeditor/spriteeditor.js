@@ -426,17 +426,20 @@ this.SpriteEditor = (function() {
   };
 
   SpriteEditor.prototype.saveSprite = function(callback) {
-    var data, saved, sprite;
+    var data, pixels, saved, sprite;
     if ((this.selected_sprite == null) || !this.spriteview.sprite) {
       return;
     }
     data = this.spriteview.sprite.saveData().split(",")[1];
     sprite = this.spriteview.sprite;
     saved = false;
+    pixels = this.spriteview.pixels_drawn;
+    this.spriteview.pixels_drawn = 0;
     this.app.client.sendRequest({
       name: "write_project_file",
       project: this.app.project.id,
       file: "sprites/" + this.selected_sprite + ".png",
+      pixels: pixels,
       properties: {
         frames: this.spriteview.sprite.frames.length,
         fps: this.spriteview.sprite.fps

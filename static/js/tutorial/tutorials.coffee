@@ -53,10 +53,34 @@ class @Tutorials
     @build()
     return
 
+  checkCompletion:()->
+    list = ["tour","programming","drawing","game"]
+    for course,i in @tutorials
+      all = true
+      for tuto in course.list
+        progress = @app.getTutorialProgress(tuto.link)
+        if progress != 100
+          all = false
+      if all
+        id = "tutorials/tutorial_#{list[i]}"
+        hasAchievement = (id)=>
+          for a in @app.user.info.achievements
+            if a.id == id
+              return true
+          return false
+
+        if not hasAchievement(id)
+          console.info "sending tutorial completion "+id
+          @app.client.send
+            name: "tutorial_completed"
+            id: id
+
   build:()->
     document.getElementById("tutorials-content").innerHTML = ""
     for t in @tutorials
       @buildCourse(t)
+
+    @checkCompletion()
     return
 
   buildCourse:(course)->

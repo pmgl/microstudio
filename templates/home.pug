@@ -77,7 +77,11 @@ html(lang=language)
           img(style="display: none;")
           i.fa.fa-user
           span#user-nick
-
+            
+      div#header-progress-summary.hidden
+        div#header-progress-level Level 0
+        div#header-progress-xp 0
+          
       div#language-setting
         i.fas.fa-comment
         div.lang.notranslate(translate="no") #{language.toUpperCase()}
@@ -119,6 +123,7 @@ html(lang=language)
       //div.profile <i class="fa fa-user"></i> #{translator.get("Profile")}
       div.settings <i class="fa fa-cogs"></i> #{translator.get("Settings")}
       div.profile <i class="fas fa-user-circle"></i> #{translator.get("Profile")}
+      div.progress <i class="fas fa-chart-bar"></i> #{translator.get("Stats & Achievements")}
       div.logout <i class="fa fa-power-off"></i> #{translator.get("Logout")}
       div.create-account <i class="fa fa-user-plus"></i> #{translator.get("Create Account")}
       div.discard-account <i class="fa fa-trash"></i> #{translator.get("Quit and Delete")}
@@ -461,3 +466,5 @@ html(lang=language)
     canvas#highlighter
 
     i.fa.fa-arrow-right#highlighter-arrow
+
+    div#user-progress-notifications

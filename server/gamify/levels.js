@@ -4,9 +4,8 @@ this.Levels = (function() {
     this.total_cost = [];
     sum = 0;
     for (i = j = 0; j <= 499; i = j += 1) {
-      this.total_cost[i] = sum;
-      console.info(i + " => " + sum);
       sum += this.costOfLevelUp(i);
+      this.total_cost[i] = sum;
     }
   }
 

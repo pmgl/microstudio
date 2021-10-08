@@ -12,6 +12,8 @@ class App
     @explore = new Explore @
     @client = new Client @
 
+    @user_progress = new UserProgress @
+
     @about = new About @
 
     @documentation = new Documentation @
@@ -275,6 +277,7 @@ class App
     @appui.userConnected(nick)
     @updateProjectList()
     @user_settings.update()
+    @user_progress.update()
 
   disconnect:()->
     if not @user.email? or @user.flags.guest
@@ -314,6 +317,16 @@ class App
         if @project? and msg.project == @project.id
           @project.optionsUpdated(msg)
           @options.projectOpened()
+      when "user_stats"
+        if @user?
+          @user.info.stats = msg.stats
+          @user_progress.update()
+          @user_progress.updateStatsPage()
+
+      when "achievements"
+        if @user?
+          @user.info.achievements = msg.achievements
+          @user_progress.checkAchievements()
 
   updateProjectUserList:(msg)->
     if @project? and msg.project == @project.id
@@ -385,3 +398,18 @@ class App
       else return "Standard"
 
     return ""
+
+  openUserSettings:()->
+    @appui.setMainSection("usersettings")
+    @user_settings.setSection("settings")
+    @app_state.pushState "user.settings","/user/settings/"
+
+  openUserProfile:()->
+    @appui.setMainSection("usersettings")
+    @user_settings.setSection("profile")
+    @app_state.pushState "user.profile","/user/profile/"
+
+  openUserProgress:()->
+    @appui.setMainSection("usersettings")
+    @user_settings.setSection("progress")
+    @app_state.pushState "user.progress","/user/progress/"
