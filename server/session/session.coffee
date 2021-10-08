@@ -102,6 +102,8 @@ class @Session
 
     @register "upload_request",(msg)=>@uploadRequest(msg)
 
+    @register "tutorial_completed",(msg)=>@tutorialCompleted(msg)
+
     for plugin in @server.plugins
       if plugin.registerSessionMessages?
         plugin.registerSessionMessages @
@@ -725,7 +727,9 @@ class @Session
           @user.progress.recordTime "time_coding"
           if data.characters?
             @user.progress.incrementLimitedStat "characters_typed",data.characters
-            @checkUpdates()
+          if data.lines?
+            @user.progress.incrementLimitedStat "lines_of_code",data.lines
+          @checkUpdates()
         else if data.file.startsWith "sprites/"
           @user.progress.recordTime "time_drawing"
           if data.pixels?
@@ -1127,6 +1131,12 @@ class @Session
             name: "edit_project_comment"
             request_id: data.request_id
 
+  tutorialCompleted:(msg)->
+    return if not @user?
+    return if not msg.id?
+    @user.progress.unlockAchievement(msg.id)
+    @checkUpdates()
+    
   checkUpdates:()->
     if @user?
       if @user.progress.achievements_update != @achievements_update

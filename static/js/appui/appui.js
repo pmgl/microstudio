@@ -573,26 +573,22 @@ AppUI = (function() {
     })(this));
     document.querySelector(".usermenu .settings").addEventListener("click", (function(_this) {
       return function(event) {
-        _this.setMainSection("usersettings");
-        return _this.app.user_settings.setSection("settings");
+        return _this.app.openUserSettings();
       };
     })(this));
     document.querySelector(".usermenu .profile").addEventListener("click", (function(_this) {
       return function(event) {
-        _this.setMainSection("usersettings");
-        return _this.app.user_settings.setSection("profile");
+        return _this.app.openUserProfile();
       };
     })(this));
     document.querySelector(".usermenu .progress").addEventListener("click", (function(_this) {
       return function(event) {
-        _this.setMainSection("usersettings");
-        return _this.app.user_settings.setSection("progress");
+        return _this.app.openUserProgress();
       };
     })(this));
     document.querySelector("#header-progress-summary").addEventListener("click", (function(_this) {
       return function(event) {
-        _this.setMainSection("usersettings");
-        return _this.app.user_settings.setSection("progress");
+        return _this.app.openUserProgress();
       };
     })(this));
     document.querySelector(".usermenu .create-account").addEventListener("click", (function(_this) {

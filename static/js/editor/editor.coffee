@@ -22,6 +22,7 @@ class @Editor
     setInterval (()=>@checkSave()),@save_delay/2
 
     @keydown_count = 0
+    @lines_of_code = 0
 
     @editor.getSession().on "change",()=>
       @editorContentsChanged()
@@ -68,7 +69,13 @@ class @Editor
         @liveHelp()
 
     document.addEventListener "keydown",(event)=>
-      @keydown_count += 1
+      try
+        if event.keyCode == 13 and @editor.getSelectionRange().start.column>1
+          @lines_of_code += 1
+        else if event.keyCode != 13
+          @keydown_count += 1
+      catch err
+        console.error err
 
       if event.keyCode != 17 and event.ctrlKey
         @cancelValueTool()
@@ -179,14 +186,17 @@ class @Editor
   saveCode:(callback)->
     source = @app.project.getSource(@selected_source)
     saved = false
+    lines = @lines_of_code
     keycount = @keydown_count
     @keydown_count = 0
+    @lines_of_code = 0
 
     @app.client.sendRequest {
       name: "write_project_file"
       project: @app.project.id
       file: "ms/#{@selected_source}.ms"
       characters: keycount
+      lines: lines
       content: @getCode()
     },(msg)=>
       saved = true

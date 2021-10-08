@@ -398,3 +398,18 @@ class App
       else return "Standard"
 
     return ""
+
+  openUserSettings:()->
+    @appui.setMainSection("usersettings")
+    @user_settings.setSection("settings")
+    @app_state.pushState "user.settings","/user/settings/"
+
+  openUserProfile:()->
+    @appui.setMainSection("usersettings")
+    @user_settings.setSection("profile")
+    @app_state.pushState "user.profile","/user/profile/"
+
+  openUserProgress:()->
+    @appui.setMainSection("usersettings")
+    @user_settings.setSection("progress")
+    @app_state.pushState "user.progress","/user/progress/"

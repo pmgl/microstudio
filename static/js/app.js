@@ -560,6 +560,24 @@ App = (function() {
     return "";
   };
 
+  App.prototype.openUserSettings = function() {
+    this.appui.setMainSection("usersettings");
+    this.user_settings.setSection("settings");
+    return this.app_state.pushState("user.settings", "/user/settings/");
+  };
+
+  App.prototype.openUserProfile = function() {
+    this.appui.setMainSection("usersettings");
+    this.user_settings.setSection("profile");
+    return this.app_state.pushState("user.profile", "/user/profile/");
+  };
+
+  App.prototype.openUserProgress = function() {
+    this.appui.setMainSection("usersettings");
+    this.user_settings.setSection("progress");
+    return this.app_state.pushState("user.progress", "/user/progress/");
+  };
+
   return App;
 
 })();

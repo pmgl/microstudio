@@ -97,7 +97,11 @@ class @UserSettings
     for s in @sections
       do (s)=>
         document.getElementById("usersettings-menu-#{s}").addEventListener "click",()=>
-          @setSection(s)
+          switch s
+            when "settings" then @app.openUserSettings()
+            when "profile" then @app.openUserProfile()
+            when "progress" then @app.openUserProgress()
+
 
   setSection:(section)->
     @current = section

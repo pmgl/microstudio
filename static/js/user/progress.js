@@ -42,19 +42,21 @@ this.UserProgress = (function() {
   };
 
   UserProgress.prototype.checkAchievements = function() {
-    var a, key, ref;
+    var a, j, k, len, len1, ref, ref1;
     if (this.app.user != null) {
       if (this.achievements == null) {
         this.achievements = {};
-        for (a in this.app.user.info.achievements) {
-          this.achievements[a] = true;
+        ref = this.app.user.info.achievements;
+        for (j = 0, len = ref.length; j < len; j++) {
+          a = ref[j];
+          this.achievements[a.id] = true;
         }
       } else {
-        ref = this.app.user.info.achievements;
-        for (key in ref) {
-          a = ref[key];
-          if (!this.achievements[key]) {
-            this.achievements[key] = true;
+        ref1 = this.app.user.info.achievements;
+        for (k = 0, len1 = ref1.length; k < len1; k++) {
+          a = ref1[k];
+          if (!this.achievements[a.id]) {
+            this.achievements[a.id] = true;
             this.addNotification("/img/achievements/" + a.id + ".png", this.app.translator.get("New achievement unlocked!"));
           }
         }
@@ -105,13 +107,14 @@ this.UserProgress = (function() {
   };
 
   UserProgress.prototype.updateStatsPage = function() {
-    var a, bonus, div, div_achievements, div_level, div_stats, dxp, j, k, key, len, len1, level, list, map, percent, ref, results, unit, value, xp, xp1, xp2;
+    var a, bonus, div, div_achievements, div_level, div_stats, dxp, j, k, key, len, len1, level, list, map, percent, results, unit, value, xp, xp1, xp2;
     div_level = document.getElementById("user-progress-level");
     div_level.innerHTML = "";
     div_stats = document.getElementById("user-progress-statistics");
     div_stats.innerHTML = "";
     map = {
       pixels_drawn: "Pixels Drawn",
+      map_cells_drawn: "Map Cells Painted",
       characters_typed: "Characters Typed",
       lines_of_code: "Lines of Code",
       time_coding: "Coding Time",
@@ -120,7 +123,7 @@ this.UserProgress = (function() {
       xp: "XP",
       level: "Level"
     };
-    list = ["level", "xp", "characters_typed", "lines_of_code", "pixels_drawn", "cells_drawn", "time_coding", "time_drawing", "time_mapping"];
+    list = ["level", "xp", "characters_typed", "lines_of_code", "pixels_drawn", "map_cells_drawn", "time_coding", "time_drawing", "time_mapping"];
     for (j = 0, len = list.length; j < len; j++) {
       key = list[j];
       value = this.app.user.info.stats[key];
@@ -148,12 +151,7 @@ this.UserProgress = (function() {
     this.setProgressBar("user-progress-stat-xp", percent);
     div_achievements = document.getElementById("user-progress-achievements");
     div_achievements.innerHTML = "";
-    list = [];
-    ref = this.app.user.info.achievements;
-    for (key in ref) {
-      value = ref[key];
-      list.push(value);
-    }
+    list = this.app.user.info.achievements;
     list.sort(function(a, b) {
       return b.date - a.date;
     });
@@ -189,8 +187,7 @@ this.UserProgress = (function() {
     div.innerHTML += " " + text + "<div style='clear:both'></div>";
     div.addEventListener("click", (function(_this) {
       return function() {
-        _this.app.appui.setMainSection("usersettings");
-        _this.app.user_settings.setSection("progress");
+        _this.app.openUserProgress();
         div.style.left = "400px";
         return setTimeout((function() {
           return parent.removeChild(div);

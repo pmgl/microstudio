@@ -33,12 +33,12 @@ class @UserProgress
     if @app.user?
       if not @achievements?
         @achievements = {}
-        for a of @app.user.info.achievements
-          @achievements[a] = true
+        for a in @app.user.info.achievements
+          @achievements[a.id] = true
       else
-        for key,a of @app.user.info.achievements
-          if not @achievements[key]
-            @achievements[key] = true
+        for a in @app.user.info.achievements
+          if not @achievements[a.id]
+            @achievements[a.id] = true
             @addNotification("/img/achievements/#{a.id}.png",@app.translator.get("New achievement unlocked!"))
     return
 
@@ -81,6 +81,7 @@ class @UserProgress
     div_stats.innerHTML = ""
     map =
       pixels_drawn: "Pixels Drawn"
+      map_cells_drawn: "Map Cells Painted"
       characters_typed: "Characters Typed"
       lines_of_code: "Lines of Code"
       time_coding: "Coding Time"
@@ -95,7 +96,7 @@ class @UserProgress
       "characters_typed"
       "lines_of_code"
       "pixels_drawn"
-      "cells_drawn"
+      "map_cells_drawn"
       "time_coding"
       "time_drawing"
       "time_mapping"
@@ -132,9 +133,7 @@ class @UserProgress
 
     div_achievements = document.getElementById("user-progress-achievements")
     div_achievements.innerHTML = ""
-    list = []
-    for key,value of @app.user.info.achievements
-      list.push value
+    list = @app.user.info.achievements
     list.sort (a,b)-> b.date-a.date
 
     if list.length>0
@@ -172,8 +171,7 @@ class @UserProgress
 
     div.innerHTML += " #{text}<div style='clear:both'></div>"
     div.addEventListener "click",()=>
-      @app.appui.setMainSection("usersettings")
-      @app.user_settings.setSection("progress")
+      @app.openUserProgress()
 
       div.style.left = "400px"
       setTimeout (()=>parent.removeChild(div)),1000

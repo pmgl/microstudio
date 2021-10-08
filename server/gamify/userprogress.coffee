@@ -6,15 +6,13 @@ class @UserProgress
     @stats = data.stats or { xp: 0 , level: 0 }
     @achievements = data.achievements or {}
 
-    @stats = { xp: 0 , level: 0 }
-    @achievements = {}
-
     @time_ids = {}
     @limited_time = {}
     @limited_value = {}
 
     @stats_update = 0
     @achievements_update = 0
+    @levels = Levels # used in webapp
 
   recordTime:(id)->
     t = Math.floor(Date.now()/60000)

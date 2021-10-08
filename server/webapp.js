@@ -50,7 +50,7 @@ this.WebApp = (function() {
         home_exp += "|";
       }
     }
-    this.reserved = ["explore", "documentation", "projects", "about", "login"];
+    this.reserved = ["explore", "documentation", "projects", "about", "login", "user"];
     this.reserved_exact = ["tutorials"];
     ref2 = this.reserved;
     for (k = 0, len = ref2.length; k < len; k++) {
@@ -642,7 +642,7 @@ this.WebApp = (function() {
   };
 
   WebApp.prototype.getUserPublicPage = function(req, res) {
-    var funk, lang, projects, s, user;
+    var achievements, displayNumber, dxp, funk, j, key, lang, len, level, list, map, percent, projects, s, stat_list, stats, translator, unit, user, value, xp, xp1, xp2;
     s = req.path.split("/");
     user = s[1];
     user = this.server.content.findUserByNick(user);
@@ -654,7 +654,64 @@ this.WebApp = (function() {
       return b.last_modified - a.last_modified;
     });
     lang = this.getLanguage(req);
+    translator = this.server.content.translator.getTranslator(lang);
     funk = pug.compileFile("../templates/play/userpage.pug");
+    stats = user.progress.exportStats();
+    map = {
+      pixels_drawn: "Pixels Drawn",
+      map_cells_drawn: "Map Cells Painted",
+      characters_typed: "Characters Typed",
+      lines_of_code: "Lines of Code",
+      time_coding: "Coding Time",
+      time_drawing: "Drawing Time",
+      time_mapping: "Map Editor Time",
+      xp: "XP",
+      level: "Level"
+    };
+    list = ["level", "xp", "characters_typed", "lines_of_code", "pixels_drawn", "map_cells_drawn", "cells_drawn", "time_coding", "time_drawing", "time_mapping"];
+    level = stats["level"] || 0;
+    xp = stats["xp"] || 0;
+    stat_list = [];
+    displayNumber = function(x) {
+      var li;
+      x = "" + x;
+      li = [];
+      while (x.length > 3) {
+        li.splice(0, 0, x.substring(x.length - 3, x.length));
+        x = x.substring(0, x.length - 3);
+      }
+      li.splice(0, 0, x);
+      return li.join(" ");
+    };
+    for (j = 0, len = list.length; j < len; j++) {
+      key = list[j];
+      value = stats[key];
+      if ((value == null) || key === "xp" || key === "level") {
+        continue;
+      }
+      unit = "";
+      if (key.startsWith("time")) {
+        if (value >= 60) {
+          unit = translator.get("hours");
+          value = Math.floor(value / 60);
+        } else {
+          unit = translator.get("minutes");
+        }
+      }
+      stat_list.push({
+        name: map[key] ? translator.get(map[key]) : key,
+        value: displayNumber(value),
+        unit: unit
+      });
+    }
+    xp1 = level > 0 ? user.progress.levels.total_cost[level - 1] : 0;
+    xp2 = user.progress.levels.total_cost[level];
+    dxp = xp2 - xp1;
+    percent = Math.max(0, Math.min(99, Math.floor((xp - xp1) / dxp * 100)));
+    achievements = user.progress.exportAchievements();
+    achievements.sort(function(a, b) {
+      return b.date - a.date;
+    });
     return res.send(funk({
       user: user.nick,
       profile_image: user.flags.profile_image === true,
@@ -662,6 +719,11 @@ this.WebApp = (function() {
         allowedTags: allowedTags
       }),
       projects: projects,
+      stats: stat_list,
+      level: level,
+      xp: xp,
+      percent: percent,
+      achievements: achievements,
       translator: this.server.content.translator.getTranslator(lang)
     }));
   };

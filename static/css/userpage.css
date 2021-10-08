@@ -14,13 +14,18 @@ html,body {
 }
 
 body {
-  background: linear-gradient(135deg, hsl(200,35%,16%), hsl(200,20%,11%));
+/*  background: linear-gradient(135deg, hsl(200,35%,16%), hsl(200,20%,11%));*/
+  background: hsl(200,30%,15%);
 }
 
 header {
   font-size: 20px;
   color: #FFF;
   margin-bottom: 20px ;
+}
+
+h3 {
+  margin-top: 0 ;
 }
 
 .headerdiv {
@@ -39,8 +44,17 @@ header {
   padding: 40px ;
 }
 
-.projects {
-  text-align: left;
+.section-content {
+  text-align: center ;
+  display: none ;
+}
+
+.section-content h2 {
+  text-align: center ;
+  margin-top: 80px ;
+}
+
+#projects {
   clear: both ;
 }
 
@@ -76,6 +90,16 @@ header {
   display: inline-block ;
   width: 120px ;
   vertical-align: top ;
+}
+
+.projectbox .appicon div img {
+  width: 72px ;
+  height: 72px ;
+  -ms-interpolation-mode: nearest-neighbor;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-pixelated;
+  image-rendering: pixelated;
 }
 
 .projectbox .buttons {
@@ -145,6 +169,7 @@ a {
 
 .sections {
   margin: 40px 0 ;
+  text-align: center ;
 }
 
 .sections div {
@@ -160,4 +185,77 @@ a {
   border-radius: 30px ;
   background: rgba(255,255,255,.9) ;
   color: rgba(0,0,0,.9);
+}
+
+
+#user-progress-statistics, #user-progress-level {
+  text-align: center ;
+  padding: 20px 0 ;
+  margin-bottom: 40px ;
+}
+
+.user-progress-stat {
+  display: inline-block ;
+  padding: 20px 40px ;
+  text-align: center ;
+}
+.user-progress-stat .unit {
+  font-size: 10px ;
+  color: rgba(255,255,255,.5);
+  position: absolute ;
+  margin-left: 5px ;
+  top: 29px ;
+}
+
+#user-progress-level .user-progress-stat {
+  background: hsl(160,50%,40%) ;
+  border-radius: 5px ;
+  margin: 5px 20px ;
+  width: 200px ;
+}
+
+.user-progress-stat-value {
+  font-size: 40px ;
+  position: relative ;
+  display: inline-block ;
+}
+.user-progress-stat-label {
+  font-size: 16px ;
+  font-weight: bold ;
+  color: rgba(255,255,255,.5) ;
+}
+
+#number-of-achievements {
+  margin-left: 10px ;
+  color: rgba(255,255,255,.5);
+  font-size: 16px ;
+}
+
+.user-progress-achievement {
+  background: rgba(255,255,255,.1) ;
+  padding: 20px 20px 0 20px ;
+  margin: 2px 10px 0 0 ;
+  text-align: left ;
+}
+.user-progress-achievement img {
+  float: left ;
+  width: 96px ;
+  -ms-interpolation-mode: nearest-neighbor;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -o-pixelated;
+  image-rendering: pixelated;
+  margin: 0 20px 20px 0 ;
+}
+.user-progress-achievement .story {
+  font-style: italic ;
+  color: rgba(255,255,255,.5) ;
+}
+.user-progress-achievement .bonus {
+  float: right ;
+  background: hsl(300,50%,30%) ;
+  font-size: 16px ;
+  padding: 4px 15px ;
+  border-radius: 30px ;
+  color: rgba(255,255,255,.75);
 }

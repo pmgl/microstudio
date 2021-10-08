@@ -29,6 +29,7 @@ this.Editor = (function() {
       };
     })(this)), this.save_delay / 2);
     this.keydown_count = 0;
+    this.lines_of_code = 0;
     this.editor.getSession().on("change", (function(_this) {
       return function() {
         return _this.editorContentsChanged();
@@ -92,7 +93,17 @@ this.Editor = (function() {
     })(this));
     document.addEventListener("keydown", (function(_this) {
       return function(event) {
-        _this.keydown_count += 1;
+        var err;
+        try {
+          if (event.keyCode === 13 && _this.editor.getSelectionRange().start.column > 1) {
+            _this.lines_of_code += 1;
+          } else if (event.keyCode !== 13) {
+            _this.keydown_count += 1;
+          }
+        } catch (error) {
+          err = error;
+          console.error(err);
+        }
         if (event.keyCode !== 17 && event.ctrlKey) {
           _this.cancelValueTool();
           _this.ignore_ctrl_up = true;
@@ -255,16 +266,19 @@ this.Editor = (function() {
   };
 
   Editor.prototype.saveCode = function(callback) {
-    var keycount, saved, source;
+    var keycount, lines, saved, source;
     source = this.app.project.getSource(this.selected_source);
     saved = false;
+    lines = this.lines_of_code;
     keycount = this.keydown_count;
     this.keydown_count = 0;
+    this.lines_of_code = 0;
     this.app.client.sendRequest({
       name: "write_project_file",
       project: this.app.project.id,
       file: "ms/" + this.selected_source + ".ms",
       characters: keycount,
+      lines: lines,
       content: this.getCode()
     }, (function(_this) {
       return function(msg) {

@@ -29,14 +29,14 @@ this.Tutorials = (function() {
   };
 
   Tutorials.prototype.update = function(doc) {
-    var e, e2, element, i, j, len, len1, list, ref, ref1;
+    var e, e2, element, j, k, len, len1, list, ref, ref1;
     element = document.createElement("div");
     element.innerHTML = DOMPurify.sanitize(marked(doc));
     this.tutorials = [];
     if (element.hasChildNodes()) {
       ref = element.childNodes;
-      for (i = 0, len = ref.length; i < len; i++) {
-        e = ref[i];
+      for (j = 0, len = ref.length; j < len; j++) {
+        e = ref[j];
         switch (e.tagName) {
           case "H2":
             list = {
@@ -49,8 +49,8 @@ this.Tutorials = (function() {
           case "P":
             if (e.hasChildNodes()) {
               ref1 = e.childNodes;
-              for (j = 0, len1 = ref1.length; j < len1; j++) {
-                e2 = ref1[j];
+              for (k = 0, len1 = ref1.length; k < len1; k++) {
+                e2 = ref1[k];
                 switch (e2.tagName) {
                   case "A":
                     if (list != null) {
@@ -71,18 +71,66 @@ this.Tutorials = (function() {
     this.build();
   };
 
+  Tutorials.prototype.checkCompletion = function() {
+    var all, course, hasAchievement, i, id, j, k, len, len1, list, progress, ref, ref1, results, tuto;
+    list = ["tour", "programming", "drawing", "game"];
+    ref = this.tutorials;
+    results = [];
+    for (i = j = 0, len = ref.length; j < len; i = ++j) {
+      course = ref[i];
+      all = true;
+      ref1 = course.list;
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        tuto = ref1[k];
+        progress = this.app.getTutorialProgress(tuto.link);
+        if (progress !== 100) {
+          all = false;
+        }
+      }
+      if (all) {
+        id = "tutorials/tutorial_" + list[i];
+        hasAchievement = (function(_this) {
+          return function(id) {
+            var a, l, len2, ref2;
+            ref2 = _this.app.user.info.achievements;
+            for (l = 0, len2 = ref2.length; l < len2; l++) {
+              a = ref2[l];
+              if (a.id === id) {
+                return true;
+              }
+            }
+            return false;
+          };
+        })(this);
+        if (!hasAchievement(id)) {
+          console.info("sending tutorial completion " + id);
+          results.push(this.app.client.send({
+            name: "tutorial_completed",
+            id: id
+          }));
+        } else {
+          results.push(void 0);
+        }
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  };
+
   Tutorials.prototype.build = function() {
-    var i, len, ref, t;
+    var j, len, ref, t;
     document.getElementById("tutorials-content").innerHTML = "";
     ref = this.tutorials;
-    for (i = 0, len = ref.length; i < len; i++) {
-      t = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      t = ref[j];
       this.buildCourse(t);
     }
+    this.checkCompletion();
   };
 
   Tutorials.prototype.buildCourse = function(course) {
-    var div, h2, i, len, p, ref, t, ul;
+    var div, h2, j, len, p, ref, t, ul;
     div = document.createElement("div");
     div.classList.add("course");
     h2 = document.createElement("h2");
@@ -94,8 +142,8 @@ this.Tutorials = (function() {
     ul = document.createElement("ul");
     div.appendChild(ul);
     ref = course.list;
-    for (i = 0, len = ref.length; i < len; i++) {
-      t = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      t = ref[j];
       div.appendChild(this.buildTutorial(t));
     }
     return document.getElementById("tutorials-content").appendChild(div);

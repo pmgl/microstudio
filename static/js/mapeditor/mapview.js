@@ -37,6 +37,7 @@ this.MapView = (function() {
     })(this));
     this.editable = false;
     this.sprite = "icon";
+    this.cells_drawn = 0;
   }
 
   MapView.prototype.setSprite = function(sprite) {
@@ -179,11 +180,14 @@ this.MapView = (function() {
     if (this.map.undo.empty()) {
       this.map.undo.pushState(this.map.clone());
     }
-    return this.mouseMove(event);
+    return this.mouseMove(event, true);
   };
 
-  MapView.prototype.mouseMove = function(event) {
+  MapView.prototype.mouseMove = function(event, force) {
     var b, clickedSprite, i, j, k, l, min, ref, ref1, s, sel, x, y;
+    if (force == null) {
+      force = false;
+    }
     if (!this.editable) {
       return;
     }
@@ -199,8 +203,11 @@ this.MapView = (function() {
       this.mouse_y = y;
       this.update();
       this.editor.setCoordinates(x, this.map.height - 1 - y);
+    } else if (!force) {
+      return false;
     }
     if (this.mousepressed) {
+      this.cells_drawn += 1;
       clickedSprite = this.map.get(x, this.map.height - 1 - y);
       if ((this.editor.tilepicker.selection != null) && this.mode === "draw") {
         sel = this.editor.tilepicker.selection;

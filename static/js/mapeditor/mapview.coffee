@@ -19,6 +19,7 @@ class @MapView
 
     @sprite = "icon"
 
+    @cells_drawn = 0
 
   setSprite:(@sprite)->
 
@@ -138,9 +139,9 @@ class @MapView
     @mode = if event.button == 2 then "erase" else "draw"
     @map.undo = new Undo() if not @map.undo?
     @map.undo.pushState @map.clone() if @map.undo.empty()
-    @mouseMove(event)
+    @mouseMove(event,true)
 
-  mouseMove:(event)->
+  mouseMove:(event,force=false)->
     return if not @editable
     b = @canvas.getBoundingClientRect()
     min = Math.min @canvas.clientWidth,@canvas.clientHeight
@@ -156,8 +157,11 @@ class @MapView
       @mouse_y = y
       @update()
       @editor.setCoordinates x,@map.height-1-y
+    else if not force
+      return false
 
     if @mousepressed
+      @cells_drawn += 1
       clickedSprite = @map.get x,@map.height-1-y
       if @editor.tilepicker.selection? and @mode =="draw"
         sel = @editor.tilepicker.selection

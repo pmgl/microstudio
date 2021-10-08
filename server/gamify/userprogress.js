@@ -13,16 +13,12 @@ this.UserProgress = (function() {
       level: 0
     };
     this.achievements = data.achievements || {};
-    this.stats = {
-      xp: 0,
-      level: 0
-    };
-    this.achievements = {};
     this.time_ids = {};
     this.limited_time = {};
     this.limited_value = {};
     this.stats_update = 0;
     this.achievements_update = 0;
+    this.levels = Levels;
   }
 
   UserProgress.prototype.recordTime = function(id) {

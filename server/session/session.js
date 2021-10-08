@@ -318,6 +318,11 @@ this.Session = (function() {
         return _this.uploadRequest(msg);
       };
     })(this));
+    this.register("tutorial_completed", (function(_this) {
+      return function(msg) {
+        return _this.tutorialCompleted(msg);
+      };
+    })(this));
     ref = this.server.plugins;
     for (j = 0, len1 = ref.length; j < len1; j++) {
       plugin = ref[j];
@@ -1163,8 +1168,11 @@ this.Session = (function() {
           this.user.progress.recordTime("time_coding");
           if (data.characters != null) {
             this.user.progress.incrementLimitedStat("characters_typed", data.characters);
-            return this.checkUpdates();
           }
+          if (data.lines != null) {
+            this.user.progress.incrementLimitedStat("lines_of_code", data.lines);
+          }
+          return this.checkUpdates();
         } else if (data.file.startsWith("sprites/")) {
           this.user.progress.recordTime("time_drawing");
           if (data.pixels != null) {
@@ -1772,6 +1780,17 @@ this.Session = (function() {
         }
       }
     }
+  };
+
+  Session.prototype.tutorialCompleted = function(msg) {
+    if (this.user == null) {
+      return;
+    }
+    if (msg.id == null) {
+      return;
+    }
+    this.user.progress.unlockAchievement(msg.id);
+    return this.checkUpdates();
   };
 
   Session.prototype.checkUpdates = function() {

@@ -118,11 +118,14 @@ class @MapEditor
     data = @mapview.map.save()
     map = @mapview.map
     saved = false
+    cells = @mapview.cells_drawn
+    @mapview.cells_drawn = 0
     @app.client.sendRequest {
       name: "write_project_file"
       project: @app.project.id
       file: "maps/#{@selected_map}.json"
       content: data
+      cells: cells
     },(msg)=>
       saved = true
       @app.project.removePendingChange(@) if @save_time == 0

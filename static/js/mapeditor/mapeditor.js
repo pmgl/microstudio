@@ -174,18 +174,21 @@ this.MapEditor = (function() {
   };
 
   MapEditor.prototype.saveMap = function(callback) {
-    var data, map, saved;
+    var cells, data, map, saved;
     if ((this.selected_map == null) || !this.mapview.map) {
       return;
     }
     data = this.mapview.map.save();
     map = this.mapview.map;
     saved = false;
+    cells = this.mapview.cells_drawn;
+    this.mapview.cells_drawn = 0;
     this.app.client.sendRequest({
       name: "write_project_file",
       project: this.app.project.id,
       file: "maps/" + this.selected_map + ".json",
-      content: data
+      content: data,
+      cells: cells
     }, (function(_this) {
       return function(msg) {
         saved = true;
