@@ -448,11 +448,16 @@ class AppUI
         e.classList.remove "language-menu-open"
         document.querySelector("#language-setting").style.width = "32px"
 
+    document.querySelector("#language-choice-pt").addEventListener "click",(event)=>@setLanguage("pt")  
     document.querySelector("#language-choice-it").addEventListener "click",(event)=>@setLanguage("it")
     document.querySelector("#language-choice-de").addEventListener "click",(event)=>@setLanguage("de")
     document.querySelector("#language-choice-pl").addEventListener "click",(event)=>@setLanguage("pl")
     document.querySelector("#language-choice-fr").addEventListener "click",(event)=>@setLanguage("fr")
     document.querySelector("#language-choice-en").addEventListener "click",(event)=>@setLanguage("en")
+
+    document.querySelector("#switch-to-pt").addEventListener "click",(event)=>
+      event.preventDefault()
+      @setLanguage("pt")
 
     document.querySelector("#switch-to-it").addEventListener "click",(event)=>
       event.preventDefault()
