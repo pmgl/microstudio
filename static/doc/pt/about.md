@@ -1,36 +1,37 @@
 ![microStudio](/img/microstudiologo.svg "microStudio")
 
-**microStudio** is a free game development environment. It also aims to be a platform for learning and sharing.
+**microStudio** é um ambiente de desenvolvimento de jogos gratuito. Também pretende ser uma plataforma de aprendizagem e compartilhamento.
 
-**microStudio** is an open source project, distributed under the MIT License: https://github.com/pmgl/microstudio/
+**microStudio** é um projeto de código aberto, distribuido sob a licença MIT: https://github.com/pmgl/microstudio/
 
-See changelog for information on updates.
+Veja o registro de mudanças para mais informações sobre as atualizações.
 
 <br />
 
-Support microStudio on Patreon and get exclusive rewards!
+Apoie o microStudio no Patreon e receba recompensas exclusivas!
 
 <a href="https://www.patreon.com/microstudiodev" target="_blank"><img src="/img/patreon.png" title="Patreon" alt="Patreon" style="width: auto"></a>
 
-Many thanks to all the contributors and especially to our wonderful Founders: Steven Landman, Code Club France
+Nossos agradecimentos aos nossos colaboradores e especialmente aos nossos maravilhosos Fundadores: Steven Landman, Code Club France
 
-Thanks a lot to our awesome translators:
-* FeniXb3 (contributed Polish language)
-* TinkerSmith (contributed German language)
-* HomineLudens (currently working on the Italian translation)
+Muito obrigado aos nossos fantásticos tradutores:
+* FeniXb3 (contribuiu com o idioma Polonês)
+* TinkerSmith (contribuiu com o idioma Alemão)
+* HomineLudens (atualmente trabalhando na tradução Italiana)
+* Ondinha (atualmente trabalhando na tradução Portuguesa)
 
-<i class="fab fa-discord"></i> Join us on Discord: [https://discord.gg/BDMqjxd](https://discord.gg/BDMqjxd)
+<i class="fab fa-discord"></i> Junte-se a nós no Discord: [https://discord.gg/BDMqjxd](https://discord.gg/BDMqjxd)
 
-<i class="fa fa-envelope"></i> Contact e-mail: [contact@microstudio.dev](mailto:contact@microstudio.dev)
+<i class="fa fa-envelope"></i> E-mail para contato: [contact@microstudio.dev](mailto:contact@microstudio.dev)
 
-Created by Gilles Pommereuil in Strasbourg, France
+Criado por Gilles Pommereuil em Estrasburgo, França.
 
-Published by:
+Publicado por:
 
 Neuronality SARL<br/>
 2 Chemin des Rochers<br/>
 67120 MOLSHEIM<br/>
-FRANCE
+FRANÇA
 
 Siret: R.C.S. Saverne TI 808 517 858<br/>
 
