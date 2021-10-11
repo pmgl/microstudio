@@ -546,126 +546,129 @@ Here is the list of binary operators in *microScript* (excluding comparisons, al
 |-|Subtração|
 |*|Multiplicação|
 |/|Divisão|
-|%|Módulo: `x % y` is equal to the rest of the division of x by y|
-|^|Potência: `x ^ y` is equal to x high at power y is `pow(x,y)`|
+|%|Módulo: `x % y` é igual ao resto da divisão de `x` por `y`|
+|^|Potência: `x ^ y` é igual a `x` elevado a `y`, tal como `pow(x,y)`|
 
-## Predefined functions
+## Funções predefinidas
 
-### Functions
-|Function|Description|
+### Funções
+
+|Função|Descrição|
 |-|-|
-|max(a,b)|Returns the largest number of a or b|
-|min(a,b)|Returns the smallest number of a or b|
-|round(a)|Returns the value a rounded to the nearest integer value|
-|floor(a)|Returns the value a rounded down to the lower integer|
-|ceil(a)|Returns the value a rounded upwards|
-|abs(a)|Returns the absolute value of a|
-|sqrt(a)|Returns the square root from a|
-|pow(a,b)|Returns a to the power of b (other possible notation: `a ^ b`)|
-|PI|Constant equals to the number Pi|
-|log(a)|Returns the natural logarithm of a|
-|exp(a)|Returns the Euler number raised to the power of a|
+|max(a,b)|Retorna o maior número entre as opções `a` ou `b`|
+|min(a,b)|Retorna o menor número entre as opções `a` ou `b`|
+|round(a)|Retorna o valor um arredondado para o valor inteiro mais próximo|
+|floor(a)|Retorna o valor um arredondado para baixo|
+|ceil(a)|Retorna o valor um arredondado para cima|
+|abs(a)|Retorna o valor absoluto de `a`|
+|sqrt(a)|Retorna a raiz quadrada de `a`|
+|pow(a,b)|Retorna `a` elevado a `b` (outra notação possível: `a ^ b`)|
+|PI|Constante que é igual ao valor de *Pi*|
+|log(a)|Retorna o logarítmo natural de a|
+|exp(a)|Returna o número de Euler elevado a `a`|
 
-#### Trigonometry functions in radians
-|Function|Description|
+#### Funções trigonométricas em radianos
+
+|Função|Descrição|
 |-|-|
-|sin(a)|Returns the sine from a (a in radians)|
-|cos(a)|Returns the cosine from a (a in radians)|
-|tan(a)|Returns the tangent from a (a in radians)|
-|acos(a)|Returns the arc cosine of a (result in radians)|
-|asin(a)|Returns the arc sine of a (result in radians)|
-|atan(a)|Returns the arc tangent of a (result in radians)|
-|atan2(y,x)|Returns the arc tangent of y/x (result in radians)|
+|sin(a)|Retorna o seno de `a` (`a` em radianos)|
+|cos(a)|Retorna o cosseno de `a`(`a` em radianos)|
+|tan(a)|Retorna tangente de `a` (`a` em radianos)|
+|acos(a)|Retorna o arco cosseno de `a` (resultado em radianos)|
+|asin(a)|Retorna o arco seno de `a` (resultado em radianos)|
+|atan(a)|Retorna o arco tangente de `a` (resultado em radianos)|
+|atan2(y,x)|Retorna o arco tangente de y/x (resultado em radianos)|
 
-#### Trigonometry functions in degrees
-|Function|Description|
+#### Funções trigonométricas em graus
+|Função|Descrição|
 |-|-|
-|sind(a)|Returns the sine from a (a in degrees)|
-|cosd(a)|Returns the cosine from a (a in degrees)|
-|tand(a)|Returns the tangent from a (a in degrees)|
-|acosd(a)|Returns the arc cosine of a (result in degrees)|
-|asind(a)|Returns the arc sine of a (result in degrees)|
-|atand(a)|Returns the arc tangent of a (result in degrees)|
-|atan2d(y,x)|Returns the arc tangent of y/x (result in degrees)|
+|sind(a)|Retorna o seno de `a` (`a` em graus)|
+|cosd(a)|Retorna o cosseno de `a` (`a` em graus)|
+|tand(a)|Retorna tangente de `a` (`a` em graus)|
+|acosd(a)|Retorna o arco cosseno de `a` (resultado em graus)|
+|asind(a)|Retorna o arco seno de `a` (resultado em graus)|
+|atand(a)|Retorna o arco tangente de `a` (resultado em graus)|
+|atan2d(y,x)|Retorna o arco tangente de y/x (resultado em graus)|
 
-### Random numbers
-The random object is used to generate pseudo-random numbers. It is possible to initialize the generator with the `seed` function to obtain the same sequence of numbers at each execution, or on the contrary a different sequence each time.
+### Números aleatórios
 
-|Description|Description|
+O objeto `random` é usado para gerar números pseudo-aleatórios. É possível inicializar o gerador com a função `seed` para obter a mesma sequência de números em cada execução, ou ao contrário, uma sequência diferente a cada vez.
+
+|Função|Description|
 |-|-|
-|`random.next()`|Removes a new random number between 0 and 1|
-|`random.nextInt(a)`|Returns a new integer random number between 0 and a-1|
-|`random.seed(a)`|reset the random number sequence using the value a ; if you use the same initialization value twice, you will get the same random number sequence. If a == 0, the random number generator is initialized... randomly and therefore not reproducible|
+|`random.next()`|Retorna um novo número aleatório entre 0 e 1|
+|`random.nextInt(a)`|Retorna um novo número inteiro aleatório entre 0 e `a`|
+|`random.seed(a)`|Redefine a sequência de números aleatórios usando o valor `a`; Se você usar o mesmo valor de inicialização duas vezes, obterá a mesma sequência de números aleatórios. Se a == 0, o gerador de número aleatório é inicializado ... aleatoriamente e, portanto, não reproduzível|
 
-## String operations
+## Operações com *strings*
 
-|Operation|Description|
+|Operação|Descrição|
 |-|-|
-|`string1 + string2`|The + operator can be used to concatenate strings.|
-|`string.length`|Field retains the length of the string.|
-|`string.substring(i1,i2)`|Returns a substring of the character string, starting at index i1 and ending at index i2|
-|`string.startsWith(s)`|Returns whether string starts exactly with `s`|
-|`string.endsWith(s)`|Returns whether string ends exactly with `s`|
-|`string.indexOf(s)`|Returns the index of the first occurrence of `s` in `string`, or -1 if `string` doesn't contain any such occurrence|
-|`string.lastIndexOf(s)`|Returns the index of the last occurrence of `s` in `string`, or -1 if `string` doesn't contain any such occurrence|
-|`string.replace(s1,s2)`|Returns a new string in which the first occurrence of `s1` (if any) is replaced with `s2`|
-|`string.toUpperCase()`|Returns the string converted to upper case|
-|`string.toLowerCase()`|Returns the string converted to lower case|
-|`string.split(s)`|The split function divides the string into a list of substrings, by searching for the separator substring given as argument and returns that list|
+|`string1 + string2`|O operador `+` pode ser usado para concatenar *strings*.|
+|`string.length`|Campo que retém o comprimento da *string*.|
+|`string.substring(i1,i2)`|Retorna a *substring* da *string*, iniciando no índice `i1` e terminando no índice `i2`|
+|`string.startsWith(s)`|Retorna se a *string* inicia exatamente por `s`|
+|`string.endsWith(s)`|Retorna se a *string* termina exatamente por `s`|
+|`string.indexOf(s)`|Retorna o índice da primeira ocorrência de `s` na *string*, ou -1 se a *string* não contiver nenhuma ocorrência|
+|`string.lastIndexOf(s)`|Retorna o índice da última ocorrência de `s` na *string*, ou -1 se a *string* não contiver nenhuma ocorrência|
+|`string.replace(s1,s2)`|Retorna uma nova *string* em que a primeira ocorrência de `s1` (se houver) é substituída por` s2`|
+|`string.toUpperCase()`|Retorna a *string* convertida para maiúsculas|
+|`string.toLowerCase()`|Retorna a *string* convertida para minúsculas|
+|`string.split(s)`|A função *split* divide a *string* em uma lista de *substrings*, procurando pela *substring* separadora fornecida como argumento e retorna uma lista|
 
 
-## List operations
-|Operation|Description|
+## Operações com listas
+|Operação|Descrição|
 |-|-|
-|`list.length`|Retains the length of the list (number of elements in the list).|
-|`list.push(element)`|Adds the element to the end of the list|
-|`list.insert(element)`|Inserts an element at the beginning of the list|
-|`list.insertAt(element,index)`|Inserts an element at the given index in the list|
-|`list.indexOf(element)`|Returns the position of the element in the list (0 for the first element, 1 for the second element ...). Returns -1 when the element is not found in the list.|
-|`list.contains(element)`|Returns 1 (true) when `element` is in the list, or 0 (false) when the element cannot be found in the list|
-|`list.removeAt(index)`|Removes from the list the element at position `index`|
-|`list.removeElement(element)`|Removes from the list `element`, if it can be found in the list|
-|`list1.concat(list2)`|Returns a new list obtained by appending list2 to list1|
+|`lista.length`|Retém a comprimento da lista (número de elementos na lista)|
+|`lista.push(elemento)`|Adiciona um elemento ao fim da lista|
+|`lista.insert(elemento)`|Insere um elemento no início da lista|
+|`lista.insertAt(elemento, índice)`|Insere um elemento na lista no índice informado|
+|`lista.indexOf(elemento)`|Retorna a posição do elemento na lista (0 para o primeiro elemento, 1 para o segundo elemento...). Retorna -1 quando o elemento não é encontrado na lista|
+|`lista.contains(elemento)`|Retorna 1 (*true*) quando o `elemento` está na lista, ou 0 (*false*) quando o `elemento` não pode ser encontrado na lista|
+|`lista.removeAt(índice)`|Remove da lista o elemento da posição `índice`|
+|`lista.removeElement(elemento)`|Remove da lista `elemento`, se o mesmo puder ser encontrado na lista|
+|`lista1.concat(lista2)`|Retorna uma nova lista concatenando `lista2` a `lista1`|
 
-## Sorting a list
+## Ordenando uma lista
 
-You can sort the elements of a list using the function `list.sortList(compareFunction)`. The `compareFunction` you provide has to accept two arguments (which we will call `a` and `b`) and should return:
-|Return value|when|
+Você pode ordenar os elementos de uma lista usando a função `lista.sortList (compareFunction)`. A `compareFunction` que você fornece tem que aceitar dois argumentos (que chamaremos de ` a` e `b`) e deve retornar:
+|Valor de retorno|Quando|
 |-|-|
-|a negative number|when `a` must be sorted before `b`(a is less than b)|
-|zero|when `a` and `b` have an equal position regarding to the desired ordering criterion|
-|a positive number|when `a` must be sorted after `b` (a is greater than b)|
+|um número negativo|quando `a` for ordenado antes de `b`(`a` é menor que `b`)|
+|zeroquando `a` e `b` tem posição igual em relação ao critério de comparação|
+|um número positivo|quando `a` for ordenado após `b` (`a` é maior que `b`)|
 
-##### example
+##### exemplo
 
-The example below assumes that the list contains *points*, each point having an `x` coordinate field. We want to sort the points from the lesser value of point.x to the greater value of point.x:
+O exemplo abaixo assume que a lista contém *pontos*, cada ponto tendo um campo de coordenada `x`. Queremos classificar os pontos do menor valor de point.x para o maior valor de point.x:
 
-`
-compare = function(point1,point2)
-  return point1.x - point2.x
+```
+compare = function(ponto1,ponto2)
+  return ponto1.x - ponto2.x
 end
 
 list.sortList(compare)
-`
+```
 
-Note that you could make the code above shorter:
+Perceba que você pode tornar o código acima mais curto:
 
-`
-list.sortList(function(point1,point2) point1.x - point2.x end)
-`
+```
+list.sortList(function(ponto1, ponto2) ponto1.x - ponto2.x end)
+```
 
-Whenever a comparison function is not provided, the elements of the list will be sorted according to the alphabetical order.
+Sempre que uma função de comparação não for fornecida, os elementos da lista serão classificados de acordo com a ordem alfabética.
 
-## Comments
+## Comentários
 
-Comments in *microScript* can be added after a double-slash: `//`; everything that follows until the next line break is ignored when analyzing the program.
+Comentários em *microScript* podem ser adicionados após uma barra dupla: `//`; tudo o que segue até a próxima quebra de linha é ignorado ao analisar o programa.
 
-##### example
-`
+##### exemplo
+```
 myFunction = ()
-  // my notes on the role of the myFunction function
+  // Minhas notas sobre o funcionamento da função myFunction
 end
-`
+```
 
 ## Classes
 
@@ -673,11 +676,11 @@ A class in a programming language refers to a kind of blueprint or template for 
 
 To illustrate these concepts, we will see how you can use classes to manage enemies in your game:
 
-### Define a class
+### Definindo uma classe
 
 We will start by creating a class `Enemy` that will be shared by all our enemies objects. Each enemy will have a position (on screen). It will have health points `hp`, move at a certain `velocity`:
 
-`
+```
 Enemy = class
   constructor = function(position)
     this.position = position
@@ -694,41 +697,41 @@ Enemy = class
     hp -= damage
   end
 end
-`
+```
 
 In microScript, classes and objects are very similar concepts and can almost be used interchangeably. The class definition thus ends with keyword `end`. The first property we defined in the class above is the function "constructor". This function is called when a object instance of the class is created. It will set the property *position* of the object. `this` refers to the object instance on which the function will be called, thus setting `this.position` means the object sets the property position on itself.
 
-### Create object instances from a class
+### Crie instâncias de objeto de uma classe
 
 Let's create two enemies objects derived from our class:
 
-`
+```
 enemy_1 = new Enemy(50)
 enemy_2 = new Enemy(100)
-`
+```
 
 The operator `new` is used to create a new object instance derived from a class. The argument we pass here will is aimed at the constructor function of our class. We thus have created an enemy instance at position 50 and another enemy instance at position 100.
 
 Both enemies share the same velocity or health points (hp). However, we may choose to set a different velocity to the second enemy:
 
-`
+```
 enemy_2.velocity = 2
-`
+```
 
 We can now make our enemies move by calling:
 
-`
+```
 enemy_1.move()
 enemy_2.move()
-`
+```
 
 The second enemy will move twice faster because we altered its property velocity before calling function move.
 
-### Inheritance
+### Herança
 
 We can make a class inherit from another class. For example, if we want to create a variation of our Enemy, we could do as follows:
 
-`
+```
 Boss = class extends Enemy
   constructor = function(position)
     super(position)
@@ -740,7 +743,7 @@ Boss = class extends Enemy
     hp += 1
   end
 end
-`
+```
 
 We have created a new class `Boss` by extending the class `Enemy`. Our new class shares all properties from Enemy, except that it replaces some of these properties by its own values. Calling `super(position)` in the constructor of our new class ensures that the constructor of our parent class Enemy is also called.
 
@@ -748,11 +751,11 @@ We created a new behavior `move` for our Boss, which overrides the default behav
 
 We can now create an instance of our Boss at position 120:
 
-`
+```
 the_final_boss = new Boss(120)
-`
+```
 
-##### notes
+##### notas
 
 * variables space: when a function is called on an object (like `enemy_1.move()`), the variables referred to in the body of the called functions are the properties of the object. For example, in the body of the move function, `position += 1` will increment the property `position` of the object itself.
 
@@ -761,16 +764,16 @@ the_final_boss = new Boss(120)
 * `super()` can be used in a function attached to an object or a class, to invoke the equally named function of the parent class.
 
 
-# Function reference
+# Referência das funções
 
 ## Display `screen`
 
 In *microStudio* the screen is represented by the predefined object "screen". To display shapes or images on the screen, simply call functions (also called *methods*) on this object. For example:
 
-`
+```
 screen.setColor("#FFF")
 screen.fillRect(0,0,100,100,100)
-`
+```
 The code above defines the drawing color as `#FFF` i. e. white (see explanations below). Then it draws a rectangle filled with this color, centered at the coordinates 0.0 of the screen (i.e. the center of the screen), of width 100 and height 100.
 
 To make your work easier, *microStudio* automatically scales the screen coordinates, regardless of the actual display resolution. By convention, the smallest display size (width in portrait mode, height in landscape mode) is 200. The origin point (0,0) being the center of the screen, the smallest dimension is therefore graduated from -100 to +100. The largest dimension will be graduated for example from -178 to +178 (classic 16:9 screen), from -200 to +200 (2:1 screen, longer, more recent smartphones) etc.
@@ -874,9 +877,9 @@ Sets the line width for all subsequent line draw operation (drawLine, drawPolygo
 Sets the line dash style for all subsequent line draw operation (drawLine, drawPolygon, drawRect etc.). The argument must be an array of positive values, defining the length of lines and gaps.
 
 #### example
-`
+```
 screen.setLineDash([2,4])
-`
+```
 <!--- suggest_end --->
 
 
@@ -888,24 +891,24 @@ screen.setLineDash([2,4])
 Draws one of the sprites you created in the *Sprites* section on the screen. The first parameter is a string that corresponds to the name of the sprite to be displayed, for example `"icon"`. Then follow the x,y coordinates where to display the sprite (the sprite will be centered on these coordinates). Then the width and height of the display.
 <!--- suggest_end --->
 
-`
+```
 screen.drawSprite("icon",0,50,50,50)
-`
+```
 The height can be omitted, as in the example above. In this case the height will be calculated according to the width and proportions of the sprite.
 
 ##### Animated sprites
 
 Animated sprites will automatically draw the correct frame according to animation settings. You can set the current frame of a sprite (e.g. to restart the animation) this way:
 
-`
+```
 sprites["sprite1"].setFrame(0) // 0 is the index of the first frame
-`
+```
 
 You can also draw a specific animation frame of your sprite, by appending "." and the index of the requested frame:
 
-`
+```
 screen.drawSprite("sprite1.0",0,50,50,50)
-`
+```
 
 The example above draws the frame 0 of sprite "sprite1".
 
@@ -915,9 +918,9 @@ The example above draws the frame 0 of sprite "sprite1".
 Draws part of a sprite on the screen. The first parameter is a string that corresponds to the name of the sprite to be displayed, for example `"icon"`. The next 4 parameters define the coordinate of a sub-rectangle of the sprite to actually be painted on screen (coordinate 0,0 is the top-left corner of the sprite). The last 4 parameters are the same as for `drawSprite`.
 <!--- suggest_end --->
 
-`
+```
 screen.drawSpritePart("icon",4,4,8,8,0,50,50,50)
-`
+```
 The height can be omitted, as in the example above. In this case the height will be calculated according to the width and proportions of the sprite part.
 
 ---
@@ -927,9 +930,9 @@ The height can be omitted, as in the example above. In this case the height will
 Draws one of the maps you created in the *Maps* section on the screen. The first parameter is a string that corresponds to the name of the map to be displayed, for example `map1`. Then follow the x,y coordinates where to display the map (the map will be centered on these coordinates). Then the width and height of the display.
 <!--- suggest_end --->
 
-`
+```
 screen.drawMap("map1",0,0,300,200)
-`
+```
 
 ### Display text
 
@@ -938,18 +941,18 @@ screen.drawMap("map1",0,0,300,200)
 Draws text on the screen. The first parameter is the text to be displayed, then the x and y coordinates where the text will be centered, then the size (height) of the text. The last parameter is the drawing color, it can be omitted, in this case the last defined color will be reused.
 <!--- suggest_end --->
 
-`
+```
 screen.drawText("Hello!",0,0,30, "#FFF")
-`
+```
 
 <!--- suggest_start screen.drawTextOutline --->
 ##### screen.drawTextOutline( text, x, y, size, &lt;color&gt; )
 Draws the outline of the text. Drawing an outline in a different color can be done after a `drawText` to increase the contrast. The thickness of the outline can be set with `screen.setLineWidth`.
 <!--- suggest_end --->
 
-`
+```
 screen.drawTextOutline("Hello!",0,0,30, "#F00")
-`
+```
 
 ---
 
@@ -960,9 +963,9 @@ Defines the font to use for future calls to `drawText`.
 **Available fonts in current version**: AESystematic, Alkhemikal, AlphaBeta, Arpegius, Awesome, BitCell, Blocktopia, Comicoro, Commodore64, DigitalDisco, Edunline, EnchantedSword, EnterCommand, Euxoi, FixedBold, GenericMobileSystem, GrapeSoda, JupiterCrash, Kapel, KiwiSoda, Litebulb8bit, LycheeSoda, MisterPixel, ModernDos, NokiaCellPhone, PearSoda, PixAntiqua, PixChicago, PixelArial, PixelOperator, Pixellari, Pixolde, PlanetaryContact, PressStart2P, RainyHearts, RetroGaming, Revolute, Romulus, Scriptorium, Squarewave, Thixel, Unbalanced, UpheavalPro, VeniceClassic, ZXSpectrum, Zepto
 <!--- suggest_end --->
 
-`
+```
 screen.setFont("BitCell")
-`
+```
 
 **Tip**: the global variable `fonts` is an array of all available fonts in microStudio
 
@@ -972,9 +975,9 @@ screen.setFont("BitCell")
 Returns the width of the given text when drawn on screen with given size.
 <!--- suggest_end --->
 
-`
+```
 width = screen.textWidth( "My Text", 20 )
-`
+```
 
 ### Drawing parameters
 <!--- suggest_start screen.setAlpha --->
@@ -982,15 +985,15 @@ width = screen.textWidth( "My Text", 20 )
 Defines the overall opacity level for all drawing functions called up later. The value 0 is equivalent to a total transparency (invisible elements) and the value 1 corresponds to a total opacity (the drawn elements totally hide what is below).
 <!--- suggest_end --->
 
-`
+```
 screen.setAlpha(0.5) // the next drawn elements will be semi-transparent
-`
+```
 
 When you use this function to draw some elements with a little transparency, don't forget to reset the alpha parameter to its default value:
 
-`
+```
 screen.setAlpha(1) // the default value, total opacity
-`
+```
 
 ---
 
@@ -999,10 +1002,10 @@ screen.setAlpha(1) // the default value, total opacity
 Defines the drawing color as a linear gradient of color, i. e. a gradient. `x1 and y1` are the coordinates of the starting point of the gradient. `x2 and y2` are the coordinates of the ending point of the gradient. `color1` is the starting color (see `setColor` for the color values). "Color2" is the arrival color.
 <!--- suggest_end --->
 
-`
+```
 screen.setLinearGradient(0,100,0,-100, "#FFF", "#F00")
 screen.fillRect(0,0,screen.width,screen.height)
-`
+```
 The above example creates a gradient from white to red, from top to bottom of the screen, and then fills the screen with this gradient.
 
 ---
@@ -1012,10 +1015,10 @@ The above example creates a gradient from white to red, from top to bottom of th
 Defines the drawing color as a radial gradient of color, i.e. a gradient in the shape of a circle. `x` and `y` are the coordinates of the center of the circle. `radius` is the radius of the circle. `color1` is the color at the center of the circle (see `setColor` for the color values). `color2` is the color at the perimeter of the circle.
 <!--- suggest_end --->
 
-`
+```
 screen.setRadialGradient(0,0,100, "#FFF", "#F00")
 screen.fillRect(0,0,screen.width,screen.height)
-`
+```
 The above example creates a gradient of white in the center of the screen, towards the red on the edges of the screen, then fills the screen with this gradient.
 
 ---
@@ -1025,48 +1028,48 @@ The above example creates a gradient of white in the center of the screen, towar
 Defines the translation of the screen coordinates for the subsequent drawing operations.
 <!--- suggest_end --->
 
-`
+```
 screen.setTranslation(50,50)
 screen.fillRect(0,0,20,20)
-`
+```
 The rectangle in the above example will be drawn with an offset of 50,50
 
 Don't forget to reset the translation to 0,0 whenever you need to stop translating draw operations.
-`
+```
 screen.setTranslation(0,0)
-`
+```
 
 <!--- suggest_start screen.setDrawRotation --->
 ##### screen.setDrawRotation( angle)
 Defines a rotation angle for the next drawing operations. The angle is expressed in degrees.
 <!--- suggest_end --->
 
-`
+```
 screen.setDrawRotation(45)
 screen.drawSprite ("icon",0,0,100)
-`
+```
 The example above shows the project icon, tilted 45 degrees.
 
 Don't forget to reset the rotation angle to 0 after using it!
-`
+```
 screen.setDrawRotation(0) // returns the rotation angle to its default value
-`
+```
 
 <!--- suggest_start screen.setDrawScale --->
 ##### screen.setDrawScale( x, y)
 Defines a scale factor for drawing the next elements on the screen. `x` defines the scale factor on the x-axis and `y` the scale factor on the y-axis. A value of 2 will display twice as much. A value of -1 allows, for example, to flip a sprite (mirror), horizontally (x) or vertically (y).
 <!--- suggest_end --->
 
-`
+```
 screen.setDrawScale(1,-1)
 screen.drawSprite ("icon",0,0,100)
-`
+```
 The example above shows the project icon, returned vertically.
 
 Don't forget to reset the scale factor to 1.1 after using it!
-`
+```
 screen.setDrawScale(1,1) // returns the scale factor to its default value.
-`
+```
 
 <!--- suggest_start screen.setDrawAnchor --->
 ##### screen.setDrawAnchor( anchor_x, anchor_y )
@@ -1077,11 +1080,11 @@ By default, all drawing operations consider your coordinates to be the center of
 On the x axis, the anchor point can be set to -1 (left side of your shape), 0 (center of your shape), 1 (right side of your shape) or any intermediary value. On the y axis, the anchor point can be set to -1 (bottom side of your shape), 0 (center of your shape), 1 (top of your shape) or any intermediary value.
 
 Examples
-`
+```
 screen.setDrawAnchor(-1,0) // useful to align text on the left
 screen.setDrawAnchor(-1,-1) // your drawing coordinates are now interpreted as the bottom left corner of your shape.
 screen.setDrawAnchor(0,0) // default value, all shapes will be drawn centered on your coordinates
-`
+```
 
 <!--- suggest_start screen.setDrawAnchor --->
 ##### screen.setBlending( blending )
@@ -1126,17 +1129,17 @@ Keyboard inputs can be tested using the `keyboard` object.
 <!--- suggest_end --->
 
 ##### example
-`
+```
 if keyboard.A then
   // the A key is currently pressed
 end
-`
+```
 
 Note that when you test your project, in order for keyboard events to reach the execution window, it is necessary to click in it first.
 
 The code below shows the ID of each keyboard key pressed. It can be useful for you to establish the list of identifiers you will need for your project.
 
-`
+```
 draw = function()
   screen.clear()
   local y = 80
@@ -1147,7 +1150,7 @@ draw = function()
     end
   end
 end
-`
+```
 *microStudio* creates for you some useful generic codes, such as UP, DOWN, LEFT and RIGHT that react to both the arrow keys and ZQSD / WASD depending on your keyboard layout.
 
 To test special characters such as +, - or even parentheses, you must use the following syntax: `keyboard["("]`, `keyboard["-"]`.
@@ -1157,22 +1160,22 @@ In the context of the function `update()`, you can check if a keyboard key was j
 
 Example:
 
-`
+```
 if keyboard.press.A then
   // Do something once, just as the user presses the key A
 end
-`
+```
 
 ##### Test whether a key was just released
 In the context of the function `update()`, you can check if a keyboard key was just released by the user using `keyboard.release.<KEY>`.
 
 Example:
 
-`
+```
 if keyboard.release.A then
   // Do something once, just as the user releases the key A
 end
-`
+```
 
 
 <!--- suggest_start touch --->
@@ -1190,21 +1193,21 @@ The touch inputs can be tested with the "touch" object (which also reports the s
 |touch.press|true if a finger just started touching the screen|
 |touch.release|true if the finger just left the screen|
 
-`
+```
 if touch.touching
   // the user touches the screen
 else
  // the user does not touch the screen
 end
-`
+```
 
-`
+```
 draw = function()
   for t in touch.touches
     screen.drawSprite("icon",t.x,t.y,50)
   end
 end
-`
+```
 The example above shows the project icon at each active touch point on the screen.  
 
 <!--- suggest_start mouse --->
@@ -1230,9 +1233,9 @@ The status of the buttons and joysticks on the controller (gamepad) can be teste
 <!--- suggest_end --->
 
 ##### example
-`
+```
 if gamepad.UP then y += 1 end
-`
+```
 
 **Tip**: To get a complete list of the fields of the "gamepad" object, simply type "gamepad" in the console when your program is running.
 
@@ -1260,10 +1263,10 @@ Plays the given sound, with optional given playback settings.
 The function call returns an object. This object allows you to control the playback settings while the sound is being played:
 
 ##### example
-`
+```
 my_sound = audio.playSound("soundname")
 my_sound.setVolume(0.5)
-`
+```
 
 |Control functions|description|
 |-|-|
@@ -1288,10 +1291,10 @@ Plays the given music, with optional given playback settings.
 The function call returns an object. This object allows you to control the playback settings while the music is being played:
 
 ##### example
-`
+```
 my_music = audio.playMusic("musicname")
 my_music.setVolume(0.5)
-`
+```
 
 |Control functions|description|
 |-|-|
@@ -1306,14 +1309,14 @@ my_music.setVolume(0.5)
 ### audio.beep
 Plays a sound described by the string passed as a parameter.
 
-`
+```
 audio.beep("C E G")
-`
+```
 <!--- suggest_end --->
 More detailed example and explanations in the table below:
-`
+```
 "saw duration 100 span 50 duration 500 volume 50 span 50 loop 4 C2 C F G G G F end"
-`
+```
 
 |Command|Description|
 |-|-|
@@ -1333,9 +1336,9 @@ Cancels all sounds being played by the *beeper*. Useful for muting the sound aft
 ## Sprite methods
 Your program can access your project's sprites, which are stored in a predefined object `sprites`:
 
-`
+```
 mysprite = sprites["icon"]
-`
+```
 
 You can then access different fields and methods of your sprite:
 
@@ -1351,9 +1354,9 @@ You can then access different fields and methods of your sprite:
 ## Map methods
 Your program can access your project's maps, which are stored in a predefined object `maps`:
 
-`
+```
 mymap = maps["map1"]
-`
+```
 
 You can then access different fields and methods of your map:
 
