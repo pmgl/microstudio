@@ -29,6 +29,23 @@ AppUI = (function() {
       fn(s);
     }
     this.updateAllowedSections();
+    document.addEventListener("keydown", (function(_this) {
+      return function(e) {
+        if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.keyCode === 83) {
+          e.preventDefault();
+          switch (_this.current_section) {
+            case "code":
+              return _this.app.editor.checkSave(true);
+            case "sprites":
+              return _this.app.sprite_editor.checkSave(true);
+            case "maps":
+              return _this.app.map_editor.checkSave(true);
+            case "doc":
+              return _this.app.doc_editor.checkSave(true);
+          }
+        }
+      };
+    })(this));
     ref1 = this.menuoptions;
     fn1 = (function(_this) {
       return function(s) {

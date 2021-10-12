@@ -170,18 +170,30 @@ class @UserProgress
       div.innerHTML += """<img src="#{image}" />"""
 
     div.innerHTML += " #{text}<div style='clear:both'></div>"
+
+    setTimeout (()=>
+        div.style.left = "400px"
+        setTimeout (()=>
+          if parent.contains(div)
+            parent.removeChild(div)),1000
+      ),12000
+
     div.addEventListener "click",()=>
       @app.openUserProgress()
 
       div.style.left = "400px"
-      setTimeout (()=>parent.removeChild(div)),1000
+      setTimeout (()=>
+        if parent.contains(div)
+          parent.removeChild(div)),1000
 
     div.insertBefore i,div.childNodes[0]
 
     i.addEventListener "click",(event)=>
       event.stopPropagation()
       div.style.left = "400px"
-      setTimeout (()=>parent.removeChild(div)),1000
+      setTimeout (()=>
+        if parent.contains(div)
+          parent.removeChild(div)),1000
 
     setTimeout (()=> div.style.left = "0px"),100
 

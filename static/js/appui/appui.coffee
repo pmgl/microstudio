@@ -39,6 +39,16 @@ class AppUI
 
     @updateAllowedSections()
 
+    document.addEventListener "keydown",(e)=>
+      if (if window.navigator.platform.match("Mac") then e.metaKey else e.ctrlKey) && e.keyCode == 83
+        e.preventDefault()
+        switch @current_section
+          when "code" then @app.editor.checkSave true
+          when "sprites" then @app.sprite_editor.checkSave true
+          when "maps" then @app.map_editor.checkSave true
+          when "doc" then @app.doc_editor.checkSave true
+
+
     for s in @menuoptions
       do (s)=>
         e = document.getElementById("menu-#{s}")

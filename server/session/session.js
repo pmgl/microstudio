@@ -1786,7 +1786,10 @@ this.Session = (function() {
     if (this.user == null) {
       return;
     }
-    if (msg.id == null) {
+    if ((msg.id == null) || typeof msg.id !== "string") {
+      return;
+    }
+    if (!msg.id.startsWith("tutorials/")) {
       return;
     }
     this.user.progress.unlockAchievement(msg.id);

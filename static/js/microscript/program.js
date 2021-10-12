@@ -1199,7 +1199,7 @@ this.Program.NewCall = (function() {
   }
 
   NewCall.prototype.evaluate = function(context) {
-    var a, argv, c, child, f, fc, j, len1, object, ref, res, superClass;
+    var a, argv, c, child, f, fc, j, k, len1, len2, object, ref, ref1, res, superClass, v;
     res = {};
     if (this.expression instanceof Program.FunctionCall) {
       context.location = this;
@@ -1207,14 +1207,33 @@ this.Program.NewCall = (function() {
       f = fc.expression.evaluate(context, true);
       if (f != null) {
         if (typeof f === "function") {
-          return 0;
+          switch (this.args.length) {
+            case 0:
+              return new f();
+            case 1:
+              v = this.args[0].evaluate(context, true);
+              return new f(v != null ? v : 0);
+            default:
+              argv = [];
+              ref = this.args;
+              for (j = 0, len1 = ref.length; j < len1; j++) {
+                a = ref[j];
+                v = a.evaluate(context, true);
+                argv.push(v != null ? v : 0);
+              }
+              return (function(func, args, ctor) {
+                ctor.prototype = func.prototype;
+                var child = new ctor, result = func.apply(child, args);
+                return Object(result) === result ? result : child;
+              })(f, argv, function(){});
+          }
         } else {
           res["class"] = f;
           Program.resolveParentClass(res, context, this.token);
           argv = [];
-          ref = fc.args;
-          for (j = 0, len1 = ref.length; j < len1; j++) {
-            a = ref[j];
+          ref1 = fc.args;
+          for (k = 0, len2 = ref1.length; k < len2; k++) {
+            a = ref1[k];
             argv.push(a.evaluate(context, true));
           }
           object = context.object;

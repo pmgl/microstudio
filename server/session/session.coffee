@@ -1133,7 +1133,8 @@ class @Session
 
   tutorialCompleted:(msg)->
     return if not @user?
-    return if not msg.id?
+    return if not msg.id? or typeof msg.id != "string"
+    return if not msg.id.startsWith("tutorials/")
     @user.progress.unlockAchievement(msg.id)
     @checkUpdates()
 

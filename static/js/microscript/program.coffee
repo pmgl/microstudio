@@ -718,7 +718,7 @@ class @Program.FunctionCall
             for a in @args
               argv.push a.evaluate(context,true)
             res = f.apply(@expression.parentObject,argv)
-            
+
         return if res != null then res else 0
 
       else if f instanceof Program.Function
@@ -807,17 +807,19 @@ class @Program.NewCall
       f = fc.expression.evaluate(context,true)
       if f?
         if typeof f == "function"
-          return 0 ##
-          #switch @args.length
-          #  when 0
-          #    return f.call(@expression.parentObject) or 0
-          #  when 1
-          #    return f.call(@expression.parentObject,@args[0].evaluate(context,true)) or 0
-          #  else
-          #    argv = []
-          #    for a in @args
-          #      argv.push a.evaluate(context,true)
-          #    return f.apply(@expression.parentObject,argv) or 0
+          ## https://stackoverflow.com/a/32548260
+          switch @args.length
+           when 0
+             return new f()
+           when 1
+             v = @args[0].evaluate(context,true)
+             return new f(if v? then v else 0)
+           else
+             argv = []
+             for a in @args
+               v = a.evaluate(context,true)
+               argv.push if v? then v else 0
+             return new f(argv...)
 
         else
           res.class = f

@@ -60,7 +60,7 @@
   id:"code/gottfried_leibniz"
   name: "Gottfried Leibniz"
   description: "You spent 1 hour coding, amazing!"
-  story: "Gottfried Leibniz was a German mathematician, philosopher, scientist and diplomat. He made advances in symbolic logic and hi work was crucial for the theoretical foundations of computer science."
+  story: "Gottfried Leibniz was a German mathematician, philosopher, scientist and diplomat. He made advances in symbolic logic and his work was crucial for the theoretical foundations of computer science."
   stat: "time_coding"
   value: 60
   xp: 2000
