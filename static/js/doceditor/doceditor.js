@@ -50,7 +50,7 @@ this.DocEditor = (function() {
   };
 
   DocEditor.prototype.checkSave = function(immediate, callback) {
-    if (this.save_time > 0 && Date.now() > this.save_time + this.save_delay) {
+    if (this.save_time > 0 && (immediate || Date.now() > this.save_time + this.save_delay)) {
       this.saveDoc(callback);
       return this.save_time = 0;
     }

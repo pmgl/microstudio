@@ -35,7 +35,7 @@ class @DocEditor
     @checkTutorial()
 
   checkSave:(immediate,callback)->
-    if @save_time>0 and Date.now()>@save_time+@save_delay
+    if @save_time>0 and (immediate or Date.now()>@save_time+@save_delay)
       @saveDoc(callback)
       @save_time = 0
 

@@ -512,3 +512,10 @@ a#run-link {
   top:7px ;
   right: 8px ;
 }
+
+.ace-tomorrow-night-bright .ace_marker-layer .ace_active-line {
+    background: #182828;
+}
+.ace-tomorrow-night-bright .ace_marker-layer .ace_selection {
+    background: #584848;
+}

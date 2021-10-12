@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2021-10-12
+* Fixes for achievements
+* Support for Ctrl+S shortcut for saving changes
+* Improved color contrast between active line vs selected text
+* Hide notifications automatically after 12 seconds
+
 ### Update 2021-10-08
 * User statistics and achievements!
   * track how many lines of code you wrote, how many pixels you drew and more!

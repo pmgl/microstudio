@@ -185,12 +185,24 @@ this.UserProgress = (function() {
       div.innerHTML += "<img src=\"" + image + "\" />";
     }
     div.innerHTML += " " + text + "<div style='clear:both'></div>";
+    setTimeout(((function(_this) {
+      return function() {
+        div.style.left = "400px";
+        return setTimeout((function() {
+          if (parent.contains(div)) {
+            return parent.removeChild(div);
+          }
+        }), 1000);
+      };
+    })(this)), 12000);
     div.addEventListener("click", (function(_this) {
       return function() {
         _this.app.openUserProgress();
         div.style.left = "400px";
         return setTimeout((function() {
-          return parent.removeChild(div);
+          if (parent.contains(div)) {
+            return parent.removeChild(div);
+          }
         }), 1000);
       };
     })(this));
@@ -200,7 +212,9 @@ this.UserProgress = (function() {
         event.stopPropagation();
         div.style.left = "400px";
         return setTimeout((function() {
-          return parent.removeChild(div);
+          if (parent.contains(div)) {
+            return parent.removeChild(div);
+          }
         }), 1000);
       };
     })(this));
