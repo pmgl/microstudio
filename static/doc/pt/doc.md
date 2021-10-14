@@ -672,13 +672,13 @@ end
 
 ## Classes
 
-A class in a programming language refers to a kind of blueprint or template for creating objects. A class defines default properties and functions which constitute the default state and behavior of all objects that will be created from it. You can create object instances derived from a class, which will all inherit from the properties of the class. Using classes and their derived objects in a program is called object-oriented programming (OOP).
+Uma classe em uma linguagem de programação se refere a um tipo de projeto ou modelo para a criação de objetos. Uma classe define propriedades e funções padrão que constituem o estado e comportamento padrão de todos os objetos que serão criados a partir dela. Você pode criar instâncias de objeto derivadas de uma classe, que herdarão todas as propriedades da classe. O uso de classes e seus objetos derivados em um programa é chamado de programação orientada a objetos (POO) ou em inglês *object-oriented programming (OOP)*.
 
-To illustrate these concepts, we will see how you can use classes to manage enemies in your game:
+Para ilustrar esses conceitos, veremos como você pode usar classes para gerenciar os inimigos em seu jogo: 
 
 ### Definindo uma classe
 
-We will start by creating a class `Enemy` that will be shared by all our enemies objects. Each enemy will have a position (on screen). It will have health points `hp`, move at a certain `velocity`:
+Começaremos criando uma classe `Enemy` que será compartilhada por todos os nossos objetos inimigos. Cada inimigo terá uma posição (na tela). Ele terá pontos de vida `hp`, e se moverá a uma certa `velocity`: 
 
 ```
 Enemy = class
@@ -699,26 +699,26 @@ Enemy = class
 end
 ```
 
-In microScript, classes and objects are very similar concepts and can almost be used interchangeably. The class definition thus ends with keyword `end`. The first property we defined in the class above is the function "constructor". This function is called when a object instance of the class is created. It will set the property *position* of the object. `this` refers to the object instance on which the function will be called, thus setting `this.position` means the object sets the property position on itself.
+No *microScript*, classes e objetos são conceitos muito semelhantes e quase podem ser usados de forma intercambiável. A definição da classe, portanto, termina com a palavra-chave `end`. A primeira propriedade que definimos na classe acima é a função *construtor*. Esta função é chamada quando uma instância de objeto da classe é criada. Isso definirá a propriedade *position* do objeto. `this` se refere à instância do objeto na qual a função será chamada, portanto, definir` this.position` significa que o objeto define a posição da propriedade em si mesmo. 
 
 ### Crie instâncias de objeto de uma classe
 
-Let's create two enemies objects derived from our class:
+Vamos criar dois inimigos derivados da nossa classe:
 
 ```
 enemy_1 = new Enemy(50)
 enemy_2 = new Enemy(100)
 ```
 
-The operator `new` is used to create a new object instance derived from a class. The argument we pass here will is aimed at the constructor function of our class. We thus have created an enemy instance at position 50 and another enemy instance at position 100.
+O operador `new` é usado para criar uma nova instância de objeto derivada de uma classe. O argumento que passamos aqui é voltado para a função construtora de nossa classe. Assim, criamos uma instância inimiga na posição 50 e outra instância inimiga na posição 100. 
 
-Both enemies share the same velocity or health points (hp). However, we may choose to set a different velocity to the second enemy:
+Ambos os inimigos compartilham a mesma velocidade ou pontos de vida (HP). No entanto, podemos escolher definir uma velocidade diferente para o segundo inimigo: 
 
 ```
 enemy_2.velocity = 2
 ```
 
-We can now make our enemies move by calling:
+Agora podemos fazer nossos inimigos se moverem chamando:
 
 ```
 enemy_1.move()
@@ -727,9 +727,11 @@ enemy_2.move()
 
 The second enemy will move twice faster because we altered its property velocity before calling function move.
 
+O segundo inimigo se moverá duas vezes mais rápido porque alteramos sua propriedade `velocity` antes de chamar a função de movimento. 
+
 ### Herança
 
-We can make a class inherit from another class. For example, if we want to create a variation of our Enemy, we could do as follows:
+Podemos fazer uma classe herdar de outra classe. Por exemplo, se quisermos criar uma variação de nosso `Enemy`, podemos fazer o seguinte: 
 
 ```
 Boss = class extends Enemy
@@ -745,11 +747,11 @@ Boss = class extends Enemy
 end
 ```
 
-We have created a new class `Boss` by extending the class `Enemy`. Our new class shares all properties from Enemy, except that it replaces some of these properties by its own values. Calling `super(position)` in the constructor of our new class ensures that the constructor of our parent class Enemy is also called.
+Criamos uma nova classe `Boss` ampliando a classe` Enemy`. Nossa nova classe compartilha todas as propriedades do Inimigo, exceto que ela substitui algumas dessas propriedades por seus próprios valores. Chamar `super (position)` no construtor de nossa nova classe garante que o construtor de nossa classe pai `Enemy` também seja chamado. 
 
-We created a new behavior `move` for our Boss, which overrides the default behavior of Enemy. In this new function, we call `super()` in order to keep the default behavior that was defined in the class Enemy ; we then increment the value of `hp`, which implies that our Bosses will regain health points when moving.
+Criamos um novo comportamento `move` para nosso chefe, que substitui o comportamento padrão do Inimigo. Nesta nova função, chamamos `super ()` para manter o comportamento padrão que foi definido na classe `Enemy`; então incrementamos o valor de `hp`, o que implica que nossos chefes irão recuperar pontos de saúde ao se moverem. 
 
-We can now create an instance of our Boss at position 120:
+Podemos agora criar uma instância do nosso `Boss` na posição 120:
 
 ```
 the_final_boss = new Boss(120)
@@ -757,11 +759,11 @@ the_final_boss = new Boss(120)
 
 ##### notas
 
-* variables space: when a function is called on an object (like `enemy_1.move()`), the variables referred to in the body of the called functions are the properties of the object. For example, in the body of the move function, `position += 1` will increment the property `position` of the object itself.
+* espaço de variáveis: quando uma função é chamada em um objeto (como `enemy_1.move ()`), as variáveis referidas no corpo das funções chamadas são as propriedades do objeto. Por exemplo, no corpo da função `move`, `position += 1` irá incrementar a propriedade `position` do próprio objeto.
 
-* It is sometimes necessary to use `this` to ensure we are correctly referring to a property of our object. This is why, in the constructor of our class Enemy, we use `this.position = position`, because `position` also refers to the argument of the function and thus "hides" the property of our object.
+* Às vezes é necessário usar `this` para garantir que estamos nos referindo corretamente a uma propriedade do nosso objeto. É por isso que, no construtor de nossa classe `Enemy`, usamos `this.position = position`, pois `position` também se refere ao argumento da função e, portanto, "mascara" a propriedade do nosso objeto.
 
-* `super()` can be used in a function attached to an object or a class, to invoke the equally named function of the parent class.
+* `super ()` pode ser usado em uma função anexada a um objeto ou classe, para invocar a função igualmente nomeada da classe pai. 
 
 
 # Referência das funções
