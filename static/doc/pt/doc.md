@@ -1143,34 +1143,34 @@ Você pode usar essa função para mostrar ou esconder o cursor do *mouse*.
 
 ## Entradas, controle
 
-To make your program interactive, you need to know if and where the user presses a key on the keyboard, joystick, touches the touch screen. *microStudio* allows you to know the status of these different control interfaces, via the objects `keyboard` (for the keyboard), `touch` (for the touch screen / mouse), `mouse` (for mouse pointer / touch screen) `gamepad` (for the controller).
+Para tornar seu programa interativo, você precisa saber se e onde o usuário pressiona uma tecla no teclado, joystick, toca a tela sensível ao toque. * microStudio * permite saber o estado dessas diferentes interfaces de controle, através dos objetos `keyboard` (para o teclado), `touch` (para a tela de toque / mouse), `mouse` (para ponteiro do mouse / tela de toque) `gamepad` (para o controle).
 
 ##### Nota
-The object `system.inputs` retains useful information on which input methods are available on the host system:
+O objeto `system.inputs` retém informações úteis sobre quais métodos de entrada estão disponíveis no sistema *host*:
 
-|Field|Value|
+|Campo|Valor|
 |-|-|
-|system.inputs.keyboard|1 if the system is believed to have a physical keyboard, 0 otherwise|
-|system.inputs.mouse|1 if the system has a mouse, 0 otherwise|
-|system.inputs.touch|1 if the system has a touch screen, 0 otherwise|
-|system.inputs.gamepad|1 if there is at least 1 gamepad connected to the system, 0 otherwise (the gamepad may appear connected only when the user has performed an action on it)|
+|system.inputs.keyboard|1 se o sistema tiver um teclado físico, caso contrário 0|
+|system.inputs.mouse|1 se o sistema tiver um mouse, caso contrário 0|
+|system.inputs.touch|1 se o sistema tiver uma tela sensível ao toque, caso contrário 0|
+|system.inputs.gamepad|1 se houver pelo menos 1 controle conectado ao sistema, caso contrário 0 (o controle pode aparecer conectado ao sistema apenas quando o usuário executar alguma ação no mesmo)|
 
 
-### Keyboard inputs
+### Entradas por teclado
 <!--- suggest_start keyboard --->
-Keyboard inputs can be tested using the `keyboard` object.
+Entradas feitas pelo teclado podem ser testadas usando o objeto `keyboard`.
 <!--- suggest_end --->
 
 ##### example
 ```
 if keyboard.A then
-  // the A key is currently pressed
+  // a tecla A foi pressionada
 end
 ```
 
-Note that when you test your project, in order for keyboard events to reach the execution window, it is necessary to click in it first.
+Observe que ao testar seu projeto, para que os eventos de teclado cheguem à janela de execução, é necessário clicar primeiro nele.
 
-The code below shows the ID of each keyboard key pressed. It can be useful for you to establish the list of identifiers you will need for your project.
+O código abaixo mostra o ID de cada tecla do teclado pressionada. Pode ser útil para você estabelecer a lista de identificadores que você precisará para seu projeto.
 
 ```
 draw = function()
@@ -1178,195 +1178,202 @@ draw = function()
   local y = 80
   for key in keyboard
     if keyboard[key] then
-      screen.drawText(key,0,y,15, "#FFF")
+      screen.drawText(key, 0, y, 15, "#FFF")
       y -= 20
     end
   end
 end
 ```
-*microStudio* creates for you some useful generic codes, such as UP, DOWN, LEFT and RIGHT that react to both the arrow keys and ZQSD / WASD depending on your keyboard layout.
+*microStudio* cria para você alguns códigos genéricos úteis, como *UP*, *DOWN*, *LEFT* e *RIGHT* que reagem às teclas de seta e ZQSD / WASD dependendo do layout do seu teclado.
 
-To test special characters such as +, - or even parentheses, you must use the following syntax: `keyboard["("]`, `keyboard["-"]`.
+Para testar caracteres especiais como +, - ou mesmo parênteses, você deve usar a seguinte sintaxe: `keyboard["("]`, `keyboard["-"]`.
 
-##### Test whether a key was just pressed
-In the context of the function `update()`, you can check if a keyboard key was just pressed by the user using `keyboard.press.<KEY>`.
+##### Testar se uma tecla acabou de ser pressionada
 
-Example:
+No contexto da função `update()`, você pode verificar se uma tecla foi pressionada pelo usuário usando `keyboard.press.<TECLA>`.
+
+Exemplo:
 
 ```
 if keyboard.press.A then
-  // Do something once, just as the user presses the key A
+  // Faça algo, assim que o usuário pressionar a tecla A
 end
 ```
 
-##### Test whether a key was just released
-In the context of the function `update()`, you can check if a keyboard key was just released by the user using `keyboard.release.<KEY>`.
+##### Testar se uma tecla acabou de ser liberada
+No contexto da função `update()`,você pode verificar se uma tecla foi liberada pelo usuário usando `keyboard.release.<TECLA>`.
 
-Example:
+Exemplo:
 
 ```
 if keyboard.release.A then
-  // Do something once, just as the user releases the key A
+  // Faça algo, assim que o usuário liberar a tecla A
 end
 ```
 
 
 <!--- suggest_start touch --->
-### Touch inputs
+### Entradas por toque
 
-The touch inputs can be tested with the "touch" object (which also reports the state of the mouse).
+Entradas feitas por toque podem ser testadas usando o objeto `touch` (que também informa o estado do mouse).
 <!--- suggest_end --->
 
-|Field|Value|
+|Campo|Valor|
 |-|-|
-|touch.touching|Is true if the user touches the screen, false if not|
-|touch.x|Position x where the screen is touched|
-|touch.y|Position y where the screen is touched|
-|touch.touches|In case you need to take into account multiple touch points simultaneously, touch.touches is a list of currently active touch points|
-|touch.press|true if a finger just started touching the screen|
-|touch.release|true if the finger just left the screen|
+|touch.touching|`true` se o usuário tocar a tela, caso contrário `false`|
+|touch.x|Posição x quando a tela é tocada|
+|touch.y|Posição y quando a tela é tocada|
+|touch.touches|Caso você precise levar em consideração vários pontos de contato simultaneamente, `touch.touches` é uma lista de pontos de contato ativos no momento|
+|touch.press|`true` se a tela acabou de ser tocada|
+|touch.release|`true` se a tela deixou de ser tocada|
 
 ```
-if touch.touching
-  // the user touches the screen
+if touch.touching then
+  // o usuário tocou na tela
 else
- // the user does not touch the screen
+ // o usuário não tocou na tela
 end
 ```
 
 ```
 draw = function()
   for t in touch.touches
-    screen.drawSprite("icon",t.x,t.y,50)
+    screen.drawSprite("icon", t.x, t.y, 50)
   end
 end
 ```
-The example above shows the project icon at each active touch point on the screen.  
+O exemplo acima mostra o ícone do projeto em cada ponto de toque ativo na tela.
 
 <!--- suggest_start mouse --->
-### Mouse inputs
+### Entradas por *mouse*
 
-The mouse inputs can be tested with the `mouse` object (which also reports touch events).
+Entradas feitas por *mouse* podem ser testadas usando o objeto `mouse` (que também informa o estado dos eventos de toque).
 <!--- suggest_end --->
 
-|Field|Value|
+|Campo|Valor|
 |-|-|
-|mouse.x|Position x of the mouse pointer|
-|mouse.y|Position y of the mouse pointer|
-|mouse.pressed|1 if any button of the mouse is pressed, 0 otherwise|
-|mouse.left|1 if left mouse button is pressed, 0 otherwise|
-|mouse.right|1 if right mouse button is pressed, 0 otherwise|
-|mouse.middle|1 if middle mouse button is pressed, 0 otherwise|
-|mouse.press|true if a mouse button was just pressed|
-|mouse.release|true if a mouse button was just released|
+|mouse.x|Posição x do ponteiro do *mouse*|
+|mouse.y|Posição y do ponteiro do *mouse*|
+|mouse.pressed|1 se qualquer botão do *mouse* for pressionado, caso contrário 0|
+|mouse.left|1 se o botão esquerdo do *mouse* for pressionado, caso contrário 0|
+|mouse.right|1 se o botão direito do *mouse* for pressionado, caso contrário 0|
+|mouse.middle|1 se o botão do meio do *mouse* for pressionado, caso contrário 0|
+|mouse.press|`true` se um botão do mouse acabou de ser pressionado|
+|mouse.release|`true` se um botão do mouse acabou de ser liberado|
 
-### Controller inputs (gamepad)
+### Entradas por controle (*gamepad*)
 <!--- suggest_start gamepad --->
-The status of the buttons and joysticks on the controller (gamepad) can be tested using the "gamepad" object.
+
+O estado dos botões e *joysticks* no controle (*gamepad*) pode ser testado usando o objeto `gamepad`.
 <!--- suggest_end --->
 
-##### example
+##### exemplo
 ```
 if gamepad.UP then y += 1 end
 ```
 
-**Tip**: To get a complete list of the fields of the "gamepad" object, simply type "gamepad" in the console when your program is running.
+**Dica**: Para obter uma lista completa dos campos do objeto `gamepad`, basta digitar "gamepad" no console quando o programa estiver em execução.
 
-In the same way as for keyboard key presses, you can use `gamepad.press.<BUTTON>` to check whether a button was just pressed or `gamepad.release.<BUTTON>` to check whether a button was just released.
+Da mesma forma que o teclado, você pode usar `gamepad.press.<BOTÃO>` para verificar se um botão acabou de ser pressionado ou `gamepad.release. <BOTÃO>` para verificar se um botão acabou de ser liberado.
 
-## Sounds
+## Sons
 
-*microStudio* currently allows you to play sounds and music you have imported to your project (as WAV files and MP3 files) or to create sounds programmatically using the legacy *beeper*.
+Atualmente, o *microStudio* permite que você reproduza sons e músicas importados para o seu projeto (como arquivos WAV e MP3) ou crie sons programaticamente usando o *beeper* legado.
 
-### Play Sound
+### Tocar som
 <!--- suggest_start audio.playSound --->
-##### audio.playSound( name, volume, pitch, pan, loop )
-Plays the given sound, with optional given playback settings.
+##### audio.playSound(nome, volume, tom, distribuição, laço)
+
+Reproduz o som informado com configurações de reprodução fornecidas opcionais.
 <!--- suggest_end --->
 
-##### arguments
-|Argument|Description|
+##### argumentos
+|Argumento|Descrição|
 |-|-|
-|name|The name of the sound (from the sounds tab of your project) to play|
-|volume|[optional] The output volume for this sound playback, ranging from 0 to 1|
-|pitch|[optional] The output pitch for this sound playback, 1 is the default pitch|
-|pan|[optional] The pan setting for this sound playback, ranging from -1 (left) to 1 (right)|
-|loop|[optional] Set to 1 (true) if you want the sound to loop indefinitely|
+|nome|O nome do som (da guia de sons do seu projeto) a ser reproduzido|
+|volume|[optional] O volume de saída para esta reprodução de som, variando de 0 a 1|
+|tom|[optional] O tom de saída para esta reprodução de som, 1 é o tom padrão|
+|distribuição|[optional] A configuração da distribuição para esta reprodução de som, variando de -1 (esquerda) a 1 (direita)|
+|laço|[optional] Defina como 1 (`true`) se quiser que o som fique em laço indefinidamente|
 
-The function call returns an object. This object allows you to control the playback settings while the sound is being played:
+A chamada de função retorna um objeto. Este objeto permite que você controle as configurações de reprodução enquanto o som está sendo reproduzido:
 
-##### example
+##### exemplo
 ```
-my_sound = audio.playSound("soundname")
+my_sound = audio.playSound("nome_do_som")
 my_sound.setVolume(0.5)
 ```
 
-|Control functions|description|
+|Funções de controle|Descrição|
 |-|-|
-|my_sound.setVolume(volume)|Changes the playback volume of the sound (value ranging from 0 to 1)|
-|my_sound.setPitch(pitch)|Changes the pitch of the sound (1 is default pitch)|
-|my_sound.setPan(pan)|Changes the pan setting of the sound (value ranging from -1 to 1)|
-|my_sound.stop()|Stops the playback of that sound|
+|my_sound.setVolume(volume)|Muda o volume de reprodução do som (variando de 0 a 1)|
+|my_sound.setPitch(tom)|Muda o tom do som (1 é o tom padrão)|
+|my_sound.setPan(distribuição)|Muda a distribuição sonora (o valor deve estar entre -1 e 1)|
+|my_sound.stop()|Para a reprodução do som|
 
-### Play Music
+### Tocar música
 <!--- suggest_start audio.playMusic --->
-##### audio.playMusic( name, volume, loop )
+##### audio.playMusic(nome, volume, laço)
 Plays the given music, with optional given playback settings.
+Toca a música informada com configurações de reprodução fornecidas opcionais. 
 <!--- suggest_end --->
 
-##### arguments
-|Argument|Description|
+##### argumentos
+|Argumento|Descrição|
 |-|-|
-|name|The name of the music (from the music tab of your project) to play|
-|volume|[optional] The output volume for this music playback, ranging from 0 to 1|
-|loop|[optional] Set to 1 (true) if you want the music to loop indefinitely|
+|nome| O nome da música (da guia de músicas do seu projeto) a ser reproduzida|
+|volume|[optional] O volume de saída para esta reprodução de música, variando de 0 a 1|
+|loop|[optional] Defina como 1 (`true`) se quiser que a música fique em laço indefinidamente|
 
 The function call returns an object. This object allows you to control the playback settings while the music is being played:
+A chamada de função retorna um objeto. Este objeto permite que você controle as configurações de reprodução enquanto a música está sendo reproduzida:
 
-##### example
+##### exemplo
 ```
-my_music = audio.playMusic("musicname")
+my_music = audio.playMusic("nome_da_música")
 my_music.setVolume(0.5)
 ```
 
-|Control functions|description|
+|Funções de controle|descrição|
 |-|-|
-|my_music.setVolume(volume)|Changes the playback volume of the music (value ranging from 0 to 1)|
-|my_music.stop()|Stops the playback of that music|
-|my_music.play()|Resumes the playback is you stopped it before|
-|my_music.getPosition()|Returns the current playback position in seconds|
-|my_music.getDuration()|Returns the total music duration in seconds|
+|my_music.setVolume(volume)|Muda o volume de reprodução da música (variando de 0 a 1)|
+|my_music.stop()|Para a reprodução da música|
+|my_music.play()|Retoma a reprodução caso você a tenha parado anteriormente|
+|my_music.getPosition()|Retorna a posição atual da reprodução em segundos|
+|my_music.getDuration()|Retorna a duração total da música em segundos|
 
 
 <!--- suggest_start audio.beep --->
 ### audio.beep
-Plays a sound described by the string passed as a parameter.
+
+Toca um som descrito pela *string* passada como parâmetro.
 
 ```
 audio.beep("C E G")
 ```
 <!--- suggest_end --->
-More detailed example and explanations in the table below:
+Exemplo mais detalhado e explicações na tabela abaixo:
 ```
 "saw duration 100 span 50 duration 500 volume 50 span 50 loop 4 C2 C F G G G F end"
 ```
 
-|Command|Description|
+|Comando|Descrição|
 |-|-|
-|saw|indicates the type of sound generator (sound color), possible values: saw, sine, square, noise|
-|duration|followed by a number of milliseconds indicates the duration of the notes|
-|tempo|followed by a number of notes per minute, indicates the tempo|
-|span|followed by a number between 1 and 100, indicates the percentage of keeping each note|
-|volume|followed by a number between 0 and 100, sets the volume|
-|C|or D, E, F etc. indicates a note to be played. It is possible to indicate the octave also, example C5 for the C of the 5th octave of the keyboard.|
-|loop|followed by a number, indicates the number of times the following sequence will have to be repeated. The sequence ends with the keyword `end` example: `loop 4 C4 E G end`; the number 0 means that the loop must be repeated indefinitely.
+|saw|indica o tipo de gerador de som (cor do som), possíveis valores: *saw*, *sine*, *square*, *noise*|
+|duration|seguido por um número de milissegundos indica a duração das notas|
+|tempo|seguido por um número de notas por minuto, indica o tempo|
+|span|seguido por um número entre 1 e 100, indica o percentual de manutenção de cada nota|
+|volume|seguido por um número entre 0 e 100, define o volume|
+|C|ou D, E, F etc. indica uma nota a ser tocada. É possível indicar a oitava também, exemplo C5 para o C da 5ª oitava do teclado.|
+|loop|seguido por um número, indica o número de vezes que a sequência terá que ser repetida. A sequência termina com a palavra-chave `end`, exemplo:` loop 4 C4 E G end`; o número 0 significa que o loop deve ser repetido indefinidamente.|
 
 <!--- suggest_start audio.cancelBeeps --->
 ### audio.cancelBeeps
-Cancels all sounds being played by the *beeper*. Useful for muting the sound after having started music loops.
+
+Cancela todos os sons reproduzidos pelo *beeper*. Útil para silenciar o som depois de iniciar os loops de música.
 <!--- suggest_end --->
 
-## Sprite methods
+## Métodos de *sprite*
 Your program can access your project's sprites, which are stored in a predefined object `sprites`:
 
 ```
@@ -1384,7 +1391,7 @@ You can then access different fields and methods of your sprite:
 
 *Note: other fields and native methods may currently seem available when you inspect a sprite object in the console. Such undocumented fields and methods may break in the future, thus do not rely too much on them!*
 
-## Map methods
+## Métodos de mapa
 Your program can access your project's maps, which are stored in a predefined object `maps`:
 
 ```
@@ -1407,23 +1414,28 @@ You can then access different fields and methods of your map:
 
 *Note: other fields and native methods may currently seem available when you inspect a map object in the console. Such undocumented fields and methods may break in the future, thus do not rely too much on them!*
 
-## System
-The object `system` allows to access the function `time`, which returns the elapsed time in milliseconds (since January 1st, 1970). But above all, invoked at various times, it makes it possible to measure time differences.
+## Sistema
+
+O objeto `system` permite acessar a função `time`, que retorna o tempo decorrido em milissegundos (desde 1º de janeiro de 1970). Mas, acima de tudo, invocado em vários momentos, permite medir as diferenças de tempo.
 
 <!--- suggest_start system.time --->
 ### system.time()
-Returns the elapsed time in milliseconds (since January 1, 1970)
+
+Retorna o tempo decorrido em milissegundos (desde 1º de janeiro de 1970)
 <!--- suggest_end --->
 
-## Storage
-The `storage` object allows for the permanent storage of your application data. You can use it to store user progress, highscores or other status information about your game or project.
+## Armazenamento
+
+O objeto `storage` permite o armazenamento permanente dos dados do seu aplicativo. Você pode usá-lo para armazenar o progresso do usuário, recordes ou outras informações de status sobre o seu jogo ou projeto.
 
 <!--- suggest_start storage.set --->
-### storage.set( name , value )
-Stores your value permanently, referenced by the string `name`. The value can be any number, string, list or structured object.
+### storage.set(nome, valor)
+
+Armazena seu valor permanentemente, referenciado pela string `nome`. O valor pode ser qualquer número, *string*, lista ou objeto estruturado.
 <!--- suggest_end --->
 
 <!--- suggest_start storage.get --->
-### storage.get( name )
-Returns the value permanently recorded under reference string `name`. Returns `0` when no such record exists.
+### storage.get(nome)
+
+Retorna o valor registrado permanentemente na *string* de referência `nome`. Retorna `0` quando não existe tal registro.
 <!--- suggest_end --->
