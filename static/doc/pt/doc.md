@@ -1001,140 +1001,151 @@ Retorna a largura do texto fornecido quando desenhado na tela com o tamanho info
 width = screen.textWidth("Meu Texto", 20)
 ```
 
-### Drawing parameters
+### Parâmetros de desenho
 <!--- suggest_start screen.setAlpha --->
 ##### screen.setAlpha
-Defines the overall opacity level for all drawing functions called up later. The value 0 is equivalent to a total transparency (invisible elements) and the value 1 corresponds to a total opacity (the drawn elements totally hide what is below).
+
+Define o nível geral de opacidade para todas as funções de desenho chamadas posteriormente. O valor 0 equivale a uma transparência total (elementos invisíveis) e o valor 1 corresponde a uma opacidade total (os elementos desenhados ocultam totalmente o que está abaixo).
 <!--- suggest_end --->
 
 ```
-screen.setAlpha(0.5) // the next drawn elements will be semi-transparent
+screen.setAlpha(0.5) // os próximos elementos desenhados serão semitransparentes
 ```
 
-When you use this function to draw some elements with a little transparency, don't forget to reset the alpha parameter to its default value:
+Ao usar esta função para desenhar alguns elementos com um pouco de transparência, não se esqueça de redefinir o parâmetro alfa para seu valor padrão:
 
 ```
-screen.setAlpha(1) // the default value, total opacity
+screen.setAlpha(1) // o valor padrão, opacidade total
 ```
 
 ---
 
 <!--- suggest_start screen.setLinearGradient --->
-##### screen.setLinearGradient(x1, y1, x2, y2, color1, color2)
-Defines the drawing color as a linear gradient of color, i. e. a gradient. `x1 and y1` are the coordinates of the starting point of the gradient. `x2 and y2` are the coordinates of the ending point of the gradient. `color1` is the starting color (see `setColor` for the color values). "Color2" is the arrival color.
+##### screen.setLinearGradient(x1, y1, x2, y2, cor1, cor2)
+
+Define a cor do desenho como um gradiente linear de cores. `x1 e y1` são as coordenadas do ponto inicial do gradiente. `x2 e y2` são as coordenadas do ponto final do gradiente. `cor1` é a cor inicial (consulte` setColor` para os valores das cores). `cor2` é a cor de chegada.
 <!--- suggest_end --->
 
 ```
-screen.setLinearGradient(0,100,0,-100, "#FFF", "#F00")
-screen.fillRect(0,0,screen.width,screen.height)
+screen.setLinearGradient(0, 100, 0, -100, "#FFF", "#F00")
+screen.fillRect(0, 0, screen.width, screen.height)
 ```
-The above example creates a gradient from white to red, from top to bottom of the screen, and then fills the screen with this gradient.
+O exemplo acima cria um gradiente de branco a vermelho, de cima para baixo da tela, em seguida preenche a tela com esse gradiente.
 
 ---
 
 <!--- suggest_start screen.setRadialGradient --->
-##### screen.setRadialGradient( x, y, radius, color1, color2)
-Defines the drawing color as a radial gradient of color, i.e. a gradient in the shape of a circle. `x` and `y` are the coordinates of the center of the circle. `radius` is the radius of the circle. `color1` is the color at the center of the circle (see `setColor` for the color values). `color2` is the color at the perimeter of the circle.
+##### screen.setRadialGradient( x, y, raio, cor1, cor2)
+
+Define a cor do desenho como um gradiente radial de cores, ou seja, um gradiente na forma de um círculo. `x` e` y` são as coordenadas do centro do círculo. `raio` é o raio. `cor1` é a cor no centro do círculo (consulte` setColor` para os valores das cores). `cor2` é a cor no perímetro do círculo.
 <!--- suggest_end --->
 
 ```
-screen.setRadialGradient(0,0,100, "#FFF", "#F00")
-screen.fillRect(0,0,screen.width,screen.height)
+screen.setRadialGradient(0, 0, 100, "#FFF", "#F00")
+screen.fillRect(0, 0, screen.width, screen.height)
 ```
-The above example creates a gradient of white in the center of the screen, towards the red on the edges of the screen, then fills the screen with this gradient.
+O exemplo acima cria um gradiente de branco no centro da tela, para o vermelho na borda da tela, em seguida preenche a tela com esse gradiente.
 
 ---
 
 <!--- suggest_start screen.setTranslation --->
-##### screen.setTranslation( tx, ty )
-Defines the translation of the screen coordinates for the subsequent drawing operations.
+##### screen.setTranslation(tx, ty)
+Define a interpretação das coordenadas da tela para as operações de desenho subsequentes.
 <!--- suggest_end --->
 
 ```
-screen.setTranslation(50,50)
-screen.fillRect(0,0,20,20)
+screen.setTranslation(50, 50)
+screen.fillRect(0, 0, 20, 20)
 ```
-The rectangle in the above example will be drawn with an offset of 50,50
+O retângulo do exemplo acima, será desenhado com o centro nas coordenadas 50, 50
 
-Don't forget to reset the translation to 0,0 whenever you need to stop translating draw operations.
+Não se esqueça de redefinir a interpreação das coordenadas para 0,0 sempre que precisar parar de deslocar as operações de desenho.
 ```
-screen.setTranslation(0,0)
+screen.setTranslation(0, 0)
 ```
 
 <!--- suggest_start screen.setDrawRotation --->
-##### screen.setDrawRotation( angle)
-Defines a rotation angle for the next drawing operations. The angle is expressed in degrees.
+##### screen.setDrawRotation(ângulo)
+
+Define um ângulo de rotação para as próximas operações de desenho. O ângulo é expresso em graus.
 <!--- suggest_end --->
 
 ```
 screen.setDrawRotation(45)
-screen.drawSprite ("icon",0,0,100)
+screen.drawSprite ("icon", 0, 0, 100)
 ```
-The example above shows the project icon, tilted 45 degrees.
 
-Don't forget to reset the rotation angle to 0 after using it!
+O exemplo acima mostra o ícone do projeto, inclinado 45 graus.
+
+Não se esqueça de redefinir o ângulo de rotação para 0 depois de usá-lo!
 ```
-screen.setDrawRotation(0) // returns the rotation angle to its default value
+screen.setDrawRotation(0) // retorna o ângulo de rotação para o valor padrão
 ```
 
 <!--- suggest_start screen.setDrawScale --->
-##### screen.setDrawScale( x, y)
-Defines a scale factor for drawing the next elements on the screen. `x` defines the scale factor on the x-axis and `y` the scale factor on the y-axis. A value of 2 will display twice as much. A value of -1 allows, for example, to flip a sprite (mirror), horizontally (x) or vertically (y).
+##### screen.setDrawScale(x, y)
+
+Define um fator de escala para desenhar os próximos elementos na tela. `x` define o fator de escala no eixo x e `y` o fator de escala no eixo y. Um valor de 2 será exibido em uma escala duas vezes maior. Um valor de -1 permite, por exemplo, espelhar um *sprite* horizontalmente (x) ou verticalmente (y).
 <!--- suggest_end --->
 
 ```
-screen.setDrawScale(1,-1)
-screen.drawSprite ("icon",0,0,100)
+screen.setDrawScale(1, -1)
+screen.drawSprite ("icon", 0, 0, 100)
 ```
-The example above shows the project icon, returned vertically.
+O exemplo acima mostra o ícone do projeto, espelhado verticalmente.
 
-Don't forget to reset the scale factor to 1.1 after using it!
+Não esqueça de redefinir o falor de escala para 1, 1 após usá-lo!
 ```
-screen.setDrawScale(1,1) // returns the scale factor to its default value.
+screen.setDrawScale(1,1) // retorna o fator de escala para o seu valor padrão.
 ```
 
 <!--- suggest_start screen.setDrawAnchor --->
-##### screen.setDrawAnchor( anchor_x, anchor_y )
-By default, all drawing operations consider your coordinates to be the center of the shape to draw. You can change this by calling
-`screen.setDrawAnchor( anchor_x, anchor_y )` to specify a different anchor point for drawing shapes.
+##### screen.setDrawAnchor(âncora_x, âncora_y)
+
+Por padrão, todas as operações de desenho consideram suas coordenadas como o centro da forma a ser desenhada. Você pode mudar isso chamando
+`screen.setDrawAnchor (âncora_x, âncora_y)` para especificar um ponto de ancoragem diferente para formas de desenho. 
 
 <!--- suggest_end --->
-On the x axis, the anchor point can be set to -1 (left side of your shape), 0 (center of your shape), 1 (right side of your shape) or any intermediary value. On the y axis, the anchor point can be set to -1 (bottom side of your shape), 0 (center of your shape), 1 (top of your shape) or any intermediary value.
+No eixo x, o ponto de ancoragem pode ser definido como -1 (lado esquerdo da forma), 0 (centro da forma), 1 (lado direito da forma) ou qualquer valor intermediário. No eixo y, o ponto de ancoragem pode ser definido como -1 (parte inferior da forma), 0 (centro da forma), 1 (parte superior da forma) ou qualquer valor intermediário.
 
-Examples
+Exemplos
 ```
-screen.setDrawAnchor(-1,0) // useful to align text on the left
-screen.setDrawAnchor(-1,-1) // your drawing coordinates are now interpreted as the bottom left corner of your shape.
-screen.setDrawAnchor(0,0) // default value, all shapes will be drawn centered on your coordinates
+screen.setDrawAnchor(-1, 0) // útil para alinhar o texto à esquerda
+screen.setDrawAnchor(-1, -1) // suas coordenadas de desenho agora são interpretadas como o canto inferior esquerdo de sua forma
+screen.setDrawAnchor(0, 0) // valor padrão, todas as formas serão desenhadas centralizadas em suas coordenadas
 ```
 
 <!--- suggest_start screen.setDrawAnchor --->
-##### screen.setBlending( blending )
-Defines how subsequent drawing operations will be composed with the underlying, already drawn image. Can be set to `normal` or `additive`.
+##### screen.setBlending(*blending*)
 
-You can also use any of the compositing modes defined in the HTML5 Canvas specification with `setBlending`, for reference see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+Define como as operações de desenho subsequentes serão compostas com a imagem subjacente já desenhada. Pode ser definido como `normal` ou `additive`.
+
+Você também pode usar qualquer um dos modos de composição definidos na especificação HTML5 Canvas com `setBlending`, para referência, consulte https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
 
 <!--- suggest_start screen.width --->
 ##### screen.width
-The "width" field of the object screen has the current screen width as its value (always 200 if the screen is in portrait mode, see *screen coordinates*).
+
+O campo "largura" do objeto `screen` contém a largura atual da tela como seu valor (sempre 200 se a tela estiver em modo retrato, veja *coordenadas da tela*).
 <!--- suggest_end --->
 
 <!--- suggest_start screen.height --->
-###### screen.height
-The "height" field of the object screen has the current height of the screen as its value (always 200 if the screen is in landscape mode, see *screen coordinates*).
+##### screen.height
+
+O campo "altura" do objeto `screen` contém a altura atual da tela como seu valor (sempre 200 se a tela estiver em modo paisagem, veja *coordenadas da tela*).
 <!--- suggest_end --->
 
 <!--- suggest_start screen.setCursorVisible --->
-##### screen.setCursorVisible( visible )
-You can use this function to show or hide the mouse cursor.
+##### screen.setCursorVisible(visibilidade)
+
+Você pode usar essa função para mostrar ou esconder o cursor do *mouse*.
 <!--- suggest_end --->
 
 
-## Inputs, control
+## Entradas, controle
 
 To make your program interactive, you need to know if and where the user presses a key on the keyboard, joystick, touches the touch screen. *microStudio* allows you to know the status of these different control interfaces, via the objects `keyboard` (for the keyboard), `touch` (for the touch screen / mouse), `mouse` (for mouse pointer / touch screen) `gamepad` (for the controller).
 
-##### Note
+##### Nota
 The object `system.inputs` retains useful information on which input methods are available on the host system:
 
 |Field|Value|
