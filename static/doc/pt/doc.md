@@ -759,226 +759,246 @@ the_final_boss = new Boss(120)
 
 ##### notas
 
-* espaço de variáveis: quando uma função é chamada em um objeto (como `enemy_1.move ()`), as variáveis referidas no corpo das funções chamadas são as propriedades do objeto. Por exemplo, no corpo da função `move`, `position += 1` irá incrementar a propriedade `position` do próprio objeto.
+* espaço de variáveis: quando uma função é chamada em um objeto (como `enemy_1.move()`), as variáveis referidas no corpo das funções chamadas são as propriedades do objeto. Por exemplo, no corpo da função `move`, `position += 1` irá incrementar a propriedade `position` do próprio objeto.
 
 * Às vezes é necessário usar `this` para garantir que estamos nos referindo corretamente a uma propriedade do nosso objeto. É por isso que, no construtor de nossa classe `Enemy`, usamos `this.position = position`, pois `position` também se refere ao argumento da função e, portanto, "mascara" a propriedade do nosso objeto.
 
-* `super ()` pode ser usado em uma função anexada a um objeto ou classe, para invocar a função igualmente nomeada da classe pai. 
+* `super()` pode ser usado em uma função anexada a um objeto ou classe, para invocar a função igualmente nomeada da classe pai. 
 
 
 # Referência das funções
 
-## Display `screen`
+## Exibir (`screen`)
 
-In *microStudio* the screen is represented by the predefined object "screen". To display shapes or images on the screen, simply call functions (also called *methods*) on this object. For example:
+No *microStudio* a tela é representada pelo objeto predefinido `screen`. Para exibir formas ou imagens na tela, simplesmente chame as funções (também conhecidas como "métodos") neste objeto. Por exemplo:
 
 ```
 screen.setColor("#FFF")
 screen.fillRect(0,0,100,100,100)
 ```
-The code above defines the drawing color as `#FFF` i. e. white (see explanations below). Then it draws a rectangle filled with this color, centered at the coordinates 0.0 of the screen (i.e. the center of the screen), of width 100 and height 100.
 
-To make your work easier, *microStudio* automatically scales the screen coordinates, regardless of the actual display resolution. By convention, the smallest display size (width in portrait mode, height in landscape mode) is 200. The origin point (0,0) being the center of the screen, the smallest dimension is therefore graduated from -100 to +100. The largest dimension will be graduated for example from -178 to +178 (classic 16:9 screen), from -200 to +200 (2:1 screen, longer, more recent smartphones) etc.
+O código acima define a cor do desenho como `#FFF`, ou seja, branco (veja explicações abaixo). Em seguida, desenha um retângulo preenchido com essa cor, centralizado nas coordenadas 0, 0 da tela (ou seja, o centro da tela), de largura 100 e altura 100.
+
+Para tornar seu trabalho mais fácil, o *microStudio* dimensiona automaticamente as coordenadas da tela, independentemente da resolução real da tela. Por convenção, o menor tamanho de exibição (largura no modo retrato, altura no modo paisagem) é 200. O ponto de origem (0,0) sendo o centro da tela, a menor dimensão é, portanto, graduada de -100 a +100. A maior dimensão será graduada, por exemplo, de -178 a +178 (tela clássica 16:9), de -200 a +200 (tela 2:1, longa, smartphones mais recentes) etc.
+
+![Coordenadas da tela](/doc/img/screen_coordinates.png "Coordenadas da tela")
+
+<small>*Representação do sistema de coordenadas em uma tela 16:9 no modo retrato e no modo paisagem*</small>
 
 
-![Screen coordinates](/doc/img/screen_coordinates.png "Screen coordinates")
-
-<small>*Drawing coordinate system on a 16:9 screen in portrait mode and in landscape mode*</small>
-
-
-### Define a color
+### Definir uma cor
 <!--- suggest_start screen.setColor --->
-##### screen.setColor( color)
+##### screen.setColor(cor)
 
-Defines the color to use for future calls to drawing functions.
+Define a cor a ser usada para chamadas futuras de funções de desenho.
 
 <!--- suggest_end --->
 
-The color is defined by a string of characters, so between quotation marks "". It is generally described by its RGB components, i.e. a mixture of Red, Green and Blue. Several types of ratings are possible:
+A cor é definida por uma sequência de caracteres, portanto, entre aspas "". É geralmente descrito por seus componentes RGB, ou seja, uma mistura de vermelho, verde e azul. Vários tipos de notações são possíveis:
 
-* "rgb(255,255,255)": (rgb for red, green, blue). A value for red, green and blue is indicated here, varying between 0 and 255 maximum. "rgb(255,255,255)" gives white, "rgb(255,0,0)" gives bright red, "rgb(0,255,0)" gives green etc. To choose a color more easily when encoding, click on your rgb color and hold down the Control key to display the color selector.
-* "#FFF" or "#FFFFFF": this notation uses hexadecimal, to describe the 3 components of red, green and blue. Hexadecimal is a number notation system in "base 16", i. e. using 16 digits, from 0 to 9 then from A to F.
-* other notations exist, which are not described here.
+* "rgb(255,255,255)": (rgb para vermelho (r), verde (g), azul (b)). Um valor para vermelho (r), verde (g) e azul (b) é indicado aqui, variando entre 0 e 255, no máximo. "rgb (255, 255, 255)" é branco, "rgb (255, 0, 0)" é vermelho, "rgb (0, 255, 0)" é verde etc. Para escolher uma cor mais facilmente, ao codificar, clique na cor rgb e mantenha pressionada a tecla Control (Ctrl) para exibir o seletor de cores.
+* "#FFF" or "#FFFFFF": esta notação usa hexadecimal para descrever os 3 componentes de vermelho (r), verde (g) e azul (b). Hexadecimal é um sistema de notação numérica na "base 16", ou seja, usando 16 dígitos, de 0 a 9, em seguida, de A a F.
+* existem outras notações que não são descritas aqui.
 
-### Clear screen
+### Limpar a tela
 <!--- suggest_start screen.clear --->
-##### screen.clear(color)
-Clears the screen (fills it with the provided color, or with black if no color is passed as argument).
+##### screen.clear(cor)
+
+Limpa a tela (a preenche com a cor fornecida ou com preto se nenhuma cor for passada como argumento).
 <!--- suggest_end --->
 
-### Drawing shapes
+### Desenhar formas
 <!--- suggest_start screen.fillRect --->
-##### screen.fillRect( x, y, width, height, color)
-Draw a filled rectangle, centered at x and y coordinates, with the specified width and height. The color is optional, if it is omitted, the last color used will be reused.
+##### screen.fillRect(x, y, largura, altura, cor)
+
+Desenhe um retângulo preenchido, centralizado nas coordenadas x e y, com a largura e altura especificadas. A cor é opcional, caso seja omitida, a última cor utilizada será reaproveitada.
 <!--- suggest_end --->
 
 ---
 
 <!--- suggest_start screen.fillRoundRect --->
-##### screen.fillRoundRect( x, y, width, height, radius, color)
-Draws a filled rounded rectangle, centered at x and y coordinates, with the specified width, height and radius of curvature. The color is optional, if it is omitted, the last color used will be reused.
+##### screen.fillRoundRect(x, y, largura, altura, raio, cor)
+
+Desenha um retângulo arredondado preenchido, centralizado nas coordenadas x e y, com a largura, altura e raio de curvatura especificados. A cor é opcional, caso seja omitida, a última cor utilizada será reaproveitada.
 <!--- suggest_end --->
 
 ---
 
 <!--- suggest_start screen.fillRound --->
-##### screen.fillRound( x, y, width, height, color)
-Draws a solid round shape (a disc or ellipse depending on the dimensions used), centered at x and y coordinates, with the specified width and height. The color is optional, if it is omitted, the last color used will be reused.
+##### screen.fillRound(x, y, largura, altura, cor)
+
+Desenha uma forma redonda sólida (um disco ou elipse dependendo das dimensões usadas), centralizado nas coordenadas x  y, com a largura e altura especificadas. A cor é opcional, caso seja omitida, a última cor utilizada será reaproveitada.
 <!--- suggest_end --->
 
 <!--- suggest_start screen.drawRect --->
-##### screen.drawRect( x, y, width, height, color)
-Draws a rectangle outline, centered at x and y coordinates, with the specified width and height. The color is optional, if it is omitted, the last color used will be reused.
+##### screen.drawRect(x, y, largura, altura, cor)
+
+Desenha um contorno de retângulo, centralizado nas coordenadas x e y, com a largura e altura especificadas. A cor é opcional, caso seja omitida, a última cor utilizada será reaproveitada.
 <!--- suggest_end --->
 
 ---
 
 <!--- suggest_start screen.drawRoundRect --->
-##### screen.drawRoundRect( x, y, width, height, radius, color)
-Draws a rounded rectangle outline, centered at x and y coordinates, with the specified width, height and radius of curvature. The color is optional, if it is omitted, the last color used will be reused.
+##### screen.drawRoundRect(x, y, largura, altura, raio, cor)
+
+Desenha um contorno de retângulo arredondado, centralizado nas coordenadas x e y, com a largura, altura e raio de curvatura especificados. A cor é opcional, caso seja omitida, a última cor utilizada será reaproveitada.
 <!--- suggest_end --->
 
 ---
 
 <!--- suggest_start screen.drawRound --->
-##### screen.drawRound( x, y, width, height, color)
-Draws a round shape outline, centered at x and y coordinates, with the specified width and height. The color is optional, if it is omitted, the last color used will be reused.
+##### screen.drawRound(x, y, largura, altura, cor)
+
+Desenha um contorno de forma redonda, centralizado nas coordenadas x e y, com a largura e altura especificadas. A cor é opcional, caso seja omitida, a última cor utilizada será reaproveitada.
 <!--- suggest_end --->
 
 <!--- suggest_start screen.drawLine --->
-##### screen.drawLine( x1, y1, x2, y2, color )
-Draws a line joining points (x1,y1) and (x2,y2). The color is optional, if it is omitted, the last color used will be reused.
+##### screen.drawLine(x1, y1, x2, y2, cor)
+
+Desenha uma linha que une os pontos (x1, y1) e (x2, y2). A cor é opcional, caso seja omitida, a última cor utilizada será reaproveitada.
 <!--- suggest_end --->
 
 <!--- suggest_start screen.fillPolygon --->
-##### screen.fillPolygon( x1, y1, x2, y2, x3, y3, ... , color )
-Fills a polygon defined by the list of point coordinates passed as arguments. The color is optional, if it is omitted, the last color used will be reused.
+##### screen.fillPolygon(x1, y1, x2, y2, x3, y3, ... , cor)
+
+Preenche um polígono definido pela lista de coordenadas de pontos passadas como argumentos. A cor é opcional, caso seja omitida, a última cor utilizada será reaproveitada.
 <!--- suggest_end --->
 
-The function can also accept an array as first argument and a color as second argument. In that case, the array is expected to hold the points coordinates like this: `screen.fillPolygon( [ x1, y1 , x2, y2, x3, y3 ... ], color )`.
+Esta função também pode aceitar um vetor como primeiro argumento e uma cor como segundo argumento. Nesse caso, espera-se que o array mantenha as coordenadas dos pontos como este: `screen.fillPolygon([x1, y1, x2, y2, x3, y3, ...], cor)`. 
 
 <!--- suggest_start screen.drawPolygon --->
-##### screen.drawPolygon( x1, y1, x2, y2, x3, y3, ... , color )
-Draws a polygon outline, defined by the list of point coordinates passed as arguments. The color is optional, if it is omitted, the last color used will be reused.
+##### screen.drawPolygon(x1, y1, x2, y2, x3, y3, ... , cor)
+
+Desenha um contorno de polígono, definido pela lista de coordenadas de pontos passadas como argumentos. A cor é opcional, caso seja omitida, a última cor utilizada será reaproveitada.
 <!--- suggest_end --->
 
-The function can also accept an array as first argument and a color as second argument. In that case, the array is expected to hold the points coordinates like this: `screen.drawPolygon( [ x1, y1 , x2, y2, x3, y3 ... ], color )`.
+Esta função também pode aceitar um vetor como primeiro argumento e uma cor como segundo argumento. Nesse caso, espera-se que o array mantenha as coordenadas dos pontos como este: `screen.drawPolygon([x1, y1 , x2, y2, x3, y3, ...], cor)`.
 
 <!--- suggest_start screen.drawPolyline --->
-##### screen.drawPolyline( x1, y1, x2, y2, x3, y3, ... , color )
-Same as `drawPolygon` except that the drawing path will not be automatically closed.
+##### screen.drawPolyline(x1, y1, x2, y2, x3, y3, ... , cor)
+
+O mesmo que `drawPolygon`, exceto que o caminho do desenho não será fechado automaticamente.
 <!--- suggest_end --->
 
 <!--- suggest_start screen.setLineWidth --->
-##### screen.setLineWidth( width )
-Sets the line width for all subsequent line draw operation (drawLine, drawPolygon, drawRect etc.). The default line width is 1.
+##### screen.setLineWidth(largura)
+
+Define a largura da linha para todas as operações subsequentes de desenho de linha (`drawLine`, `drawPolygon`, `drawRect` etc.). A largura padrão da linha é 1.
 <!--- suggest_end --->
 
 <!--- suggest_start screen.setLineDash --->
-##### screen.setLineDash( array_of_values )
-Sets the line dash style for all subsequent line draw operation (drawLine, drawPolygon, drawRect etc.). The argument must be an array of positive values, defining the length of lines and gaps.
+##### screen.setLineDash(vetor_de_valores)
+
+Define o estilo do traçado de linha para todas as operações subsequentes de desenho de linha (`drawLine`, `drawPolygon`, `drawRect` etc.). O argumento deve ser uma matriz de valores positivos, definindo o comprimento das linhas e lacunas.
 
 #### example
+
 ```
 screen.setLineDash([2,4])
 ```
 <!--- suggest_end --->
 
 
-### Display sprites and maps
+### Exibir *sprites* e mapas
 
 <!--- suggest_start screen.drawSprite --->
-##### screen.drawSprite( sprite, x, y, width, height)
+##### screen.drawSprite(*sprite*, x, y, largura, altura)
 
-Draws one of the sprites you created in the *Sprites* section on the screen. The first parameter is a string that corresponds to the name of the sprite to be displayed, for example `"icon"`. Then follow the x,y coordinates where to display the sprite (the sprite will be centered on these coordinates). Then the width and height of the display.
+Desenha um dos sprites que você criou na seção *Sprites*. O primeiro parâmetro é uma *string* que corresponde ao nome do sprite a ser exibido, por exemplo "icon". Em seguida, as coordenadas x, y onde o *sprite* será exibido (o *sprite* será centralizado nessas coordenadas). Em seguida, a largura e a altura.
 <!--- suggest_end --->
 
 ```
-screen.drawSprite("icon",0,50,50,50)
+screen.drawSprite("icon", 0, 50, 50, 50)
 ```
-The height can be omitted, as in the example above. In this case the height will be calculated according to the width and proportions of the sprite.
+A altura pode ser omitida. Neste caso, a altura será calculada de acordo com a largura e proporções do sprite.
 
-##### Animated sprites
+##### *Sprites* animados
 
-Animated sprites will automatically draw the correct frame according to animation settings. You can set the current frame of a sprite (e.g. to restart the animation) this way:
+*Sprites* animados desenharão automaticamente o quadro correto de acordo com as configurações de animação. Você pode definir o quadro atual de um *sprite* (por exemplo, para reiniciar a animação) desta forma:
 
 ```
-sprites["sprite1"].setFrame(0) // 0 is the index of the first frame
+sprites["sprite1"].setFrame(0) // 0 é o índice do primeiro quadro de animação
 ```
 
-You can also draw a specific animation frame of your sprite, by appending "." and the index of the requested frame:
+Você também pode desenhar um quadro de animação específico do seu sprite, acrescentando "." e o índice do quadro solicitado:
 
 ```
 screen.drawSprite("sprite1.0",0,50,50,50)
 ```
 
 The example above draws the frame 0 of sprite "sprite1".
+O exemplo acima desenha o quadro 0 do *sprite* "sprite1".
 
 <!--- suggest_start screen.drawSpritePart --->
-##### screen.drawSpritePart( sprite, part_x, part_y, part_width, part_height, x, y, width, height)
+##### screen.drawSpritePart(sprite, parte_x, parte_y, parte_largura, parte_altura, x, y, largura, altura)
 
-Draws part of a sprite on the screen. The first parameter is a string that corresponds to the name of the sprite to be displayed, for example `"icon"`. The next 4 parameters define the coordinate of a sub-rectangle of the sprite to actually be painted on screen (coordinate 0,0 is the top-left corner of the sprite). The last 4 parameters are the same as for `drawSprite`.
+Desenha parte de um *sprite* na tela. O primeiro parâmetro é uma *string* que corresponde ao nome do *sprite* a ser exibido, por exemplo "*icon*". Os próximos 4 parâmetros definem as coordenadas de um sub-retângulo do *sprite* a ser realmente pintado na tela (a coordenada 0,0 é o canto superior esquerdo do sprite). Os últimos 4 parâmetros são iguais aos de `drawSprite`.
 <!--- suggest_end --->
 
 ```
-screen.drawSpritePart("icon",4,4,8,8,0,50,50,50)
+screen.drawSpritePart("icon", 4, 4, 8, 8, 0, 50, 50, 50)
 ```
-The height can be omitted, as in the example above. In this case the height will be calculated according to the width and proportions of the sprite part.
+A altura pode ser omitida. Neste caso, a altura será calculada de acordo com a largura e proporções do sprite.
 
 ---
 
 <!--- suggest_start screen.drawMap --->
-##### screen.drawMap( map , x , y , width , height )
-Draws one of the maps you created in the *Maps* section on the screen. The first parameter is a string that corresponds to the name of the map to be displayed, for example `map1`. Then follow the x,y coordinates where to display the map (the map will be centered on these coordinates). Then the width and height of the display.
+##### screen.drawMap(mapa, x, y, largura, altura)
+
+Desenha um dos mapas que você criou na seção *Mapas*. O primeiro parâmetro é uma *string* que corresponde ao nome do mapa a ser exibido, por exemplo `mapa1`. Em seguida, as coordenadas x, y para exibir o mapa (o mapa será centralizado nessas coordenadas). Em seguida, a largura e a altura.
 <!--- suggest_end --->
 
 ```
-screen.drawMap("map1",0,0,300,200)
+screen.drawMap("mapa1", 0, 0, 300, 200)
 ```
 
-### Display text
+### Exibir texto
 
 <!--- suggest_start screen.drawText --->
-##### screen.drawText( text, x, y, size, &lt;color&gt; )
-Draws text on the screen. The first parameter is the text to be displayed, then the x and y coordinates where the text will be centered, then the size (height) of the text. The last parameter is the drawing color, it can be omitted, in this case the last defined color will be reused.
+##### screen.drawText(texto, x, y, tamanho, cor)
+
+Desenha texto na tela. O primeiro parâmetro é o texto a ser exibido, depois as coordenadas x e y onde o texto será centralizado e, a seguir, o tamanho (altura) do texto. O último parâmetro é a cor, ela pode ser omitida, neste caso a última cor definida será reaproveitada.
 <!--- suggest_end --->
 
 ```
-screen.drawText("Hello!",0,0,30, "#FFF")
+screen.drawText("Olá!", 0, 0, 30, "#FFF")
 ```
 
 <!--- suggest_start screen.drawTextOutline --->
-##### screen.drawTextOutline( text, x, y, size, &lt;color&gt; )
-Draws the outline of the text. Drawing an outline in a different color can be done after a `drawText` to increase the contrast. The thickness of the outline can be set with `screen.setLineWidth`.
+##### screen.drawTextOutline(texto, x, y, tamanho, cor)
+
+Desenha o contorno do texto. Desenhar um contorno em uma cor diferente pode ser feito após um `drawText` para aumentar o contraste. A espessura do contorno pode ser definida com `screen.setLineWidth`.
 <!--- suggest_end --->
 
 ```
-screen.drawTextOutline("Hello!",0,0,30, "#F00")
+screen.drawTextOutline("Olá!", 0, 0, 30, "#F00")
 ```
 
 ---
 
 <!--- suggest_start screen.setFont --->
-##### screen.setFont( font_name )
-Defines the font to use for future calls to `drawText`.
+##### screen.setFont(nome_da_fonte)
 
-**Available fonts in current version**: AESystematic, Alkhemikal, AlphaBeta, Arpegius, Awesome, BitCell, Blocktopia, Comicoro, Commodore64, DigitalDisco, Edunline, EnchantedSword, EnterCommand, Euxoi, FixedBold, GenericMobileSystem, GrapeSoda, JupiterCrash, Kapel, KiwiSoda, Litebulb8bit, LycheeSoda, MisterPixel, ModernDos, NokiaCellPhone, PearSoda, PixAntiqua, PixChicago, PixelArial, PixelOperator, Pixellari, Pixolde, PlanetaryContact, PressStart2P, RainyHearts, RetroGaming, Revolute, Romulus, Scriptorium, Squarewave, Thixel, Unbalanced, UpheavalPro, VeniceClassic, ZXSpectrum, Zepto
+Define a fonte a ser utilizada em chamadas futuras a `drawText`.
+
+**Fontes disponíveis na versão atual**: AESystematic, Alkhemikal, AlphaBeta, Arpegius, Awesome, BitCell, Blocktopia, Comicoro, Commodore64, DigitalDisco, Edunline, EnchantedSword, EnterCommand, Euxoi, FixedBold, GenericMobileSystem, GrapeSoda, JupiterCrash, Kapel, KiwiSoda, Litebulb8bit, LycheeSoda, MisterPixel, ModernDos, NokiaCellPhone, PearSoda, PixAntiqua, PixChicago, PixelArial, PixelOperator, Pixellari, Pixolde, PlanetaryContact, PressStart2P, RainyHearts, RetroGaming, Revolute, Romulus, Scriptorium, Squarewave, Thixel, Unbalanced, UpheavalPro, VeniceClassic, ZXSpectrum, Zepto
 <!--- suggest_end --->
 
 ```
 screen.setFont("BitCell")
 ```
 
-**Tip**: the global variable `fonts` is an array of all available fonts in microStudio
+**Dica**: a variável global `fonts` é um vetor com todas as fontes disponíveis no microStudio
 
 
 <!--- suggest_start screen.textWidth --->
-##### screen.textWidth( text, size )
-Returns the width of the given text when drawn on screen with given size.
+##### screen.textWidth(texto, tamanho)
+
+Retorna a largura do texto fornecido quando desenhado na tela com o tamanho informado.
 <!--- suggest_end --->
 
 ```
-width = screen.textWidth( "My Text", 20 )
+width = screen.textWidth("Meu Texto", 20)
 ```
 
 ### Drawing parameters
