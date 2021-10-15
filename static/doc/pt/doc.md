@@ -148,7 +148,7 @@ Chamar a função *draw()* para visualizar a mudança em *position_x* e seus efe
 ### Rastreios
 No código do seu programa, você pode enviar texto para ser mostrado no console a qualquer momento, usando a função `print()`.
 
-##### example
+##### exemplo
 ```
 draw = function()
   // a implementação de draw()
@@ -286,7 +286,7 @@ Também pode ser acessado com colchetes `[]`. A definição acima também pode, 
 ```
 my_object["x"] = 0
 my_object["y"] = 0
-my_object["name"] = "object 1"
+my_object["nome"] = "objeto 1"
 ```
 
 Você pode navegar pela lista de campos de um objeto com um laço `for`:
@@ -304,7 +304,7 @@ Um valor pode ser do tipo função. Ao escrever `draw = function() ... end`, um 
 #### Variáveis locais
 Por padrão, as variáveis declaradas pela atribuição são globais. É possível definir uma variável local, como parte de uma função, usando a palavra reservada *local*:
 ```
-maFunction = function()
+myFunction = function()
   local i = 0
 end
 ```
@@ -361,8 +361,6 @@ end
 "then" significa "então";
 "else" significa "caso contrário";
 "end" means "fim"
-
-In the example above, **if** the value of the age variable is less than 18, **then** the instruction ``print("child")`` will be executed, **else** the instruction `print("adult")` will be executed.
 
 No exemplo acima, **se** o valor da variável *age* for menor que 18, **então** a instrução `print("criança")` será executada, **caso contrário** a instrução `print("adulto")` será executada.
 
@@ -457,7 +455,7 @@ while true
 end
 ```
 
-Você pode pular as operações restantes de um laço e continuar para a próxima iteração do laço com a usando `continue`. Exemplo:
+Você pode pular as operações restantes de um laço e continuar para a próxima iteração do laço usando `continue`. Exemplo:
 ```
 for i=0 to 10000
   if i%10 == 0 then continue end // isso irá pular o processamento dos múltiplos de 19
@@ -492,7 +490,7 @@ Aqui está a lista de operadores binários em *microScript* (excluindo comparaç
 |pow(a,b)|Retorna `a` elevado a `b` (outra notação possível: `a ^ b`)|
 |PI|Constante que é igual ao valor de *Pi*|
 |log(a)|Retorna o logarítmo natural de a|
-|exp(a)|Returna o número de Euler elevado a `a`|
+|exp(a)|Retorna o número de Euler elevado a `a`|
 
 #### Funções trigonométricas em radianos
 |Função|Descrição|
@@ -636,8 +634,6 @@ enemy_1.move()
 enemy_2.move()
 ```
 
-The second enemy will move twice faster because we altered its property velocity before calling function move.
-
 O segundo inimigo se moverá duas vezes mais rápido porque alteramos sua propriedade `velocity` antes de chamar a função de movimento. 
 
 ### Herança
@@ -780,7 +776,7 @@ Define a largura da linha para todas as operações subsequentes de desenho de l
 ##### screen.setLineDash(vetor_de_valores)
 Define o estilo do traçado de linha para todas as operações subsequentes de desenho de linha (`drawLine`, `drawPolygon`, `drawRect` etc.). O argumento deve ser uma matriz de valores positivos, definindo o comprimento das linhas e lacunas.
 
-#### example
+#### exemplo
 ```
 screen.setLineDash([2,4])
 ```
@@ -808,7 +804,6 @@ Você também pode desenhar um quadro de animação específico do seu sprite, a
 screen.drawSprite("sprite1.0",0,50,50,50)
 ```
 
-The example above draws the frame 0 of sprite "sprite1".
 O exemplo acima desenha o quadro 0 do *sprite* "sprite1".
 
 <!--- suggest_start screen.drawSpritePart --->
@@ -954,7 +949,7 @@ screen.drawSprite ("icon", 0, 0, 100)
 ```
 O exemplo acima mostra o ícone do projeto, espelhado verticalmente.
 
-Não esqueça de redefinir o falor de escala para 1, 1 após usá-lo!
+Não esqueça de redefinir o fator de escala para 1, 1 após usá-lo!
 ```
 screen.setDrawScale(1,1) // retorna o fator de escala para o seu valor padrão.
 ```
@@ -1014,7 +1009,7 @@ O objeto `system.inputs` retém informações úteis sobre quais métodos de ent
 Entradas feitas pelo teclado podem ser testadas usando o objeto `keyboard`.
 <!--- suggest_end --->
 
-##### example
+##### exemplo
 ```
 if keyboard.A then
   // a tecla A foi pressionada
@@ -1121,7 +1116,7 @@ if gamepad.UP then y += 1 end
 
 **Dica**: Para obter uma lista completa dos campos do objeto `gamepad`, basta digitar "gamepad" no console quando o programa estiver em execução.
 
-Da mesma forma que o teclado, você pode usar `gamepad.press.<BOTÃO>` para verificar se um botão acabou de ser pressionado ou `gamepad.release. <BOTÃO>` para verificar se um botão acabou de ser liberado.
+Da mesma forma que o teclado, você pode usar `gamepad.press.<BOTÃO>` para verificar se um botão acabou de ser pressionado ou `gamepad.release.<BOTÃO>` para verificar se um botão acabou de ser liberado.
 
 ## Sons
 Atualmente, o *microStudio* permite que você reproduza sons e músicas importados para o seu projeto (como arquivos WAV e MP3) ou crie sons programaticamente usando o *beeper* legado.
@@ -1137,10 +1132,10 @@ Reproduz o som informado com configurações de reprodução fornecidas opcionai
 |Argumento|Descrição|
 |-|-|
 |nome|O nome do som (da guia de sons do seu projeto) a ser reproduzido|
-|volume|[optional] O volume de saída para esta reprodução de som, variando de 0 a 1|
-|tom|[optional] O tom de saída para esta reprodução de som, 1 é o tom padrão|
-|distribuição|[optional] A configuração da distribuição para esta reprodução de som, variando de -1 (esquerda) a 1 (direita)|
-|laço|[optional] Defina como 1 (`true`) se quiser que o som fique em laço indefinidamente|
+|volume|[opcional] O volume de saída para esta reprodução de som, variando de 0 a 1|
+|tom|[opcional] O tom de saída para esta reprodução de som, 1 é o tom padrão|
+|distribuição|[opcional] A configuração da distribuição para esta reprodução de som, variando de -1 (esquerda) a 1 (direita)|
+|laço|[opcional] Defina como 1 (`true`) se quiser que o som fique em laço indefinidamente|
 
 A chamada de função retorna um objeto. Este objeto permite que você controle as configurações de reprodução enquanto o som está sendo reproduzido:
 
@@ -1160,7 +1155,6 @@ my_sound.setVolume(0.5)
 ### Tocar música
 <!--- suggest_start audio.playMusic --->
 ##### audio.playMusic(nome, volume, laço)
-Plays the given music, with optional given playback settings.
 Toca a música informada com configurações de reprodução fornecidas opcionais. 
 <!--- suggest_end --->
 
@@ -1168,10 +1162,9 @@ Toca a música informada com configurações de reprodução fornecidas opcionai
 |Argumento|Descrição|
 |-|-|
 |nome| O nome da música (da guia de músicas do seu projeto) a ser reproduzida|
-|volume|[optional] O volume de saída para esta reprodução de música, variando de 0 a 1|
-|loop|[optional] Defina como 1 (`true`) se quiser que a música fique em laço indefinidamente|
+|volume|[opcional] O volume de saída para esta reprodução de música, variando de 0 a 1|
+|loop|[opcional] Defina como 1 (`true`) se quiser que a música fique em laço indefinidamente|
 
-The function call returns an object. This object allows you to control the playback settings while the music is being played:
 A chamada de função retorna um objeto. Este objeto permite que você controle as configurações de reprodução enquanto a música está sendo reproduzida:
 
 ##### exemplo
