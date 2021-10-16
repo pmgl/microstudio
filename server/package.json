@@ -10,7 +10,9 @@
     "@fortawesome/fontawesome-free": "^5.15.3",
     "ace-builds": "^1.4.12",
     "canvas": "^2.8.0",
+    "coffeescript": "^1.12.7",
     "compression": "^1.7.4",
+    "concurrently": "^6.2.0",
     "cookie-parser": "^1.4.5",
     "crypto-js": "^3.3.0",
     "dompurify": "^2.2.8",
@@ -31,14 +33,10 @@
     "websocket": "^1.0.34",
     "ws": "^7.5.0"
   },
-  "devDependencies": {
-    "coffeescript": "^1.12.7",
-    "concurrently": "^6.2.0"
-  },
   "scripts": {
     "compile": "coffee -c --no-header -b ../.",
     "compile-and-watch": "coffee -c --no-header -b -w ../.",
-    "dev": "npm run compile && concurrently \"npm:compile-and-watch\" \"npm:start\"",
+    "dev": "concurrently \"npm:compile-and-watch\" \"npm:start\"",
     "start": "npm run compile && node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

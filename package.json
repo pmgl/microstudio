@@ -1,0 +1,13 @@
+{
+  "name": "microstudio",
+  "version": "1.0.0",
+  "description": "Web server",
+  "main": "server/server.js",
+  "scripts": {
+    "postinstall": "cd server && npm install",
+    "compile": "cd server && npm run compile",
+    "dev": "cd server && npm run dev",
+    "start": "cd server && npm start"
+  },
+  "author": "pmgl"
+}

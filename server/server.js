@@ -61,9 +61,10 @@ this.Server = (function() {
           _this.PORT = 443;
           _this.PROD = true;
         } else {
-          _this.PORT = _this.config.port || 8080;
+          _this.PORT = process.env.PORT || _this.config.port || 8080;
           _this.PROD = false;
         }
+        console.info("Using port number " + _this.PORT);
         return _this.loadPlugins(function() {
           return _this.create();
         });
