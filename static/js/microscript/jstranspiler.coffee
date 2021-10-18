@@ -709,14 +709,26 @@ class JSTranspiler
 
     classvar = @createTempVariable context
     objvar = @createTempVariable context
-    @prepend "var #{classvar} = #{@transpile(funcall.expression,context,true)} ;"
-    @prepend """var #{objvar} = { "class": #{classvar}} ;"""
+
     constructor = """_msApply(#{objvar},"_constructor" """
+    fconstructor = """new #{classvar}("""
     for a,i in funcall.args
+      a = @transpile(a,context,true)
       constructor += ", "
-      constructor += @transpile(a,context,true)
+      constructor += a
+      fconstructor += ", " if i>0
+      fconstructor += a
     constructor += ") ;"
-    @prepend constructor
+    fconstructor += ") ;"
+
+    @prepend "var #{classvar} = #{@transpile(funcall.expression,context,true)} ;"
+    @prepend """if (typeof #{classvar} == "function") {
+      var #{objvar} = #{fconstructor} ;
+    } else {
+      var #{objvar} = { "class": #{classvar}} ;
+      #{constructor}
+    } """
+
     objvar
 
   exec:(context)->

@@ -774,7 +774,7 @@ AppUI = (function() {
     if (this.app.user != null) {
       this.allowed_sections.sounds = true;
       this.allowed_sections.music = true;
-      if (this.app.user.flags.m3d) {
+      if (this.app.user.flags.experimental) {
         document.getElementById("project-option-graphics").style.display = "block";
         this.allowed_sections.assets = (this.app.project != null) && this.app.project.graphics === "M3D";
         if ((this.app.project != null) && this.app.project.graphics === "M3D") {

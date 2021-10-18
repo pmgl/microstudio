@@ -37,7 +37,7 @@ div.usersettings#usersettings
     //-   div.button#change-password <i class="fa fa-sync-alt"></i> #{translator.get("Change password")}
 
     div.usersetting
-      h3 Newsletter
+      h3 #{translator.get("Newsletter")}
       input(type="checkbox" id="subscribe-newsletter")
       label(for="subscribe-newsletter") #{translator.get("Receive newsletter")}
       br
@@ -50,6 +50,14 @@ div.usersettings#usersettings
     div.usersetting
       h3 #{translator.get("Storage")}
       span#usersettings-storage
+        
+    div.usersetting#experimental-features-setting
+      h3 #{translator.get("Experimental features")}
+      input(type="checkbox" id="experimental-features")
+      label(for="experimental-features") #{translator.get("Enable experimental features")}
+      br
+      span.tip #{translator.get("Experimental features can change, break or be removed anytime. You are warned!")}
+      
 
     div.usersetting#advanced
       div.button#open-translation-app <i class="fa fa-globe"></i> #{translator.get("Open translation tool")}

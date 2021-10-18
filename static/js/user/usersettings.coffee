@@ -3,6 +3,7 @@ class @UserSettings
     document.getElementById("resend-validation-email").addEventListener "click",()=>@resendValidationEMail()
     #document.getElementById("change-password").addEventListener "click",()=>@changePassword()
     document.getElementById("subscribe-newsletter").addEventListener "change",()=>@newsletterChange()
+    document.getElementById("experimental-features").addEventListener "change",()=>@experimentalChange()
 
     document.getElementById("usersetting-email").addEventListener "input",()=>@emailChange()
 
@@ -119,6 +120,9 @@ class @UserSettings
 
   update:()->
     document.getElementById("subscribe-newsletter").checked = @app.user.flags["newsletter"] == true
+    document.getElementById("experimental-features").checked = @app.user.flags["experimental"] == true
+    document.getElementById("experimental-features-setting").style.display = if @app.user.flags.validated then "block" else "none"
+
     if @app.user.flags["validated"] == true
       document.getElementById("email-not-validated").style.display = "none"
     else
@@ -187,6 +191,13 @@ class @UserSettings
     @app.client.sendRequest
       name: "change_newsletter"
       newsletter: checked
+
+  experimentalChange:()->
+    checked = document.getElementById("experimental-features").checked
+    @app.user.flags.experimental = checked
+    @app.client.sendRequest
+      name: "change_experimental"
+      experimental: checked
 
   nickChange:()->
 

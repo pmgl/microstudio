@@ -4,11 +4,7 @@ this.Runtime = (function() {
     this.sources = sources;
     this.resources = resources;
     this.listener = listener;
-    if (window.graphics === "M3D") {
-      this.screen = new Screen3D(this);
-    } else {
-      this.screen = new Screen(this);
-    }
+    this.screen = new Screen(this);
     this.audio = new AudioCore(this);
     this.keyboard = new Keyboard();
     this.gamepad = new Gamepad();
@@ -189,6 +185,15 @@ this.Runtime = (function() {
     };
     if (window.graphics === "M3D") {
       global.M3D = new M3D(this);
+    } else if (window.graphics === "M2D") {
+      global.M2D = M2D;
+      M2D.runtime = this;
+    } else if (window.graphics === "PIXI") {
+      global.PIXI = PIXI;
+      PIXI.runtime = this;
+    } else if (window.graphics === "BABYLON") {
+      global.BABYLON = BABYLON;
+      BABYLON.runtime = this;
     }
     namespace = location.pathname;
     this.vm = new MicroVM(meta, global, namespace, location.hash === "#transpiler");

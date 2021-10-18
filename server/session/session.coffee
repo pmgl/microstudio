@@ -52,6 +52,7 @@ class @Session
     @register "change_nick",(msg)=>@changeNick(msg)
     @register "change_password",(msg)=>@changePassword(msg)
     @register "change_newsletter",(msg)=>@changeNewsletter(msg)
+    @register "change_experimental",(msg)=>@changeExperimental(msg)
     @register "set_user_setting",(msg)=>@setUserSetting(msg)
     @register "set_user_profile",(msg)=>@setUserProfile(msg)
 
@@ -1013,13 +1014,26 @@ class @Session
           request_id: data.request_id
 
   changeNewsletter:(data)->
+    return if not @user?
+
     @user.setFlag "newsletter",data.newsletter
     @send
       name: "change_newsletter"
       newsletter: data.newsletter
       request_id: data.request_id
 
+  changeExperimental:(data)->
+    return if not @user? or not @user.flags.validated
+
+    @user.setFlag "experimental",data.experimental
+    @send
+      name: "change_experimental"
+      experimental: data.experimental
+      request_id: data.request_id
+
   setUserSetting:(data)->
+    return if not @user?
+
     return if not data.setting? or not data.value?
     @user.setSetting data.setting,data.value
 

@@ -1,4 +1,4 @@
-class @Screen3D
+class @Screen
   constructor:(@runtime)->
     @renderer = new THREE.WebGLRenderer
       antialias: true

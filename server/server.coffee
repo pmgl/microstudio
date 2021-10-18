@@ -86,6 +86,8 @@ class @Server
     app.use("/lib/dompurify/purify.js",express.static("node_modules/dompurify/dist/purify.min.js"))
     app.use("/lib/jquery/jquery.js",express.static("node_modules/jquery/dist/jquery.min.js"))
     app.use("/lib/jquery-ui",express.static("node_modules/jquery-ui-dist"))
+    app.use("/lib/pixijs",express.static("node_modules/pixi.js/dist/browser"))
+    app.use("/lib/babylonjs",express.static("node_modules/babylonjs"))
 
     @db = new DB "../data",(db)=>
       for plugin in @plugins

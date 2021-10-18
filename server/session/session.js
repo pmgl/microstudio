@@ -113,6 +113,11 @@ this.Session = (function() {
         return _this.changeNewsletter(msg);
       };
     })(this));
+    this.register("change_experimental", (function(_this) {
+      return function(msg) {
+        return _this.changeExperimental(msg);
+      };
+    })(this));
     this.register("set_user_setting", (function(_this) {
       return function(msg) {
         return _this.setUserSetting(msg);
@@ -1592,6 +1597,9 @@ this.Session = (function() {
   };
 
   Session.prototype.changeNewsletter = function(data) {
+    if (this.user == null) {
+      return;
+    }
     this.user.setFlag("newsletter", data.newsletter);
     return this.send({
       name: "change_newsletter",
@@ -1600,7 +1608,22 @@ this.Session = (function() {
     });
   };
 
+  Session.prototype.changeExperimental = function(data) {
+    if ((this.user == null) || !this.user.flags.validated) {
+      return;
+    }
+    this.user.setFlag("experimental", data.experimental);
+    return this.send({
+      name: "change_experimental",
+      experimental: data.experimental,
+      request_id: data.request_id
+    });
+  };
+
   Session.prototype.setUserSetting = function(data) {
+    if (this.user == null) {
+      return;
+    }
     if ((data.setting == null) || (data.value == null)) {
       return;
     }

@@ -59,8 +59,11 @@ div.projectoptions#projectoptions
         div.projectoption#project-option-graphics
           h3 #{translator.get("Graphics library")}
           select#projectoption-graphics
-            option(value="M1") Basic
-            option(value="M3D") micro3D
+            option(value="M1") #{translator.get("basic graphics API")}
+            option(value="M2D") #{translator.get("micro 2D - Experimental - Built on Pixi.js")}
+            option(value="M3D") #{translator.get("micro 3D - Experimental - Built on Babylon.js")}
+            option(value="PIXI") #{translator.get("Pixi.js - Experimental")}
+            option(value="BABYLON") #{translator.get("Babylon.js - Experimental")}
 
         div.projectoption#project-option-storage
           h3 #{translator.get("Storage used")}

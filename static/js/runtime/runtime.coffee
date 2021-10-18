@@ -1,9 +1,6 @@
 class @Runtime
   constructor:(@url,@sources,@resources,@listener)->
-    if window.graphics == "M3D"
-      @screen = new Screen3D @
-    else
-      @screen = new Screen @
+    @screen = new Screen @
 
     @audio = new AudioCore @
     @keyboard = new Keyboard()
@@ -137,6 +134,15 @@ class @Runtime
 
     if window.graphics == "M3D"
       global.M3D = new M3D @
+    else if window.graphics == "M2D"
+      global.M2D = M2D
+      M2D.runtime = @
+    else if window.graphics == "PIXI"
+      global.PIXI = PIXI
+      PIXI.runtime = @
+    else if window.graphics == "BABYLON"
+      global.BABYLON = BABYLON
+      BABYLON.runtime = @
 
     namespace = location.pathname
     @vm = new MicroVM(meta,global,namespace,location.hash == "#transpiler")

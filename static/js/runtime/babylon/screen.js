@@ -1,5 +1,5 @@
-this.Screen3D = (function() {
-  function Screen3D(runtime) {
+this.Screen = (function() {
+  function Screen(runtime) {
     this.runtime = runtime;
     this.renderer = new THREE.WebGLRenderer({
       antialias: true
@@ -18,7 +18,7 @@ this.Screen3D = (function() {
     };
   }
 
-  Screen3D.prototype.getInterface = function() {
+  Screen.prototype.getInterface = function() {
     var screen;
     if (this["interface"] != null) {
       return this["interface"];
@@ -33,16 +33,16 @@ this.Screen3D = (function() {
     };
   };
 
-  Screen3D.prototype.updateInterface = function() {
+  Screen.prototype.updateInterface = function() {
     this["interface"].width = this.width;
     return this["interface"].height = this.height;
   };
 
-  Screen3D.prototype.initDraw = function() {};
+  Screen.prototype.initDraw = function() {};
 
-  Screen3D.prototype.clear = function() {};
+  Screen.prototype.clear = function() {};
 
-  Screen3D.prototype.resize = function() {
+  Screen.prototype.resize = function() {
     var ch, cw, h, min, r, ratio, w;
     cw = window.innerWidth;
     ch = window.innerHeight;
@@ -108,7 +108,7 @@ this.Screen3D = (function() {
     return this.renderer.setSize(w, h);
   };
 
-  Screen3D.prototype.render = function(scene, camera) {
+  Screen.prototype.render = function(scene, camera) {
     if (this.update_camera) {
       camera.camera.aspect = this.camera_aspect;
       camera.camera.updateProjectionMatrix();
@@ -117,7 +117,7 @@ this.Screen3D = (function() {
     return this.renderer.render(scene.scene, camera.camera);
   };
 
-  Screen3D.prototype.startControl = function(element) {
+  Screen.prototype.startControl = function(element) {
     this.element = element;
     this.canvas.addEventListener("touchstart", (function(_this) {
       return function(event) {
@@ -157,7 +157,7 @@ this.Screen3D = (function() {
     return this.ratio = devicePixelRatio;
   };
 
-  Screen3D.prototype.touchStart = function(event) {
+  Screen.prototype.touchStart = function(event) {
     var b, i, j, min, ref, t, x, y;
     event.preventDefault();
     event.stopPropagation();
@@ -179,7 +179,7 @@ this.Screen3D = (function() {
     return false;
   };
 
-  Screen3D.prototype.touchMove = function(event) {
+  Screen.prototype.touchMove = function(event) {
     var b, i, j, min, ref, t, x, y;
     event.preventDefault();
     event.stopPropagation();
@@ -199,7 +199,7 @@ this.Screen3D = (function() {
     return false;
   };
 
-  Screen3D.prototype.touchRelease = function(event) {
+  Screen.prototype.touchRelease = function(event) {
     var i, j, ref, t, x, y;
     for (i = j = 0, ref = event.changedTouches.length - 1; j <= ref; i = j += 1) {
       t = event.changedTouches[i];
@@ -214,7 +214,7 @@ this.Screen3D = (function() {
     return false;
   };
 
-  Screen3D.prototype.mouseDown = function(event) {
+  Screen.prototype.mouseDown = function(event) {
     var b, min, x, y;
     this.mousepressed = true;
     b = this.canvas.getBoundingClientRect();
@@ -241,7 +241,7 @@ this.Screen3D = (function() {
     return false;
   };
 
-  Screen3D.prototype.mouseMove = function(event) {
+  Screen.prototype.mouseMove = function(event) {
     var b, min, x, y;
     event.preventDefault();
     b = this.canvas.getBoundingClientRect();
@@ -257,7 +257,7 @@ this.Screen3D = (function() {
     return false;
   };
 
-  Screen3D.prototype.mouseUp = function(event) {
+  Screen.prototype.mouseUp = function(event) {
     var b, min, x, y;
     delete this.touches["mouse"];
     b = this.canvas.getBoundingClientRect();
@@ -280,6 +280,6 @@ this.Screen3D = (function() {
     return false;
   };
 
-  return Screen3D;
+  return Screen;
 
 })();
