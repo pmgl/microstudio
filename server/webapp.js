@@ -37,11 +37,11 @@ this.WebApp = (function() {
       };
     })(this));
     this.forum_app = new ForumApp(this.server, this);
-    this.home_funk = {};
     this.concatenator = new Concatenator(this);
     this.fonts = new Fonts;
     this.export_features = new ExportFeatures(this);
     this.server.build_manager.createLinks(this.app);
+    this.home_page = {};
     this.languages = ["en", "fr", "pl", "de", "it", "pt"];
     home_exp = "^(\\/";
     for (i = j = 1, ref1 = this.languages.length - 1; j <= ref1; i = j += 1) {
@@ -79,20 +79,24 @@ this.WebApp = (function() {
             lang = l;
           }
         }
-        if ((_this.home_funk[lang] == null) || !_this.server.use_cache) {
-          _this.home_funk[lang] = pug.compileFile("../templates/home.pug");
+        if ((_this.home_funk == null) || !_this.server.use_cache) {
+          _this.home_funk = pug.compileFile("../templates/home.pug");
         }
-        return res.send(_this.home_funk[lang]({
-          tags: _this.server.content.tag_list,
-          name: "microStudio",
-          patches: _this.server.content.hot_patches,
-          javascript_files: _this.concatenator.getHomeJSFiles(),
-          css_files: _this.concatenator.getHomeCSSFiles(),
-          select: "hot",
-          path: req.path,
-          translator: _this.server.content.translator.getTranslator(lang),
-          language: lang
-        }));
+        if ((_this.server.content.translator.languages[lang] != null) && _this.server.content.translator.languages[lang].updated) {
+          _this.server.content.translator.languages[lang].updated = false;
+          delete _this.home_page[lang];
+        }
+        if ((_this.home_page[lang] == null) || !_this.server.use_cache) {
+          _this.home_page[lang] = _this.home_funk({
+            name: "microStudio",
+            javascript_files: _this.concatenator.getHomeJSFiles(),
+            css_files: _this.concatenator.getHomeCSSFiles(),
+            translator: _this.server.content.translator.getTranslator(lang),
+            language: lang,
+            languages: _this.languages
+          });
+        }
+        return res.send(_this.home_page[lang]);
       };
     })(this));
     ref4 = this.server.plugins;
@@ -647,7 +651,7 @@ this.WebApp = (function() {
     user = s[1];
     user = this.server.content.findUserByNick(user);
     if (user == null) {
-      this.return404(req, res);
+      return this.return404(req, res);
     }
     projects = user.listPublicProjects();
     projects.sort(function(a, b) {

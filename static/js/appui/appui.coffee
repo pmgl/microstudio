@@ -37,6 +37,8 @@ class AppUI
           document.getElementById("menuitem-#{s}").addEventListener "click",(event)=>
             @setSection(s,true)
 
+    @warning_messages = []
+
     @updateAllowedSections()
 
     document.addEventListener "keydown",(e)=>
@@ -188,12 +190,47 @@ class AppUI
       setInterval (()=>funk()),30000
       document.body.appendChild div
 
-  addWarningMessage:(text)->
-    document.querySelector(".main-container").style.top = "100px"
+  addWarningMessage:(text,icon="fa-exclamation-circle",id,dismissable)->
+    if dismissable and id?
+      if localStorage.getItem(id)
+        return
+
     div = document.createElement "div"
     div.classList.add "meta-message"
-    div.innerHTML = "<i class='fas fa-exclamation-circle'></i> #{text}"
+
+    span = document.createElement "span"
+    span.innerHTML = "<i class='fas #{icon}'></i> #{text}"
+
+    if dismissable
+      close = document.createElement "i"
+      close.classList.add "fa"
+      close.classList.add "fa-times"
+
+      close.addEventListener "click",()=>
+        @removeWarningMessage div
+        localStorage.setItem(id,true)
+
+      div.appendChild close
+
+    div.appendChild span
+
+    @warning_messages.push div
+    document.querySelector(".main-container").style.top = "#{60+40*@warning_messages.length}px"
     document.body.appendChild div
+    @layoutWarningMessages()
+
+  layoutWarningMessages:()->
+    for w,i in @warning_messages
+      w.style.top = "#{60+i*40}px"
+
+  removeWarningMessage:(div)->
+    if document.body.contains div
+      document.body.removeChild div
+      index = @warning_messages.indexOf div
+      if index>=0
+        @warning_messages.splice index,1
+        document.querySelector(".main-container").style.top = "#{60+40*@warning_messages.length}px"
+        @layoutWarningMessages()
 
   checkActivity:()->
     t = Date.now()-@last_activity
@@ -458,36 +495,15 @@ class AppUI
         e.classList.remove "language-menu-open"
         document.querySelector("#language-setting").style.width = "32px"
 
-    document.querySelector("#language-choice-pt").addEventListener "click",(event)=>@setLanguage("pt")  
-    document.querySelector("#language-choice-it").addEventListener "click",(event)=>@setLanguage("it")
-    document.querySelector("#language-choice-de").addEventListener "click",(event)=>@setLanguage("de")
-    document.querySelector("#language-choice-pl").addEventListener "click",(event)=>@setLanguage("pl")
-    document.querySelector("#language-choice-fr").addEventListener "click",(event)=>@setLanguage("fr")
-    document.querySelector("#language-choice-en").addEventListener "click",(event)=>@setLanguage("en")
+    for lang in window.ms_languages
+      do (lang)=>
+        if document.querySelector("#language-choice-#{lang}")?
+          document.querySelector("#language-choice-#{lang}").addEventListener "click",(event)=>@setLanguage(lang)
 
-    document.querySelector("#switch-to-pt").addEventListener "click",(event)=>
-      event.preventDefault()
-      @setLanguage("pt")
-
-    document.querySelector("#switch-to-it").addEventListener "click",(event)=>
-      event.preventDefault()
-      @setLanguage("it")
-
-    document.querySelector("#switch-to-de").addEventListener "click",(event)=>
-      event.preventDefault()
-      @setLanguage("de")
-
-    document.querySelector("#switch-to-pl").addEventListener "click",(event)=>
-      event.preventDefault()
-      @setLanguage("pl")
-
-    document.querySelector("#switch-to-fr").addEventListener "click",(event)=>
-      event.preventDefault()
-      @setLanguage("fr")
-
-    document.querySelector("#switch-to-en").addEventListener "click",(event)=>
-      event.preventDefault()
-      @setLanguage("en")
+        if document.querySelector("#switch-to-#{lang}")?
+          document.querySelector("#switch-to-#{lang}").addEventListener "click",(event)=>
+            event.preventDefault()
+            @setLanguage(lang)
 
     @setAction "login-submit",()=>
       @app.login @get("login_nick").value,@get("login_password").value
@@ -541,16 +557,19 @@ class AppUI
     @updateAllowedSections()
     @setMainSection "projects",location.pathname.length<4 # home page with language variation => record jump to /projects/
 
+    @addWarningMessage """Join <a target="_blank" href="https://itch.io/jam/microstudio-mini-jam-2">microStudio mini-jam #2</a>! From October 24/25. More info in the <a target="_blank" href="https://microstudio.dev/community/news/mini-jam-2/235/">Community Forum</a> and <a target="_blank" href="https://discord.gg/BDMqjxd">Discord</a>""","fa-info-circle","mini_jam_2_#{Math.floor(Date.now()/1000/3600/12)}",true
+
     if @app.user.info.size>@app.user.info.max_storage
       text = @app.translator.get "Your account is out of space!"
       text += " "+@app.translator.get("You are using %USED% of the %ALLOWED% you are allowed." ).replace("%USED%",@displayByteSize(@app.user.info.size)).replace("%ALLOWED%",@displayByteSize(@app.user.info.max_storage))
       text += " <a href='https://microstudio.dev/community/tips/your-account-is-out-of-space/109/' target='_blank'>#{@app.translator.get("More info...")}</a>"
-      @addWarningMessage text
+      @addWarningMessage text,undefined,"out_of_storage",false
     #if not @project?
     #  @show "myprojects"
     #  @hide "projectview"
       #@get("menu-projects").style.display = "inline-block"
     #@setMainSection "projects"
+
 
   updateAllowedSections:()->
     if @app.user?

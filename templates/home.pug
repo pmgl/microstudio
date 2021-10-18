@@ -61,6 +61,9 @@ html(lang=language)
 
     script(src="/lib/marked/marked.js")
     script(src="/lib/dompurify/purify.js")
+    
+    script.
+      window.ms_languages = !{JSON.stringify(languages)}
 
     each js in javascript_files
       script(src=js)

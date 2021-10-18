@@ -26,12 +26,13 @@ class @WebApp
 
     @forum_app = new ForumApp @server,@
 
-    @home_funk = {}
     @concatenator = new Concatenator @
     @fonts = new Fonts
 
     @export_features = new ExportFeatures @
     @server.build_manager.createLinks(@app)
+
+    @home_page = {}
 
     @languages = ["en","fr","pl","de","it", "pt"]
     home_exp = "^(\\/"
@@ -65,20 +66,25 @@ class @WebApp
           lang = l
       #console.info "language=#{lang}"
 
-      if not @home_funk[lang]? or not @server.use_cache
-        @home_funk[lang] = pug.compileFile "../templates/home.pug"
 
-      res.send @home_funk[lang](
-        tags: @server.content.tag_list
-        name: "microStudio"
-        patches: @server.content.hot_patches
-        javascript_files: @concatenator.getHomeJSFiles()
-        css_files: @concatenator.getHomeCSSFiles()
-        select: "hot"
-        path: req.path
-        translator: @server.content.translator.getTranslator(lang)
-        language: lang
-      )
+      if not @home_funk? or not @server.use_cache
+        @home_funk = pug.compileFile "../templates/home.pug"
+
+      if @server.content.translator.languages[lang]? and @server.content.translator.languages[lang].updated
+        @server.content.translator.languages[lang].updated = false
+        delete @home_page[lang]
+
+      if not @home_page[lang]? or not @server.use_cache
+        #console.info "generating home page #{lang}"
+        @home_page[lang] = @home_funk
+          name: "microStudio"
+          javascript_files: @concatenator.getHomeJSFiles()
+          css_files: @concatenator.getHomeCSSFiles()
+          translator: @server.content.translator.getTranslator(lang)
+          language: lang
+          languages: @languages
+
+      res.send @home_page[lang]
 
     for plugin in @server.plugins
       if plugin.addWebHooks?
@@ -535,7 +541,7 @@ class @WebApp
 
     user = @server.content.findUserByNick(user)
     if not user?
-      @return404(req,res)
+      return @return404(req,res)
 
     projects = user.listPublicProjects()
     projects.sort (a,b)-> b.last_modified-a.last_modified

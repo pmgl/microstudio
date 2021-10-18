@@ -71,6 +71,7 @@ class @Translator.Language
     return
 
   set:(userid,source,trans)->
+    @updated = true
     t = @translations[source]
     if not t?
       t =

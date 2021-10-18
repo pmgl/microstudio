@@ -122,6 +122,7 @@ this.Translator.Language = (function() {
 
   Language.prototype.set = function(userid, source, trans) {
     var t, u;
+    this.updated = true;
     t = this.translations[source];
     if (t == null) {
       t = {
