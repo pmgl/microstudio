@@ -23,6 +23,8 @@ class @Documentation
         req.open "GET","/doc/pl/doc.md"
       when "it"
         req.open "GET","/doc/it/doc.md"
+      when "pt"
+        req.open "GET","/doc/pt/doc.md"
       else
         req.open "GET","/doc/en/doc.md"
 
