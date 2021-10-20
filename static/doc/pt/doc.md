@@ -63,8 +63,8 @@ Você pode criar um projeto vazio na seção principal *Criar*. Seu projeto tem 
 * **Sprites**: *sprites* são imagens que você pode desenhar e modificar nesta seção. Você pode consultá-los facilmente para exibi-los na tela ao programar o jogo.
 * **Mapas**: Mapas são cenas ou níveis que você pode criar ao organizar os *sprites* em uma grade. Você pode mostrá-los facilmente na tela em seu programa.
 * **Documentação**: Nesta seção você escreve a documentação do seu projeto; Pode ser um documento de *design*, um tutorial, um guia para reusar seu projeto como um template e etc.
-* **Configurações**: Here you can set various options for your project; you can also invite other users to participate in your project with you.
-* **Publicação**: Here you can make your project public; don't forget to create a description and add tags.
+* **Configurações**: Aqui você pode escolher várias opções para o seu projeto; Você pode convidar outros usuários para participarem em seu projeto.
+* **Publicação**: Aqui você pode tornar o seu projeto público; Não esqueça de criar uma descrição e adicionar *tags*.
 
 ## Código
 Nesta seção, você programa e testa seu projeto. Um arquivo de código fonte é criado automaticamente para seu projeto. Você pode adicionar outros para dividir as funcionalidades de seu projeto em vários subconjuntos.
