@@ -10,16 +10,14 @@
 
 ### Primeiro Projeto
 
-Your first project is already created! You will create a character and
-program microStudio to display it on screen and ensure it can be moved around
-by pressing the arrow keys of your computer keyboard.
-
+Seu primeiro projeto já está criado! Você criará um personagem e programará o microStudio para exibi-lo na tela e fará com que ele possa ser movido pressionando as teclas de seta do teclado do computador.
 
 ## Criar um *Sprite*
 
 ### Criar um *Sprite*
 
 Click **Sprites** to open the sprites editor.
+Cliquem em **Sprites** para abrir o editor de *sprites*.
 
 :highlight #projectview .sidemenu #menuitem-sprites
 
@@ -29,7 +27,7 @@ Click **Sprites** to open the sprites editor.
 
 ### Criar um *Sprite*
 
-Click button "Add Sprite" to create a new sprite.
+Clique no botão "Adicionar Sprite" para criar um novo *sprite*.
 
 :navigate projects.sprites
 
@@ -45,16 +43,15 @@ Click button "Add Sprite" to create a new sprite.
 
 ### Desenhe seu Personagem
 
-Use the drawing tools on the right-hand side of the screen to draw your character.
-You can spend as much time as you wish on it!
+Use as ferramentas de desenho no lado direito da tela para desenhar seu personagem. Você pode usar o tempo que precisar para esta tarefa!
 
-When your sprite is done, move to the next step.
+Quando seu sprite estiver pronto, vá para a próxima etapa.
 
 ## Código 1
 
 ### Código
 
-Now click **Code**, we are about to program a bit!
+Agora clique em **Código**, iremos programar um pouco!
 
 :highlight #projectview .sidemenu #menuitem-code
 
@@ -69,16 +66,13 @@ Now click **Code**, we are about to program a bit!
 
 ### Código
 
-Your project's code is already filled with the definition of three functions:
-```init```, ```update``` et ```draw```. We will work on the contents of function
-```draw```. Add the following line, between line
-```draw = function()``` and line ```end```:
+O código do seu projeto já está preenchido com a definição de três funções: ```init```, ```update``` e ```draw```. Trabalharemos no conteúdo da função ```draw```. Adicione a linha abaixo, entre as linhas ```draw = function()``` e a linha ```end```:
 
 ```
-  screen.drawSprite("sprite",0,0,20)
+  screen.drawSprite("sprite", 0, 0, 20)
 ```
 
-This is how your code now looks like:
+Seu código ficará assim:
 
 ```
 draw = function()
@@ -94,7 +88,7 @@ end
 
 ### Execute seu Programa
 
-Let's give it a try! Click button play to launch your program.
+Vamos fazer um teste! Clique no botão *Play* para executar seu programa.
 
 :highlight #run-button
 
@@ -108,14 +102,9 @@ Let's give it a try! Click button play to launch your program.
 
 ### Executando
 
-Your character is now displayed in the middle of the execution view. The line of code
-we have added calls function ```drawSprite``` on object
-```screen```. The call is made with parameters: the name of the sprite to display  ```"sprite"```
-(make sure that it is actually the name of the sprite you created), x and y coordinates of the point
-where to display it (0,0 is the center of the screen) and the display size (20).
+Seu personagem agora é exibido no centro da tela de visualização da execução. A linha de código que adicionamos chama a função ```drawSprite``` no objeto ``` screen```. A chamada é feita com parâmetros: o nome do *sprite* para exibir: "sprite " (certifique-se de que é realmente o nome do *sprite* que você criou), coordenadas x e y do ponto onde exibi-lo (0, 0 é o centro da tela) e o tamanho da exibição(20).
 
-You can play with these coordinates to change the drawing position of the sprite. You will notice
-that your changes are reflected in real time in the execution view.
+Você pode brincar com essas coordenadas para alterar a posição de desenho do *sprite*. Você notará que suas alterações são refletidas em tempo real na tela de visualização da execução.
 
 ## Adicione um Fundo
 
@@ -123,16 +112,13 @@ that your changes are reflected in real time in the execution view.
 
 ### Adicione uma Cor de Fundo
 
-Above our line ```screen.drawSprite(...)```, we will add the following line:
+Acima de nossa linha ```screen.drawSprite (...)` ``, adicionaremos a seguinte linha:
 
 ```
-  screen.fillRect(0,0,400,400,"#468")
+  screen.fillRect(0, 0, 400, 400, "#468")
 ```
 
-```fillRect``` means "fill a rectangle". Parameter ```"#468"``` represents
-a blue-gray color. Click on it and then press and hold CTRL down, a color picker will show up.
-Pick the color you like the most!
-
+```fillRect``` significa "preencher um retângulo". O parâmetro ```"#468"``` representa uma cor cinza-azulada. Clique nele e pressione CTRL, um seletor de cores aparecerá. Escolha a cor que mais gosta!
 
 ## Controle o Personagem
 
@@ -140,14 +126,15 @@ Pick the color you like the most!
 
 ### Controle o Personagem
 
-In order to control the drawing position of the character, we will use two variables, ```x``` and ```y```.
-Let's change the line of code which draws the sprite, as follows:
+Para controlar a posição de desenho do personagem, usaremos duas variáveis, ```x``` e ```y```.
+Vamos mudar a linha de código que desenha o sprite, da seguinte maneira:
 
 ```
-  screen.drawSprite("sprite",x,y,20)
+  screen.drawSprite("sprite", x, y, 20)
 ```
 
 The character will now be drawn at coordinates ```x``` , ```y```.
+O personagem será desenhado nas coordenadas ```x``` , ```y```.
 
 ## Controle
 
@@ -158,12 +145,13 @@ The character will now be drawn at coordinates ```x``` , ```y```.
 All we need now is to change the value of ```x``` and ```y``` when keyboard
 arrow keys are pressed. Insert the following line between
 ```update = function()``` and ```end```:
+Tudo o que precisamos agora é alterar o valor de ```x``` e ```y``` quando as teclas de seta do teclado são pressionadas. Insira a seguinte linha entre ```update = function ()``` e ```end```:
 
 ```
-  if keyboard.LEFT then x = x-1 end
+  if keyboard.LEFT then x = x - 1 end
 ```
 
-Your full code now looks like this:
+Seu código completo agora será parecido com este:
 
 ```
 init = function()
@@ -185,16 +173,13 @@ end
 
 ### Controle o Personagem
 
-Click on the execution view, then press the left arrow key of your computer keyboard.
-You should see the character moving to the left!
+Clique na tela visualização de execução e pressione a tecla de seta para a esquerda no teclado do computador. Você deverá ver o personagem se movendo para a esquerda!
 
-Why: the code line we have added checks whether the left arrow key is pressed (```keyboard.LEFT```) and
-when it is the case, the value of ```x``` is reduced by 1.
+Por que: a linha de código que adicionamos verifica se a tecla de seta para a esquerda está pressionada (```keyboard.LEFT```) e quando for o caso, o valor de ```x``` é reduzido em 1.
 
-Knowing that the other arrow keys identifiers are RIGHT, UP and DOWN, add three lines to your code
-to ensure your character can move in every direction.
+Sabendo que os outros identificadores de teclas de seta são *RIGHT*, *UP* e *DOWN*, adicione três linhas ao seu código para garantir que seu personagem possa se mover em todas as direções.
 
-(Solution in the next step)
+(Solução no próximo passo)
 
 ## Controle o Personagem
 
@@ -202,19 +187,17 @@ to ensure your character can move in every direction.
 
 ### Controle o Personagem
 
-Here is the full code of the function  ```update``` to move the character in all 4 directions with
-keyboard arrow keys:
+Aqui está o código completo da função ```update``` para mover o personagem em todas as 4 direções com as teclas de seta do teclado:
 
 ```
 update = function()
-  if keyboard.LEFT then x = x-1 end
-  if keyboard.RIGHT then x = x+1 end
-  if keyboard.UP then y = y+1 end
-  if keyboard.DOWN then y = y-1 end
+  if keyboard.LEFT then x = x - 1 end
+  if keyboard.RIGHT then x = x + 1 end
+  if keyboard.UP then y = y + 1 end
+  if keyboard.DOWN then y = y - 1 end
 end
 ```
 
 ## Fim
 
-This tutorial is over. You can now learn more about programming in *microScript*, by
-starting the course on Programming.
+Este tutorial acabou. Agora você pode aprender mais sobre programação em *microScript*, iniciando o curso de Programação.
