@@ -22,6 +22,9 @@ this.Tutorials = (function() {
       case "it":
         req.open("GET", location.origin + "/tutorials/it/toc.md");
         break;
+      case "pt":
+        req.open("GET", location.origin + "/tutorials/pt/toc.md");
+        break;
       default:
         req.open("GET", location.origin + "/tutorials/en/toc.md");
     }
