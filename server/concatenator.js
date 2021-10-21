@@ -39,19 +39,23 @@ this.Concatenator = (function() {
     this.alt_player_base = ['/js/util/canvas2d.js', "/js/microscript/random.js", "/js/microscript/microvm.js", "/js/microscript/tokenizer.js", "/js/microscript/token.js", "/js/microscript/parser.js", "/js/microscript/program.js", "/js/microscript/jstranspiler.js", '/js/runtime/runtime.js', '/js/runtime/keyboard.js', '/js/runtime/gamepad.js', '/js/runtime/sprite.js', '/js/runtime/spriteframe.js', '/js/runtime/map.js', "/js/runtime/audio/audio.js", "/js/runtime/audio/beeper.js", "/js/runtime/audio/sound.js", "/js/runtime/audio/music.js", '/js/play/player.js', '/js/play/playerclient.js'];
     this.alt_players = {
       m2d: {
-        lib: "/lib/pixijs/pixi.min.js",
+        lib: ["/lib/pixijs/pixi.min.js"],
+        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"],
         scripts: ['/js/runtime/m2d/screen.js', '/js/runtime/m2d/m2d.js']
       },
       m3d: {
-        lib: "/lib/babylonjs/babylon.js",
+        lib: ["/lib/babylonjs/babylon.js"],
+        lib_path: ["node_modules/babylonjs/babylon.js"],
         scripts: ['/js/runtime/m3d/screen.js', '/js/runtime/m3d/m3d.js']
       },
       pixi: {
-        lib: "/lib/pixijs/pixi.min.js",
+        lib: ["/lib/pixijs/pixi.min.js"],
+        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"],
         scripts: ['/js/runtime/pixi/screen.js', '/js/runtime/pixi/pixi.js']
       },
       babylon: {
-        lib: "/lib/babylonjs/babylon.js",
+        lib: ["/lib/babylonjs/babylon.js"],
+        lib_path: ["node_modules/babylonjs/babylon.js"],
         scripts: ['/js/runtime/babylon/screen.js', '/js/runtime/babylon/babylon.js']
       }
     };
@@ -84,7 +88,7 @@ this.Concatenator = (function() {
     ref = this.alt_players;
     for (key in ref) {
       value = ref[key];
-      this.concat(this[key + "_js"], this[key + "_js_concat"]);
+      this.concat(this[key + "_js"], key + "_js_concat");
     }
     this.concat(this.webapp_css, "webapp_css_concat");
     return this.concat(this.audioengine_js, "audioengine_js_concat");
@@ -112,9 +116,9 @@ this.Concatenator = (function() {
       g = graphics.toLowerCase();
       player = this.alt_players[g];
       if (this.webapp.server.use_cache && (this.player3d_js_concat != null)) {
-        return [player.lib, "/" + g + ".js"];
+        return player.lib.concat(["/" + g + ".js"]);
       } else {
-        return [player.lib].concat(this[g + "_js"]);
+        return player.lib.concat(this[g + "_js"]);
       }
     } else {
       if (this.webapp.server.use_cache && (this.player_js_concat != null)) {
@@ -122,6 +126,16 @@ this.Concatenator = (function() {
       } else {
         return this.player_js;
       }
+    }
+  };
+
+  Concatenator.prototype.getEngineExport = function(graphics) {
+    var g;
+    if ((graphics != null) && typeof graphics === "string" && this.alt_players[graphics.toLowerCase()]) {
+      g = graphics.toLowerCase();
+      return this[g + "_js_concat"] || "";
+    } else {
+      return this.player_js_concat;
     }
   };
 

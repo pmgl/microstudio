@@ -47,16 +47,20 @@ class @Concatenator
 
     @alt_players =
       m2d:
-        lib: "/lib/pixijs/pixi.min.js"
+        lib: ["/lib/pixijs/pixi.min.js"]
+        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"]
         scripts: ['/js/runtime/m2d/screen.js','/js/runtime/m2d/m2d.js']
       m3d:
-        lib: "/lib/babylonjs/babylon.js"
+        lib: ["/lib/babylonjs/babylon.js"]
+        lib_path: ["node_modules/babylonjs/babylon.js"]
         scripts: ['/js/runtime/m3d/screen.js','/js/runtime/m3d/m3d.js']
       pixi:
-        lib: "/lib/pixijs/pixi.min.js"
+        lib: ["/lib/pixijs/pixi.min.js"]
+        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"]
         scripts: ['/js/runtime/pixi/screen.js','/js/runtime/pixi/pixi.js']
       babylon:
-        lib: "/lib/babylonjs/babylon.js"
+        lib: ["/lib/babylonjs/babylon.js"]
+        lib_path: ["node_modules/babylonjs/babylon.js"]
         scripts: ['/js/runtime/babylon/screen.js','/js/runtime/babylon/babylon.js']
 
     for key,value of @alt_players
@@ -224,7 +228,7 @@ class @Concatenator
     @concat(@webapp_js,"webapp_js_concat")
     @concat(@player_js,"player_js_concat")
     for key,value of @alt_players
-      @concat(@["#{key}_js"],@["#{key}_js_concat"])
+      @concat(@["#{key}_js"],"#{key}_js_concat")
     @concat(@webapp_css,"webapp_css_concat")
     @concat(@audioengine_js,"audioengine_js_concat")
 
@@ -245,14 +249,21 @@ class @Concatenator
       g = graphics.toLowerCase()
       player = @alt_players[g]
       if @webapp.server.use_cache and @player3d_js_concat?
-        [player.lib,"/#{g}.js"]
+        player.lib.concat ["/#{g}.js"]
       else
-        [player.lib].concat @["#{g}_js"]
+        player.lib.concat @["#{g}_js"]
     else
       if @webapp.server.use_cache and @player_js_concat?
         ["/play.js"]
       else
         @player_js
+
+  getEngineExport:(graphics)->
+    if graphics? and typeof graphics == "string" and @alt_players[graphics.toLowerCase()]
+      g = graphics.toLowerCase()
+      @["#{g}_js_concat"] or ""
+    else
+      @player_js_concat
 
   concat:(files,variable,callback)->
     list = (f for f in files)
