@@ -2,13 +2,13 @@
 
 :project Tutorial: Create a Game
 
-## Introduction
+## Introdução
 
 :position 30,30,40,40
 
 :overlay
 
-### Create a game
+### Criar um Jogo
 
 In this tutorial series, we will create a simple yet fully working game in less
 than 70 lines of code.
@@ -22,13 +22,13 @@ Here is an example of how the final game can look like:
 
 https://microstudio.io/gilles/skaterun/
 
-## Hero
+## Herói
 
 :position 50,50,40,40
 
 :highlight #menuitem-sprites
 
-### Hero
+### Herói
 
 Our game needs a Hero. Go to the Sprites tab and click "Add a sprite".
 
@@ -37,11 +37,11 @@ You can spend as much time as you wish on your hero. You can even make it animat
 toolbar at the bottom of the window and adding animation frames.
 
 
-## Initial code
+## Código inicial
 
 :highlight #menuitem-code
 
-### Initial code
+### Código inicial
 
 We will now start coding to display our hero on screen. Click to open the Code tab.
 
@@ -68,9 +68,9 @@ animations, physics and logic.
 ```draw``` is called everytime the screen can be redrawn. We will start working on the body of this function.
 
 
-## Painting the background
+## Pintando o fundo
 
-### Painting the background
+### Pintando o fundo
 
 We will insert a line in the body of the function draw:
 
@@ -80,20 +80,20 @@ draw = function()
 end
 ```
 
-## Run
+## Executar
 
 :highlight #run-button
 
-### Run the program
+### Executar o programa
 
 Click on the run button to start your program.
 
 The line we have added fills a rectangle, centered on the center of the screen, extending to the screen boundaries.
 The fifth parameter is the color. Click on it and hold down CTRL to pick another color with the color picker!
 
-## Displaying our hero
+## Exibindo o herói
 
-### Displaying our hero
+### Exibindo o herói
 
 Add the following line, in the body of the function draw, after the call to ```screen.fillRect```:
 
@@ -119,9 +119,9 @@ draw = function()
 end
 ```
 
-## Next
+## Próximo
 
-### Next
+### Próximo
 
 Let's continue with the next tutorial where we will create a wall on which our hero is
 running.

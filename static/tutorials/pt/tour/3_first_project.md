@@ -57,7 +57,6 @@ Agora clique em **Código**, iremos programar um pouco!
 
 :auto
 
-
 ## Código
 
 :navigate projects.code
@@ -112,7 +111,7 @@ Você pode brincar com essas coordenadas para alterar a posição de desenho do 
 
 ### Adicione uma Cor de Fundo
 
-Acima de nossa linha ```screen.drawSprite (...)` ``, adicionaremos a seguinte linha:
+Acima de nossa linha ```screen.drawSprite (...)```, adicionaremos a seguinte linha:
 
 ```
   screen.fillRect(0, 0, 400, 400, "#468")
@@ -133,8 +132,7 @@ Vamos mudar a linha de código que desenha o sprite, da seguinte maneira:
   screen.drawSprite("sprite", x, y, 20)
 ```
 
-The character will now be drawn at coordinates ```x``` , ```y```.
-O personagem será desenhado nas coordenadas ```x``` , ```y```.
+O personagem será desenhado nas coordenadas ```x```, ```y```.
 
 ## Controle
 
@@ -142,9 +140,6 @@ O personagem será desenhado nas coordenadas ```x``` , ```y```.
 
 ### Controle o Personagem
 
-All we need now is to change the value of ```x``` and ```y``` when keyboard
-arrow keys are pressed. Insert the following line between
-```update = function()``` and ```end```:
 Tudo o que precisamos agora é alterar o valor de ```x``` e ```y``` quando as teclas de seta do teclado são pressionadas. Insira a seguinte linha entre ```update = function ()``` e ```end```:
 
 ```

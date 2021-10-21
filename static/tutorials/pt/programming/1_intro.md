@@ -2,7 +2,7 @@
 
 :project Programming
 
-## Introduction
+## Introdução
 
 :overlay
 
@@ -10,7 +10,7 @@
 
 :navigate projects.code.console
 
-### Programming
+### Programando
 
 In this tutorial course, we will learn about programming in **microScript**.
 
@@ -34,7 +34,7 @@ computer's answers.
 
 :highlight #terminal
 
-## Console input
+## Entrada do console
 
 :navigate projects.code.console
 

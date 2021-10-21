@@ -2,11 +2,11 @@
 
 :project Tutorial: Create a Game
 
-## Blades
+## Lâminas
 
 :position 50,50,40,40
 
-### Blades
+### Lâminas
 
 We will now add some obstacles that our hero needs to avoid by jumping. We will call them
 blades but you can design them as anything else provided they look dangerous enough!
@@ -14,9 +14,9 @@ blades but you can design them as anything else provided they look dangerous eno
 Open the sprites tab, click "Add a sprite" to create a new sprite, make sure to rename it "blade"
 to ensure it works correctly with the rest of this tutorial series. Draw your dangerous blade!
 
-## Initializing blades
+## Inicializando as lâminas
 
-### Initializing blades
+### Inicializando as lâminas
 
 Now that your "blade" sprite is ready, we will create a set of blades by code, display them,
 make them respawn ahead of the hero after they disappeared behind him.
@@ -32,9 +32,9 @@ init = function()
 end
 ```
 
-## Creating blades' "behaviour"
+## Criando o "comportamento" das lâminas
 
-### Creating blades' "behaviour"
+### Criando o "comportamento" das lâminas
 
 As our hero runs on the wall, the blades will seem to move toward him and disappear behind him.
 Once disappeared, we will reuse the same blade and make it respawn ahead of the hero at a slightly
@@ -53,9 +53,9 @@ inserted in the body of the ```update``` function.
 When respawning a blade ahead of the user, we also reset the value in the ```passed``` list to zero,
 you will understand later why.
 
-## Displaying blades
+## Exibindo as lâminas
 
-### Displaying blades
+### Exibindo as lâminas
 
 We should now display the blades on screen. To do that, add the code below to the body of our function ```draw```.
 This code iterates on the blades positions, and draws the "blade" sprite at their location.
@@ -69,9 +69,9 @@ This code iterates on the blades positions, and draws the "blade" sprite at thei
 The x coordinate for drawing the sprite is computed as the difference between the blade's position and the global variable *position*.
 Thus when the blade's position equals the hero's position, both will be drawn at the same place.
 
-## Testing collisions with blades
+## Testando colisões com lâminas
 
-### Testing collisions with blades
+### Testando colisões com lâminas
 
 We will now check if the hero collides with a blade, or is jumping over it. For each blade, we will check the difference
 between the blade's position and the hero's. If the absolute value of the difference is small enough, we can consider the two
@@ -112,9 +112,9 @@ Here is the full code of the *for loop* within function *update*:
   end
 ```
 
-## Displaying the score
+## Exibindo a pontuação
 
-### Displaying the score
+### Exibindo a pontuação
 
 So we are now recording a score, how about actually displaying it? Let's add this to
 the body of function *draw*:
@@ -124,9 +124,9 @@ the body of function *draw*:
 ```
 
 
-## Next
+## Próximo
 
-### Next
+### Próximo
 
 Our game is almost complete! In the next tutorial, we will manage the game over case and see
 how to restart a new game. Here is the full code as it should look for now:

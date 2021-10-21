@@ -63,9 +63,9 @@ covering all the game interface and draw the text GAME OVER. We add this to the 
   end
 ```
 
-## Accelerating the gameplay
+## Acelenrando o jogo
 
-### Accelerating the gameplay
+### Acelenrando o jogo
 
 Our game is too easy. Let's make it harder! We will progressively accelerate the hero during the game.
 We do that by creating a variable *speed* which we initialize to value 2 in the *init* function:
@@ -84,9 +84,9 @@ We will then change the line ```position = position + 2``` in the *update* metho
 
 We are thus increasing the speed of the hero during the gameplay!
 
-## Done!
+## Pronto!
 
-### Done!
+### Pronto!
 
 We have finished creating our game. The full code is given again below. If you look closely, you will notice that
 we have added a variable *running* which purpose is to wait that the player touches the screen / clicks before

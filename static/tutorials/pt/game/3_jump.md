@@ -2,19 +2,19 @@
 
 :project Tutorial: Create a Game
 
-## Jump!
+## Pulo!
 
 :position 50,50,40,40
 
-### Jump!
+### Pulo!
 
 We need our hero to jump on a tap or mouse click on the screen. Jumping means acquiring
 some vertical velocity, which will affect the vertical position of the hero. The vertical
 velocity itself will be affected by gravity.
 
-## Jump!
+## Pulo!
 
-### Jump!
+### Pulo!
 
 Let's choose to use a variable ```hero_y``` as vertical position of the hero and ```hero_vy``` as
 vertical velocity of the hero.
@@ -33,9 +33,9 @@ adding:
   hero_y = hero_y + hero_vy
 ```
 
-## Initiate the jump
+## Iniciar o pulo
 
-### Initiate the jump
+### Iniciar o pulo
 
 Our two conditions for initiating a jump are:
 
@@ -52,9 +52,9 @@ Let's add the following code to the ```update``` function body:
   end
 ```
 
-## Gravity
+## Gravidade
 
-### Gravity
+### Gravidade
 
 Now when you make your hero jump, he goes through the roof and disappears real quick! That is because we haven't
 introduced gravity yet. Gravity is similar to a downwards acceleration. Every short period of time, it decreases our
@@ -78,9 +78,9 @@ to
 
 We are just now ensuring that our hero's vertical position cannot be lower than zero.
 
-## Next
+## Próximo
 
-### Next
+### Próximo
 
 In the next short tutorial, we will add blades that our hero will have to avoid by jumping over them.
 Here is our full current code below:
