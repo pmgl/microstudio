@@ -402,6 +402,10 @@
 #colorpicker-group {
   text-align: center ;
 }
+input#colortext {
+  text-align: center;
+  background:  hsl(200,30%,30%);
+}
 #colorpicker-group .spritetoolbutton {
   width: 140px ;
   margin: 2px 0 ;

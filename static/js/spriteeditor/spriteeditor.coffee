@@ -43,6 +43,7 @@ class @SpriteEditor
 
     document.getElementById("sprite-width").addEventListener "input",(event)=>@spriteDimensionChanged("width")
     document.getElementById("sprite-height").addEventListener "input",(event)=>@spriteDimensionChanged("height")
+    document.getElementById("colortext").addEventListener "input",(event)=>@colortextChanged()
 
     @sprite_size_validator = new InputValidator [document.getElementById("sprite-width"),document.getElementById("sprite-height")],
       document.getElementById("sprite-size-button"),
@@ -407,6 +408,7 @@ class @SpriteEditor
   setColor:(@color)->
     @spriteview.setColor @color
     @auto_palette.colorPicked @color
+    document.getElementById("colortext").value = @color
 
   rebuildSpriteList:()->
     list = document.getElementById "sprite-list"
@@ -522,6 +524,10 @@ class @SpriteEditor
         document.getElementById("sprite-height").value = document.getElementById("sprite-width").value
       else
         document.getElementById("sprite-width").value = document.getElementById("sprite-height").value
+  
+  colortextChanged:()->
+    @colorpicker.color = document.getElementById("colortext").value
+    @colorpicker.update()
 
   saveDimensionChange:(value)->
     return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
