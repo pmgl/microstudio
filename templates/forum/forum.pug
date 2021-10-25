@@ -31,7 +31,9 @@ html(lang=language)
     else
       link(rel="manifest" href="/community/manifest.json")
 
-    script window.community = !{JSON.stringify(community)} ;
+    script.
+      window.community = !{JSON.stringify(community)} ;
+      window.translation = !{translation};
 
   body(class=theme)
     header

@@ -63,7 +63,8 @@ html(lang=language)
     script(src="/lib/dompurify/purify.js")
     
     script.
-      window.ms_languages = !{JSON.stringify(languages)}
+      window.ms_languages = !{JSON.stringify(languages)};
+      window.translation = !{translation};
 
     each js in javascript_files
       script(src=js)

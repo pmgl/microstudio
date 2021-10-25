@@ -775,7 +775,6 @@ AppUI = (function() {
     this.hide("login-overlay");
     this.updateAllowedSections();
     this.setMainSection("projects", location.pathname.length < 4);
-    this.addWarningMessage("Join <a target=\"_blank\" href=\"https://itch.io/jam/microstudio-mini-jam-2\">microStudio mini-jam #2</a>! From October 24/25. More info in the <a target=\"_blank\" href=\"https://microstudio.dev/community/news/mini-jam-2/235/\">Community Forum</a> and <a target=\"_blank\" href=\"https://discord.gg/BDMqjxd\">Discord</a>", "fa-info-circle", "mini_jam_2_" + (Math.floor(Date.now() / 1000 / 3600 / 12)), true);
     if (this.app.user.info.size > this.app.user.info.max_storage) {
       text = this.app.translator.get("Your account is out of space!");
       text += " " + this.app.translator.get("You are using %USED% of the %ALLOWED% you are allowed.").replace("%USED%", this.displayByteSize(this.app.user.info.size)).replace("%ALLOWED%", this.displayByteSize(this.app.user.info.max_storage));

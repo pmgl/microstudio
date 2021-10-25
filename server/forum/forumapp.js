@@ -166,6 +166,7 @@ this.ForumApp = (function() {
             scroll: scroll,
             getHue: _this.getHue,
             theme: theme,
+            translation: _this.server.content.translator.languages[lang] != null ? _this.server.content.translator.languages[lang]["export"]() : "{}",
             post_info: {
               id: post.id,
               slug: post.slug,
@@ -204,6 +205,7 @@ this.ForumApp = (function() {
       name: name,
       theme: theme,
       description: description,
+      translation: this.server.content.translator.languages[lang] != null ? this.server.content.translator.languages[lang]["export"]() : "{}",
       community: {
         language: lang,
         category: selected,

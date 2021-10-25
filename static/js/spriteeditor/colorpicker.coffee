@@ -18,10 +18,20 @@ class @ColorPicker
     document.addEventListener "mouseup", (event) => @mouseUp(event)
 
   colorPicked:(c)->
+    if typeof c == "string"
+      match = /rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/.exec(c.replace(/ /g,""))
+      if match? and match.length>=4
+        c = [match[1]|0,match[2]|0,match[3]|0]
+      else
+        return
+
+    for i in [0..2]
+      c[i] = Math.max(0,Math.min(255,c[i]))
+
     @color = "rgb(#{c[0]},#{c[1]},#{c[2]})"
     @editor.setColor(@color)
     col = @RGBtoHSV(c[0],c[1],c[2])
-    @hue = Math.floor(col.h*@num_blocks*2)%(@num_blocks*2)
+    @hue = Math.round(col.h*@num_blocks*2)%(@num_blocks*2)
     @saturation = Math.round(col.s*@num_blocks)
     @lightness = Math.round(col.v*@num_blocks)
     if @saturation == 0 or @lightness == 0

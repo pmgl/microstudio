@@ -480,7 +480,7 @@ a#run-link {
 
 .value-tool {
   padding: 10px ;
-  background: #333 ;
+  background: hsl(200,20%,15%) ;
   border:solid 1px rgba(255,255,255,.2);
   box-shadow: 0 0 5px #000 ;
   border-radius: 5px ;
@@ -488,6 +488,9 @@ a#run-link {
 }
 .value-tool input {
   width: 300px ;
+}
+.value-tool .colortext {
+  width: unset ;
 }
 .value-tool canvas {
   /*background: linear-gradient(to right,#444,rgba(0,0,0,0));*/

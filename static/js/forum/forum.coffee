@@ -3,17 +3,11 @@ class @Forum
     @client = new Client @
     @client.start()
     @translator = new Translator @
-    @translator.load ()=>
-      @setTimeInfo()
-      @setOtherInfo()
-      @addLinks()
-      @updateUserCapabilities()
-      @createLikeButtons()
-      @createWatchButton()
-      if not @edit_bars_added
-        @edit_bars_added = true
-        @addEditBars()
 
+    @setTimeInfo()
+    @setOtherInfo()
+    @addLinks()
+    @updateUserCapabilities()
 
     @plug "create-post-button",()=> document.getElementById("edit-post").style.display = "block"
     @plug "create-post-button",()=> document.getElementById("edit-post").style.display = "block"
@@ -352,6 +346,13 @@ class @Forum
 
     @filterPerms()
     @updateUserCapabilities()
+    @createLikeButtons()
+    @createWatchButton()
+
+    if not @edit_bars_added
+      @edit_bars_added = true
+      @addEditBars()
+
 
   updateUserCapabilities:()->
     if not @user?

@@ -83,6 +83,7 @@ class @WebApp
           translator: @server.content.translator.getTranslator(lang)
           language: lang
           languages: @languages
+          translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
 
       res.send @home_page[lang]
 
