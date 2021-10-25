@@ -1,22 +1,20 @@
-@M2D = {}
+M2D = {}
 
-@M2D.Scene =
+class M2D.Scene extends PIXI.Container
   constructor: ()->
-    this.children = []
-    this.stage = new PIXI.Container()
+    super()
 
-@M2D.Camera =
-  constructor: ()->
-    this.height = 200
-    this.width = 0
+class M2D.Camera
+  constructor:(@fov=200,@x=0,@y=0)->
 
+class M2D.Group
+  constructor:()->
 
-@M2D.Group =
-  constructor: (x)->
-    this.x = x
-
-
-
-@M2D.Sprite =
-  constructor: (x)->
-    this.x = x
+class M2D.Sprite extends PIXI.Sprite
+  constructor:(source)->
+    if source instanceof Sprite
+      super new PIXI.Texture source.frames[0].canvas
+    else if typeof source == "string" and M2D.runtime.sprites[source]?
+      super new PIXI.Texture M2D.runtime.sprites[source].frames[0].canvas
+    else
+      super(source)

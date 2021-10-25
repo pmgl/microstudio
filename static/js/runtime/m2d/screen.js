@@ -1,14 +1,16 @@
 this.Screen = (function() {
   function Screen(runtime) {
     this.runtime = runtime;
-    this.app = new PIXI.Application({
+    this.renderer = new PIXI.Renderer({
       width: 200,
       height: 200,
       antialias: true,
       resolution: 1,
       transparent: false
     });
-    this.canvas = this.app.view;
+    M2D.runtime = this.runtime;
+    M2D.PIXI = PIXI;
+    this.canvas = this.renderer.view;
     this.touches = {};
     this.mouse = {
       x: -10000,
@@ -29,8 +31,8 @@ this.Screen = (function() {
     return this["interface"] = {
       width: this.width,
       height: this.height,
-      render: function(scene, camera) {
-        return screen.render(scene, camera);
+      render: function(stage) {
+        return screen.render(stage);
       }
     };
   };
@@ -107,16 +109,13 @@ this.Screen = (function() {
     this.canvas.style.height = Math.round(h) + "px";
     this.camera_aspect = w / h;
     this.update_camera = true;
-    return this.app.renderer.resize(w, h);
+    this.renderer.resize(w, h);
+    this.width = w;
+    return this.height = h;
   };
 
-  Screen.prototype.render = function(scene, camera) {
-    if (this.update_camera) {
-      camera.camera.aspect = this.camera_aspect;
-      camera.camera.updateProjectionMatrix();
-      this.update_camera = false;
-    }
-    return this.renderer.render(scene.scene, camera.camera);
+  Screen.prototype.render = function(stage) {
+    return this.renderer.render(stage);
   };
 
   Screen.prototype.startControl = function(element) {

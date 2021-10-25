@@ -1,13 +1,16 @@
 class @Screen
   constructor:(@runtime)->
-    @app = new PIXI.Application
+    @renderer = new PIXI.Renderer
       width: 200
       height: 200
       antialias: true
       resolution: 1
       transparent: false
 
-    @canvas = @app.view
+    M2D.runtime = @runtime
+    M2D.PIXI = PIXI
+
+    @canvas = @renderer.view
 
     @touches = {}
     @mouse =
@@ -24,7 +27,7 @@ class @Screen
     @interface =
       width: @width
       height: @height
-      render: (scene,camera)->screen.render(scene,camera)
+      render: (stage)->screen.render(stage)
 
   updateInterface:()->
     @interface.width = @width
@@ -95,18 +98,12 @@ class @Screen
     @camera_aspect = w/h
     @update_camera = true
 
-    @app.renderer.resize( w,h )
+    @renderer.resize( w,h )
+    @width = w
+    @height = h
 
-  render:(scene,camera)->
-    if @update_camera
-      camera.camera.aspect = @camera_aspect
-      camera.camera.updateProjectionMatrix()
-      @update_camera = false
-
-    #@renderer.shadowMap.enabled = true
-    #@renderer.shadowMap.type = THREE.PCFSoftShadowMap
-
-    @renderer.render scene.scene,camera.camera
+  render:(stage)->
+    @renderer.render(stage)
 
   startControl:(@element)->
     @canvas.addEventListener "touchstart", (event) => @touchStart(event)
