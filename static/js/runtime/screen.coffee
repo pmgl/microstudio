@@ -189,6 +189,7 @@ class @Screen
 
   setFont:(font)->
     @font = font or "Verdana"
+    @loadFont @font
 
   loadFont:(font="BitCell")->
     if not @font_load_requested[font]
@@ -199,7 +200,7 @@ class @Screen
       catch err
     1
 
-  isFontReady:(font="BitCell")->
+  isFontReady:(font=@font)->
     return 1 if @font_loaded[font]
     try
       if document.fonts? and document.fonts.check?

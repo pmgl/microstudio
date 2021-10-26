@@ -946,7 +946,7 @@ screen.loadFont("DigitalDisco")
 ##### screen.isFontReady( font_name )
 Returns 1 (true) if the given font is loaded and ready to be used. Make sure to call `screen.loadFont` first or your font may never be loaded.
 <!--- suggest_end --->
-You can omit the function argument, in which case it checks whether the default font is loaded and ready to be used (BitCell font).
+You can omit the function argument, in which case it checks whether the current font is loaded and ready to be used (default font, or other font you have set with your latest call to `screen.setFont( font_name )``).
 
 ```
 if screen.isFontReady() then

@@ -296,7 +296,8 @@ this.Screen = (function() {
   };
 
   Screen.prototype.setFont = function(font) {
-    return this.font = font || "Verdana";
+    this.font = font || "Verdana";
+    return this.loadFont(this.font);
   };
 
   Screen.prototype.loadFont = function(font) {
@@ -320,7 +321,7 @@ this.Screen = (function() {
   Screen.prototype.isFontReady = function(font) {
     var err, res;
     if (font == null) {
-      font = "BitCell";
+      font = this.font;
     }
     if (this.font_loaded[font]) {
       return 1;

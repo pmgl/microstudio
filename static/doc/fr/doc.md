@@ -928,7 +928,7 @@ screen.loadFont("DigitalDisco")
 ##### screen.isFontReady( font_name )
 Renvoie 1 (vrai) si la police demandée est chargée et prête à être utilisée. Prenez soin d'appeler `screen.loadFont` au préalable, sans quoi votre police pourrait ne jamais être chargée.
 <!--- suggest_end --->
-Vous pouvez omettre l'argument, dans ce cas la fonction restera si la police par défaut est chargée et prête à être utilisée (BitCell).
+Vous pouvez omettre l'argument, dans ce cas la fonction testera si la police en cours est chargée et prête à être utilisée (la police par défaut, ou la dernière police que vous avez choisie avec `screen.setFont( nom_de_police )`.
 
 ```
 if screen.isFontReady() then
