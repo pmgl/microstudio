@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2021-10-26
+* Text input/output for the color picker
+* Synchronous translation data, fixes translation problems in the UI
+* translated publish options titles
+
 ### Update 2021-10-12
 * Fixes for achievements
 * Support for Ctrl+S shortcut for saving changes
