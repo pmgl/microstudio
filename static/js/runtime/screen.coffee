@@ -18,6 +18,9 @@ class @Screen
     @anchor_y = 0
     @supersampling = @previous_supersampling = 1
     @font = "BitCell"
+    @font_load_requested = {}
+    @font_loaded = {}
+    @loadFont @font
     @initContext()
 
     @cursor = "default"
@@ -108,6 +111,8 @@ class @Screen
       drawPolyline: ()->screen.drawPolyline(arguments)
       fillPolygon: ()->screen.fillPolygon(arguments)
       setCursorVisible: (visible)->screen.setCursorVisible(visible)
+      loadFont: (font)->screen.loadFont(font)
+      isFontReady: (font)->screen.isFontReady(font)
 
   updateInterface:()->
     @interface.width = @width
@@ -184,6 +189,26 @@ class @Screen
 
   setFont:(font)->
     @font = font or "Verdana"
+
+  loadFont:(font="BitCell")->
+    if not @font_load_requested[font]
+      @font_load_requested[font] = true
+      try
+        if document.fonts? and document.fonts.load?
+          document.fonts.load "16pt #{font}"
+      catch err
+    1
+
+  isFontReady:(font="BitCell")->
+    return 1 if @font_loaded[font]
+    try
+      if document.fonts? and document.fonts.check?
+        res = document.fonts.check "16pt #{font}"
+        if res
+          @font_loaded[font] = res
+        return if res then 1 else 0
+    catch err
+    1
 
   setTranslation:(@translation_x,@translation_y)->
 

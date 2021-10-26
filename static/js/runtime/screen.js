@@ -19,6 +19,9 @@ this.Screen = (function() {
     this.anchor_y = 0;
     this.supersampling = this.previous_supersampling = 1;
     this.font = "BitCell";
+    this.font_load_requested = {};
+    this.font_loaded = {};
+    this.loadFont(this.font);
     this.initContext();
     this.cursor = "default";
     this.canvas.addEventListener("mousemove", (function(_this) {
@@ -189,6 +192,12 @@ this.Screen = (function() {
       },
       setCursorVisible: function(visible) {
         return screen.setCursorVisible(visible);
+      },
+      loadFont: function(font) {
+        return screen.loadFont(font);
+      },
+      isFontReady: function(font) {
+        return screen.isFontReady(font);
       }
     };
   };
@@ -288,6 +297,50 @@ this.Screen = (function() {
 
   Screen.prototype.setFont = function(font) {
     return this.font = font || "Verdana";
+  };
+
+  Screen.prototype.loadFont = function(font) {
+    var err;
+    if (font == null) {
+      font = "BitCell";
+    }
+    if (!this.font_load_requested[font]) {
+      this.font_load_requested[font] = true;
+      try {
+        if ((document.fonts != null) && (document.fonts.load != null)) {
+          document.fonts.load("16pt " + font);
+        }
+      } catch (error) {
+        err = error;
+      }
+    }
+    return 1;
+  };
+
+  Screen.prototype.isFontReady = function(font) {
+    var err, res;
+    if (font == null) {
+      font = "BitCell";
+    }
+    if (this.font_loaded[font]) {
+      return 1;
+    }
+    try {
+      if ((document.fonts != null) && (document.fonts.check != null)) {
+        res = document.fonts.check("16pt " + font);
+        if (res) {
+          this.font_loaded[font] = res;
+        }
+        if (res) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    } catch (error) {
+      err = error;
+    }
+    return 1;
   };
 
   Screen.prototype.setTranslation = function(translation_x, translation_y) {

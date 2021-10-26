@@ -916,6 +916,34 @@ screen.setFont("BitCell")
 
 **Astuce**: La variable globale ```fonts``` est une liste de tous les noms de polices de caractères disponibles dans microStudio.
 
+<!--- suggest_start screen.loadFont --->
+##### screen.loadFont( font_name )
+Initie le chargement d'une police de caractères. Utile en conjonction avec `screen.isFontReady`
+<!--- suggest_end --->
+
+```
+screen.loadFont("DigitalDisco")
+```
+<!--- suggest_start screen.isFontReady --->
+##### screen.isFontReady( font_name )
+Renvoie 1 (vrai) si la police demandée est chargée et prête à être utilisée. Prenez soin d'appeler `screen.loadFont` au préalable, sans quoi votre police pourrait ne jamais être chargée.
+<!--- suggest_end --->
+Vous pouvez omettre l'argument, dans ce cas la fonction restera si la police par défaut est chargée et prête à être utilisée (BitCell).
+
+```
+if screen.isFontReady() then
+  // nous pouvons ici utiliser la police par défaut
+  screen.drawText("DU TEXTE",0,0,50)
+end
+
+screen.loadFont("DigitalDisco") // assurons-nous que DigitalDisco va être chargée
+
+if screen.isFontReady("DigitalDisco")
+  screen.setFont("DigitalDisco")
+  screen.drawText("ENCORE DU TEXTE",0,50,20)
+end
+```
+
 <!--- suggest_start screen.textWidth --->
 ##### screen.textWidth( texte, taille )
 Permet de connaître la largeur du texte donné en paramètre, lorsqu'il sera dessiné avec la taille spécifiée.

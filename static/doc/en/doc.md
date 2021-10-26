@@ -934,6 +934,34 @@ screen.setFont("BitCell")
 
 **Tip**: the global variable ```fonts``` is an array of all available fonts in microStudio
 
+<!--- suggest_start screen.loadFont --->
+##### screen.loadFont( font_name )
+Initiates the loading of a font. Useful in conjunction with `screen.isFontReady`
+<!--- suggest_end --->
+
+```
+screen.loadFont("DigitalDisco")
+```
+<!--- suggest_start screen.isFontReady --->
+##### screen.isFontReady( font_name )
+Returns 1 (true) if the given font is loaded and ready to be used. Make sure to call `screen.loadFont` first or your font may never be loaded.
+<!--- suggest_end --->
+You can omit the function argument, in which case it checks whether the default font is loaded and ready to be used (BitCell font).
+
+```
+if screen.isFontReady() then
+  // we can use the default font
+  screen.drawText("MY TEXT",0,0,50)
+end
+
+screen.loadFont("DigitalDisco") // make sure DigitalDisco will be loaded
+
+if screen.isFontReady("DigitalDisco")
+  screen.setFont("DigitalDisco")
+  screen.drawText("SOME OTHER TEXT",0,50,20)
+end
+```
+
 
 <!--- suggest_start screen.textWidth --->
 ##### screen.textWidth( text, size )

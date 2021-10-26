@@ -2,6 +2,7 @@
 
 ### Update 2021-10-26
 * Text input/output for the color picker (thanks to HomineLudens for his initial contribution of this feature!)
+* Added `screen.loadFont()` and `screen.isFontReady`, allowing to deal with asynchronous loading of fonts
 * Synchronous translation data, fixes translation problems in the UI
 * translated publish options titles
 
