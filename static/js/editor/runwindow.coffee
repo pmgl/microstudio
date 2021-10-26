@@ -116,7 +116,7 @@ class @RunWindow
 
     if @transpiler then url += "#transpiler"
     @app.project.savePendingChanges ()=>
-      device.innerHTML = "<iframe id='runiframe' allow='autoplay' src='#{url}'></iframe>"
+      device.innerHTML = "<iframe id='runiframe' allow='autoplay;gamepad' src='#{url}'></iframe>"
       #document.getElementById("runiframe").focus()
       @windowResized()
 

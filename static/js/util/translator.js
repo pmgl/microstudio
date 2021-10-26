@@ -3,6 +3,7 @@ this.Translator = (function() {
     var index;
     this.app = app;
     this.lang = document.children[0].lang;
+    this.language = window.translation;
     this.incomplete = {};
     if ((document.cookie != null) && document.cookie.indexOf("language=") >= 0) {
       index = document.cookie.indexOf("language=") + "language=".length;

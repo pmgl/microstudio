@@ -1,6 +1,7 @@
 class @Translator
   constructor:(@app)->
     @lang = document.children[0].lang
+    @language = window.translation
     @incomplete = {}
     if document.cookie? and document.cookie.indexOf("language=")>=0
       index = document.cookie.indexOf("language=")+"language=".length

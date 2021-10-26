@@ -402,6 +402,37 @@
 #colorpicker-group {
   text-align: center ;
 }
+.colortext {
+  margin-top: 10px ;
+  position: relative ;
+  color: rgba(0,0,0,.7) ;
+}
+.colortext input {
+  text-align: center;
+  background: hsla(200,40%,80%,.8);
+  box-sizing: border-box;
+  width: 146px ;
+  border-radius: 5px;
+  border: none ;
+  padding: 5px 5px 5px 10px ;
+  font-family: 'Ubuntu Mono';
+}
+.colortext input:focus {
+  border: none ;
+  outline: none ;
+  background: hsla(200,40%,80%,1);
+}
+.colortext input::selection {
+  background: rgba(0,0,0,.3);
+}
+.colortext i {
+  position: absolute ;
+  left: 4px ;
+  top: 5px ;
+  font-size: 14px ;
+  cursor: pointer ;
+}
+
 #colorpicker-group .spritetoolbutton {
   width: 140px ;
   margin: 2px 0 ;

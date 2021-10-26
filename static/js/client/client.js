@@ -124,9 +124,6 @@ this.Client = (function() {
     this.socket.onopen = (function(_this) {
       return function() {
         var s;
-        if (_this.app.translator != null) {
-          _this.app.translator.load();
-        }
         _this.checkToken();
         while (_this.sends.length > 0) {
           s = _this.sends.splice(0, 1)[0];

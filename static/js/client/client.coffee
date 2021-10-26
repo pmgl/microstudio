@@ -86,8 +86,6 @@ class @Client
         console.error err
 
     @socket.onopen = ()=>
-      #console.info "socket opened"
-      @app.translator.load() if @app.translator?
       @checkToken()
       while @sends.length>0
         s = @sends.splice(0,1)[0]

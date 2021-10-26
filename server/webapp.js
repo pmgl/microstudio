@@ -93,7 +93,8 @@ this.WebApp = (function() {
             css_files: _this.concatenator.getHomeCSSFiles(),
             translator: _this.server.content.translator.getTranslator(lang),
             language: lang,
-            languages: _this.languages
+            languages: _this.languages,
+            translation: _this.server.content.translator.languages[lang] != null ? _this.server.content.translator.languages[lang]["export"]() : "{}"
           });
         }
         return res.send(_this.home_page[lang]);

@@ -6,20 +6,10 @@ this.Forum = (function() {
     this.client = new Client(this);
     this.client.start();
     this.translator = new Translator(this);
-    this.translator.load((function(_this) {
-      return function() {
-        _this.setTimeInfo();
-        _this.setOtherInfo();
-        _this.addLinks();
-        _this.updateUserCapabilities();
-        _this.createLikeButtons();
-        _this.createWatchButton();
-        if (!_this.edit_bars_added) {
-          _this.edit_bars_added = true;
-          return _this.addEditBars();
-        }
-      };
-    })(this));
+    this.setTimeInfo();
+    this.setOtherInfo();
+    this.addLinks();
+    this.updateUserCapabilities();
     this.plug("create-post-button", (function(_this) {
       return function() {
         return document.getElementById("edit-post").style.display = "block";
@@ -507,7 +497,13 @@ this.Forum = (function() {
       console.info("admin");
     }
     this.filterPerms();
-    return this.updateUserCapabilities();
+    this.updateUserCapabilities();
+    this.createLikeButtons();
+    this.createWatchButton();
+    if (!this.edit_bars_added) {
+      this.edit_bars_added = true;
+      return this.addEditBars();
+    }
   };
 
   Forum.prototype.updateUserCapabilities = function() {

@@ -43,8 +43,30 @@ class @ColorValueTool
       data = context.getImageData(0,0,1,1)
     catch err
 
+    div = document.createElement "div"
+    div.classList.add "colortext"
+
+    @input = document.createElement "input"
+    @input.spellcheck = false
+    @input.addEventListener "input",(event)=>@colortextChanged()
+
+    @copy = document.createElement "i"
+    @copy.classList.add "fa"
+    @copy.classList.add "fa-copy"
+    @copy.addEventListener "click",(event)=>
+      @copy.classList.remove "fa-copy"
+      @copy.classList.add "fa-check"
+      setTimeout (()=>
+        @copy.classList.remove "fa-check"
+        @copy.classList.add "fa-copy"),3000
+      navigator.clipboard.writeText """\"#{@input.value}\""""
+
+
     @picker = new ColorPicker @
     @tool.appendChild @picker.canvas
+    @tool.appendChild div
+    div.appendChild @copy
+    div.appendChild @input
 
     if data?
       @picker.colorPicked data.data
@@ -58,8 +80,13 @@ class @ColorValueTool
     @tool.addEventListener "mousedown",(event)->
       event.stopPropagation()
 
+  colortextChanged:()->
+    @picker.color = @input.value
+    @picker.colorPicked(@input.value)
+
   setColor:(@color)->
     @callback @color if @started
+    @input.value = @color
 
   dispose:()->
     document.getElementById("editor-view").removeChild @tool

@@ -30,11 +30,22 @@ this.ColorPicker = (function() {
   }
 
   ColorPicker.prototype.colorPicked = function(c) {
-    var col;
+    var col, i, j, match;
+    if (typeof c === "string") {
+      match = /rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/.exec(c.replace(/ /g, ""));
+      if ((match != null) && match.length >= 4) {
+        c = [match[1] | 0, match[2] | 0, match[3] | 0];
+      } else {
+        return;
+      }
+    }
+    for (i = j = 0; j <= 2; i = ++j) {
+      c[i] = Math.max(0, Math.min(255, c[i]));
+    }
     this.color = "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")";
     this.editor.setColor(this.color);
     col = this.RGBtoHSV(c[0], c[1], c[2]);
-    this.hue = Math.floor(col.h * this.num_blocks * 2) % (this.num_blocks * 2);
+    this.hue = Math.round(col.h * this.num_blocks * 2) % (this.num_blocks * 2);
     this.saturation = Math.round(col.s * this.num_blocks);
     this.lightness = Math.round(col.v * this.num_blocks);
     if (this.saturation === 0 || this.lightness === 0) {

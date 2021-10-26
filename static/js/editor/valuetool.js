@@ -43,7 +43,7 @@ this.ValueTool = (function() {
 
 this.ColorValueTool = (function() {
   function ColorValueTool(editor, x, y, value, callback) {
-    var canvas, context, data, err;
+    var canvas, context, data, div, err;
     this.editor = editor;
     this.x = x;
     this.y = y;
@@ -65,8 +65,34 @@ this.ColorValueTool = (function() {
     } catch (error) {
       err = error;
     }
+    div = document.createElement("div");
+    div.classList.add("colortext");
+    this.input = document.createElement("input");
+    this.input.spellcheck = false;
+    this.input.addEventListener("input", (function(_this) {
+      return function(event) {
+        return _this.colortextChanged();
+      };
+    })(this));
+    this.copy = document.createElement("i");
+    this.copy.classList.add("fa");
+    this.copy.classList.add("fa-copy");
+    this.copy.addEventListener("click", (function(_this) {
+      return function(event) {
+        _this.copy.classList.remove("fa-copy");
+        _this.copy.classList.add("fa-check");
+        setTimeout((function() {
+          _this.copy.classList.remove("fa-check");
+          return _this.copy.classList.add("fa-copy");
+        }), 3000);
+        return navigator.clipboard.writeText("\"" + _this.input.value + "\"");
+      };
+    })(this));
     this.picker = new ColorPicker(this);
     this.tool.appendChild(this.picker.canvas);
+    this.tool.appendChild(div);
+    div.appendChild(this.copy);
+    div.appendChild(this.input);
     if (data != null) {
       this.picker.colorPicked(data.data);
     }
@@ -80,11 +106,17 @@ this.ColorValueTool = (function() {
     });
   }
 
+  ColorValueTool.prototype.colortextChanged = function() {
+    this.picker.color = this.input.value;
+    return this.picker.colorPicked(this.input.value);
+  };
+
   ColorValueTool.prototype.setColor = function(color) {
     this.color = color;
     if (this.started) {
-      return this.callback(this.color);
+      this.callback(this.color);
     }
+    return this.input.value = this.color;
   };
 
   ColorValueTool.prototype.dispose = function() {
