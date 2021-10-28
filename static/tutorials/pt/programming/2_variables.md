@@ -2,7 +2,7 @@
 
 :project Programming
 
-## Variables
+## Variáveis
 
 :overlay
 
@@ -10,7 +10,7 @@
 
 :navigate projects.code.console
 
-### Variables
+### Variáveis
 
 Variables are an essential part of programming languages. A variable
 is a location in the computer's memory that contains a value and which
@@ -19,13 +19,13 @@ is designated by an identifier chosen by the programmer.
 During this tutorial, do not hesitate to copy the various examples in the console
 or to experiment with your own.
 
-## Variables
+## Variáveis
 
 :navigate projects.code.console
 
 :position 55,30,40,40
 
-### Variables
+### Variáveis
 
 The variables are there to make our job easier! For example, they allow us to
 write :
@@ -43,11 +43,11 @@ memory_514 = memory_23 + memory_1289
 This last example may sound better to a computer but would be much more difficult
 to read for a human!
 
-## Assign a value to a variable
+## Atribuindo um valor a uma variável
 
 :navigate projects.code.console
 
-### Assign a value to a variable
+### Atribuindo um valor a uma variável
 
 Assigning a value to a variable means to request it to hold a value. We use the
 sign ```=``` for this, for example:
@@ -60,11 +60,11 @@ In microScript, simply assigning a value to a variable is enough to define it
 (i.e. to have a memory slot assigned to it). A variable which hasn't been defined
 yet, therefore having no reserved memory slot, will always have the default value ```0```.
 
-## Naming variables
+## Nomeando variáveis
 
 :navigate projects.code.console
 
-### Name your variables
+### Nomeie suas variáveis
 
 There are a few rules for naming your variables correctly. In microScript, you should
 only use letters of the alphabet, without any accent. You can use them in upper or lower case.
@@ -72,11 +72,11 @@ Other characters allowed include the "underscore" character ```_``` and digits f
 also be used, except for the first character of the variable name.
 
 
-## Naming variables
+## Nomeando variáveis
 
 :navigate projects.code.console
 
-### Name your variables
+### Nomeie suas variáveis
 
 Examples :
 ```
@@ -91,9 +91,9 @@ Player_1 = 0
 my character = 3 // spaces not allowed!
 ```
 
-## Name variables
+## Nomeando variáveis
 
-### Name your variables
+### Nomeie suas variáveis
 
 In addition to these rules, we advise you to choose rather
 descriptive variable names. It will make it easier to proofread your code.
@@ -109,11 +109,11 @@ rather than:
 c = 25
 ```
 
-## Value types
+## Tipos de valores
 
 :navigate projects.code.console
 
-### Value types
+### Tipos de valores
 
 Variables in microScript can store several types of values:
 
@@ -124,9 +124,9 @@ Variables in microScript can store several types of values:
 * A list (studied in the rest of this course). Example: ```[1,3,5,7]``` or ```["dog", "cat", "rabbit"]```.
 * An object (studied in the rest of this course). Example: ```object x=1 y=2 end```
 
-## Using a variable
+## Usando uma variável
 
-### Using a variable
+### Usando uma variável
 
 A variable can be used in any *expression* of the program and will then be
 substituted by its current value at runtime.
@@ -145,11 +145,11 @@ The ```+``` operator, when used on a string, operates a
 concatenation of character strings (it joins the two text snippets). The value
 of the "display" variable above will therefore be "Your score is 124".
 
-## Scope and Context
+## Escopo e contexto
 
 :navigate projects.code.console
 
-### Visibility and context
+### Visibilidade e contexto
 
 The variables we have defined so far are global, i.e. they
 belong to a general program memory and can be used anywhere in the program.

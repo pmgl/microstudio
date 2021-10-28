@@ -12,9 +12,9 @@
 
 ### Programando
 
-In this tutorial course, we will learn about programming in **microScript**.
+Neste curso tutorial, aprenderemos sobre programação em **microScript**.
 
-Click button "next" to continue:
+Clique no botão "próximo" para continuar: 
 
 :navigate projects.code.console
 
@@ -28,9 +28,7 @@ Click button "next" to continue:
 
 ### Console
 
-As an introduction to programming, we will play with the microStudio console.
-The console allows to converse with the computer by typing text (code) and reading
-computer's answers.
+Como introdução à programação, vamos brincar com o console microStudio. O console permite conversar com o computador digitando texto (código) e lendo as respostas do computador. 
 
 :highlight #terminal
 
@@ -38,51 +36,45 @@ computer's answers.
 
 :navigate projects.code.console
 
-To start programming, click on the input area of the console (highlighted).
+Para iniciar a programação, clique na área de entrada do console (destacada). 
 
 :highlight #terminal-input-line
 
 :auto
 
-## Type a word
+## Digite uma palavra
 
 :navigate projects.code.console
 
-### Type a word
+### Digite uma palavra
 
-Type in a word with your keyboard, like:
+Digite uma palavra com seu teclado, tal como:
 
 ```
 hello
 ```
 
-Then validate your input by pressing key [Return] or [⏎].
+Em seguida, valide sua entrada pressionando a tecla [Enter] ou [⏎]
 
 :auto #terminal-input
 
-## Answer
+## Resposta
 
 :navigate projects.code.console
 
-If you typed ```hello```, microScript has answered with ```0```.
+Se você digitou ```hello```, microScript respondeu com ```0```.
 
-Don't be upset, the computer didn't mean to be rude! A computer is not
-as smart as you think. It can work hard, yet it needs you to express
-exactly what you expect from it.
+Não fique chateado, o computador não quis ser rude! Um computador não é tão inteligente quanto você pensa. Ele pode trabalhar duro, mas precisa que você expresse exatamente o que espera dele.
 
-Programming means telling the computer what to do, using a language it can
-understand.
+Programar significa dizer ao computador o que fazer, usando uma linguagem que ele possa entender. 
 
-## Answer 2
+## Resposta 2
 
 :navigate projects.code.console
 
-The computer answered with ```0``` because it doesn't know ```hello```. It
-did search its memory for a *variable* which would be called that, but didn't
-find anything.
+O computador respondeu com ```0``` porque não conhece ```hello```. Ele procurou em sua memória por uma *variável* que seria chamada assim, mas não encontrou nada.
 
-It thus answered ```0``` which for it also means nothing, not found, unknown.
-Let's try to teach it something, type:
+Assim, respondeu ```0``` que para ele também significa nada, não encontrado, desconhecido. Vamos tentar ensinar algo, digite:
 
 ```
 hello = 5
@@ -90,39 +82,34 @@ hello = 5
 
 :auto #terminal-input
 
-## Assign a value to a variable
+## Atribuindo um valor a uma variável
 
 :navigate projects.code.console
 
-By validating this line, we just *assigned* the value ```5``` to the *variable* ```hello```.
-The computer created a cell in its memory, labelled "hello" and in which it stored
-the value 5.
+Ao validar esta linha, nós apenas * atribuímos * o valor ```5``` para a *variável* ```hello```. O computador criou uma célula em sua memória, denominada "hello" e na qual armazenou o valor 5.
 
-Now we can ask it again:
+Agora podemos perguntar de novo: 
 
 ```
 hello
 ```
 
-The console answers 5! It seems it finally learnt something.
+O console respondeu 5! Parece que finalmente aprendeu alguma coisa.
 
-## Making calculations
+## Fazendo cálculos
 
 :navigate projects.code.console
 
-Can it even count though? Let's try:
+Será que é possível calcular? Vamos tentar:
 
 ```
 1+1
 ```
 
-Impressive isn't it? Now:
+Impressionante, não é mesmo? Agora tente:
 
 ```
 hello*2
 ```
 
-OK now this is something, it seems it can use its memory and make calculations
-*simultaneously*.
-We can certainly get something out of it. It's time to move on to the
-next tutorial to learn more about variables.
+OK, isso é muito interessante, parece que ele pode usar sua memória e fazer cálculos *simultaneamente*. Certamente podemos tirar proveito disso. É hora de passar para o próximo tutorial para aprender mais sobre variáveis. 
