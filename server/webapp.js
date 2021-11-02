@@ -1,4 +1,4 @@
-var Concatenator, ExportFeatures, Fonts, ForumApp, ProjectManager, SHA256, allowedTags, createCanvas, fs, loadImage, marked, pug, ref, sanitizeHTML,
+var Concatenator, ExportFeatures, Fonts, ForumApp, Jimp, ProjectManager, SHA256, allowedTags, fs, marked, pug, sanitizeHTML,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 SHA256 = require("crypto-js/sha256");
@@ -9,7 +9,7 @@ fs = require("fs");
 
 ProjectManager = require(__dirname + "/session/projectmanager.js");
 
-ref = require('canvas'), createCanvas = ref.createCanvas, loadImage = ref.loadImage;
+Jimp = require("jimp");
 
 Concatenator = require(__dirname + "/concatenator.js");
 
@@ -27,7 +27,7 @@ allowedTags = sanitizeHTML.defaults.allowedTags.concat(["img"]);
 
 this.WebApp = (function() {
   function WebApp(server, app) {
-    var home_exp, i, j, k, len, len1, len2, m, n, plugin, r, ref1, ref2, ref3, ref4;
+    var home_exp, i, j, k, len, len1, len2, m, n, plugin, r, ref, ref1, ref2, ref3;
     this.server = server;
     this.app = app;
     this.code = "";
@@ -44,7 +44,7 @@ this.WebApp = (function() {
     this.home_page = {};
     this.languages = ["en", "fr", "pl", "de", "it", "pt"];
     home_exp = "^(\\/";
-    for (i = j = 1, ref1 = this.languages.length - 1; j <= ref1; i = j += 1) {
+    for (i = j = 1, ref = this.languages.length - 1; j <= ref; i = j += 1) {
       home_exp += "|\\/" + this.languages[i] + "\\/?";
       if (i === this.languages.length - 1) {
         home_exp += "|";
@@ -52,14 +52,14 @@ this.WebApp = (function() {
     }
     this.reserved = ["explore", "documentation", "projects", "about", "login", "user"];
     this.reserved_exact = ["tutorials"];
-    ref2 = this.reserved;
-    for (k = 0, len = ref2.length; k < len; k++) {
-      r = ref2[k];
+    ref1 = this.reserved;
+    for (k = 0, len = ref1.length; k < len; k++) {
+      r = ref1[k];
       home_exp += "\\/" + r + "|\\/" + r + "\\/.*|";
     }
-    ref3 = this.reserved_exact;
-    for (m = 0, len1 = ref3.length; m < len1; m++) {
-      r = ref3[m];
+    ref2 = this.reserved_exact;
+    for (m = 0, len1 = ref2.length; m < len1; m++) {
+      r = ref2[m];
       home_exp += "\\/" + r + "|\\/" + r + "\\/|";
     }
     home_exp += "\\/tutorial\\/[^\\/\\|\\?\\&\\.]+\\/[^\\/\\|\\?\\&\\.]+(\\/([^\\/\\|\\?\\&\\.]+\\/?)?)|";
@@ -67,14 +67,14 @@ this.WebApp = (function() {
     console.info("home_exp = " + home_exp);
     this.app.get(new RegExp(home_exp), (function(_this) {
       return function(req, res) {
-        var l, lang, len2, n, ref4;
+        var l, lang, len2, n, ref3;
         if (_this.ensureDevArea(req, res)) {
           return;
         }
         lang = _this.getLanguage(req);
-        ref4 = _this.languages;
-        for (n = 0, len2 = ref4.length; n < len2; n++) {
-          l = ref4[n];
+        ref3 = _this.languages;
+        for (n = 0, len2 = ref3.length; n < len2; n++) {
+          l = ref3[n];
           if (req.path === ("/" + l) || req.path === ("/" + l + "/")) {
             lang = l;
           }
@@ -100,9 +100,9 @@ this.WebApp = (function() {
         return res.send(_this.home_page[lang]);
       };
     })(this));
-    ref4 = this.server.plugins;
-    for (n = 0, len2 = ref4.length; n < len2; n++) {
-      plugin = ref4[n];
+    ref3 = this.server.plugins;
+    for (n = 0, len2 = ref3.length; n < len2; n++) {
+      plugin = ref3[n];
       if (plugin.addWebHooks != null) {
         plugin.addWebHooks(this.app);
       }
@@ -365,35 +365,19 @@ this.WebApp = (function() {
         size = size[size.length - 1];
         size = Math.min(1024, size.split(".")[0] | 0);
         path = user.id + "/" + project.id + "/sprites/icon.png";
-        path = _this.server.content.files.sanitize(path);
-        return loadImage("../files/" + path).then((function(image) {
-          var canvas, context;
-          canvas = createCanvas(size, size);
-          context = canvas.getContext("2d");
-          context.antialias = "none";
-          context.imageSmoothingEnabled = false;
-          if (image != null) {
-            context.drawImage(image, 0, 0, size, size);
+        path = _this.server.content.files.folder + "/" + _this.server.content.files.sanitize(path);
+        return Jimp.read(path, function(err, img) {
+          if (err) {
+            console.error(err);
+            return;
           }
-          context.antialias = "default";
-          context.globalCompositeOperation = "destination-in";
-          _this.fillRoundRect(context, 0, 0, size, size, size / 8);
-          return canvas.toBuffer(function(err, result) {
+          return img.resize(size, size, Jimp.RESIZE_NEAREST_NEIGHBOR).getBuffer(Jimp.MIME_PNG, function(err, buffer) {
+            if (err) {
+              console.error(err);
+              return;
+            }
             res.setHeader("Content-Type", "image/png");
-            return res.send(result);
-          });
-        }), function(error) {
-          var canvas, context;
-          canvas = createCanvas(size, size);
-          context = canvas.getContext("2d");
-          context.fillStyle = "#000";
-          context.fillRect(0, 0, size, size);
-          context.antialias = "default";
-          context.globalCompositeOperation = "destination-in";
-          _this.fillRoundRect(context, 0, 0, size, size, size / 8);
-          return canvas.toBuffer(function(err, result) {
-            res.setHeader("Content-Type", "image/png");
-            return res.send(result);
+            return res.send(buffer);
           });
         });
       };
