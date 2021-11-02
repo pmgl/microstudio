@@ -729,7 +729,8 @@ this.WebApp = (function() {
       xp: xp,
       percent: percent,
       achievements: achievements,
-      translator: this.server.content.translator.getTranslator(lang)
+      translator: this.server.content.translator.getTranslator(lang),
+      language: lang
     }));
   };
 

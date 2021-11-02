@@ -627,6 +627,7 @@ class @WebApp
       percent: percent
       achievements: achievements
       translator: @server.content.translator.getTranslator(lang)
+      language: lang
 
   getLanguage:(request)->
     if request.cookies.language?

@@ -167,7 +167,8 @@ this.UserProgress = (function() {
       if (a.info.xp != null) {
         bonus = "<div class=\"bonus\">XP bonus +" + a.info.xp + "</div>";
       }
-      results.push(div_achievements.innerHTML += "<div class=\"user-progress-achievement\">\n  <img src=\"/img/achievements/" + a.id + ".png\" />\n  " + bonus + "\n  <h3>" + a.info.name + "</h3>\n  <p>" + a.info.description + "</p>\n  " + (a.info.story != null ? "<p class='story'>" + a.info.story + "</p>" : "") + "\n  <div style=\"clear: both\"></div>\n</div>");
+      bonus += "<div class=\"date\">" + (new Date(a.date).toLocaleDateString()) + "</div>";
+      results.push(div_achievements.innerHTML += "<div class=\"user-progress-achievement\">\n  <img src=\"/img/achievements/" + a.id + ".png\" />\n  " + bonus + "\n  <h3>" + (this.app.translator.get(a.info.name)) + "</h3>\n  <p>" + (this.app.translator.get(a.info.description)) + "</p>\n  " + (a.info.story != null ? "<p class='story'>" + this.app.translator.get(a.info.story) + "</p>" : "") + "\n  <div style=\"clear: both\"></div>\n</div>");
     }
     return results;
   };

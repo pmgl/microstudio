@@ -31,12 +31,15 @@ this.UserProgress = (function() {
     return this.incrementStat(id, 1, true);
   };
 
-  UserProgress.prototype.unlockAchievement = function(id) {
+  UserProgress.prototype.unlockAchievement = function(id, date) {
     var a;
+    if (date == null) {
+      date = Date.now();
+    }
     if (!this.hasAchievement(id)) {
       this.achievements[id] = {
         id: id,
-        date: Date.now()
+        date: date
       };
       a = Achievements.by_id[id];
       if ((a != null) && (a.xp != null)) {

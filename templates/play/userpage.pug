@@ -1,5 +1,5 @@
 doctype html
-html(lang='en')
+html(lang=language)
   head
     title #{user} - microStudio
     meta(http-equiv='content-type', content='text/html; charset=UTF-8')
@@ -89,10 +89,11 @@ html(lang='en')
                 img(src="/img/achievements/"+a.id+".png")
                 if a.info.xp>0
                   div.bonus #{"XP bonus +"+a.info.xp}
-                h3 #{a.info.name}
-                p #{a.info.description}
+                div.date #{new Date(a.date).toLocaleDateString(language)}
+                h3 #{translator.get(a.info.name)}
+                p #{translator.get(a.info.description)}
                 if a.info.story != null
-                  p.story #{a.info.story}
+                  p.story #{translator.get(a.info.story)}
                 div(style="clear:both")
         
         
