@@ -93,6 +93,7 @@ this.WebApp = (function() {
             css_files: _this.concatenator.getHomeCSSFiles(),
             translator: _this.server.content.translator.getTranslator(lang),
             language: lang,
+            standalone: _this.server.config.standalone === true,
             languages: _this.languages,
             translation: _this.server.content.translator.languages[lang] != null ? _this.server.content.translator.languages[lang]["export"]() : "{}"
           });

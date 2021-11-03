@@ -1,3 +1,7 @@
+var fs;
+
+fs = require("fs");
+
 this.Translator = (function() {
   function Translator(content) {
     this.content = content;
@@ -47,9 +51,9 @@ this.Translator = (function() {
         code: lang,
         translations: {}
       };
+      record = this.content.db.create("translations", d);
+      return this.loadLanguage(record);
     }
-    record = this.content.db.create("translations", d);
-    return this.loadLanguage(record);
   };
 
   Translator.prototype.getTranslator = function(language) {
@@ -76,6 +80,20 @@ this.Translator.Language = (function() {
     this.code = data.code;
     this.translations = data.translations;
     this.buffer = null;
+    this["default"] = {};
+    console.info("reading " + ("../static/lang/" + this.code + ".json"));
+    fs.readFile("../static/lang/" + this.code + ".json", (function(_this) {
+      return function(err, data) {
+        if (!err) {
+          try {
+            return _this["default"] = JSON.parse(data);
+          } catch (error) {
+            err = error;
+            return console.error(err);
+          }
+        }
+      };
+    })(this));
   }
 
   Language.prototype.get = function(text) {
@@ -83,19 +101,28 @@ this.Translator.Language = (function() {
     t = this.translations[text];
     if (t != null) {
       return t.best;
+    } else if (this["default"][text]) {
+      return this["default"][text];
     } else {
       return text;
     }
   };
 
   Language.prototype["export"] = function() {
-    var key, ref, value;
+    var key, ref, ref1, value;
     if (this.buffer == null) {
       this.buffer = {};
       ref = this.translations;
       for (key in ref) {
         value = ref[key];
         this.buffer[key] = value.best;
+      }
+      ref1 = this["default"];
+      for (key in ref1) {
+        value = ref1[key];
+        if (this.buffer[key] == null) {
+          this.buffer[key] = value;
+        }
       }
       this.buffer = JSON.stringify(this.buffer);
     }

@@ -13,6 +13,9 @@ class @Client
 
   start:()->
     @token = localStorage.getItem "token"
+    if window.ms_standalone
+      @token = "---"
+
     if @token?
       setTimeout (()=>@app.appui.popMenu()),500
       @connect()

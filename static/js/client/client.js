@@ -21,6 +21,9 @@ this.Client = (function() {
 
   Client.prototype.start = function() {
     this.token = localStorage.getItem("token");
+    if (window.ms_standalone) {
+      this.token = "---";
+    }
     if (this.token != null) {
       setTimeout(((function(_this) {
         return function() {

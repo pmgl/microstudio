@@ -14,10 +14,10 @@ WebSocket = require "ws"
 process = require "process"
 
 class @Server
-  constructor:()->
+  constructor:(@config={},@callback)->
     process.chdir __dirname
-    @config =
-      realm: "local"
+
+    @app_data = @config.app_data or ".."
 
     @mailer =    # STUB
       sendMail:(recipient,subject,text)->
@@ -32,22 +32,17 @@ class @Server
 
     @last_backup_time = 0
 
-    fs.readFile "../config.json",(err,data)=>
-      if not err
-        @config = JSON.parse(data)
-        console.info "config.json loaded"
-      else
-        console.info "No config.json file found, running local with default settings"
+    if @config.realm == "production"
+      @PORT = 443
+      @PROD = true
+    else if @config.standalone
+      @PORT = @config.port or 0
+    else
+      @PORT = @config.port or 8080
+      @PROD = false
 
-      if @config.realm == "production"
-        @PORT = 443
-        @PROD = true
-      else
-        @PORT = @config.port or 8080
-        @PROD = false
-
-      @loadPlugins ()=>
-        @create()
+    @loadPlugins ()=>
+      @create()
 
   create:()->
     app = express()
@@ -87,7 +82,7 @@ class @Server
     app.use("/lib/jquery/jquery.js",express.static("node_modules/jquery/dist/jquery.min.js"))
     app.use("/lib/jquery-ui",express.static("node_modules/jquery-ui-dist"))
 
-    @db = new DB "../data",(db)=>
+    @db = new DB "#{@app_data}/data",(db)=>
       for plugin in @plugins
         if plugin.dbLoaded?
           plugin.dbLoaded(db)
@@ -103,6 +98,13 @@ class @Server
           @use_cache = true
           glx.serveApp app
           @start(app,db)
+      else if @config.standalone
+        @use_cache = false
+        @httpserver = require("http").createServer(app).listen @PORT,"127.0.0.1",()=>
+          @PORT = @httpserver.address().port
+          @start(app,db)
+          console.info "standalone running on port #{@PORT}"
+          @callback() if @callback?
       else
         @httpserver = require("http").createServer(app).listen(@PORT)
         @use_cache = false
@@ -126,9 +128,12 @@ class @Server
 
     @session_check = setInterval (()=>@sessionCheck()),10000
 
-    @content = new Content @,db,new FileStorage()
+    @content = new Content @,db,new FileStorage "#{@app_data}/files"
     @build_manager = new BuildManager @
     @webapp = new WebApp @,app
+
+    for l in @webapp.languages
+      @content.translator.createLanguage l
 
     process.on 'SIGINT', ()=>
       console.log "caught INT signal"
@@ -206,4 +211,4 @@ class @Server
       console.info "plugin #{folder} has no index.js"
       callback()
 
-server = new @Server()
+module.exports = @Server

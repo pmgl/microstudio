@@ -56,9 +56,28 @@ class AppUI
         e = document.getElementById("menu-#{s}")
         if e?
           e.addEventListener "click",(event)=>
-            @setMainSection(s,true)
+            if window.ms_standalone and s == "explore"
+              window.open "https://microstudio.dev/explore/","_blank"
+            else if window.ms_standalone and s == "home"
+              window.open "https://microstudio.dev","_blank"
+            else
+              @setMainSection(s,true)
 
-    @setAction "logo",()=>@setMainSection("home",true)
+    @setAction "logo",()=>
+      if window.ms_standalone
+        window.open "https://microstudio.dev","_blank"
+      else
+        @setMainSection("home",true)
+
+    if window.ms_standalone
+      document.getElementById("menu-community").parentNode.href = "https://microstudio.dev/community/"
+
+      document.getElementById("projectoptions-users-content").style.display = "none"
+      document.getElementById("publish-box-online").style.display = "none"
+      document.getElementById("usersetting-block-nickname").style.display = "none"
+      document.getElementById("usersetting-block-email").style.display = "none"
+      document.getElementById("usersetting-block-newsletter").style.display = "none"
+      document.getElementById("usersetting-block-account-type").style.display = "none"
 
     #@setSection("options")
     @createLoginFunctions()
@@ -439,7 +458,10 @@ class AppUI
 
     document.querySelector(".username").addEventListener "click",(event)=>
       e = document.querySelector(".usermenu")
-      if @app.user.flags.guest or not @app.user.email?
+      if window.ms_standalone
+        e.classList.add "standalone"
+        e.classList.remove "regular"
+      else if @app.user.flags.guest or not @app.user.email?
         e.classList.add "guest"
         e.classList.remove "regular"
       else

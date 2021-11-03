@@ -361,6 +361,22 @@ class @Session
       request_id: data.request_id
 
   checkToken:(data)->
+    if @server.config.standalone and @content.user_count == 1
+      @user = @server.content.users[0]
+      @user.addListener @
+      @send
+        name: "token_valid"
+        nick: @user.nick
+        email: @user.email
+        flags: if not @user.flags.censored then @user.flags else {}
+        info: @getUserInfo()
+        settings: @user.settings
+        notifications: @user.notifications
+        request_id: data.request_id
+      @user.notifications = []
+      @user.set "last_active",Date.now()
+      @logActiveUser()
+
     token = @content.findToken data.token
     if token?
       @user = token.user

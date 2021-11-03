@@ -73,9 +73,14 @@ this.About = (function() {
   };
 
   About.prototype.update = function(doc) {
-    var element;
+    var e, element, i, len, list;
     element = document.getElementById("about-content");
-    return element.innerHTML = DOMPurify.sanitize(marked(doc));
+    element.innerHTML = DOMPurify.sanitize(marked(doc));
+    list = element.getElementsByTagName("a");
+    for (i = 0, len = list.length; i < len; i++) {
+      e = list[i];
+      e.target = "_blank";
+    }
   };
 
   return About;

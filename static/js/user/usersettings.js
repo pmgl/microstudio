@@ -128,6 +128,9 @@ this.UserSettings = (function() {
         return _this.profileDescriptionChanged();
       };
     })(this));
+    if (window.ms_standalone) {
+      document.getElementById("usersettings-menu-profile").style.display = "none";
+    }
   }
 
   UserSettings.prototype.initSections = function() {

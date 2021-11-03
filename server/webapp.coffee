@@ -82,6 +82,7 @@ class @WebApp
           css_files: @concatenator.getHomeCSSFiles()
           translator: @server.content.translator.getTranslator(lang)
           language: lang
+          standalone: @server.config.standalone == true
           languages: @languages
           translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
 
