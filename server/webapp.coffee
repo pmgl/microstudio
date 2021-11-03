@@ -2,7 +2,7 @@ SHA256 = require("crypto-js/sha256")
 pug = require "pug"
 fs = require "fs"
 ProjectManager = require __dirname+"/session/projectmanager.js"
-{ createCanvas, loadImage } = require('canvas')
+Jimp = require "jimp"
 Concatenator = require __dirname+"/concatenator.js"
 Fonts = require __dirname+"/fonts.js"
 ExportFeatures = require __dirname+"/app/exportfeatures.js"
@@ -82,6 +82,7 @@ class @WebApp
           css_files: @concatenator.getHomeCSSFiles()
           translator: @server.content.translator.getTranslator(lang)
           language: lang
+          standalone: @server.config.standalone == true
           languages: @languages
           translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
 
@@ -303,34 +304,18 @@ class @WebApp
       size = Math.min(1024,size.split(".")[0]|0)
 
       path = "#{user.id}/#{project.id}/sprites/icon.png"
-      path = @server.content.files.sanitize path
+      path = @server.content.files.folder+"/"+@server.content.files.sanitize path
 
-      loadImage("../files/#{path}").then ((image)=>
-        canvas = createCanvas(size,size)
-        context = canvas.getContext "2d"
-        context.antialias = "none"
-        context.imageSmoothingEnabled = false
-        if image?
-          context.drawImage image,0,0,size,size
-
-        context.antialias = "default"
-        context.globalCompositeOperation = "destination-in"
-        @fillRoundRect context,0,0,size,size,size/8
-        canvas.toBuffer (err,result)=>
-          res.setHeader("Content-Type", "image/png")
-          res.send result
-        ),(error)=>
-          canvas = createCanvas(size,size)
-          context = canvas.getContext "2d"
-          context.fillStyle = "#000"
-          context.fillRect 0,0,size,size
-          context.antialias = "default"
-          context.globalCompositeOperation = "destination-in"
-          @fillRoundRect context,0,0,size,size,size/8
-
-          canvas.toBuffer (err,result)=>
-            res.setHeader("Content-Type", "image/png")
-            res.send result
+      Jimp.read path, (err, img) =>
+        if err
+          console.error err
+          return
+        img.resize(size,size,Jimp.RESIZE_NEAREST_NEIGHBOR).getBuffer Jimp.MIME_PNG,(err,buffer)=>
+          if err
+            console.error err
+            return
+          res.setHeader "Content-Type", "image/png"
+          res.send buffer
 
     # source files for player
     @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/ms\/[A-Za-z0-9_]+.ms$/,(req,res)=>
@@ -627,6 +612,7 @@ class @WebApp
       percent: percent
       achievements: achievements
       translator: @server.content.translator.getTranslator(lang)
+      language: lang
 
   getLanguage:(request)->
     if request.cookies.language?

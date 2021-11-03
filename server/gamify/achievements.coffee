@@ -376,4 +376,47 @@
   description: "You won the third prize in a microStudio Game Jam!"
   xp: 2500
 
+@Achievements.add new @Achievement
+  id:"community/game_jam2_contender"
+  name: "Game Jam Contender"
+  description: "You made a submission to a microStudio Game Jam"
+  xp: 2000
+
+@Achievements.add new @Achievement
+  id:"community/game_jam2_n1"
+  name: "Game Jam Winner"
+  description: "You won the first prize in a microStudio Game Jam!"
+  xp: 10000
+
+@Achievements.add new @Achievement
+  id:"community/game_jam2_n2"
+  name: "Game Jam Silver"
+  description: "You won the second prize in a microStudio Game Jam!"
+  xp: 5000
+
+@Achievements.add new @Achievement
+  id:"community/game_jam2_n3"
+  name: "Game Jam Bronze"
+  description: "You won the third prize in a microStudio Game Jam!"
+  xp: 2500
+
+@Achievements.add new @Achievement
+  id:"community/github"
+  name: "Github contributor"
+  description: "You made microStudio better by contributing code to the project on Github!"
+  xp: 10000
+
+@Achievements.add new @Achievement
+  id:"community/translator"
+  name: "Translator"
+  description: "You made microStudio more accessible by translating it to your language."
+  xp: 10000
+
+@Achievements.add new @Achievement
+  id:"community/pioneer"
+  name: "Pioneer"
+  description: "You joined microStudio before October 2021."
+  story: "The Pioneer 11 space probe was launched in 1973 to study the asteroid belt, Jupiter and Saturn. It lost contact with Earth in 1995 and should reach interstellar space in a few years."
+  xp: 2000
+
 module.exports = @Achievements

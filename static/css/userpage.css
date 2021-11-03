@@ -253,9 +253,17 @@ a {
 }
 .user-progress-achievement .bonus {
   float: right ;
-  background: hsl(300,50%,30%) ;
+  background: hsl(300,30%,40%) ;
   font-size: 16px ;
   padding: 4px 15px ;
   border-radius: 30px ;
   color: rgba(255,255,255,.75);
+}
+.user-progress-achievement .date {
+  float: right ;
+  font-size: 16px ;
+  padding: 4px 15px ;
+  border-radius: 30px ;
+  font-weight: bold ;
+  color: hsla(200,100%,80%,.5);
 }

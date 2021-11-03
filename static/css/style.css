@@ -1084,6 +1084,10 @@ padding-left: 2px ;
 .usermenu.guest .settings, .usermenu.guest .logout, .usermenu.guest .profile {
   display: none ;
 }
+.usermenu.standalone .profile,.usermenu.standalone .logout,.usermenu.standalone .create-account,.usermenu.standalone .discard-account {
+  display: none ;
+}
+
 .usermenu .discard-account {
   background: hsl(0,50%,40%);
 }

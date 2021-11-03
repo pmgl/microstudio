@@ -29,6 +29,10 @@ class @DocEditor
     src = @editor.getValue()
     e = document.getElementById("doc-render")
     e.innerHTML = DOMPurify.sanitize marked src
+    list = e.getElementsByTagName "a"
+    for el in list
+      el.target = "_blank"
+
     return if @ignore_changes
     @app.project.addPendingChange @
     @save_time = Date.now()

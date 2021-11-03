@@ -36,6 +36,10 @@ class @Documentation
       headerPrefix: "documentation_"
     element.innerHTML = DOMPurify.sanitize marked @doc
 
+    list = element.getElementsByTagName "a"
+    for e in list
+      e.target = "_blank"
+
     #lexer = new marked.Lexer({})
     #console.info lexer.lex @doc
     @buildToc()

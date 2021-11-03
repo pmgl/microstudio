@@ -660,6 +660,23 @@ this.Session = (function() {
 
   Session.prototype.checkToken = function(data) {
     var token;
+    if (this.server.config.standalone && this.content.user_count === 1) {
+      this.user = this.server.content.users[0];
+      this.user.addListener(this);
+      this.send({
+        name: "token_valid",
+        nick: this.user.nick,
+        email: this.user.email,
+        flags: !this.user.flags.censored ? this.user.flags : {},
+        info: this.getUserInfo(),
+        settings: this.user.settings,
+        notifications: this.user.notifications,
+        request_id: data.request_id
+      });
+      this.user.notifications = [];
+      this.user.set("last_active", Date.now());
+      this.logActiveUser();
+    }
     token = this.content.findToken(data.token);
     if (token != null) {
       this.user = token.user;

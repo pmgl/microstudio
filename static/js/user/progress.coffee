@@ -146,13 +146,15 @@ class @UserProgress
       if a.info.xp?
         bonus = """<div class="bonus">XP bonus +#{a.info.xp}</div>"""
 
+      bonus += """<div class="date">#{new Date(a.date).toLocaleDateString()}</div>"""
+
       div_achievements.innerHTML += """
         <div class="user-progress-achievement">
           <img src="/img/achievements/#{a.id}.png" />
           #{bonus}
-          <h3>#{a.info.name}</h3>
-          <p>#{a.info.description}</p>
-          #{if a.info.story? then ("<p class='story'>"+a.info.story+"</p>") else "" }
+          <h3>#{@app.translator.get(a.info.name)}</h3>
+          <p>#{@app.translator.get(a.info.description)}</p>
+          #{if a.info.story? then ("<p class='story'>"+@app.translator.get(a.info.story)+"</p>") else "" }
           <div style="clear: both"></div>
         </div>
       """

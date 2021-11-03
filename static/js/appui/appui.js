@@ -54,7 +54,13 @@ AppUI = (function() {
         e = document.getElementById("menu-" + s);
         if (e != null) {
           return e.addEventListener("click", function(event) {
-            return _this.setMainSection(s, true);
+            if (window.ms_standalone && s === "explore") {
+              return window.open("https://microstudio.dev/explore/", "_blank");
+            } else if (window.ms_standalone && s === "home") {
+              return window.open("https://microstudio.dev", "_blank");
+            } else {
+              return _this.setMainSection(s, true);
+            }
           });
         }
       };
@@ -65,9 +71,22 @@ AppUI = (function() {
     }
     this.setAction("logo", (function(_this) {
       return function() {
-        return _this.setMainSection("home", true);
+        if (window.ms_standalone) {
+          return window.open("https://microstudio.dev", "_blank");
+        } else {
+          return _this.setMainSection("home", true);
+        }
       };
     })(this));
+    if (window.ms_standalone) {
+      document.getElementById("menu-community").parentNode.href = "https://microstudio.dev/community/";
+      document.getElementById("projectoptions-users-content").style.display = "none";
+      document.getElementById("publish-box-online").style.display = "none";
+      document.getElementById("usersetting-block-nickname").style.display = "none";
+      document.getElementById("usersetting-block-email").style.display = "none";
+      document.getElementById("usersetting-block-newsletter").style.display = "none";
+      document.getElementById("usersetting-block-account-type").style.display = "none";
+    }
     this.createLoginFunctions();
     this.setAction("create-project-button", (function(_this) {
       return function() {
@@ -605,7 +624,10 @@ AppUI = (function() {
       return function(event) {
         var c, e, j, len, num, ref;
         e = document.querySelector(".usermenu");
-        if (_this.app.user.flags.guest || (_this.app.user.email == null)) {
+        if (window.ms_standalone) {
+          e.classList.add("standalone");
+          e.classList.remove("regular");
+        } else if (_this.app.user.flags.guest || (_this.app.user.email == null)) {
           e.classList.add("guest");
           e.classList.remove("regular");
         } else {

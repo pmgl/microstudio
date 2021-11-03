@@ -78,11 +78,28 @@ this.Content = (function() {
   };
 
   Content.prototype.load = function() {
-    var j, k, l, len, len1, len2, projects, record, token, tokens, users;
+    var j, k, l, len, len1, len2, projects, record, token, tokens, user, users;
     users = this.db.list("users");
     for (j = 0, len = users.length; j < len; j++) {
       record = users[j];
       this.loadUser(record);
+    }
+    if (this.server.config.standalone) {
+      if (this.user_count > 1) {
+        throw "Error, cannot run standalone if user_count>1";
+      } else if (this.user_count === 0) {
+        user = this.createUser({
+          nick: "microstudio",
+          email: "standalone@microstudio.dev",
+          flags: {
+            validated: true
+          },
+          hash: "---",
+          date_created: Date.now(),
+          last_active: Date.now(),
+          creation_ip: "127.0.0.1"
+        });
+      }
     }
     tokens = this.db.list("tokens");
     for (k = 0, len1 = tokens.length; k < len1; k++) {

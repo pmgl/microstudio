@@ -1,9 +1,8 @@
 #fs = require "fs"
-
+Jimp = require "jimp"
 JSZip = require "jszip"
 pug = require "pug"
 JobQueue = require __dirname+"/jobqueue.js"
-{ createCanvas, loadImage } = require('canvas')
 
 class @ExportFeatures
   constructor:(@webapp)->
@@ -327,28 +326,19 @@ class @ExportFeatures
 
       queue.add ()=>
         path = "#{user.id}/#{project.id}/sprites/icon.png"
-        path = @webapp.server.content.files.sanitize path
-        loadImage("../files/#{path}").then ((image)=>
-          for size in [16,32,64,180,192,512,1024]
-            do (size)=>
-              queue.add ()=>
-                canvas = createCanvas(size,size)
-                context = canvas.getContext "2d"
-                context.antialias = "none"
-                context.imageSmoothingEnabled = false
-                if image?
-                  context.drawImage image,0,0,size,size
+        path = @webapp.server.content.files.folder+"/"+@webapp.server.content.files.sanitize path
 
-                if size>100
-                  context.antialias = "default"
-                  context.globalCompositeOperation = "destination-in"
-                  @webapp.fillRoundRect context,0,0,size,size,size/8
-
-                canvas.toBuffer (err,result)=>
-                  zip.file "icon#{size}.png",result
-                  queue.next()
-                ),(error)=>
-                  queue.next()
+        Jimp.read path,(err,img)=>
+          if not err
+            for size in [16,32,64,180,192,512,1024]
+              do (size)=>
+                queue.add ()=>
+                  img.clone().resize(size,size,Jimp.RESIZE_NEAREST_NEIGHBOR).getBuffer Jimp.MIME_PNG,(err,buffer)=>
+                    if err
+                      queue.next()
+                    else
+                      zip.file "icon#{size}.png",buffer
+                      queue.next()
           queue.next()
 
       queue.start()

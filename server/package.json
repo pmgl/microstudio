@@ -9,7 +9,6 @@
     "@fontsource/ubuntu-mono": "^4.4.5",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "ace-builds": "^1.4.12",
-    "canvas": "^2.8.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "crypto-js": "^3.3.0",
@@ -20,6 +19,7 @@
     "fontsource-source-sans-pro": "^4.0.0",
     "greenlock-express": "^4.0.3",
     "greenlock-store-fs": "^3.2.2",
+    "jimp": "^0.16.1",
     "jquery": "^3.6.0",
     "jquery-ui-dist": "^1.12.1",
     "jszip": "^3.6.0",
@@ -39,7 +39,7 @@
     "compile": "coffee -c --no-header -b ../.",
     "compile-and-watch": "coffee -c --no-header -b -w ../.",
     "dev": "npm run compile && concurrently \"npm:compile-and-watch\" \"npm:start\"",
-    "start": "npm run compile && node server.js",
+    "start": "npm run compile && node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "pmgl"

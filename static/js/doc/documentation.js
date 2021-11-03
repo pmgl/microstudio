@@ -48,12 +48,17 @@ this.Documentation = (function() {
   };
 
   Documentation.prototype.update = function() {
-    var element;
+    var e, element, j, len1, list;
     element = document.getElementById("documentation");
     marked.setOptions({
       headerPrefix: "documentation_"
     });
     element.innerHTML = DOMPurify.sanitize(marked(this.doc));
+    list = element.getElementsByTagName("a");
+    for (j = 0, len1 = list.length; j < len1; j++) {
+      e = list[j];
+      e.target = "_blank";
+    }
     this.buildToc();
     return this.buildLiveHelp();
   };

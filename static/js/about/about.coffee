@@ -43,3 +43,7 @@ class @About
   update:(doc)->
     element = document.getElementById("about-content")
     element.innerHTML = DOMPurify.sanitize marked doc
+    list = element.getElementsByTagName "a"
+    for e in list
+      e.target = "_blank"
+    return

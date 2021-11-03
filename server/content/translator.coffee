@@ -1,3 +1,5 @@
+fs = require "fs"
+
 class @Translator
   constructor:(@content)->
     @languages = {}
@@ -30,8 +32,8 @@ class @Translator
         code: lang
         translations: {}
 
-    record = @content.db.create "translations",d
-    @loadLanguage record
+      record = @content.db.create "translations",d
+      @loadLanguage record
 
   getTranslator:(language)->
     language = language or "en"
@@ -43,11 +45,22 @@ class @Translator.Language
     @code = data.code
     @translations = data.translations
     @buffer = null
+    @default = {}
+
+    console.info "reading "+"../static/lang/#{@code}.json"
+    fs.readFile "../static/lang/#{@code}.json",(err,data)=>
+      if not err
+        try
+          @default = JSON.parse(data)
+        catch err
+          console.error err
 
   get:(text)->
     t = @translations[text]
     if t?
       t.best
+    else if @default[text]
+      @default[text]
     else
       text
 
@@ -56,6 +69,11 @@ class @Translator.Language
       @buffer = {}
       for key,value of @translations
         @buffer[key] = value.best
+
+      for key,value of @default
+        if not @buffer[key]?
+          @buffer[key] = value
+
       @buffer = JSON.stringify @buffer
 
     @buffer

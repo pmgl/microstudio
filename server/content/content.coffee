@@ -61,6 +61,19 @@ class @Content
     for record in users
       @loadUser record
 
+    if @server.config.standalone
+      if @user_count>1
+        throw "Error, cannot run standalone if user_count>1"
+      else if @user_count == 0
+        user = @createUser
+          nick: "microstudio"
+          email: "standalone@microstudio.dev"
+          flags: {validated: true}
+          hash: "---"
+          date_created: Date.now()
+          last_active: Date.now()
+          creation_ip: "127.0.0.1"
+
     tokens = @db.list("tokens")
     for token in tokens
       @loadToken token
