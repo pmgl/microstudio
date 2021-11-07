@@ -153,7 +153,7 @@ LFO = (function() {
   LFO.prototype.processSine = function(rate) {
     var p, r;
     if (this.params.audio) {
-      r = 1 + rate * rate * 4;
+      r = 1 + rate * 25;
       rate = this.audio_freq * r;
     } else {
       rate = .01 + rate * rate * 20;
@@ -172,8 +172,10 @@ LFO = (function() {
   };
 
   LFO.prototype.processTriangle = function(rate) {
+    var r;
     if (this.params.audio) {
-      rate = this.audio_freq * (1 + rate * rate * 4);
+      r = 1 + rate * 25;
+      rate = this.audio_freq * r;
     } else {
       rate = .01 + rate * rate * 20;
     }
@@ -185,9 +187,10 @@ LFO = (function() {
   };
 
   LFO.prototype.processSaw = function(rate) {
-    var out;
+    var out, r;
     if (this.params.audio) {
-      rate = this.audio_freq * (1 + rate * rate * 4);
+      r = 1 + rate * 25;
+      rate = this.audio_freq * r;
     } else {
       rate = .01 + rate * rate * 20;
     }
@@ -200,9 +203,10 @@ LFO = (function() {
   };
 
   LFO.prototype.processSawInv = function(rate) {
-    var out;
+    var out, r;
     if (this.params.audio) {
-      rate = this.audio_freq * (1 + rate * rate * 4);
+      r = 1 + rate * 25;
+      rate = this.audio_freq * r;
     } else {
       rate = .01 + rate * rate * 20;
     }
@@ -215,9 +219,10 @@ LFO = (function() {
   };
 
   LFO.prototype.processSquare = function(rate) {
-    var out;
+    var out, r;
     if (this.params.audio) {
-      rate = this.audio_freq * (1 + rate * rate * 4);
+      r = 1 + rate * 25;
+      rate = this.audio_freq * r;
     } else {
       rate = .01 + rate * rate * 20;
     }
@@ -230,8 +235,10 @@ LFO = (function() {
   };
 
   LFO.prototype.processRandom = function(rate) {
+    var r;
     if (this.params.audio) {
-      rate = this.audio_freq * (1 + rate * rate * 4);
+      r = 1 + rate * 25;
+      rate = this.audio_freq * r;
     } else {
       rate = .01 + rate * rate * 20;
     }
@@ -245,8 +252,10 @@ LFO = (function() {
   };
 
   LFO.prototype.processRandomStep = function(rate) {
+    var r;
     if (this.params.audio) {
-      rate = this.audio_freq * (1 + rate * rate * 4);
+      r = 1 + rate * 25;
+      rate = this.audio_freq * r;
     } else {
       rate = .01 + rate * rate * 20;
     }

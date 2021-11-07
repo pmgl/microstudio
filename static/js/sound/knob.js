@@ -31,46 +31,47 @@ this.Knob = (function() {
     var alpha, context, x1, x2, y1, y2;
     context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    context.strokeStyle = "rgba(0,0,0,.5)";
-    context.lineWidth = 6;
+    context.strokeStyle = "rgba(255,255,255,.1)";
+    context.lineWidth = 2;
     context.beginPath();
-    context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 3, .7 * Math.PI, 2.3 * Math.PI, false);
+    context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 1, .7 * Math.PI, 2.3 * Math.PI, false);
     context.stroke();
     context.beginPath();
     context.fillStyle = "rgba(0,0,0,.5)";
-    context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 3.2, 0, Math.PI * 2, false);
+    context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 2, 0, Math.PI * 2, false);
+    context.fill();
+    context.beginPath();
+    context.fillStyle = "rgba(255,255,255,.1)";
+    context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 6, 0, Math.PI * 2, false);
     context.fill();
     context.beginPath();
     context.lineWidth = 2;
-    context.strokeStyle = "rgba(255,255,255,.5)";
+    context.strokeStyle = "hsl(200,100%,70%)";
     alpha = (.7 + (2.3 - .7) * this.value) * Math.PI;
-    x1 = this.canvas.width / 2 + this.canvas.width / 8 * Math.cos(alpha);
-    y1 = this.canvas.height / 2 + this.canvas.height / 8 * Math.sin(alpha);
-    x2 = this.canvas.width / 2 + this.canvas.width / 4 * Math.cos(alpha);
-    y2 = this.canvas.height / 2 + this.canvas.height / 4 * Math.sin(alpha);
+    x1 = this.canvas.width / 2 + (this.canvas.width / 2 - 14) * Math.cos(alpha);
+    y1 = this.canvas.height / 2 + (this.canvas.width / 2 - 14) * Math.sin(alpha);
+    x2 = this.canvas.width / 2 + (this.canvas.width / 2 - 8) * Math.cos(alpha);
+    y2 = this.canvas.height / 2 + (this.canvas.width / 2 - 8) * Math.sin(alpha);
     context.moveTo(x1, y1);
     context.lineTo(x2, y2);
     context.stroke();
-    context.shadowBlur = 6;
-    context.shadowColor = "hsl(200,100%,60%)";
-    context.shadowOpacity = 1;
-    context.strokeStyle = "hsl(200,100%,60%)";
-    context.lineWidth = 1.5;
+    context.strokeStyle = "hsl(200,100%,70%)";
+    context.lineWidth = 2;
     if (this.type === "centered") {
       if (this.value > .5) {
         context.beginPath();
-        context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 3, 1.5 * Math.PI, (.7 + (2.3 - .7) * this.value) * Math.PI, false);
+        context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 1, 1.5 * Math.PI, (.7 + (2.3 - .7) * this.value) * Math.PI, false);
         context.stroke();
       } else if (this.value < .5) {
-        context.shadowColor = "hsl(20,100%,60%)";
-        context.strokeStyle = "hsl(20,100%,60%)";
+        context.shadowColor = "hsl(20,100%,70%)";
+        context.strokeStyle = "hsl(20,100%,70%)";
         context.beginPath();
-        context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 3, (.7 + (2.3 - .7) * this.value) * Math.PI, 1.5 * Math.PI, false);
+        context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 1, (.7 + (2.3 - .7) * this.value) * Math.PI, 1.5 * Math.PI, false);
         context.stroke();
       }
     } else {
       context.beginPath();
-      context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 3, .7 * Math.PI, (.7 + (2.3 - .7) * this.value) * Math.PI, false);
+      context.arc(this.canvas.width / 2, this.canvas.height / 2, this.canvas.width / 2 - 1, .7 * Math.PI, (.7 + (2.3 - .7) * this.value) * Math.PI, false);
       context.stroke();
     }
     return context.shadowBlur = context.shadowOpacity = 0;

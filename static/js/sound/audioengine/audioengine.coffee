@@ -83,8 +83,8 @@ class AudioEngine
           for inst in @instruments
             sig += inst.output[i][j]
 
-          sig *= .125
-          sig = if sig<0 then -(1-Math.exp(sig)) else 1-Math.exp(-sig)
+          sig *= .25
+          #sig = if sig<0 then -(1-Math.exp(sig)) else 1-Math.exp(-sig)
 
           channel[j] = sig
 
