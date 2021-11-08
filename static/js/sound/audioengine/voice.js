@@ -19,14 +19,17 @@ Voice = (function() {
   }
 
   Voice.prototype.init = function(layer) {
+    var fm1, fm2, ref, ref1, ref2, ref3;
     if (!(this.osc1 instanceof Voice.oscillators[layer.inputs.osc1.type])) {
       this.osc1 = new Voice.oscillators[layer.inputs.osc1.type](this);
     }
     if (!(this.osc2 instanceof Voice.oscillators[layer.inputs.osc2.type])) {
       this.osc2 = new Voice.oscillators[layer.inputs.osc2.type](this);
     }
-    this.osc1.init(layer.inputs.osc1, layer.inputs.sync);
-    this.osc2.init(layer.inputs.osc2, layer.inputs.sync);
+    fm1 = (this.inputs.lfo1.audio && ((ref = this.inputs.lfo1.out) === 0 || ref === 3)) || (this.inputs.lfo2.audio && ((ref1 = this.inputs.lfo2.out) === 0 || ref1 === 3));
+    fm2 = (this.inputs.lfo1.audio && ((ref2 = this.inputs.lfo1.out) === 0 || ref2 === 6)) || (this.inputs.lfo2.audio && ((ref3 = this.inputs.lfo2.out) === 0 || ref3 === 6));
+    this.osc1.init(layer.inputs.osc1, layer.inputs.sync, !fm1);
+    this.osc2.init(layer.inputs.osc2, layer.inputs.sync, !fm2);
     this.noise.init(layer, layer.inputs.sync);
     this.lfo1.init(layer.inputs.lfo1, layer.inputs.sync);
     this.lfo2.init(layer.inputs.lfo2, layer.inputs.sync);
@@ -37,6 +40,7 @@ Voice = (function() {
   };
 
   Voice.prototype.update = function() {
+    var fm1, fm2, ref, ref1, ref2, ref3;
     if (this.layer == null) {
       return;
     }
@@ -46,8 +50,10 @@ Voice = (function() {
     if (!(this.osc2 instanceof Voice.oscillators[this.layer.inputs.osc2.type])) {
       this.osc2 = new Voice.oscillators[this.layer.inputs.osc2.type](this, this.layer.inputs.osc2);
     }
-    this.osc1.update(this.layer.inputs.osc1, this.layer.inputs.sync);
-    this.osc2.update(this.layer.inputs.osc2, this.layer.inputs.sync);
+    fm1 = (this.inputs.lfo1.audio && ((ref = this.inputs.lfo1.out) === 0 || ref === 3)) || (this.inputs.lfo2.audio && ((ref1 = this.inputs.lfo2.out) === 0 || ref1 === 3));
+    fm2 = (this.inputs.lfo1.audio && ((ref2 = this.inputs.lfo1.out) === 0 || ref2 === 6)) || (this.inputs.lfo2.audio && ((ref3 = this.inputs.lfo2.out) === 0 || ref3 === 6));
+    this.osc1.update(this.layer.inputs.osc1, this.layer.inputs.sync, !fm1);
+    this.osc2.update(this.layer.inputs.osc2, this.layer.inputs.sync, !fm2);
     this.env1.update();
     this.env2.update();
     this.lfo1.update();
@@ -61,11 +67,11 @@ Voice = (function() {
     this.osc1_on = this.inputs.osc1.amp > 0 || this.inputs.lfo1.out === 5 || this.inputs.lfo2.out === 5 || this.inputs.env2.out === 7 || this.inputs.velocity.out === 4 || this.inputs.modulation.out === 2;
     this.osc2_on = this.inputs.osc2.amp > 0 || this.inputs.lfo1.out === 8 || this.inputs.lfo2.out === 8 || this.inputs.env2.out === 10 || this.inputs.velocity.out === 6 || this.inputs.modulation.out === 4;
     this.noise_on = this.inputs.noise.amp > 0 || this.inputs.lfo1.out === 9 || this.inputs.lfo2.out === 9 || this.inputs.env2.out === 11 || this.inputs.velocity.out === 7 || this.inputs.modulation.out === 6;
-    this.osc1_amp = DBSCALE(this.inputs.osc1.amp, 3);
-    this.osc2_amp = DBSCALE(this.inputs.osc2.amp, 3);
+    this.osc1_amp = this.inputs.osc1.amp;
+    this.osc2_amp = this.inputs.osc2.amp;
     this.osc1_mod = this.inputs.osc1.mod;
     this.osc2_mod = this.inputs.osc2.mod;
-    this.noise_amp = DBSCALE(this.inputs.noise.amp, 3);
+    this.noise_amp = this.inputs.noise.amp;
     this.noise_mod = this.inputs.noise.mod;
     if (this.inputs.velocity.amp > 0) {
       p = this.inputs.velocity.amp;
@@ -306,7 +312,7 @@ Voice = (function() {
       case 2:
         mod = this.env2_amount * 2 - 1;
         mod *= this.env2.process(this.on);
-        mod = 1 + mod;
+        mod = Math.pow(16, mod);
         osc1_freq *= mod;
         osc2_freq *= mod;
         break;
@@ -324,7 +330,8 @@ Voice = (function() {
       case 5:
         mod = this.env2_amount * 2 - 1;
         mod *= this.env2.process(this.on);
-        osc1_freq *= 1 + mod;
+        mod = Math.pow(16, mod);
+        osc1_freq *= mod;
         break;
       case 6:
         mod = this.env2.process(this.on) * (this.env2_amount * 2 - 1);
@@ -337,7 +344,8 @@ Voice = (function() {
       case 8:
         mod = this.env2_amount * 2 - 1;
         mod *= this.env2.process(this.on);
-        osc1_freq *= 1 + mod;
+        mod = Math.pow(16, mod);
+        osc2_freq *= mod;
         break;
       case 9:
         mod = this.env2.process(this.on) * (this.env2_amount * 2 - 1);
@@ -395,7 +403,11 @@ Voice = (function() {
         break;
       case 3:
         mod = lfo1_amount;
-        mod = 1 + mod * mod * this.lfo1.process(lfo1_rate);
+        if (this.inputs.lfo1.audio) {
+          mod = 1 + mod * mod * this.lfo1.process(lfo1_rate) * 16;
+        } else {
+          mod = 1 + mod * mod * this.lfo1.process(lfo1_rate);
+        }
         osc1_freq *= mod;
         break;
       case 4:
@@ -408,7 +420,11 @@ Voice = (function() {
         break;
       case 6:
         mod = lfo1_amount;
-        mod = 1 + mod * mod * this.lfo1.process(lfo1_rate);
+        if (this.inputs.lfo1.audio) {
+          mod = 1 + mod * mod * this.lfo1.process(lfo1_rate) * 16;
+        } else {
+          mod = 1 + mod * mod * this.lfo1.process(lfo1_rate);
+        }
         osc2_freq *= mod;
         break;
       case 7:
@@ -465,7 +481,11 @@ Voice = (function() {
         break;
       case 3:
         mod = lfo2_amount;
-        mod = 1 + mod * mod * this.lfo2.process(lfo2_rate);
+        if (this.inputs.lfo2.audio) {
+          mod = 1 + mod * mod * this.lfo2.process(lfo2_rate) * 16;
+        } else {
+          mod = 1 + mod * mod * this.lfo2.process(lfo2_rate);
+        }
         osc1_freq *= mod;
         break;
       case 4:
@@ -478,7 +498,11 @@ Voice = (function() {
         break;
       case 6:
         mod = lfo2_amount;
-        mod = 1 + mod * mod * this.lfo2.process(lfo2_rate);
+        if (this.inputs.lfo2.audio) {
+          mod = 1 + mod * mod * this.lfo2.process(lfo2_rate) * 16;
+        } else {
+          mod = 1 + mod * mod * this.lfo2.process(lfo2_rate);
+        }
         osc2_freq *= mod;
         break;
       case 7:

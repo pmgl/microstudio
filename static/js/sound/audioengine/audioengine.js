@@ -103,8 +103,7 @@ AudioEngine = (function() {
             inst = ref2[o];
             sig += inst.output[i][j];
           }
-          sig *= .125;
-          sig = sig < 0 ? -(1 - Math.exp(sig)) : 1 - Math.exp(-sig);
+          sig *= .25;
           channel[j] = sig;
         }
       }

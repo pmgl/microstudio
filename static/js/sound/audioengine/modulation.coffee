@@ -103,9 +103,7 @@ class LFO
 
   processSine:(rate)->
     if @params.audio
-      r = 1+rate*rate*4
-      #r = if rate<.5 then .25+rate*rate/.25*.75 else rate*rate*4
-      #r = Math.pow(2,(Math.round(rate*48))/12)*.25
+      r = 1+rate*25
       rate = @audio_freq*r
     else
       rate = .01+rate*rate*20
@@ -121,7 +119,8 @@ class LFO
 
   processTriangle:(rate)->
     if @params.audio
-      rate = @audio_freq*(1+rate*rate*4)
+      r = 1+rate*25
+      rate = @audio_freq*r
     else
       rate = .01+rate*rate*20
 
@@ -131,7 +130,8 @@ class LFO
 
   processSaw:(rate)->
     if @params.audio
-      rate = @audio_freq*(1+rate*rate*4)
+      r = 1+rate*25
+      rate = @audio_freq*r
     else
       rate = .01+rate*rate*20
 
@@ -142,7 +142,8 @@ class LFO
 
   processSawInv:(rate)->
     if @params.audio
-      rate = @audio_freq*(1+rate*rate*4)
+      r = 1+rate*25
+      rate = @audio_freq*r
     else
       rate = .01+rate*rate*20
 
@@ -153,7 +154,8 @@ class LFO
 
   processSquare:(rate)->
     if @params.audio
-      rate = @audio_freq*(1+rate*rate*4)
+      r = 1+rate*25
+      rate = @audio_freq*r
     else
       rate = .01+rate*rate*20
 
@@ -164,7 +166,8 @@ class LFO
 
   processRandom:(rate)->
     if @params.audio
-      rate = @audio_freq*(1+rate*rate*4)
+      r = 1+rate*25
+      rate = @audio_freq*r
     else
       rate = .01+rate*rate*20
 
@@ -178,7 +181,8 @@ class LFO
 
   processRandomStep:(rate)->
     if @params.audio
-      rate = @audio_freq*(1+rate*rate*4)
+      r = 1+rate*25
+      rate = @audio_freq*r
     else
       rate = .01+rate*rate*20
 

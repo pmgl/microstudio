@@ -11,29 +11,45 @@ SquareOscillator = (function() {
     }
   }
 
-  SquareOscillator.prototype.init = function(osc, sync) {
+  SquareOscillator.prototype.init = function(osc, sync, antialias) {
     var i, j, ref;
     this.sync = sync;
     this.phase = this.sync ? 0 : Math.random();
     this.sig = -1;
     this.index = 0;
-    this.update(osc);
+    this.update(osc, this.sync, antialias);
     for (i = j = 0, ref = this.buffer.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
       this.buffer[i] = 0;
     }
   };
 
-  SquareOscillator.prototype.update = function(osc, sync) {
+  SquareOscillator.prototype.update = function(osc, sync, antialias) {
     var c, fine;
     this.sync = sync;
     c = Math.round(osc.coarse * 48) / 48;
     fine = osc.tune * 2 - 1;
     fine = fine * (1 + fine * fine) * .5;
     this.tune = 1 * Math.pow(2, c * 4) * .25 * Math.pow(Math.pow(2, 1 / 12), fine);
-    return this.analog_tune = this.tune;
+    this.analog_tune = this.tune;
+    return this.process = antialias ? this.processAntialias : this.processFM;
   };
 
-  SquareOscillator.prototype.process = function(freq, mod) {
+  SquareOscillator.prototype.processFM = function(freq, mod) {
+    var avg, dphase, m;
+    m = .5 - mod * .49;
+    avg = 1 - 2 * m;
+    dphase = this.analog_tune * freq * this.invSampleRate;
+    this.phase += dphase;
+    while (this.phase < 0) {
+      this.phase += 1;
+    }
+    while (this.phase >= 1) {
+      this.phase -= 1;
+    }
+    return (this.phase < m ? 1 : -1) - avg;
+  };
+
+  SquareOscillator.prototype.processAntialias = function(freq, mod) {
     var a, avg, dp, dpi, i, index, j, k, m, sig;
     dp = this.analog_tune * freq * this.invSampleRate;
     this.phase += dp;
@@ -97,30 +113,44 @@ SawOscillator = (function() {
     }
   }
 
-  SawOscillator.prototype.init = function(osc, sync) {
+  SawOscillator.prototype.init = function(osc, sync, antialias) {
     var i, j, ref;
     this.sync = sync;
     this.phase = this.sync ? 0 : Math.random();
     this.sig = -1;
     this.index = 0;
     this.jumped = false;
-    this.update(osc);
+    this.update(osc, this.sync, antialias);
     for (i = j = 0, ref = this.buffer.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
       this.buffer[i] = 0;
     }
   };
 
-  SawOscillator.prototype.update = function(osc, sync) {
+  SawOscillator.prototype.update = function(osc, sync, antialias) {
     var c, fine;
     this.sync = sync;
     c = Math.round(osc.coarse * 48) / 48;
     fine = osc.tune * 2 - 1;
     fine = fine * (1 + fine * fine) * .5;
     this.tune = 1 * Math.pow(2, c * 4) * .25 * Math.pow(Math.pow(2, 1 / 12), fine);
-    return this.analog_tune = this.tune;
+    this.analog_tune = this.tune;
+    return this.process = antialias ? this.processAntialias : this.processFM;
   };
 
-  SawOscillator.prototype.process = function(freq, mod) {
+  SawOscillator.prototype.processFM = function(freq, mod) {
+    var dphase;
+    dphase = this.analog_tune * freq * this.invSampleRate;
+    this.phase += dphase;
+    while (this.phase < 0) {
+      this.phase += 1;
+    }
+    while (this.phase >= 1) {
+      this.phase -= 1;
+    }
+    return (1 - mod) * (1 - 2 * this.phase) + mod * (1 - 4 * (this.phase % 0.5));
+  };
+
+  SawOscillator.prototype.processAntialias = function(freq, mod) {
     var a, dp, dphase, dpi, i, index, j, k, offset, sig, slope;
     dphase = this.analog_tune * freq * this.invSampleRate;
     this.phase += dphase;
@@ -235,10 +265,10 @@ SineOscillator = (function() {
       this.analog_tune = this.sync ? this.tune : this.tune * (1 + (Math.random() - .5) * .002);
       this.dphase = this.analog_tune * this.invSampleRate;
     }
-    m1 = mod * this.modnorm;
+    m1 = mod * mod * this.modnorm * 4;
     m2 = mod * m1;
     p = this.phase;
-    return this.sinWave2(p + m1 * this.sinWave2(p + m2 * this.sinWave2(p)));
+    return this.sinWave2(p + m1 * this.sinWave2(p));
   };
 
   return SineOscillator;
