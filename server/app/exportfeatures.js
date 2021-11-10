@@ -1,14 +1,14 @@
-var JSZip, JobQueue, createCanvas, fs, loadImage, pug, ref;
+var JSZip, Jimp, JobQueue, fs, pug;
 
 fs = require("fs");
+
+Jimp = require("jimp");
 
 JSZip = require("jszip");
 
 pug = require("pug");
 
 JobQueue = require(__dirname + "/jobqueue.js");
-
-ref = require('canvas'), createCanvas = ref.createCanvas, loadImage = ref.loadImage;
 
 this.ExportFeatures = (function() {
   function ExportFeatures(webapp) {
@@ -429,10 +429,10 @@ this.ExportFeatures = (function() {
               fn1(src);
             }
             queue.add(function() {
-              var font, l, len2, ref1;
-              ref1 = _this.webapp.fonts.fonts;
-              for (l = 0, len2 = ref1.length; l < len2; l++) {
-                font = ref1[l];
+              var font, l, len2, ref;
+              ref = _this.webapp.fonts.fonts;
+              for (l = 0, len2 = ref.length; l < len2; l++) {
+                font = ref[l];
                 if (font === "BitCell" || fullsource.indexOf("\"" + font + "\"") >= 0) {
                   fonts.push(font);
                   (function(font) {
@@ -455,40 +455,30 @@ this.ExportFeatures = (function() {
         queue.add(function() {
           var path;
           path = user.id + "/" + project.id + "/sprites/icon.png";
-          path = _this.webapp.server.content.files.sanitize(path);
-          loadImage("../files/" + path).then((function(image) {
-            var k, len1, ref1, results, size;
-            ref1 = [16, 32, 64, 180, 192, 512, 1024];
-            results = [];
-            for (k = 0, len1 = ref1.length; k < len1; k++) {
-              size = ref1[k];
-              results.push((function(size) {
+          path = _this.webapp.server.content.files.folder + "/" + _this.webapp.server.content.files.sanitize(path);
+          return Jimp.read(path, function(err, img) {
+            var fn1, k, len1, ref, size;
+            if (!err) {
+              ref = [16, 32, 64, 180, 192, 512, 1024];
+              fn1 = function(size) {
                 return queue.add(function() {
-                  var canvas, context;
-                  canvas = createCanvas(size, size);
-                  context = canvas.getContext("2d");
-                  context.antialias = "none";
-                  context.imageSmoothingEnabled = false;
-                  if (image != null) {
-                    context.drawImage(image, 0, 0, size, size);
-                  }
-                  if (size > 100) {
-                    context.antialias = "default";
-                    context.globalCompositeOperation = "destination-in";
-                    _this.webapp.fillRoundRect(context, 0, 0, size, size, size / 8);
-                  }
-                  return canvas.toBuffer(function(err, result) {
-                    zip.file("icon" + size + ".png", result);
-                    return queue.next();
+                  return img.clone().resize(size, size, Jimp.RESIZE_NEAREST_NEIGHBOR).getBuffer(Jimp.MIME_PNG, function(err, buffer) {
+                    if (err) {
+                      return queue.next();
+                    } else {
+                      zip.file("icon" + size + ".png", buffer);
+                      return queue.next();
+                    }
                   });
                 });
-              })(size));
+              };
+              for (k = 0, len1 = ref.length; k < len1; k++) {
+                size = ref[k];
+                fn1(size);
+              }
             }
-            return results;
-          }), function(error) {
             return queue.next();
           });
-          return queue.next();
         });
         return queue.start();
       };

@@ -59,6 +59,16 @@ this.SpriteEditor = (function() {
         return _this.spriteDimensionChanged("height");
       };
     })(this));
+    document.getElementById("colortext").addEventListener("input", (function(_this) {
+      return function(event) {
+        return _this.colortextChanged();
+      };
+    })(this));
+    document.getElementById("colortext-copy").addEventListener("click", (function(_this) {
+      return function(event) {
+        return _this.colortextCopy();
+      };
+    })(this));
     this.sprite_size_validator = new InputValidator([document.getElementById("sprite-width"), document.getElementById("sprite-height")], document.getElementById("sprite-size-button"), null, (function(_this) {
       return function(value) {
         return _this.saveDimensionChange(value);
@@ -573,7 +583,8 @@ this.SpriteEditor = (function() {
   SpriteEditor.prototype.setColor = function(color) {
     this.color = color;
     this.spriteview.setColor(this.color);
-    return this.auto_palette.colorPicked(this.color);
+    this.auto_palette.colorPicked(this.color);
+    return document.getElementById("colortext").value = this.color;
   };
 
   SpriteEditor.prototype.rebuildSpriteList = function() {
@@ -711,6 +722,25 @@ this.SpriteEditor = (function() {
         return document.getElementById("sprite-width").value = document.getElementById("sprite-height").value;
       }
     }
+  };
+
+  SpriteEditor.prototype.colortextChanged = function() {
+    return this.colorpicker.colorPicked(document.getElementById("colortext").value);
+  };
+
+  SpriteEditor.prototype.colortextCopy = function() {
+    var colortext, copy;
+    copy = document.getElementById("colortext-copy");
+    colortext = document.getElementById("colortext");
+    copy.classList.remove("fa-copy");
+    copy.classList.add("fa-check");
+    setTimeout(((function(_this) {
+      return function() {
+        copy.classList.remove("fa-check");
+        return copy.classList.add("fa-copy");
+      };
+    })(this)), 3000);
+    return navigator.clipboard.writeText("\"" + colortext.value + "\"");
   };
 
   SpriteEditor.prototype.saveDimensionChange = function(value) {

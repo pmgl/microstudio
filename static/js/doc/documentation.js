@@ -38,6 +38,9 @@ this.Documentation = (function() {
       case "it":
         req.open("GET", "/doc/it/doc.md");
         break;
+      case "pt":
+        req.open("GET", "/doc/pt/doc.md");
+        break;
       default:
         req.open("GET", "/doc/en/doc.md");
     }
@@ -45,12 +48,17 @@ this.Documentation = (function() {
   };
 
   Documentation.prototype.update = function() {
-    var element;
+    var e, element, j, len1, list;
     element = document.getElementById("documentation");
     marked.setOptions({
       headerPrefix: "documentation_"
     });
     element.innerHTML = DOMPurify.sanitize(marked(this.doc));
+    list = element.getElementsByTagName("a");
+    for (j = 0, len1 = list.length; j < len1; j++) {
+      e = list[j];
+      e.target = "_blank";
+    }
     this.buildToc();
     return this.buildLiveHelp();
   };

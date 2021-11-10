@@ -1055,7 +1055,7 @@ screen.setDrawAnchor(-1,-1) // le vostre coordinate di disegno sono ora interpre
 screen.setDrawAnchor(0,0) // valore predefinito, tutte le forme saranno disegnate centrate sulle vostre coordinate
 ```
 
-<!--- suggest_start screen.setDrawAnchor --->
+<!--- suggest_start screen.setBlending --->
 ##### screen.setBlending( blending )
 Definisce come le successive operazioni di disegno saranno composte con l'immagine sottostante, già disegnata. Può essere impostato su `normal` (normale) o `additive` (additivo).
 
@@ -1067,7 +1067,7 @@ Il campo "width" dell'oggetto schermo ha come valore la larghezza attuale dello 
 <!--- suggest_end --->
 
 <!--- suggest_start screen.height --->
-###### screen.height
+##### screen.height
 Il campo "altezza" dell'oggetto schermo ha come valore l'altezza attuale dello schermo (sempre 200 se lo schermo è in modalità paesaggio, vedi *coordinate schermo*).
 <!--- suggest_end --->
 

@@ -164,7 +164,7 @@ header li .pastille {
   z-index: 10 ;
 }
 .language-menu-open {
-  width: 250px;
+  width: 300px;
   background: hsl(200,25%,20%);
   border-radius: 5px;
   padding-left: 10px;
@@ -310,6 +310,8 @@ header .username span {
   bottom: 0 ;
   left: 0 ;
   right: 0 ;
+  transition-property: top ;
+  transition-duration: .5s ;
 }
 .projects-section {
   display: none ;
@@ -1082,6 +1084,10 @@ padding-left: 2px ;
 .usermenu.guest .settings, .usermenu.guest .logout, .usermenu.guest .profile {
   display: none ;
 }
+.usermenu.standalone .profile,.usermenu.standalone .logout,.usermenu.standalone .create-account,.usermenu.standalone .discard-account {
+  display: none ;
+}
+
 .usermenu .discard-account {
   background: hsl(0,50%,40%);
 }
@@ -1380,13 +1386,31 @@ padding-left: 2px ;
   left: 0 ;
   right: 0 ;
   height: 22px ;
-  background: hsl(300,30%,75%);
+  background: hsl(190,20%,75%);
   color: #222 ;
-  padding: 9px 20px ;
+  padding: 9px 20px 8px 20px ;
   font-size: 16px ;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   border-bottom: rgba(0,0,0,.25);
 }
+
 .meta-message i {
   margin-right: 10px ;
+  vertical-align: middle ;
+  font-size: 20px ;
+}
+
+.meta-message i.fa-times {
+  float: right ;
+  cursor: pointer ;
+  font-size: 14px ;
+  padding: 4px 6px ;
+  border-radius: 20px ;
+  color: #FFF ;
+  background: hsl(0,30%,50%);
+  margin-left: 10px ;
 }
 
 

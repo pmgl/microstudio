@@ -94,6 +94,9 @@ class @UserSettings
     document.getElementById("usersettings-profile-description").addEventListener "input",()=>
       @profileDescriptionChanged()
 
+    if window.ms_standalone
+      document.getElementById("usersettings-menu-profile").style.display = "none"
+
   initSections:()->
     for s in @sections
       do (s)=>

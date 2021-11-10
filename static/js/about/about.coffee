@@ -33,7 +33,7 @@ class @About
           @loaded[section] = req.responseText
           callback(@loaded[section]) if callback?
 
-    if @app.translator.lang in ["fr","it"] and section != "changelog"
+    if @app.translator.lang in ["fr","it","pt"] and section != "changelog"
       req.open "GET",location.origin+"/doc/#{@app.translator.lang}/#{section}.md"
     else
       req.open "GET",location.origin+"/doc/en/#{section}.md"
@@ -43,3 +43,7 @@ class @About
   update:(doc)->
     element = document.getElementById("about-content")
     element.innerHTML = DOMPurify.sanitize marked doc
+    list = element.getElementsByTagName "a"
+    for e in list
+      e.target = "_blank"
+    return

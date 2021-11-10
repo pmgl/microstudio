@@ -21,11 +21,11 @@ class @UserProgress
     @time_ids[id] = t
     @incrementStat(id,1,true)
 
-  unlockAchievement:(id)->
+  unlockAchievement:(id,date=Date.now())->
     if not @hasAchievement(id)
       @achievements[id] =
         id: id
-        date: Date.now()
+        date: date
 
       a = Achievements.by_id[id]
       if a? and a.xp?

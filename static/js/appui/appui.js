@@ -28,6 +28,7 @@ AppUI = (function() {
       s = ref[j];
       fn(s);
     }
+    this.warning_messages = [];
     this.updateAllowedSections();
     document.addEventListener("keydown", (function(_this) {
       return function(e) {
@@ -53,7 +54,13 @@ AppUI = (function() {
         e = document.getElementById("menu-" + s);
         if (e != null) {
           return e.addEventListener("click", function(event) {
-            return _this.setMainSection(s, true);
+            if (window.ms_standalone && s === "explore") {
+              return window.open("https://microstudio.dev/explore/", "_blank");
+            } else if (window.ms_standalone && s === "home") {
+              return window.open("https://microstudio.dev", "_blank");
+            } else {
+              return _this.setMainSection(s, true);
+            }
           });
         }
       };
@@ -64,9 +71,22 @@ AppUI = (function() {
     }
     this.setAction("logo", (function(_this) {
       return function() {
-        return _this.setMainSection("home", true);
+        if (window.ms_standalone) {
+          return window.open("https://microstudio.dev", "_blank");
+        } else {
+          return _this.setMainSection("home", true);
+        }
       };
     })(this));
+    if (window.ms_standalone) {
+      document.getElementById("menu-community").parentNode.href = "https://microstudio.dev/community/";
+      document.getElementById("projectoptions-users-content").style.display = "none";
+      document.getElementById("publish-box-online").style.display = "none";
+      document.getElementById("usersetting-block-nickname").style.display = "none";
+      document.getElementById("usersetting-block-email").style.display = "none";
+      document.getElementById("usersetting-block-newsletter").style.display = "none";
+      document.getElementById("usersetting-block-account-type").style.display = "none";
+    }
     this.createLoginFunctions();
     this.setAction("create-project-button", (function(_this) {
       return function() {
@@ -259,13 +279,61 @@ AppUI = (function() {
     }
   };
 
-  AppUI.prototype.addWarningMessage = function(text) {
-    var div;
-    document.querySelector(".main-container").style.top = "100px";
+  AppUI.prototype.addWarningMessage = function(text, icon, id, dismissable) {
+    var close, div, span;
+    if (icon == null) {
+      icon = "fa-exclamation-circle";
+    }
+    if (dismissable && (id != null)) {
+      if (localStorage.getItem(id)) {
+        return;
+      }
+    }
     div = document.createElement("div");
     div.classList.add("meta-message");
-    div.innerHTML = "<i class='fas fa-exclamation-circle'></i> " + text;
-    return document.body.appendChild(div);
+    span = document.createElement("span");
+    span.innerHTML = "<i class='fas " + icon + "'></i> " + text;
+    if (dismissable) {
+      close = document.createElement("i");
+      close.classList.add("fa");
+      close.classList.add("fa-times");
+      close.addEventListener("click", (function(_this) {
+        return function() {
+          _this.removeWarningMessage(div);
+          return localStorage.setItem(id, true);
+        };
+      })(this));
+      div.appendChild(close);
+    }
+    div.appendChild(span);
+    this.warning_messages.push(div);
+    document.querySelector(".main-container").style.top = (60 + 40 * this.warning_messages.length) + "px";
+    document.body.appendChild(div);
+    return this.layoutWarningMessages();
+  };
+
+  AppUI.prototype.layoutWarningMessages = function() {
+    var i, j, len, ref, results, w;
+    ref = this.warning_messages;
+    results = [];
+    for (i = j = 0, len = ref.length; j < len; i = ++j) {
+      w = ref[i];
+      results.push(w.style.top = (60 + i * 40) + "px");
+    }
+    return results;
+  };
+
+  AppUI.prototype.removeWarningMessage = function(div) {
+    var index;
+    if (document.body.contains(div)) {
+      document.body.removeChild(div);
+      index = this.warning_messages.indexOf(div);
+      if (index >= 0) {
+        this.warning_messages.splice(index, 1);
+        document.querySelector(".main-container").style.top = (60 + 40 * this.warning_messages.length) + "px";
+        return this.layoutWarningMessages();
+      }
+    }
   };
 
   AppUI.prototype.checkActivity = function() {
@@ -472,7 +540,7 @@ AppUI = (function() {
   };
 
   AppUI.prototype.createLoginFunctions = function() {
-    var s1, s2, s3, s4;
+    var fn, j, lang, len, ref, s1, s2, s3, s4;
     s1 = document.getElementById("switch_to_create_account");
     s2 = document.getElementById("switch_to_log_in");
     s3 = document.getElementById("switch_from_forgot_to_login");
@@ -556,7 +624,10 @@ AppUI = (function() {
       return function(event) {
         var c, e, j, len, num, ref;
         e = document.querySelector(".usermenu");
-        if (_this.app.user.flags.guest || (_this.app.user.email == null)) {
+        if (window.ms_standalone) {
+          e.classList.add("standalone");
+          e.classList.remove("regular");
+        } else if (_this.app.user.flags.guest || (_this.app.user.email == null)) {
           e.classList.add("guest");
           e.classList.remove("regular");
         } else {
@@ -642,61 +713,26 @@ AppUI = (function() {
         }
       };
     })(this));
-    document.querySelector("#language-choice-it").addEventListener("click", (function(_this) {
-      return function(event) {
-        return _this.setLanguage("it");
+    ref = window.ms_languages;
+    fn = (function(_this) {
+      return function(lang) {
+        if (document.querySelector("#language-choice-" + lang) != null) {
+          document.querySelector("#language-choice-" + lang).addEventListener("click", function(event) {
+            return _this.setLanguage(lang);
+          });
+        }
+        if (document.querySelector("#switch-to-" + lang) != null) {
+          return document.querySelector("#switch-to-" + lang).addEventListener("click", function(event) {
+            event.preventDefault();
+            return _this.setLanguage(lang);
+          });
+        }
       };
-    })(this));
-    document.querySelector("#language-choice-de").addEventListener("click", (function(_this) {
-      return function(event) {
-        return _this.setLanguage("de");
-      };
-    })(this));
-    document.querySelector("#language-choice-pl").addEventListener("click", (function(_this) {
-      return function(event) {
-        return _this.setLanguage("pl");
-      };
-    })(this));
-    document.querySelector("#language-choice-fr").addEventListener("click", (function(_this) {
-      return function(event) {
-        return _this.setLanguage("fr");
-      };
-    })(this));
-    document.querySelector("#language-choice-en").addEventListener("click", (function(_this) {
-      return function(event) {
-        return _this.setLanguage("en");
-      };
-    })(this));
-    document.querySelector("#switch-to-it").addEventListener("click", (function(_this) {
-      return function(event) {
-        event.preventDefault();
-        return _this.setLanguage("it");
-      };
-    })(this));
-    document.querySelector("#switch-to-de").addEventListener("click", (function(_this) {
-      return function(event) {
-        event.preventDefault();
-        return _this.setLanguage("de");
-      };
-    })(this));
-    document.querySelector("#switch-to-pl").addEventListener("click", (function(_this) {
-      return function(event) {
-        event.preventDefault();
-        return _this.setLanguage("pl");
-      };
-    })(this));
-    document.querySelector("#switch-to-fr").addEventListener("click", (function(_this) {
-      return function(event) {
-        event.preventDefault();
-        return _this.setLanguage("fr");
-      };
-    })(this));
-    document.querySelector("#switch-to-en").addEventListener("click", (function(_this) {
-      return function(event) {
-        event.preventDefault();
-        return _this.setLanguage("en");
-      };
-    })(this));
+    })(this);
+    for (j = 0, len = ref.length; j < len; j++) {
+      lang = ref[j];
+      fn(lang);
+    }
     this.setAction("login-submit", (function(_this) {
       return function() {
         return _this.app.login(_this.get("login_nick").value, _this.get("login_password").value);
@@ -765,7 +801,7 @@ AppUI = (function() {
       text = this.app.translator.get("Your account is out of space!");
       text += " " + this.app.translator.get("You are using %USED% of the %ALLOWED% you are allowed.").replace("%USED%", this.displayByteSize(this.app.user.info.size)).replace("%ALLOWED%", this.displayByteSize(this.app.user.info.max_storage));
       text += " <a href='https://microstudio.dev/community/tips/your-account-is-out-of-space/109/' target='_blank'>" + (this.app.translator.get("More info...")) + "</a>";
-      return this.addWarningMessage(text);
+      return this.addWarningMessage(text, void 0, "out_of_storage", false);
     }
   };
 

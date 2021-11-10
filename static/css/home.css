@@ -192,6 +192,7 @@
 .home-section .footer p a {
   color: hsl(200,100%,80%);
   text-decoration: none ;
+  white-space: nowrap ;
 }
 .home-section .footer p i {
   margin: 0 20px ;

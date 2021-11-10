@@ -3,6 +3,7 @@ html(lang=language)
   head
     meta(name="description" content=translator.get("Learn programming, create video games - microStudio is a free game engine online."))
     meta(name="viewport" content="width=device-width, user-scalable=no, initial-scale=.6")
+    link(rel="alternate" hreflang="pt" href="https://microstudio.dev/pt/")
     link(rel="alternate" hreflang="it" href="https://microstudio.dev/it/")
     link(rel="alternate" hreflang="de" href="https://microstudio.dev/de/")
     link(rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/")
@@ -60,6 +61,11 @@ html(lang=language)
 
     script(src="/lib/marked/marked.js")
     script(src="/lib/dompurify/purify.js")
+    
+    script.
+      window.ms_languages = !{JSON.stringify(languages)};
+      window.ms_standalone = !{standalone} ;
+      window.translation = !{translation};
 
     each js in javascript_files
       script(src=js)
@@ -106,6 +112,10 @@ html(lang=language)
         div.language-choice#language-choice-it(title="Italiano")
           i.fas.fa-comment
           div.notranslate(translate="no") IT
+
+        div.language-choice#language-choice-pt(title="Português")
+          i.fas.fa-comment
+          div.notranslate(translate="no") PT
 
       img.logo#logo(src="/img/microstudiologo.svg" alt="microStudio" title="microStudio")
 
@@ -228,6 +238,8 @@ html(lang=language)
             a.notranslate(id="switch-to-de" href="/de/" translate="no") microStudio auf Deutsch
             i.fa.fa-circle
             a.notranslate(id="switch-to-it" href="/it/" translate="no") microStudio in Italiano
+            i.fa.fa-circle
+            a.notranslate(id="switch-to-pt" href="/pt/" translate="no") microStudio em Português
 
       div.exploreview#explore-section
         div#explore-bar

@@ -6,23 +6,37 @@ class SquareOscillator
     @buffer = new Float64Array(32)
     @init(osc) if osc?
 
-  init:(osc,@sync)->
+  init:(osc,@sync,antialias)->
     @phase = if @sync then 0 else Math.random()
     @sig = -1
     @index = 0
-    @update(osc)
+    @update(osc,@sync,antialias)
     for i in [0..@buffer.length-1]
       @buffer[i] = 0
     return
 
-  update:(osc,@sync)->
+  update:(osc,@sync,antialias)->
     c = Math.round(osc.coarse*48)/48
     fine = osc.tune*2-1
     fine = fine*(1+fine*fine)*.5
     @tune = 1*Math.pow(2,c*4)*.25*Math.pow(Math.pow(2,1/12),fine)
     @analog_tune = @tune
+    @process = if antialias then @processAntialias else @processFM
 
-  process:(freq,mod)->
+  processFM:(freq,mod)->
+    m = .5-mod*.49
+    avg = 1-2*m
+
+    dphase = @analog_tune*freq*@invSampleRate
+    @phase += dphase
+    while @phase<0
+      @phase += 1
+    while @phase>=1
+      @phase -= 1
+
+    (if @phase<m then 1 else -1)-avg
+
+  processAntialias:(freq,mod)->
     dp = @analog_tune*freq*@invSampleRate
     @phase += dp
 
@@ -74,24 +88,35 @@ class SawOscillator
     @buffer = new Float64Array(32)
     @init(osc) if osc?
 
-  init:(osc,@sync)->
+  init:(osc,@sync,antialias)->
     @phase = if @sync then 0 else Math.random()
     @sig = -1
     @index = 0
     @jumped = false
-    @update(osc)
+    @update(osc,@sync,antialias)
     for i in [0..@buffer.length-1]
       @buffer[i] = 0
     return
 
-  update:(osc,@sync)->
+  update:(osc,@sync,antialias)->
     c = Math.round(osc.coarse*48)/48
     fine = osc.tune*2-1
     fine = fine*(1+fine*fine)*.5
     @tune = 1*Math.pow(2,c*4)*.25*Math.pow(Math.pow(2,1/12),fine)
     @analog_tune = @tune
+    @process = if antialias then @processAntialias else @processFM
 
-  process:(freq,mod)->
+  processFM:(freq,mod)->
+    dphase = @analog_tune*freq*@invSampleRate
+    @phase += dphase
+    while @phase<0
+      @phase += 1
+    while @phase>=1
+      @phase -= 1
+
+    (1-mod)*(1-2*@phase)+mod*(1-4*(@phase%0.5))
+
+  processAntialias:(freq,mod)->
     dphase = @analog_tune*freq*@invSampleRate
     @phase += dphase
 
@@ -189,10 +214,11 @@ class SineOscillator
       @analog_tune = if @sync then @tune else @tune*(1+(Math.random()-.5)*.002)
       @dphase = @analog_tune*@invSampleRate
 
-    m1 = mod*@modnorm
+    m1 = mod*mod*@modnorm*4
     m2 = mod*m1
     p = @phase
-    return @sinWave2(p+m1*@sinWave2(p+m2*@sinWave2(p)))
+#    return @sinWave2(p+m1*@sinWave2(p+m2*@sinWave2(p)))
+    return @sinWave2(p+m1*@sinWave2(p))
 
 class VoiceOscillator
   constructor:(@voice,osc)->

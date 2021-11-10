@@ -2,7 +2,7 @@ SHA256 = require("crypto-js/sha256")
 pug = require "pug"
 fs = require "fs"
 ProjectManager = require __dirname+"/session/projectmanager.js"
-{ createCanvas, loadImage } = require('canvas')
+Jimp = require "jimp"
 Concatenator = require __dirname+"/concatenator.js"
 Fonts = require __dirname+"/fonts.js"
 ExportFeatures = require __dirname+"/app/exportfeatures.js"
@@ -26,14 +26,15 @@ class @WebApp
 
     @forum_app = new ForumApp @server,@
 
-    @home_funk = {}
     @concatenator = new Concatenator @
     @fonts = new Fonts
 
     @export_features = new ExportFeatures @
     @server.build_manager.createLinks(@app)
 
-    @languages = ["en","fr","pl","de","it"]
+    @home_page = {}
+
+    @languages = ["en","fr","pl","de","it", "pt"]
     home_exp = "^(\\/"
     for i in [1..@languages.length-1] by 1
       home_exp += "|\\/#{@languages[i]}\\/?"
@@ -65,20 +66,27 @@ class @WebApp
           lang = l
       #console.info "language=#{lang}"
 
-      if not @home_funk[lang]? or not @server.use_cache
-        @home_funk[lang] = pug.compileFile "../templates/home.pug"
 
-      res.send @home_funk[lang](
-        tags: @server.content.tag_list
-        name: "microStudio"
-        patches: @server.content.hot_patches
-        javascript_files: @concatenator.getHomeJSFiles()
-        css_files: @concatenator.getHomeCSSFiles()
-        select: "hot"
-        path: req.path
-        translator: @server.content.translator.getTranslator(lang)
-        language: lang
-      )
+      if not @home_funk? or not @server.use_cache
+        @home_funk = pug.compileFile "../templates/home.pug"
+
+      if @server.content.translator.languages[lang]? and @server.content.translator.languages[lang].updated
+        @server.content.translator.languages[lang].updated = false
+        delete @home_page[lang]
+
+      if not @home_page[lang]? or not @server.use_cache
+        #console.info "generating home page #{lang}"
+        @home_page[lang] = @home_funk
+          name: "microStudio"
+          javascript_files: @concatenator.getHomeJSFiles()
+          css_files: @concatenator.getHomeCSSFiles()
+          translator: @server.content.translator.getTranslator(lang)
+          language: lang
+          standalone: @server.config.standalone == true
+          languages: @languages
+          translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
+
+      res.send @home_page[lang]
 
     for plugin in @server.plugins
       if plugin.addWebHooks?
@@ -296,34 +304,18 @@ class @WebApp
       size = Math.min(1024,size.split(".")[0]|0)
 
       path = "#{user.id}/#{project.id}/sprites/icon.png"
-      path = @server.content.files.sanitize path
+      path = @server.content.files.folder+"/"+@server.content.files.sanitize path
 
-      loadImage("../files/#{path}").then ((image)=>
-        canvas = createCanvas(size,size)
-        context = canvas.getContext "2d"
-        context.antialias = "none"
-        context.imageSmoothingEnabled = false
-        if image?
-          context.drawImage image,0,0,size,size
-
-        context.antialias = "default"
-        context.globalCompositeOperation = "destination-in"
-        @fillRoundRect context,0,0,size,size,size/8
-        canvas.toBuffer (err,result)=>
-          res.setHeader("Content-Type", "image/png")
-          res.send result
-        ),(error)=>
-          canvas = createCanvas(size,size)
-          context = canvas.getContext "2d"
-          context.fillStyle = "#000"
-          context.fillRect 0,0,size,size
-          context.antialias = "default"
-          context.globalCompositeOperation = "destination-in"
-          @fillRoundRect context,0,0,size,size,size/8
-
-          canvas.toBuffer (err,result)=>
-            res.setHeader("Content-Type", "image/png")
-            res.send result
+      Jimp.read path, (err, img) =>
+        if err
+          console.error err
+          return
+        img.resize(size,size,Jimp.RESIZE_NEAREST_NEIGHBOR).getBuffer Jimp.MIME_PNG,(err,buffer)=>
+          if err
+            console.error err
+            return
+          res.setHeader "Content-Type", "image/png"
+          res.send buffer
 
     # source files for player
     @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/ms\/[A-Za-z0-9_]+.ms$/,(req,res)=>
@@ -535,7 +527,7 @@ class @WebApp
 
     user = @server.content.findUserByNick(user)
     if not user?
-      @return404(req,res)
+      return @return404(req,res)
 
     projects = user.listPublicProjects()
     projects.sort (a,b)-> b.last_modified-a.last_modified
@@ -620,6 +612,7 @@ class @WebApp
       percent: percent
       achievements: achievements
       translator: @server.content.translator.getTranslator(lang)
+      language: lang
 
   getLanguage:(request)->
     if request.cookies.language?

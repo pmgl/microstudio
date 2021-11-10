@@ -23,8 +23,10 @@ html(lang=language)
     script(src="/js/util/translator.js")
     script(src="/lib/marked/marked.js")
 
-    script window.post = !{JSON.stringify(post_info)} ;
-    script window.community = !{JSON.stringify(community)} ;
+    script.
+      window.post = !{JSON.stringify(post_info)} ;
+      window.community = !{JSON.stringify(community)} ;
+      window.translation = !{translation};
 
   body(class=theme)
     header

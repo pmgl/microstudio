@@ -166,7 +166,7 @@ this.RunWindow = (function() {
     }
     return this.app.project.savePendingChanges((function(_this) {
       return function() {
-        device.innerHTML = "<iframe id='runiframe' allow='autoplay' src='" + url + "'></iframe>";
+        device.innerHTML = "<iframe id='runiframe' allow='autoplay;gamepad' src='" + url + "'></iframe>";
         return _this.windowResized();
       };
     })(this));

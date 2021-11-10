@@ -46,7 +46,7 @@ this.DB = (function() {
   };
 
   DB.prototype.tableLoaded = function() {
-    var key, ref, table;
+    var c, key, ref, table;
     ref = this.tables;
     for (key in ref) {
       table = ref[key];
@@ -55,10 +55,11 @@ this.DB = (function() {
       }
     }
     if (this.callback != null) {
+      c = this.callback;
+      delete this.callback;
       this.load_time = Date.now() - this.load_time;
       console.info("DB load time: " + this.load_time + " ms");
-      this.callback(this);
-      return delete this.callback;
+      return c(this);
     }
   };
 

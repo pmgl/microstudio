@@ -146,6 +146,7 @@ class @ForumApp
           scroll: scroll
           getHue: @getHue
           theme: theme
+          translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
           post_info:
             id: post.id
             slug: post.slug
@@ -181,6 +182,7 @@ class @ForumApp
       name: name
       theme: theme
       description: description
+      translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
       community:
         language: lang
         category: selected

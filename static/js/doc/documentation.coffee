@@ -23,6 +23,8 @@ class @Documentation
         req.open "GET","/doc/pl/doc.md"
       when "it"
         req.open "GET","/doc/it/doc.md"
+      when "pt"
+        req.open "GET","/doc/pt/doc.md"
       else
         req.open "GET","/doc/en/doc.md"
 
@@ -33,6 +35,10 @@ class @Documentation
     marked.setOptions
       headerPrefix: "documentation_"
     element.innerHTML = DOMPurify.sanitize marked @doc
+
+    list = element.getElementsByTagName "a"
+    for e in list
+      e.target = "_blank"
 
     #lexer = new marked.Lexer({})
     #console.info lexer.lex @doc

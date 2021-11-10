@@ -13,6 +13,8 @@ class @Tutorials
         req.open "GET",location.origin+"/tutorials/fr/toc.md"
       when "it"
         req.open "GET",location.origin+"/tutorials/it/toc.md"
+      when "pt"
+        req.open "GET",location.origin+"/tutorials/pt/toc.md"
       else
         req.open "GET",location.origin+"/tutorials/en/toc.md"
 

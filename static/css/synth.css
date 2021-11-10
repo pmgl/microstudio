@@ -23,16 +23,16 @@
 }
 
 .synth .module {
-  margin: 0px 10px 10px 0 ;
+  margin: 0px 5px 5px 0 ;
   display: inline-block ;
-  height: 155px ;
-  background: linear-gradient(hsl(200,25%,30%),hsl(200,25%,20%));
-  border-radius: 5px ;
+  height: 175px ;
+  background: rgba(255,255,255,.1);
   overflow: hidden ;
-  padding: 5px ;
-  border-top: solid 4px hsl(200,15%,50%);
   line-height: 12px ;
-  box-shadow: 0 0 5px rgba(0,0,0,.5);
+}
+
+.synth .module-content {
+  padding: 5px ;
 }
 
 .synth .separator {
@@ -59,9 +59,16 @@
 
 
 .synth .module .label {
-  padding: 3px 3px 4px 3px ;
-  font-size: 12px ;
-  color: #FFF ;
+  padding: 6px ;
+  font-size: 11px ;
+  color: rgba(255,255,255,.7) ;
+  border-bottom: solid 2px rgba(0,0,0,.5);
+  text-transform: uppercase;
+  cursor: pointer ;
+}
+.synth .module .label i {
+  color: hsl(20,100%,70%);
+  margin-right: 5px ;
 }
 
 .synth .layers {
@@ -83,7 +90,11 @@
   margin: 5px ;
 }
 .synth .module .knoblabel {
-  font-size: 11px ;
+  font-size: 9px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: 3px;
+  color: rgba(255,255,255,.7);
 }
 .synth .knob {
   cursor: pointer ;
@@ -183,7 +194,7 @@
   height: auto ;
   border-radius: 10px ;
   box-shadow: 0 0 20px #000, 0 0 2px 0px #000 ;
-  background: hsl(200,30%,15%);
+  background: hsl(200,50%,10%);
   z-index: 10 ;
   display: block ;
   overflow: hidden ;

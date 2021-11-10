@@ -64,7 +64,7 @@ this.About = (function() {
         }
       };
     })(this);
-    if (((ref = this.app.translator.lang) === "fr" || ref === "it") && section !== "changelog") {
+    if (((ref = this.app.translator.lang) === "fr" || ref === "it" || ref === "pt") && section !== "changelog") {
       req.open("GET", location.origin + ("/doc/" + this.app.translator.lang + "/" + section + ".md"));
     } else {
       req.open("GET", location.origin + ("/doc/en/" + section + ".md"));
@@ -73,9 +73,14 @@ this.About = (function() {
   };
 
   About.prototype.update = function(doc) {
-    var element;
+    var e, element, i, len, list;
     element = document.getElementById("about-content");
-    return element.innerHTML = DOMPurify.sanitize(marked(doc));
+    element.innerHTML = DOMPurify.sanitize(marked(doc));
+    list = element.getElementsByTagName("a");
+    for (i = 0, len = list.length; i < len; i++) {
+      e = list[i];
+      e.target = "_blank";
+    }
   };
 
   return About;

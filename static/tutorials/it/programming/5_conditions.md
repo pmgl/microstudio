@@ -122,7 +122,7 @@ per isolare più di due possibilità diverse. Per esempio:
 test = function(numero)
   if numero<0 then
     print( "il numero è negativo" )
-  elsif numero == 0 allora
+  elsif numero == 0 then
     print( "il numero è zero")
   else
     print( "Il numero è positivo" )

@@ -37,10 +37,15 @@ this.DocEditor = (function() {
   }
 
   DocEditor.prototype.editorContentsChanged = function() {
-    var e, src;
+    var e, el, i, len, list, src;
     src = this.editor.getValue();
     e = document.getElementById("doc-render");
     e.innerHTML = DOMPurify.sanitize(marked(src));
+    list = e.getElementsByTagName("a");
+    for (i = 0, len = list.length; i < len; i++) {
+      el = list[i];
+      el.target = "_blank";
+    }
     if (this.ignore_changes) {
       return;
     }

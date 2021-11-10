@@ -32,10 +32,11 @@ class @DB
       return if not table.loaded
 
     if @callback?
+      c = @callback
+      delete @callback
       @load_time = Date.now()-@load_time
       console.info "DB load time: #{@load_time} ms"
-      @callback @
-      delete @callback
+      c @
 
   create:(table,data)->
     #console.info "creating #{JSON.stringify(data)}"

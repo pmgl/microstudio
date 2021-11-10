@@ -11,7 +11,7 @@ div.usersettings#usersettings
     
   div.usersettings-page#usersettings-settings
     h1 #{translator.get("User Settings")}
-    div.usersetting
+    div.usersetting#usersetting-block-nickname
       h3 #{translator.get("Nickname")}
       input#usersetting-nick(type="text")
       div.validate-button-container#usersetting-nick-button
@@ -19,7 +19,7 @@ div.usersettings#usersettings
       div.error#usersetting-nick-error
       div.tip #{translator.get("Your nickname will be displayed publicly.")}
 
-    div.usersetting
+    div.usersetting#usersetting-block-email
       h3 #{translator.get("E-mail Address")}
       input#usersetting-email(type="text")
       div.validate-button-container#usersetting-email-button
@@ -36,18 +36,18 @@ div.usersettings#usersettings
     //- div.usersetting
     //-   div.button#change-password <i class="fa fa-sync-alt"></i> #{translator.get("Change password")}
 
-    div.usersetting
+    div.usersetting#usersetting-block-newsletter
       h3 #{translator.get("Newsletter")}
       input(type="checkbox" id="subscribe-newsletter")
       label(for="subscribe-newsletter") #{translator.get("Receive newsletter")}
       br
       span.tip #{translator.get("We will send you an information email no more than once a month.")}
 
-    div.usersetting
+    div.usersetting#usersetting-block-account-type
       h3 #{translator.get("Account Type")}
       div#usersettings-account-type
 
-    div.usersetting
+    div.usersetting#usersetting-block-storage
       h3 #{translator.get("Storage")}
       span#usersettings-storage
         

@@ -72,6 +72,9 @@ div.sprites-right
       //input(type="range" min="0" max="100" value="100")#sprite-tool-opacity
       div#colorpicker-group
         div.colorpicker#colorpicker
+        div.colortext
+          i.fa.fa-copy#colortext-copy(title=translator.get("Copy Color"))
+          input#colortext(type="text" value="rgb" spellcheck="false")
         div.spritetoolbutton#eyedropper
           i(class="fa fa-eye-dropper")
           br

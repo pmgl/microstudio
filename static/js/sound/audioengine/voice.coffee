@@ -21,8 +21,11 @@ class Voice
     if @osc2 not instanceof Voice.oscillators[layer.inputs.osc2.type]
       @osc2 = new Voice.oscillators[layer.inputs.osc2.type] @
 
-    @osc1.init(layer.inputs.osc1,layer.inputs.sync)
-    @osc2.init(layer.inputs.osc2,layer.inputs.sync)
+    fm1 = (@inputs.lfo1.audio and @inputs.lfo1.out in [0,3]) or (@inputs.lfo2.audio and @inputs.lfo2.out in [0,3])
+    fm2 = (@inputs.lfo1.audio and @inputs.lfo1.out in [0,6]) or (@inputs.lfo2.audio and @inputs.lfo2.out in [0,6])
+
+    @osc1.init(layer.inputs.osc1,layer.inputs.sync,not fm1)
+    @osc2.init(layer.inputs.osc2,layer.inputs.sync,not fm2)
     @noise.init(layer,layer.inputs.sync)
     @lfo1.init(layer.inputs.lfo1,layer.inputs.sync)
     @lfo2.init(layer.inputs.lfo2,layer.inputs.sync)
@@ -41,8 +44,11 @@ class Voice
     if @osc2 not instanceof Voice.oscillators[@layer.inputs.osc2.type]
       @osc2 = new Voice.oscillators[@layer.inputs.osc2.type] @,@layer.inputs.osc2
 
-    @osc1.update(@layer.inputs.osc1,@layer.inputs.sync)
-    @osc2.update(@layer.inputs.osc2,@layer.inputs.sync)
+    fm1 = (@inputs.lfo1.audio and @inputs.lfo1.out in [0,3]) or (@inputs.lfo2.audio and @inputs.lfo2.out in [0,3])
+    fm2 = (@inputs.lfo1.audio and @inputs.lfo1.out in [0,6]) or (@inputs.lfo2.audio and @inputs.lfo2.out in [0,6])
+
+    @osc1.update(@layer.inputs.osc1,@layer.inputs.sync,not fm1)
+    @osc2.update(@layer.inputs.osc2,@layer.inputs.sync,not fm2)
 
     @env1.update()
     @env2.update()
@@ -58,12 +64,14 @@ class Voice
     @osc2_on = @inputs.osc2.amp>0 or @inputs.lfo1.out == 8 or @inputs.lfo2.out == 8 or @inputs.env2.out == 10 or @inputs.velocity.out == 6 or @inputs.modulation.out == 4
     @noise_on = @inputs.noise.amp>0 or @inputs.lfo1.out == 9 or @inputs.lfo2.out == 9 or @inputs.env2.out == 11 or @inputs.velocity.out == 7 or @inputs.modulation.out == 6
 
-    @osc1_amp = DBSCALE(@inputs.osc1.amp,3)
-    @osc2_amp = DBSCALE(@inputs.osc2.amp,3)
+    @osc1_amp = @inputs.osc1.amp #DBSCALE(@inputs.osc1.amp,3)
+    @osc2_amp = @inputs.osc2.amp #DBSCALE(@inputs.osc2.amp,3)
     @osc1_mod = @inputs.osc1.mod
     @osc2_mod = @inputs.osc2.mod
-    @noise_amp = DBSCALE(@inputs.noise.amp,3)
+    @noise_amp = @inputs.noise.amp #DBSCALE(@inputs.noise.amp,3)
     @noise_mod = @inputs.noise.mod
+
+    #console.info(@osc1_amp)
 
     if @inputs.velocity.amp>0
       p = @inputs.velocity.amp
@@ -332,7 +340,7 @@ class Voice
       when 2 # Pitch
         mod = @env2_amount*2-1
         mod *= @env2.process(@on)
-        mod = 1+mod
+        mod = Math.pow(16,mod)
         osc1_freq *= mod
         osc2_freq *= mod
 
@@ -350,7 +358,8 @@ class Voice
       when 5 #Osc1 Pitch
         mod = @env2_amount*2-1
         mod *= @env2.process(@on)
-        osc1_freq *= 1+mod
+        mod = Math.pow(16,mod)
+        osc1_freq *= mod
 
       when 6 #Osc1 Mod
         mod = @env2.process(@on)*(@env2_amount*2-1)
@@ -363,7 +372,8 @@ class Voice
       when 8 #Osc2 Pitch
         mod = @env2_amount*2-1
         mod *= @env2.process(@on)
-        osc1_freq *= 1+mod
+        mod = Math.pow(16,mod)
+        osc2_freq *= mod
 
       when 9 #Osc2 Mod
         mod = @env2.process(@on)*(@env2_amount*2-1)
@@ -420,7 +430,10 @@ class Voice
 
       when 3 #Osc1 Pitch
         mod = lfo1_amount
-        mod = 1+mod*mod*@lfo1.process(lfo1_rate)
+        if @inputs.lfo1.audio
+          mod = 1+mod*mod*@lfo1.process(lfo1_rate)*16
+        else
+          mod = 1+mod*mod*@lfo1.process(lfo1_rate)
         osc1_freq *= mod
 
       when 4 #Osc1 Mod
@@ -433,7 +446,10 @@ class Voice
 
       when 6 #Osc2 Pitch
         mod = lfo1_amount
-        mod = 1+mod*mod*@lfo1.process(lfo1_rate)
+        if @inputs.lfo1.audio
+          mod = 1+mod*mod*@lfo1.process(lfo1_rate)*16
+        else
+          mod = 1+mod*mod*@lfo1.process(lfo1_rate)
         osc2_freq *= mod
 
       when 7 #Osc2 Mod
@@ -490,7 +506,10 @@ class Voice
 
       when 3 #Osc1 Pitch
         mod = lfo2_amount
-        mod = 1+mod*mod*@lfo2.process(lfo2_rate)
+        if @inputs.lfo2.audio
+          mod = 1+mod*mod*@lfo2.process(lfo2_rate)*16
+        else
+          mod = 1+mod*mod*@lfo2.process(lfo2_rate)
         osc1_freq *= mod
 
       when 4 #Osc1 Mod
@@ -503,7 +522,10 @@ class Voice
 
       when 6 #Osc2 Pitch
         mod = lfo2_amount
-        mod = 1+mod*mod*@lfo2.process(lfo2_rate)
+        if @inputs.lfo2.audio
+          mod = 1+mod*mod*@lfo2.process(lfo2_rate)*16
+        else
+          mod = 1+mod*mod*@lfo2.process(lfo2_rate)
         osc2_freq *= mod
 
       when 7 #Osc2 Mod

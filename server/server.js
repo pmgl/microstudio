@@ -1,4 +1,4 @@
-var BuildManager, Content, DB, FileStorage, RateLimiter, Session, WebApp, WebSocket, compression, cookieParser, express, fs, path, process, server,
+var BuildManager, Content, DB, FileStorage, RateLimiter, Session, WebApp, WebSocket, compression, cookieParser, express, fs, path, process,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 compression = require("compression");
@@ -30,12 +30,12 @@ WebSocket = require("ws");
 process = require("process");
 
 this.Server = (function() {
-  function Server() {
+  function Server(config, callback1) {
+    this.config = config != null ? config : {};
+    this.callback = callback1;
     this.exit = bind(this.exit, this);
     process.chdir(__dirname);
-    this.config = {
-      realm: "local"
-    };
+    this.app_data = this.config.app_data || "..";
     this.mailer = {
       sendMail: function(recipient, subject, text) {
         return console.info("send mail to:" + recipient + " subject:" + subject + " text:" + text);
@@ -49,24 +49,18 @@ this.Server = (function() {
       stop: function() {}
     };
     this.last_backup_time = 0;
-    fs.readFile("../config.json", (function(_this) {
-      return function(err, data) {
-        if (!err) {
-          _this.config = JSON.parse(data);
-          console.info("config.json loaded");
-        } else {
-          console.info("No config.json file found, running local with default settings");
-        }
-        if (_this.config.realm === "production") {
-          _this.PORT = 443;
-          _this.PROD = true;
-        } else {
-          _this.PORT = _this.config.port || 8080;
-          _this.PROD = false;
-        }
-        return _this.loadPlugins(function() {
-          return _this.create();
-        });
+    if (this.config.realm === "production") {
+      this.PORT = 443;
+      this.PROD = true;
+    } else if (this.config.standalone) {
+      this.PORT = this.config.port || 0;
+    } else {
+      this.PORT = this.config.port || 8080;
+      this.PROD = false;
+    }
+    this.loadPlugins((function(_this) {
+      return function() {
+        return _this.create();
       };
     })(this));
   }
@@ -115,7 +109,7 @@ this.Server = (function() {
     app.use("/lib/jquery-ui", express["static"]("node_modules/jquery-ui-dist"));
     app.use("/lib/pixijs", express["static"]("node_modules/pixi.js/dist/browser"));
     app.use("/lib/babylonjs", express["static"]("node_modules/babylonjs"));
-    return this.db = new DB("../data", (function(_this) {
+    return this.db = new DB(this.app_data + "/data", (function(_this) {
       return function(db) {
         var j, len1, ref1;
         ref1 = _this.plugins;
@@ -137,6 +131,16 @@ this.Server = (function() {
             glx.serveApp(app);
             return _this.start(app, db);
           });
+        } else if (_this.config.standalone) {
+          _this.use_cache = false;
+          return _this.httpserver = require("http").createServer(app).listen(_this.PORT, "127.0.0.1", function() {
+            _this.PORT = _this.httpserver.address().port;
+            _this.start(app, db);
+            console.info("standalone running on port " + _this.PORT);
+            if (_this.callback != null) {
+              return _this.callback();
+            }
+          });
         } else {
           _this.httpserver = require("http").createServer(app).listen(_this.PORT);
           _this.use_cache = false;
@@ -147,6 +151,7 @@ this.Server = (function() {
   };
 
   Server.prototype.start = function(app, db) {
+    var i, l, len, ref;
     this.active_users = 0;
     this.io = new WebSocket.Server({
       server: this.httpserver,
@@ -166,9 +171,14 @@ this.Server = (function() {
         return _this.sessionCheck();
       };
     })(this)), 10000);
-    this.content = new Content(this, db, new FileStorage());
+    this.content = new Content(this, db, new FileStorage(this.app_data + "/files"));
     this.build_manager = new BuildManager(this);
     this.webapp = new WebApp(this, app);
+    ref = this.webapp.languages;
+    for (i = 0, len = ref.length; i < len; i++) {
+      l = ref[i];
+      this.content.translator.createLanguage(l);
+    }
     process.on('SIGINT', (function(_this) {
       return function() {
         console.log("caught INT signal");
@@ -279,4 +289,4 @@ this.Server = (function() {
 
 })();
 
-server = new this.Server();
+module.exports = this.Server;
