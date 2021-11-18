@@ -1,4 +1,4 @@
-#fs = require "fs"
+fs = require "fs"
 Jimp = require "jimp"
 JSZip = require "jszip"
 pug = require "pug"
@@ -101,6 +101,8 @@ class @ExportFeatures
     platforms: project.platforms
     controls: project.controls
     type: project.type
+    graphics: project.graphics
+    libs: project.libs
     date_created: project.date_created
     last_modified: project.last_modified
     first_published: project.first_published
@@ -171,6 +173,17 @@ class @ExportFeatures
       music_list = []
       fullsource = "\n\n"
 
+      libs = []
+      if project.graphics? and typeof project.graphics == "string"
+        g = project.graphics.toLowerCase()
+        if @webapp.concatenator.alt_players[g]?
+          libs = [].concat @webapp.concatenator.alt_players[g].lib_path # clone the array, will be modified
+
+      for optlib in project.libs
+        lib = @webapp.concatenator.optional_libs[optlib]
+        if lib?
+          libs.push lib.lib_path
+
       queue = new JobQueue ()=>
         resources = JSON.stringify
           images: images
@@ -186,7 +199,7 @@ class @ExportFeatures
 
         html = export_funk
           user: user
-          javascript_files: ["microengine.js"]
+          javascript_files: libs.concat ["microengine.js"]
           fonts: fonts
           game:
             name: project.slug
@@ -195,6 +208,7 @@ class @ExportFeatures
             resources: resources
             orientation: project.orientation
             aspect: project.aspect
+            libs: JSON.stringify project.libs
             code: fullsource
 
         zip.file("index.html",html)
@@ -210,16 +224,26 @@ class @ExportFeatures
 
         zip.file("manifest.json",mani)
 
-        if project.graphics == "M3D"
-          zip.file("microengine.js",@webapp.concatenator["player3d_js_concat"])
-        else
-          zip.file("microengine.js",@webapp.concatenator["player_js_concat"])
+        zip.file("microengine.js",@webapp.concatenator.getEngineExport(project.graphics))
 
         zip.generateAsync({type:"nodebuffer"}).then (content)=>
           res.setHeader("Content-Type", "application/zip")
           res.setHeader("Content-Disposition","attachement; filename=\"#{project.slug}.zip\"")
           res.setHeader("Cache-Control","no-cache")
           res.send content
+
+      for lib,i in libs
+        do (lib,i)=>
+          queue.add ()=>
+            fs.readFile lib,(err,data)=>
+              if data?
+                data = data.toString "utf-8"
+                lib = lib.split("/")
+                lib = lib[lib.length-1]
+                libs[i] = lib
+                zip.file lib,data
+
+              queue.next()
 
       queue.add ()=>
         manager.listFiles "sprites",(sprites)=>

@@ -87,7 +87,7 @@
   font-family: "Source Sans Pro",Verdana ;
   width: 200px ;
 }
-.usersettings input#subscribe-newsletter {
+.usersettings input[type="checkbox"] {
   width: initial ;
 }
 

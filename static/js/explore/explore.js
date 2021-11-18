@@ -234,7 +234,7 @@ this.Explore = (function() {
   };
 
   Explore.prototype.openProject = function(p) {
-    var div, i, len, likes, list, ref, t;
+    var desc, div, i, j, len, len1, lib, likes, list, ref, ref1, t;
     this.project = p;
     if (this.cloned[this.project.id]) {
       this.get("project-details-clonebutton").style.display = "none";
@@ -247,7 +247,16 @@ this.Explore = (function() {
     this.get("explore-project-details").style.display = "block";
     PixelatedImage.setURL(this.get("project-details-image"), location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png"), 200);
     this.get("project-details-title").innerText = p.title;
-    this.get("project-details-description").innerHTML = DOMPurify.sanitize(marked(p.description));
+    desc = DOMPurify.sanitize(marked(p.description));
+    ref = p.libs;
+    for (i = 0, len = ref.length; i < len; i++) {
+      lib = ref[i];
+      desc = ("<p><i class=\"fas fa-exclamation-triangle\" style=\"color:hsl(20,100%,70%)\"></i> " + (this.app.translator.get("This project uses an experimental integration of this library:")) + " " + lib + "</p>") + desc;
+    }
+    if (p.graphics !== "M1") {
+      desc = ("<p><i class=\"fas fa-exclamation-triangle\" style=\"color:hsl(20,100%,70%)\"></i> " + (this.app.translator.get("This project uses an experimental integration of graphics API:")) + " " + p.graphics + "</p>") + desc;
+    }
+    this.get("project-details-description").innerHTML = desc;
     document.querySelector("#project-details-author").innerHTML = "";
     document.querySelector("#project-details-author").appendChild(this.app.appui.createUserTag(p.owner, p.owner_info.tier, p.owner_info.profile_image, 12));
     likes = this.get("project-details-likes");
@@ -264,9 +273,9 @@ this.Explore = (function() {
     }
     list = this.get("project-details-tags");
     list.innerHTML = "";
-    ref = p.tags;
-    for (i = 0, len = ref.length; i < len; i++) {
-      t = ref[i];
+    ref1 = p.tags;
+    for (j = 0, len1 = ref1.length; j < len1; j++) {
+      t = ref1[j];
       div = document.createElement("div");
       div.classList.add("tag");
       div.innerText = t;

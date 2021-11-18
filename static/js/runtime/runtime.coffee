@@ -1,9 +1,6 @@
 class @Runtime
   constructor:(@url,@sources,@resources,@listener)->
-    if window.graphics == "M3D"
-      @screen = new Screen3D @
-    else
-      @screen = new Screen @
+    @screen = new Screen @
 
     @audio = new AudioCore @
     @keyboard = new Keyboard()
@@ -136,7 +133,22 @@ class @Runtime
       fonts: window.fonts
 
     if window.graphics == "M3D"
-      global.M3D = new M3D @
+      global.M3D = M3D
+      M3D.runtime = @
+    else if window.graphics == "M2D"
+      global.M2D = M2D
+      M2D.runtime = @
+    else if window.graphics == "PIXI"
+      global.PIXI = PIXI
+      PIXI.runtime = @
+    else if window.graphics == "BABYLON"
+      global.BABYLON = BABYLON
+      BABYLON.runtime = @
+
+    for lib in window.ms_libs
+      switch lib
+        when "matterjs" then global.Matter = Matter
+        when "cannonjs" then global.CANNON = CANNON
 
     namespace = location.pathname
     @vm = new MicroVM(meta,global,namespace,location.hash == "#transpiler")

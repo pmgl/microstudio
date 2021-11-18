@@ -25,6 +25,22 @@ class @Options
       if event.keyCode == 13
         @addProjectUser()
 
+    list = document.querySelectorAll("#project-option-libs input")
+    for input in list
+      do(input)=>
+        input.addEventListener "change",()=>
+          id = input.id.split("-")
+          id = id[id.length-1]
+          if input.checked
+            if id not in @app.project.libs
+              @app.project.libs.push id
+              @optionChanged "libs",@app.project.libs
+          else
+            index = @app.project.libs.indexOf id
+            if index>=0
+              @app.project.libs.splice index,1
+              @optionChanged "libs",@app.project.libs
+
   textInput:(element,action)->
     e = document.getElementById(element)
     e.addEventListener "input",(event)=>action(e.value)
@@ -43,6 +59,16 @@ class @Options
     document.getElementById("projectoption-orientation").value = @app.project.orientation
     document.getElementById("projectoption-aspect").value = @app.project.aspect
     document.getElementById("projectoption-graphics").value = @app.project.graphics or "M1"
+
+    list = document.querySelectorAll("#project-option-libs input")
+    for input in list
+      input.checked = false
+
+    for lib in @app.project.libs
+      e = document.getElementById "project-option-lib-#{lib}"
+      if e?
+        e.checked = true
+
     @updateSecretCodeLine()
     @updateUserList()
     @app.project.addListener @
@@ -64,7 +90,7 @@ class @Options
     document.getElementById("projectoption-storage-used").innerText = storage
 
   optionChanged:(name,value)->
-    return if value.trim().length == 0
+    return if value.trim? and value.trim().length == 0
     switch name
       when "title"
         @app.project.setTitle value

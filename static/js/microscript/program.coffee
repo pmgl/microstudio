@@ -808,15 +808,15 @@ class @Program.NewCall
       if f?
         if typeof f == "function"
           ## https://stackoverflow.com/a/32548260
-          switch @args.length
+          switch @expression.args.length
            when 0
              return new f()
            when 1
-             v = @args[0].evaluate(context,true)
+             v = @expression.args[0].evaluate(context,true)
              return new f(if v? then v else 0)
            else
              argv = []
-             for a in @args
+             for a in @expression.args
                v = a.evaluate(context,true)
                argv.push if v? then v else 0
              return new f(argv...)
@@ -839,8 +839,11 @@ class @Program.NewCall
             f = f.data
             c = f.constructor
           context.superClass = f.class
-          if c? and c instanceof Program.Function
-            c.call(context,argv,false)
+          if c?
+            if c instanceof Program.Function
+              c.call(context,argv,false)
+            else if typeof c == "function"
+              c.apply(res,argv)
 
           context.object = object
           context.childName = child

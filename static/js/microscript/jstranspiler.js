@@ -638,21 +638,27 @@ JSTranspiler = (function() {
   };
 
   JSTranspiler.prototype.transpileNewCall = function(statement, context) {
-    var a, classvar, constructor, funcall, i, j, len, objvar, ref;
+    var a, classvar, constructor, fconstructor, funcall, i, j, len, objvar, ref;
     funcall = statement.expression;
     classvar = this.createTempVariable(context);
     objvar = this.createTempVariable(context);
-    this.prepend("var " + classvar + " = " + (this.transpile(funcall.expression, context, true)) + " ;");
-    this.prepend("var " + objvar + " = { \"class\": " + classvar + "} ;");
     constructor = "_msApply(" + objvar + ",\"_constructor\" ";
+    fconstructor = "new " + classvar + "(";
     ref = funcall.args;
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
       a = ref[i];
+      a = this.transpile(a, context, true);
       constructor += ", ";
-      constructor += this.transpile(a, context, true);
+      constructor += a;
+      if (i > 0) {
+        fconstructor += ", ";
+      }
+      fconstructor += a;
     }
     constructor += ") ;";
-    this.prepend(constructor);
+    fconstructor += ") ;";
+    this.prepend("var " + classvar + " = " + (this.transpile(funcall.expression, context, true)) + " ;");
+    this.prepend("if (typeof " + classvar + " == \"function\") {\n  var " + objvar + " = " + fconstructor + " ;\n} else {\n  var " + objvar + " = { \"class\": " + classvar + "} ;\n  " + constructor + "\n} ");
     return objvar;
   };
 
