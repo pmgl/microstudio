@@ -109,6 +109,8 @@ this.Server = (function() {
     app.use("/lib/jquery-ui", express["static"]("node_modules/jquery-ui-dist"));
     app.use("/lib/pixijs", express["static"]("node_modules/pixi.js/dist/browser"));
     app.use("/lib/babylonjs", express["static"]("node_modules/babylonjs"));
+    app.use("/lib/matterjs", express["static"]("node_modules/matter-js/build"));
+    app.use("/lib/cannonjs", express["static"]("node_modules/cannon/build"));
     return this.db = new DB(this.app_data + "/data", (function(_this) {
       return function(db) {
         var j, len1, ref1;

@@ -812,10 +812,7 @@ AppUI = (function() {
       this.allowed_sections.music = true;
       if (this.app.user.flags.experimental) {
         document.getElementById("project-option-graphics").style.display = "block";
-        this.allowed_sections.assets = (this.app.project != null) && this.app.project.graphics === "M3D";
-        if ((this.app.project != null) && this.app.project.graphics === "M3D") {
-          this.app.assets_manager.init();
-        }
+        document.getElementById("project-option-libs").style.display = "block";
       }
     }
     ref = this.sections;

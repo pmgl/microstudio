@@ -475,6 +475,7 @@ class @Session
         clone.setOrientation project.orientation
         clone.setAspect project.aspect
         clone.setGraphics project.graphics
+        clone.set "libs",project.libs
         clone.set "files",JSON.parse JSON.stringify project.files
         man = @getProjectManager(project)
 
@@ -522,6 +523,7 @@ class @Session
           clone.setOrientation project.orientation
           clone.setAspect project.aspect
           clone.setGraphics project.graphics
+          clone.set "libs",project.libs
           clone.set "files",JSON.parse JSON.stringify project.files
           man = @getProjectManager(project)
 
@@ -630,8 +632,12 @@ class @Session
         when "platforms"
           project.setPlatforms data.value if Array.isArray data.value
 
-        when "controls"
-          project.setControls data.value if Array.isArray data.value
+        when "libs"
+          if Array.isArray data.value
+            for v in data.value
+              return if typeof v != "string" or v.length>100 or data.value.length>20
+
+            project.set "libs",data.value
 
         when "type"
           project.setType data.value if typeof data.value == "string"
@@ -685,6 +691,7 @@ class @Session
           orientation: p.orientation
           aspect: p.aspect
           graphics: p.graphics
+          libs: p.libs
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
@@ -712,6 +719,7 @@ class @Session
           orientation: p.orientation
           aspect: p.aspect
           graphics: p.graphics
+          libs: p.libs
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
@@ -861,6 +869,8 @@ class @Session
           liked: @user? and @user.isLiked(p.id)
           tags: p.tags
           date_published: p.first_published
+          graphics: p.graphics
+          libs: p.libs
 
     @send
       name: "public_projects"
@@ -890,6 +900,8 @@ class @Session
             liked: @user? and @user.isLiked(p.id)
             tags: p.tags
             date_published: p.first_published
+            graphics: p.graphics
+            libs: p.libs
 
           @send
             name: "get_public_project"

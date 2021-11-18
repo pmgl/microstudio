@@ -31,8 +31,8 @@ this.Screen = (function() {
     return this["interface"] = {
       width: this.width,
       height: this.height,
-      render: function(stage) {
-        return screen.render(stage);
+      render: function(scene, camera) {
+        return screen.render(scene, camera);
       }
     };
   };
@@ -114,8 +114,25 @@ this.Screen = (function() {
     return this.height = h;
   };
 
-  Screen.prototype.render = function(stage) {
-    return this.renderer.render(stage);
+  Screen.prototype.render = function(scene, camera) {
+    var r;
+    if (camera == null) {
+      camera = {
+        x: 0,
+        y: 0,
+        fov: 200
+      };
+    }
+    scene.position.x = this.width / 2 - camera.x;
+    scene.position.y = this.height / 2 - camera.y;
+    if (this.width > this.height) {
+      r = this.height / camera.fov;
+    } else {
+      r = this.width / camera.fov;
+    }
+    scene.scale.x = r;
+    scene.scale.y = r;
+    return this.renderer.render(scene);
   };
 
   Screen.prototype.startControl = function(element) {

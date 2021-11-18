@@ -101,6 +101,8 @@ class @ExportFeatures
     platforms: project.platforms
     controls: project.controls
     type: project.type
+    graphics: project.graphics
+    libs: project.libs
     date_created: project.date_created
     last_modified: project.last_modified
     first_published: project.first_published
@@ -177,6 +179,11 @@ class @ExportFeatures
         if @webapp.concatenator.alt_players[g]?
           libs = [].concat @webapp.concatenator.alt_players[g].lib_path # clone the array, will be modified
 
+      for optlib in project.libs
+        lib = @webapp.concatenator.optional_libs[optlib]
+        if lib?
+          libs.push lib.lib_path
+
       queue = new JobQueue ()=>
         resources = JSON.stringify
           images: images
@@ -201,6 +208,7 @@ class @ExportFeatures
             resources: resources
             orientation: project.orientation
             aspect: project.aspect
+            libs: JSON.stringify project.libs
             code: fullsource
 
         zip.file("index.html",html)

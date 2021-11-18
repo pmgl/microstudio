@@ -63,6 +63,17 @@ class @Concatenator
         lib_path: ["node_modules/babylonjs/babylon.js"]
         scripts: ['/js/runtime/babylon/screen.js','/js/runtime/babylon/babylon.js']
 
+    @optional_libs =
+      matterjs:
+        title: "matter.js - 2D physics engine"
+        lib: "/lib/matterjs/matter.min.js"
+        lib_path: "node_modules/matter-js/build/matter.min.js"
+
+      cannonjs:
+        title: "cannon.js - 3D physics engine"
+        lib: "/lib/cannonjs/cannon.min.js"
+        lib_path: "node_modules/cannon/build/cannon.min.js"
+
     for key,value of @alt_players
       @webapp.app.get new RegExp("^\\/#{key}.js$"), (req,res)=>
         res.setHeader("Content-Type", "text/javascript")

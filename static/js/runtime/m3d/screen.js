@@ -1,12 +1,11 @@
 this.Screen = (function() {
   function Screen(runtime) {
     this.runtime = runtime;
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: true
-    });
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.setSize(1080, 1920);
-    this.canvas = this.renderer.domElement;
+    this.canvas = document.createElement("canvas");
+    this.canvas.width = 1000;
+    this.canvas.height = 800;
+    this.engine = new BABYLON.Engine(this.canvas, true);
+    BABYLON.engine = this.engine;
     this.touches = {};
     this.mouse = {
       x: -10000,
@@ -28,7 +27,7 @@ this.Screen = (function() {
       width: this.width,
       height: this.height,
       render: function(scene, camera) {
-        return screen.render(scene, camera);
+        return scene.render(camera);
       }
     };
   };
@@ -105,16 +104,11 @@ this.Screen = (function() {
     this.canvas.style.height = Math.round(h) + "px";
     this.camera_aspect = w / h;
     this.update_camera = true;
-    return this.renderer.setSize(w, h);
+    return this.engine.resize(true);
   };
 
   Screen.prototype.render = function(scene, camera) {
-    if (this.update_camera) {
-      camera.camera.aspect = this.camera_aspect;
-      camera.camera.updateProjectionMatrix();
-      this.update_camera = false;
-    }
-    return this.renderer.render(scene.scene, camera.camera);
+    return this.renderer.render(scene, camera);
   };
 
   Screen.prototype.startControl = function(element) {

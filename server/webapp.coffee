@@ -84,6 +84,7 @@ class @WebApp
           language: lang
           standalone: @server.config.standalone == true
           languages: @languages
+          optional_libs: @concatenator.optional_libs
           translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
 
       res.send @home_page[lang]
@@ -200,6 +201,11 @@ class @WebApp
 
       manager = @getProjectManager(project)
 
+      jsfiles = @concatenator.getPlayerJSFiles(project.graphics)
+      for lib in project.libs
+        if @concatenator.optional_libs[lib]?
+          jsfiles.push @concatenator.optional_libs[lib].lib
+
       manager.listFiles "ms",(sources)=>
         manager.listFiles "sprites",(sprites)=>
           manager.listFiles "maps",(maps)=>
@@ -218,7 +224,7 @@ class @WebApp
 
                 res.send @play_funk
                   user: user
-                  javascript_files: @concatenator.getPlayerJSFiles(project.graphics)
+                  javascript_files: jsfiles
                   fonts: @fonts.fonts
                   game:
                     name: project.slug
@@ -228,6 +234,7 @@ class @WebApp
                     orientation: project.orientation
                     aspect: project.aspect
                     graphics: project.graphics
+                    libs: JSON.stringify(project.libs)
 
     @app.get /^\/[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*\/?$/,(req,res)=>
       return if @ensureIOArea(req,res)

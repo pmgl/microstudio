@@ -27,7 +27,7 @@ class @Screen
     @interface =
       width: @width
       height: @height
-      render: (stage)->screen.render(stage)
+      render: (scene,camera)->screen.render(scene,camera)
 
   updateInterface:()->
     @interface.width = @width
@@ -102,8 +102,17 @@ class @Screen
     @width = w
     @height = h
 
-  render:(stage)->
-    @renderer.render(stage)
+  render:(scene,camera={x:0,y:0,fov:200})->
+    scene.position.x = @width/2-camera.x
+    scene.position.y = @height/2-camera.y
+    if @width>@height
+      r = @height/camera.fov
+    else
+      r = @width/camera.fov
+
+    scene.scale.x = r
+    scene.scale.y = r
+    @renderer.render(scene)
 
   startControl:(@element)->
     @canvas.addEventListener "touchstart", (event) => @touchStart(event)

@@ -14,6 +14,7 @@ class @Project
     @type = data.type
     @orientation = data.orientation
     @graphics = data.graphics or "M1"
+    @libs = data.libs or []
     @aspect = data.aspect
     @users = data.users
 

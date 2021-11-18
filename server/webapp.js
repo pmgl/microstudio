@@ -95,6 +95,7 @@ this.WebApp = (function() {
             language: lang,
             standalone: _this.server.config.standalone === true,
             languages: _this.languages,
+            optional_libs: _this.concatenator.optional_libs,
             translation: _this.server.content.translator.languages[lang] != null ? _this.server.content.translator.languages[lang]["export"]() : "{}"
           });
         }
@@ -221,7 +222,7 @@ this.WebApp = (function() {
     })(this));
     this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+\/?)?)?$/, (function(_this) {
       return function(req, res) {
-        var access, encoding, file, manager, project, redir, user;
+        var access, encoding, file, jsfiles, len3, lib, manager, o, project, redir, ref4, user;
         if (_this.ensureIOArea(req, res)) {
           return;
         }
@@ -239,6 +240,14 @@ this.WebApp = (function() {
         file = user.id + "/" + project.id + "/ms/main.ms";
         encoding = "text";
         manager = _this.getProjectManager(project);
+        jsfiles = _this.concatenator.getPlayerJSFiles(project.graphics);
+        ref4 = project.libs;
+        for (o = 0, len3 = ref4.length; o < len3; o++) {
+          lib = ref4[o];
+          if (_this.concatenator.optional_libs[lib] != null) {
+            jsfiles.push(_this.concatenator.optional_libs[lib].lib);
+          }
+        }
         return manager.listFiles("ms", function(sources) {
           return manager.listFiles("sprites", function(sprites) {
             return manager.listFiles("maps", function(maps) {
@@ -258,7 +267,7 @@ this.WebApp = (function() {
                   }
                   return res.send(_this.play_funk({
                     user: user,
-                    javascript_files: _this.concatenator.getPlayerJSFiles(project.graphics),
+                    javascript_files: jsfiles,
                     fonts: _this.fonts.fonts,
                     game: {
                       name: project.slug,
@@ -267,7 +276,8 @@ this.WebApp = (function() {
                       resources: resources,
                       orientation: project.orientation,
                       aspect: project.aspect,
-                      graphics: project.graphics
+                      graphics: project.graphics,
+                      libs: JSON.stringify(project.libs)
                     }
                   }));
                 });

@@ -124,6 +124,8 @@ this.ExportFeatures = (function() {
       platforms: project.platforms,
       controls: project.controls,
       type: project.type,
+      graphics: project.graphics,
+      libs: project.libs,
       date_created: project.date_created,
       last_modified: project.last_modified,
       first_published: project.first_published,
@@ -200,7 +202,7 @@ this.ExportFeatures = (function() {
   ExportFeatures.prototype.addPublishHTML = function() {
     return this.webapp.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?publish\/html\/$/, (function(_this) {
       return function(req, res) {
-        var access, assets, fn, fonts, fullsource, g, i, images, j, len, lib, libs, manager, maps_dict, music_list, project, queue, sounds_list, user, zip;
+        var access, assets, fn, fonts, fullsource, g, i, images, j, k, len, len1, lib, libs, manager, maps_dict, music_list, optlib, project, queue, ref, sounds_list, user, zip;
         access = _this.webapp.getProjectAccess(req, res);
         if (access == null) {
           return;
@@ -221,6 +223,14 @@ this.ExportFeatures = (function() {
           g = project.graphics.toLowerCase();
           if (_this.webapp.concatenator.alt_players[g] != null) {
             libs = [].concat(_this.webapp.concatenator.alt_players[g].lib_path);
+          }
+        }
+        ref = project.libs;
+        for (j = 0, len = ref.length; j < len; j++) {
+          optlib = ref[j];
+          lib = _this.webapp.concatenator.optional_libs[optlib];
+          if (lib != null) {
+            libs.push(lib.lib_path);
           }
         }
         queue = new JobQueue(function() {
@@ -246,6 +256,7 @@ this.ExportFeatures = (function() {
               resources: resources,
               orientation: project.orientation,
               aspect: project.aspect,
+              libs: JSON.stringify(project.libs),
               code: fullsource
             }
           });
@@ -283,13 +294,13 @@ this.ExportFeatures = (function() {
             });
           });
         };
-        for (i = j = 0, len = libs.length; j < len; i = ++j) {
+        for (i = k = 0, len1 = libs.length; k < len1; i = ++k) {
           lib = libs[i];
           fn(lib, i);
         }
         queue.add(function() {
           return manager.listFiles("sprites", function(sprites) {
-            var fn1, k, len1, s;
+            var fn1, l, len2, s;
             fn1 = function(s) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/sprites/" + s.file, "binary", function(content) {
@@ -301,8 +312,8 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (k = 0, len1 = sprites.length; k < len1; k++) {
-              s = sprites[k];
+            for (l = 0, len2 = sprites.length; l < len2; l++) {
+              s = sprites[l];
               fn1(s);
             }
             return queue.next();
@@ -310,7 +321,7 @@ this.ExportFeatures = (function() {
         });
         queue.add(function() {
           return manager.listFiles("maps", function(maps) {
-            var fn1, k, len1, map;
+            var fn1, l, len2, map;
             fn1 = function(map) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/maps/" + map.file, "text", function(content) {
@@ -321,8 +332,8 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (k = 0, len1 = maps.length; k < len1; k++) {
-              map = maps[k];
+            for (l = 0, len2 = maps.length; l < len2; l++) {
+              map = maps[l];
               fn1(map);
             }
             return queue.next();
@@ -330,7 +341,7 @@ this.ExportFeatures = (function() {
         });
         queue.add(function() {
           return manager.listFiles("sounds", function(sounds) {
-            var fn1, k, len1, s;
+            var fn1, l, len2, s;
             fn1 = function(s) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/sounds/" + s.file, "binary", function(content) {
@@ -342,8 +353,8 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (k = 0, len1 = sounds.length; k < len1; k++) {
-              s = sounds[k];
+            for (l = 0, len2 = sounds.length; l < len2; l++) {
+              s = sounds[l];
               fn1(s);
             }
             return queue.next();
@@ -351,7 +362,7 @@ this.ExportFeatures = (function() {
         });
         queue.add(function() {
           return manager.listFiles("music", function(music) {
-            var fn1, k, len1, m;
+            var fn1, l, len2, m;
             fn1 = function(m) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/music/" + m.file, "binary", function(content) {
@@ -363,8 +374,8 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (k = 0, len1 = music.length; k < len1; k++) {
-              m = music[k];
+            for (l = 0, len2 = music.length; l < len2; l++) {
+              m = music[l];
               fn1(m);
             }
             return queue.next();
@@ -372,7 +383,7 @@ this.ExportFeatures = (function() {
         });
         queue.add(function() {
           return manager.listFiles("assets", function(assets) {
-            var asset, fn1, k, len1;
+            var asset, fn1, l, len2;
             fn1 = function(asset) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/assets/" + asset.file, "binary", function(content) {
@@ -384,8 +395,8 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (k = 0, len1 = assets.length; k < len1; k++) {
-              asset = assets[k];
+            for (l = 0, len2 = assets.length; l < len2; l++) {
+              asset = assets[l];
               fn1(asset);
             }
             return queue.next();
@@ -393,7 +404,7 @@ this.ExportFeatures = (function() {
         });
         queue.add(function() {
           return manager.listFiles("doc", function(docs) {
-            var doc, fn1, k, len1;
+            var doc, fn1, l, len2;
             fn1 = function(doc) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/doc/" + doc.file, "text", function(content) {
@@ -404,8 +415,8 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (k = 0, len1 = docs.length; k < len1; k++) {
-              doc = docs[k];
+            for (l = 0, len2 = docs.length; l < len2; l++) {
+              doc = docs[l];
               fn1(doc);
             }
             return queue.next();
@@ -413,7 +424,7 @@ this.ExportFeatures = (function() {
         });
         queue.add(function() {
           return manager.listFiles("ms", function(ms) {
-            var fn1, k, len1, src;
+            var fn1, l, len2, src;
             fn1 = function(src) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/ms/" + src.file, "text", function(content) {
@@ -424,15 +435,15 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (k = 0, len1 = ms.length; k < len1; k++) {
-              src = ms[k];
+            for (l = 0, len2 = ms.length; l < len2; l++) {
+              src = ms[l];
               fn1(src);
             }
             queue.add(function() {
-              var font, l, len2, ref;
-              ref = _this.webapp.fonts.fonts;
-              for (l = 0, len2 = ref.length; l < len2; l++) {
-                font = ref[l];
+              var font, len3, n, ref1;
+              ref1 = _this.webapp.fonts.fonts;
+              for (n = 0, len3 = ref1.length; n < len3; n++) {
+                font = ref1[n];
                 if (font === "BitCell" || fullsource.indexOf("\"" + font + "\"") >= 0) {
                   fonts.push(font);
                   (function(font) {
@@ -457,9 +468,9 @@ this.ExportFeatures = (function() {
           path = user.id + "/" + project.id + "/sprites/icon.png";
           path = _this.webapp.server.content.files.folder + "/" + _this.webapp.server.content.files.sanitize(path);
           return Jimp.read(path, function(err, img) {
-            var fn1, k, len1, ref, size;
+            var fn1, l, len2, ref1, size;
             if (!err) {
-              ref = [16, 32, 64, 180, 192, 512, 1024];
+              ref1 = [16, 32, 64, 180, 192, 512, 1024];
               fn1 = function(size) {
                 return queue.add(function() {
                   return img.clone().resize(size, size, Jimp.RESIZE_NEAREST_NEIGHBOR).getBuffer(Jimp.MIME_PNG, function(err, buffer) {
@@ -472,8 +483,8 @@ this.ExportFeatures = (function() {
                   });
                 });
               };
-              for (k = 0, len1 = ref.length; k < len1; k++) {
-                size = ref[k];
+              for (l = 0, len2 = ref1.length; l < len2; l++) {
+                size = ref1[l];
                 fn1(size);
               }
             }

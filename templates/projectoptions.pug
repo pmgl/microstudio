@@ -65,6 +65,14 @@ div.projectoptions#projectoptions
             option(value="PIXI") #{translator.get("Pixi.js - Experimental")}
             option(value="BABYLON") #{translator.get("Babylon.js - Experimental")}
 
+        div.projectoption#project-option-libs
+          h3 #{translator.get("Additional tools and libraries")}
+          each val,key in optional_libs  
+            input(type="checkbox" id="project-option-lib-"+key)
+            label(for="project-option-lib-"+key) #{translator.get(val.title)}
+            div.tip #{translator.get("Note: this integration is experimental")}
+            br
+
         div.projectoption#project-option-storage
           h3 #{translator.get("Storage used")}
           span#projectoption-storage-used

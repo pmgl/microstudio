@@ -11,6 +11,10 @@ M2D.Scene = (function(superClass) {
     Scene.__super__.constructor.call(this);
   }
 
+  Scene.prototype.add = function(child) {
+    return this.addChild(child);
+  };
+
   return Scene;
 
 })(PIXI.Container);
@@ -26,26 +30,42 @@ M2D.Camera = (function() {
 
 })();
 
-M2D.Group = (function() {
-  function Group() {}
+M2D.Group = (function(superClass) {
+  extend(Group, superClass);
+
+  function Group() {
+    Group.__super__.constructor.call(this);
+  }
 
   return Group;
 
-})();
+})(PIXI.Container);
 
 M2D.Sprite = (function(superClass) {
   extend(Sprite, superClass);
 
-  function Sprite(source) {
+  function Sprite(source, width, height) {
+    if (width == null) {
+      width = 20;
+    }
+    if (height == null) {
+      height = 20;
+    }
     if (source instanceof Sprite) {
-      Sprite.__super__.constructor.call(this, new PIXI.Texture(source.frames[0].canvas));
+      Sprite.__super__.constructor.call(this, PIXI.Texture.from(source.frames[0].canvas));
     } else if (typeof source === "string" && (M2D.runtime.sprites[source] != null)) {
-      Sprite.__super__.constructor.call(this, new PIXI.Texture(M2D.runtime.sprites[source].frames[0].canvas));
+      Sprite.__super__.constructor.call(this, PIXI.Texture.from(M2D.runtime.sprites[source].frames[0].canvas));
     } else {
       Sprite.__super__.constructor.call(this, source);
     }
+    this.width = width;
+    this.height = height;
+    this.anchor.x = .5;
+    this.anchor.y = .5;
   }
 
   return Sprite;
 
 })(PIXI.Sprite);
+
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;

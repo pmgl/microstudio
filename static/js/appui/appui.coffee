@@ -601,9 +601,10 @@ class AppUI
 
       if @app.user.flags.experimental
         document.getElementById("project-option-graphics").style.display = "block"
-        @allowed_sections.assets = @app.project? and @app.project.graphics == "M3D"
-        if @app.project? and @app.project.graphics == "M3D"
-          @app.assets_manager.init()
+        document.getElementById("project-option-libs").style.display = "block"
+        #@allowed_sections.assets = @app.project? and @app.project.graphics == "M3D"
+        #if @app.project? and @app.project.graphics == "M3D"
+        #  @app.assets_manager.init()
 
     for s in @sections
       e = document.getElementById("menuitem-#{s}")

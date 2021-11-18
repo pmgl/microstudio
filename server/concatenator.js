@@ -59,6 +59,18 @@ this.Concatenator = (function() {
         scripts: ['/js/runtime/babylon/screen.js', '/js/runtime/babylon/babylon.js']
       }
     };
+    this.optional_libs = {
+      matterjs: {
+        title: "matter.js - 2D physics engine",
+        lib: "/lib/matterjs/matter.min.js",
+        lib_path: "node_modules/matter-js/build/matter.min.js"
+      },
+      cannonjs: {
+        title: "cannon.js - 3D physics engine",
+        lib: "/lib/cannonjs/cannon.min.js",
+        lib_path: "node_modules/cannon/build/cannon.min.js"
+      }
+    };
     ref = this.alt_players;
     for (key in ref) {
       value = ref[key];

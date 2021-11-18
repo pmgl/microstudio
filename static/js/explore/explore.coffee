@@ -190,7 +190,15 @@ class @Explore
 
     PixelatedImage.setURL @get("project-details-image"),location.origin+"/#{p.owner}/#{p.slug}/icon.png",200
     @get("project-details-title").innerText = p.title
-    @get("project-details-description").innerHTML = DOMPurify.sanitize marked p.description
+    desc = DOMPurify.sanitize marked p.description
+
+    for lib in p.libs
+      desc = """<p><i class="fas fa-exclamation-triangle" style="color:hsl(20,100%,70%)"></i> #{@app.translator.get("This project uses an experimental integration of this library:")} #{lib}</p>"""+desc
+
+    if p.graphics != "M1"
+      desc = """<p><i class="fas fa-exclamation-triangle" style="color:hsl(20,100%,70%)"></i> #{@app.translator.get("This project uses an experimental integration of graphics API:")} #{p.graphics}</p>"""+desc
+
+    @get("project-details-description").innerHTML = desc
     document.querySelector("#project-details-author").innerHTML = ""
     document.querySelector("#project-details-author").appendChild @app.appui.createUserTag p.owner,p.owner_info.tier,p.owner_info.profile_image,12
 
