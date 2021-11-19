@@ -393,7 +393,9 @@ this.Content = (function() {
       deleted: false,
       owner: owner.id,
       orientation: data.orientation,
-      aspect: data.aspect
+      aspect: data.aspect,
+      graphics: data.graphics,
+      libs: data.libs
     };
     record = this.db.create("projects", d);
     project = this.loadProject(record);

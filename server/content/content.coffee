@@ -289,6 +289,8 @@ class @Content
       owner: owner.id
       orientation: data.orientation
       aspect: data.aspect
+      graphics: data.graphics
+      libs: data.libs
 
     record = @db.create "projects",d
     project = @loadProject record

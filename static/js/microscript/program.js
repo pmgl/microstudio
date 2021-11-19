@@ -1207,15 +1207,15 @@ this.Program.NewCall = (function() {
       f = fc.expression.evaluate(context, true);
       if (f != null) {
         if (typeof f === "function") {
-          switch (this.args.length) {
+          switch (this.expression.args.length) {
             case 0:
               return new f();
             case 1:
-              v = this.args[0].evaluate(context, true);
+              v = this.expression.args[0].evaluate(context, true);
               return new f(v != null ? v : 0);
             default:
               argv = [];
-              ref = this.args;
+              ref = this.expression.args;
               for (j = 0, len1 = ref.length; j < len1; j++) {
                 a = ref[j];
                 v = a.evaluate(context, true);
@@ -1247,8 +1247,12 @@ this.Program.NewCall = (function() {
             c = f.constructor;
           }
           context.superClass = f["class"];
-          if ((c != null) && c instanceof Program.Function) {
-            c.call(context, argv, false);
+          if (c != null) {
+            if (c instanceof Program.Function) {
+              c.call(context, argv, false);
+            } else if (typeof c === "function") {
+              c.apply(res, argv);
+            }
           }
           context.object = object;
           context.childName = child;

@@ -11,6 +11,11 @@ this.UserSettings = (function() {
         return _this.newsletterChange();
       };
     })(this));
+    document.getElementById("experimental-features").addEventListener("change", (function(_this) {
+      return function() {
+        return _this.experimentalChange();
+      };
+    })(this));
     document.getElementById("usersetting-email").addEventListener("input", (function(_this) {
       return function() {
         return _this.emailChange();
@@ -179,6 +184,8 @@ this.UserSettings = (function() {
   UserSettings.prototype.update = function() {
     var account_type, div, icon, key, ref, span, translator, value;
     document.getElementById("subscribe-newsletter").checked = this.app.user.flags["newsletter"] === true;
+    document.getElementById("experimental-features").checked = this.app.user.flags["experimental"] === true;
+    document.getElementById("experimental-features-setting").style.display = this.app.user.flags.validated ? "block" : "none";
     if (this.app.user.flags["validated"] === true) {
       document.getElementById("email-not-validated").style.display = "none";
     } else {
@@ -252,6 +259,16 @@ this.UserSettings = (function() {
     return this.app.client.sendRequest({
       name: "change_newsletter",
       newsletter: checked
+    });
+  };
+
+  UserSettings.prototype.experimentalChange = function() {
+    var checked;
+    checked = document.getElementById("experimental-features").checked;
+    this.app.user.flags.experimental = checked;
+    return this.app.client.sendRequest({
+      name: "change_experimental",
+      experimental: checked
     });
   };
 

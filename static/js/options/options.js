@@ -1,5 +1,8 @@
+var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
 this.Options = (function() {
   function Options(app) {
+    var fn, i, input, len, list;
     this.app = app;
     this.textInput("projectoption-name", (function(_this) {
       return function(value) {
@@ -43,6 +46,32 @@ this.Options = (function() {
         }
       };
     })(this));
+    list = document.querySelectorAll("#project-option-libs input");
+    fn = (function(_this) {
+      return function(input) {
+        return input.addEventListener("change", function() {
+          var id, index;
+          id = input.id.split("-");
+          id = id[id.length - 1];
+          if (input.checked) {
+            if (indexOf.call(_this.app.project.libs, id) < 0) {
+              _this.app.project.libs.push(id);
+              return _this.optionChanged("libs", _this.app.project.libs);
+            }
+          } else {
+            index = _this.app.project.libs.indexOf(id);
+            if (index >= 0) {
+              _this.app.project.libs.splice(index, 1);
+              return _this.optionChanged("libs", _this.app.project.libs);
+            }
+          }
+        });
+      };
+    })(this);
+    for (i = 0, len = list.length; i < len; i++) {
+      input = list[i];
+      fn(input);
+    }
   }
 
   Options.prototype.textInput = function(element, action) {
@@ -66,6 +95,7 @@ this.Options = (function() {
   };
 
   Options.prototype.projectOpened = function() {
+    var e, i, input, j, len, len1, lib, list, ref;
     PixelatedImage.setURL(document.getElementById("projectoptions-icon"), this.app.project.getFullURL() + "icon.png", 160);
     document.getElementById("projectoption-name").value = this.app.project.title;
     this.project_slug_validator.set(this.app.project.slug);
@@ -73,6 +103,19 @@ this.Options = (function() {
     document.getElementById("projectoption-orientation").value = this.app.project.orientation;
     document.getElementById("projectoption-aspect").value = this.app.project.aspect;
     document.getElementById("projectoption-graphics").value = this.app.project.graphics || "M1";
+    list = document.querySelectorAll("#project-option-libs input");
+    for (i = 0, len = list.length; i < len; i++) {
+      input = list[i];
+      input.checked = false;
+    }
+    ref = this.app.project.libs;
+    for (j = 0, len1 = ref.length; j < len1; j++) {
+      lib = ref[j];
+      e = document.getElementById("project-option-lib-" + lib);
+      if (e != null) {
+        e.checked = true;
+      }
+    }
     this.updateSecretCodeLine();
     this.updateUserList();
     this.app.project.addListener(this);
@@ -101,7 +144,7 @@ this.Options = (function() {
   };
 
   Options.prototype.optionChanged = function(name, value) {
-    if (value.trim().length === 0) {
+    if ((value.trim != null) && value.trim().length === 0) {
       return;
     }
     switch (name) {

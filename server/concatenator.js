@@ -4,6 +4,7 @@ fs = require("fs");
 
 this.Concatenator = (function() {
   function Concatenator(webapp) {
+    var key, ref, ref1, value;
     this.webapp = webapp;
     this.webapp.app.get(/^\/all.js$/, (function(_this) {
       return function(req, res) {
@@ -23,12 +24,6 @@ this.Concatenator = (function() {
         return res.send(_this.player_js_concat);
       };
     })(this));
-    this.webapp.app.get(/^\/play3d.js$/, (function(_this) {
-      return function(req, res) {
-        res.setHeader("Content-Type", "text/javascript");
-        return res.send(_this.player3d_js_concat);
-      };
-    })(this));
     this.webapp.app.get(/^\/audioengine.js$/, (function(_this) {
       return function(req, res) {
         res.setHeader("Content-Type", "text/javascript");
@@ -41,18 +36,72 @@ this.Concatenator = (function() {
         }
       };
     })(this));
+    this.alt_player_base = ['/js/util/canvas2d.js', "/js/microscript/random.js", "/js/microscript/microvm.js", "/js/microscript/tokenizer.js", "/js/microscript/token.js", "/js/microscript/parser.js", "/js/microscript/program.js", "/js/microscript/jstranspiler.js", '/js/runtime/runtime.js', '/js/runtime/keyboard.js', '/js/runtime/gamepad.js', '/js/runtime/sprite.js', '/js/runtime/spriteframe.js', '/js/runtime/map.js', "/js/runtime/audio/audio.js", "/js/runtime/audio/beeper.js", "/js/runtime/audio/sound.js", "/js/runtime/audio/music.js", '/js/play/player.js', '/js/play/playerclient.js'];
+    this.alt_players = {
+      m2d: {
+        lib: ["/lib/pixijs/pixi.min.js"],
+        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"],
+        scripts: ['/js/runtime/m2d/screen.js', '/js/runtime/m2d/m2d.js']
+      },
+      m3d: {
+        lib: ["/lib/babylonjs/babylon.js"],
+        lib_path: ["node_modules/babylonjs/babylon.js"],
+        scripts: ['/js/runtime/m3d/screen.js', '/js/runtime/m3d/m3d.js']
+      },
+      pixi: {
+        lib: ["/lib/pixijs/pixi.min.js"],
+        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"],
+        scripts: ['/js/runtime/pixi/screen.js', '/js/runtime/pixi/pixi.js']
+      },
+      babylon: {
+        lib: ["/lib/babylonjs/babylon.js"],
+        lib_path: ["node_modules/babylonjs/babylon.js"],
+        scripts: ['/js/runtime/babylon/screen.js', '/js/runtime/babylon/babylon.js']
+      }
+    };
+    this.optional_libs = {
+      matterjs: {
+        title: "matter.js - 2D physics engine",
+        lib: "/lib/matterjs/matter.min.js",
+        lib_path: "node_modules/matter-js/build/matter.min.js"
+      },
+      cannonjs: {
+        title: "cannon.js - 3D physics engine",
+        lib: "/lib/cannonjs/cannon.min.js",
+        lib_path: "node_modules/cannon/build/cannon.min.js"
+      }
+    };
+    ref = this.alt_players;
+    for (key in ref) {
+      value = ref[key];
+      this.webapp.app.get(new RegExp("^\\/" + key + ".js$"), (function(_this) {
+        return function(req, res) {
+          res.setHeader("Content-Type", "text/javascript");
+          return res.send(_this[key + "_js_concat"]);
+        };
+      })(this));
+    }
     this.webapp_css = ["/css/style.css", "/css/home.css", "/css/doc.css", "/css/code.css", "/css/assets.css", "/css/sprites.css", "/css/sounds.css", "/css/synth.css", "/css/music.css", "/css/maps.css", "/css/publish.css", "/css/explore.css", "/css/options.css", "/css/user.css", "/css/media.css", "/css/terminal.css", "/css/tutorial.css", "/css/md.css"];
     this.webapp_js = ["/js/microscript/random.js", "/js/microscript/microvm.js", "/js/microscript/tokenizer.js", "/js/microscript/token.js", "/js/microscript/parser.js", "/js/microscript/program.js", "/js/microscript/jstranspiler.js", "/js/client/client.js", "/js/util/canvas2d.js", "/js/util/regexlib.js", "/js/util/inputvalidator.js", "/js/util/translator.js", "/js/manager.js", "/js/about/about.js", "/js/doc/documentation.js", "/js/doceditor/doceditor.js", "/js/editor/editor.js", "/js/editor/runwindow.js", "/js/editor/rulercanvas.js", "/js/editor/valuetool.js", "/js/options/options.js", "/js/publish/publish.js", "/js/publish/appbuild.js", "/js/explore/explore.js", "/js/explore/projectdetails.js", "/js/user/usersettings.js", "/js/user/translationapp.js", "/js/user/progress.js", "/js/spriteeditor/drawtool.js", "/js/spriteeditor/spritelist.js", "/js/spriteeditor/spriteeditor.js", "/js/spriteeditor/colorpicker.js", "/js/spriteeditor/spriteview.js", "/js/spriteeditor/animationpanel.js", "/js/spriteeditor/autopalette.js", "/js/mapeditor/mapview.js", "/js/mapeditor/mapeditor.js", "/js/mapeditor/tilepicker.js", "/js/assets/assetsmanager.js", "/js/assets/assetviewer.js", "/js/sound/audiocontroller.js", "/js/sound/knob.js", "/js/sound/slider.js", "/js/sound/keyboard.js", "/js/sound/synthwheel.js", "/js/sound/synth.js", "/js/sound/soundeditor.js", "/js/sound/soundthumbnailer.js", "/js/music/musiceditor.js", "/js/util/undo.js", "/js/util/random.js", "/js/util/splitbar.js", "/js/util/pixelartscaler.js", "/js/util/pixelatedimage.js", "/js/runtime/sprite.js", "/js/runtime/spriteframe.js", "/js/runtime/map.js", "/js/terminal/terminal.js", "/js/project/project.js", "/js/project/projectsource.js", "/js/project/projectsprite.js", "/js/project/projectmap.js", "/js/project/projectasset.js", "/js/project/projectsound.js", "/js/project/projectmusic.js", "/js/appui/floatingwindow.js", "/js/appui/appui.js", "/js/app.js", "/js/appstate.js", "/js/tutorial/tutorials.js", "/js/tutorial/tutorial.js", "/js/tutorial/tutorialwindow.js", "/js/tutorial/highlighter.js"];
     this.player_js = ['/js/util/canvas2d.js', "/js/microscript/random.js", "/js/microscript/microvm.js", "/js/microscript/tokenizer.js", "/js/microscript/token.js", "/js/microscript/parser.js", "/js/microscript/program.js", "/js/microscript/jstranspiler.js", '/js/runtime/runtime.js', '/js/runtime/screen.js', '/js/runtime/keyboard.js', '/js/runtime/gamepad.js', '/js/runtime/sprite.js', '/js/runtime/spriteframe.js', '/js/runtime/map.js', "/js/runtime/audio/audio.js", "/js/runtime/audio/beeper.js", "/js/runtime/audio/sound.js", "/js/runtime/audio/music.js", '/js/play/player.js', '/js/play/playerclient.js'];
-    this.player3d_js = ['/js/util/canvas2d.js', "/js/microscript/random.js", "/js/microscript/microvm.js", "/js/microscript/tokenizer.js", "/js/microscript/token.js", "/js/microscript/parser.js", "/js/microscript/program.js", "/js/microscript/jstranspiler.js", '/js/runtime/m3d/screen3d.js', '/js/runtime/m3d/m3d.js', '/js/runtime/runtime.js', '/js/runtime/keyboard.js', '/js/runtime/gamepad.js', '/js/runtime/sprite.js', '/js/runtime/spriteframe.js', '/js/runtime/map.js', "/js/runtime/audio/audio.js", "/js/runtime/audio/beeper.js", "/js/runtime/audio/sound.js", "/js/runtime/audio/music.js", '/js/play/player.js', '/js/play/playerclient.js'];
+    ref1 = this.alt_players;
+    for (key in ref1) {
+      value = ref1[key];
+      this[key + "_js"] = this.alt_player_base.concat(value.scripts);
+    }
     this.audioengine_js = ["/js/sound/audioengine/utils.js", "/js/sound/audioengine/oscillators.js", "/js/sound/audioengine/modulation.js", "/js/sound/audioengine/filters.js", "/js/sound/audioengine/effects.js", "/js/sound/audioengine/voice.js", "/js/sound/audioengine/instrument.js", "/js/sound/audioengine/audioengine.js"];
     this.refresh();
   }
 
   Concatenator.prototype.refresh = function() {
+    var key, ref, value;
     this.concat(this.webapp_js, "webapp_js_concat");
     this.concat(this.player_js, "player_js_concat");
-    this.concat(this.player3d_js, "player3d_js_concat");
+    ref = this.alt_players;
+    for (key in ref) {
+      value = ref[key];
+      this.concat(this[key + "_js"], key + "_js_concat");
+    }
     this.concat(this.webapp_css, "webapp_css_concat");
     return this.concat(this.audioengine_js, "audioengine_js_concat");
   };
@@ -74,11 +123,14 @@ this.Concatenator = (function() {
   };
 
   Concatenator.prototype.getPlayerJSFiles = function(graphics) {
-    if (graphics === "M3D") {
+    var g, player;
+    if ((graphics != null) && typeof graphics === "string" && this.alt_players[graphics.toLowerCase()]) {
+      g = graphics.toLowerCase();
+      player = this.alt_players[g];
       if (this.webapp.server.use_cache && (this.player3d_js_concat != null)) {
-        return ["/play3d.js"];
+        return player.lib.concat(["/" + g + ".js"]);
       } else {
-        return this.player3d_js;
+        return player.lib.concat(this[g + "_js"]);
       }
     } else {
       if (this.webapp.server.use_cache && (this.player_js_concat != null)) {
@@ -86,6 +138,16 @@ this.Concatenator = (function() {
       } else {
         return this.player_js;
       }
+    }
+  };
+
+  Concatenator.prototype.getEngineExport = function(graphics) {
+    var g;
+    if ((graphics != null) && typeof graphics === "string" && this.alt_players[graphics.toLowerCase()]) {
+      g = graphics.toLowerCase();
+      return this[g + "_js_concat"] || "";
+    } else {
+      return this.player_js_concat;
     }
   };
 

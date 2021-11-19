@@ -113,6 +113,11 @@ this.Session = (function() {
         return _this.changeNewsletter(msg);
       };
     })(this));
+    this.register("change_experimental", (function(_this) {
+      return function(msg) {
+        return _this.changeExperimental(msg);
+      };
+    })(this));
     this.register("set_user_setting", (function(_this) {
       return function(msg) {
         return _this.setUserSetting(msg);
@@ -812,6 +817,7 @@ this.Session = (function() {
           clone.setOrientation(project.orientation);
           clone.setAspect(project.aspect);
           clone.setGraphics(project.graphics);
+          clone.set("libs", project.libs);
           clone.set("files", JSON.parse(JSON.stringify(project.files)));
           man = _this.getProjectManager(project);
           folders = ["ms", "sprites", "maps", "sounds", "sounds_th", "music", "music_th", "doc"];
@@ -878,6 +884,7 @@ this.Session = (function() {
             clone.setOrientation(project.orientation);
             clone.setAspect(project.aspect);
             clone.setGraphics(project.graphics);
+            clone.set("libs", project.libs);
             clone.set("files", JSON.parse(JSON.stringify(project.files)));
             man = _this.getProjectManager(project);
             folders = ["ms", "sprites", "maps", "sounds", "sounds_th", "music", "music_th", "doc"];
@@ -988,7 +995,7 @@ this.Session = (function() {
   };
 
   Session.prototype.setProjectOption = function(data) {
-    var project;
+    var j, len1, project, ref, v;
     if (this.user == null) {
       return this.sendError("not connected");
     }
@@ -1033,9 +1040,16 @@ this.Session = (function() {
             project.setPlatforms(data.value);
           }
           break;
-        case "controls":
+        case "libs":
           if (Array.isArray(data.value)) {
-            project.setControls(data.value);
+            ref = data.value;
+            for (j = 0, len1 = ref.length; j < len1; j++) {
+              v = ref[j];
+              if (typeof v !== "string" || v.length > 100 || data.value.length > 20) {
+                return;
+              }
+            }
+            project.set("libs", data.value);
           }
           break;
         case "type":
@@ -1110,6 +1124,7 @@ this.Session = (function() {
           orientation: p.orientation,
           aspect: p.aspect,
           graphics: p.graphics,
+          libs: p.libs,
           date_created: p.date_created,
           last_modified: p.last_modified,
           "public": p["public"],
@@ -1141,6 +1156,7 @@ this.Session = (function() {
           orientation: p.orientation,
           aspect: p.aspect,
           graphics: p.graphics,
+          libs: p.libs,
           date_created: p.date_created,
           last_modified: p.last_modified,
           "public": p["public"],
@@ -1367,7 +1383,9 @@ this.Session = (function() {
           likes: p.likes,
           liked: (this.user != null) && this.user.isLiked(p.id),
           tags: p.tags,
-          date_published: p.first_published
+          date_published: p.first_published,
+          graphics: p.graphics,
+          libs: p.libs
         });
       }
     }
@@ -1402,7 +1420,9 @@ this.Session = (function() {
             likes: p.likes,
             liked: (this.user != null) && this.user.isLiked(p.id),
             tags: p.tags,
-            date_published: p.first_published
+            date_published: p.first_published,
+            graphics: p.graphics,
+            libs: p.libs
           };
           return this.send({
             name: "get_public_project",
@@ -1609,6 +1629,9 @@ this.Session = (function() {
   };
 
   Session.prototype.changeNewsletter = function(data) {
+    if (this.user == null) {
+      return;
+    }
     this.user.setFlag("newsletter", data.newsletter);
     return this.send({
       name: "change_newsletter",
@@ -1617,7 +1640,22 @@ this.Session = (function() {
     });
   };
 
+  Session.prototype.changeExperimental = function(data) {
+    if ((this.user == null) || !this.user.flags.validated) {
+      return;
+    }
+    this.user.setFlag("experimental", data.experimental);
+    return this.send({
+      name: "change_experimental",
+      experimental: data.experimental,
+      request_id: data.request_id
+    });
+  };
+
   Session.prototype.setUserSetting = function(data) {
+    if (this.user == null) {
+      return;
+    }
     if ((data.setting == null) || (data.value == null)) {
       return;
     }

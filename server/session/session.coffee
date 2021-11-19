@@ -52,6 +52,7 @@ class @Session
     @register "change_nick",(msg)=>@changeNick(msg)
     @register "change_password",(msg)=>@changePassword(msg)
     @register "change_newsletter",(msg)=>@changeNewsletter(msg)
+    @register "change_experimental",(msg)=>@changeExperimental(msg)
     @register "set_user_setting",(msg)=>@setUserSetting(msg)
     @register "set_user_profile",(msg)=>@setUserProfile(msg)
 
@@ -474,6 +475,7 @@ class @Session
         clone.setOrientation project.orientation
         clone.setAspect project.aspect
         clone.setGraphics project.graphics
+        clone.set "libs",project.libs
         clone.set "files",JSON.parse JSON.stringify project.files
         man = @getProjectManager(project)
 
@@ -521,6 +523,7 @@ class @Session
           clone.setOrientation project.orientation
           clone.setAspect project.aspect
           clone.setGraphics project.graphics
+          clone.set "libs",project.libs
           clone.set "files",JSON.parse JSON.stringify project.files
           man = @getProjectManager(project)
 
@@ -629,8 +632,12 @@ class @Session
         when "platforms"
           project.setPlatforms data.value if Array.isArray data.value
 
-        when "controls"
-          project.setControls data.value if Array.isArray data.value
+        when "libs"
+          if Array.isArray data.value
+            for v in data.value
+              return if typeof v != "string" or v.length>100 or data.value.length>20
+
+            project.set "libs",data.value
 
         when "type"
           project.setType data.value if typeof data.value == "string"
@@ -684,6 +691,7 @@ class @Session
           orientation: p.orientation
           aspect: p.aspect
           graphics: p.graphics
+          libs: p.libs
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
@@ -711,6 +719,7 @@ class @Session
           orientation: p.orientation
           aspect: p.aspect
           graphics: p.graphics
+          libs: p.libs
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
@@ -860,6 +869,8 @@ class @Session
           liked: @user? and @user.isLiked(p.id)
           tags: p.tags
           date_published: p.first_published
+          graphics: p.graphics
+          libs: p.libs
 
     @send
       name: "public_projects"
@@ -889,6 +900,8 @@ class @Session
             liked: @user? and @user.isLiked(p.id)
             tags: p.tags
             date_published: p.first_published
+            graphics: p.graphics
+            libs: p.libs
 
           @send
             name: "get_public_project"
@@ -1029,13 +1042,26 @@ class @Session
           request_id: data.request_id
 
   changeNewsletter:(data)->
+    return if not @user?
+
     @user.setFlag "newsletter",data.newsletter
     @send
       name: "change_newsletter"
       newsletter: data.newsletter
       request_id: data.request_id
 
+  changeExperimental:(data)->
+    return if not @user? or not @user.flags.validated
+
+    @user.setFlag "experimental",data.experimental
+    @send
+      name: "change_experimental"
+      experimental: data.experimental
+      request_id: data.request_id
+
   setUserSetting:(data)->
+    return if not @user?
+
     return if not data.setting? or not data.value?
     @user.setSetting data.setting,data.value
 

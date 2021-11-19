@@ -1,4 +1,6 @@
-var JSZip, Jimp, JobQueue, pug;
+var JSZip, Jimp, JobQueue, fs, pug;
+
+fs = require("fs");
 
 Jimp = require("jimp");
 
@@ -19,7 +21,7 @@ this.ExportFeatures = (function() {
   ExportFeatures.prototype.addProjectFilesExport = function() {
     return this.webapp.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?export\/project\/$/, (function(_this) {
       return function(req, res) {
-        var access, f, fn, folders, i, len, manager, project, projectInfo, queue, user, zip;
+        var access, f, fn, folders, j, len, manager, project, projectInfo, queue, user, zip;
         access = _this.webapp.getProjectAccess(req, res);
         if (access == null) {
           return;
@@ -43,8 +45,8 @@ this.ExportFeatures = (function() {
         fn = function(f) {
           return _this.enqueueFolderZipping(zip, queue, manager, user, project, f.name, f.fileType);
         };
-        for (i = 0, len = folders.length; i < len; i++) {
-          f = folders[i];
+        for (j = 0, len = folders.length; j < len; j++) {
+          f = folders[j];
           fn(f);
         }
         return queue.start();
@@ -56,7 +58,7 @@ this.ExportFeatures = (function() {
     return queue.add((function(_this) {
       return function() {
         return manager.listFiles(folder, function(files) {
-          var f, fn, i, len;
+          var f, fn, j, len;
           fn = function(f) {
             return queue.add(function() {
               return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/" + folder + "/" + f.file, fileType, function(content) {
@@ -67,8 +69,8 @@ this.ExportFeatures = (function() {
               });
             });
           };
-          for (i = 0, len = files.length; i < len; i++) {
-            f = files[i];
+          for (j = 0, len = files.length; j < len; j++) {
+            f = files[j];
             fn(f);
           }
           return queue.next();
@@ -122,6 +124,8 @@ this.ExportFeatures = (function() {
       platforms: project.platforms,
       controls: project.controls,
       type: project.type,
+      graphics: project.graphics,
+      libs: project.libs,
       date_created: project.date_created,
       last_modified: project.last_modified,
       first_published: project.first_published,
@@ -152,7 +156,7 @@ this.ExportFeatures = (function() {
         });
         queue.add(function() {
           return manager.listFiles("sprites", function(sprites) {
-            var fn, i, len, s;
+            var fn, j, len, s;
             fn = function(s) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/sprites/" + s.file, "binary", function(content) {
@@ -163,8 +167,8 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (i = 0, len = sprites.length; i < len; i++) {
-              s = sprites[i];
+            for (j = 0, len = sprites.length; j < len; j++) {
+              s = sprites[j];
               fn(s);
             }
             return queue.next();
@@ -172,7 +176,7 @@ this.ExportFeatures = (function() {
         });
         queue.add(function() {
           return manager.listFiles("doc", function(docs) {
-            var doc, fn, i, len;
+            var doc, fn, j, len;
             fn = function(doc) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/doc/" + doc.file, "text", function(content) {
@@ -183,8 +187,8 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (i = 0, len = docs.length; i < len; i++) {
-              doc = docs[i];
+            for (j = 0, len = docs.length; j < len; j++) {
+              doc = docs[j];
               fn(doc);
             }
             return queue.next();
@@ -198,7 +202,7 @@ this.ExportFeatures = (function() {
   ExportFeatures.prototype.addPublishHTML = function() {
     return this.webapp.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?publish\/html\/$/, (function(_this) {
       return function(req, res) {
-        var access, assets, fonts, fullsource, images, manager, maps_dict, music_list, project, queue, sounds_list, user, zip;
+        var access, assets, fn, fonts, fullsource, g, i, images, j, k, len, len1, lib, libs, manager, maps_dict, music_list, optlib, project, queue, ref, sounds_list, user, zip;
         access = _this.webapp.getProjectAccess(req, res);
         if (access == null) {
           return;
@@ -214,6 +218,21 @@ this.ExportFeatures = (function() {
         sounds_list = [];
         music_list = [];
         fullsource = "\n\n";
+        libs = [];
+        if ((project.graphics != null) && typeof project.graphics === "string") {
+          g = project.graphics.toLowerCase();
+          if (_this.webapp.concatenator.alt_players[g] != null) {
+            libs = [].concat(_this.webapp.concatenator.alt_players[g].lib_path);
+          }
+        }
+        ref = project.libs;
+        for (j = 0, len = ref.length; j < len; j++) {
+          optlib = ref[j];
+          lib = _this.webapp.concatenator.optional_libs[optlib];
+          if (lib != null) {
+            libs.push(lib.lib_path);
+          }
+        }
         queue = new JobQueue(function() {
           var export_funk, html, mani, resources;
           resources = JSON.stringify({
@@ -228,7 +247,7 @@ this.ExportFeatures = (function() {
           export_funk = pug.compileFile("../templates/export/html.pug");
           html = export_funk({
             user: user,
-            javascript_files: ["microengine.js"],
+            javascript_files: libs.concat(["microengine.js"]),
             fonts: fonts,
             game: {
               name: project.slug,
@@ -237,6 +256,7 @@ this.ExportFeatures = (function() {
               resources: resources,
               orientation: project.orientation,
               aspect: project.aspect,
+              libs: JSON.stringify(project.libs),
               code: fullsource
             }
           });
@@ -250,11 +270,7 @@ this.ExportFeatures = (function() {
           mani = mani.toString().replace(/ICONVERSION/g, "0");
           mani = mani.replace("START_URL", ".");
           zip.file("manifest.json", mani);
-          if (project.graphics === "M3D") {
-            zip.file("microengine.js", _this.webapp.concatenator["player3d_js_concat"]);
-          } else {
-            zip.file("microengine.js", _this.webapp.concatenator["player_js_concat"]);
-          }
+          zip.file("microengine.js", _this.webapp.concatenator.getEngineExport(project.graphics));
           return zip.generateAsync({
             type: "nodebuffer"
           }).then(function(content) {
@@ -264,10 +280,28 @@ this.ExportFeatures = (function() {
             return res.send(content);
           });
         });
+        fn = function(lib, i) {
+          return queue.add(function() {
+            return fs.readFile(lib, function(err, data) {
+              if (data != null) {
+                data = data.toString("utf-8");
+                lib = lib.split("/");
+                lib = lib[lib.length - 1];
+                libs[i] = lib;
+                zip.file(lib, data);
+              }
+              return queue.next();
+            });
+          });
+        };
+        for (i = k = 0, len1 = libs.length; k < len1; i = ++k) {
+          lib = libs[i];
+          fn(lib, i);
+        }
         queue.add(function() {
           return manager.listFiles("sprites", function(sprites) {
-            var fn, i, len, s;
-            fn = function(s) {
+            var fn1, l, len2, s;
+            fn1 = function(s) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/sprites/" + s.file, "binary", function(content) {
                   if (content != null) {
@@ -278,17 +312,17 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (i = 0, len = sprites.length; i < len; i++) {
-              s = sprites[i];
-              fn(s);
+            for (l = 0, len2 = sprites.length; l < len2; l++) {
+              s = sprites[l];
+              fn1(s);
             }
             return queue.next();
           });
         });
         queue.add(function() {
           return manager.listFiles("maps", function(maps) {
-            var fn, i, len, map;
-            fn = function(map) {
+            var fn1, l, len2, map;
+            fn1 = function(map) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/maps/" + map.file, "text", function(content) {
                   if (content != null) {
@@ -298,17 +332,17 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (i = 0, len = maps.length; i < len; i++) {
-              map = maps[i];
-              fn(map);
+            for (l = 0, len2 = maps.length; l < len2; l++) {
+              map = maps[l];
+              fn1(map);
             }
             return queue.next();
           });
         });
         queue.add(function() {
           return manager.listFiles("sounds", function(sounds) {
-            var fn, i, len, s;
-            fn = function(s) {
+            var fn1, l, len2, s;
+            fn1 = function(s) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/sounds/" + s.file, "binary", function(content) {
                   if (content != null) {
@@ -319,17 +353,17 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (i = 0, len = sounds.length; i < len; i++) {
-              s = sounds[i];
-              fn(s);
+            for (l = 0, len2 = sounds.length; l < len2; l++) {
+              s = sounds[l];
+              fn1(s);
             }
             return queue.next();
           });
         });
         queue.add(function() {
           return manager.listFiles("music", function(music) {
-            var fn, i, len, m;
-            fn = function(m) {
+            var fn1, l, len2, m;
+            fn1 = function(m) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/music/" + m.file, "binary", function(content) {
                   if (content != null) {
@@ -340,17 +374,17 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (i = 0, len = music.length; i < len; i++) {
-              m = music[i];
-              fn(m);
+            for (l = 0, len2 = music.length; l < len2; l++) {
+              m = music[l];
+              fn1(m);
             }
             return queue.next();
           });
         });
         queue.add(function() {
           return manager.listFiles("assets", function(assets) {
-            var asset, fn, i, len;
-            fn = function(asset) {
+            var asset, fn1, l, len2;
+            fn1 = function(asset) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/assets/" + asset.file, "binary", function(content) {
                   if (content != null) {
@@ -361,17 +395,17 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (i = 0, len = assets.length; i < len; i++) {
-              asset = assets[i];
-              fn(asset);
+            for (l = 0, len2 = assets.length; l < len2; l++) {
+              asset = assets[l];
+              fn1(asset);
             }
             return queue.next();
           });
         });
         queue.add(function() {
           return manager.listFiles("doc", function(docs) {
-            var doc, fn, i, len;
-            fn = function(doc) {
+            var doc, fn1, l, len2;
+            fn1 = function(doc) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/doc/" + doc.file, "text", function(content) {
                   if (content != null) {
@@ -381,17 +415,17 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (i = 0, len = docs.length; i < len; i++) {
-              doc = docs[i];
-              fn(doc);
+            for (l = 0, len2 = docs.length; l < len2; l++) {
+              doc = docs[l];
+              fn1(doc);
             }
             return queue.next();
           });
         });
         queue.add(function() {
           return manager.listFiles("ms", function(ms) {
-            var fn, i, len, src;
-            fn = function(src) {
+            var fn1, l, len2, src;
+            fn1 = function(src) {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/ms/" + src.file, "text", function(content) {
                   if (content != null) {
@@ -401,15 +435,15 @@ this.ExportFeatures = (function() {
                 });
               });
             };
-            for (i = 0, len = ms.length; i < len; i++) {
-              src = ms[i];
-              fn(src);
+            for (l = 0, len2 = ms.length; l < len2; l++) {
+              src = ms[l];
+              fn1(src);
             }
             queue.add(function() {
-              var font, j, len1, ref;
-              ref = _this.webapp.fonts.fonts;
-              for (j = 0, len1 = ref.length; j < len1; j++) {
-                font = ref[j];
+              var font, len3, n, ref1;
+              ref1 = _this.webapp.fonts.fonts;
+              for (n = 0, len3 = ref1.length; n < len3; n++) {
+                font = ref1[n];
                 if (font === "BitCell" || fullsource.indexOf("\"" + font + "\"") >= 0) {
                   fonts.push(font);
                   (function(font) {
@@ -434,10 +468,10 @@ this.ExportFeatures = (function() {
           path = user.id + "/" + project.id + "/sprites/icon.png";
           path = _this.webapp.server.content.files.folder + "/" + _this.webapp.server.content.files.sanitize(path);
           return Jimp.read(path, function(err, img) {
-            var fn, i, len, ref, size;
+            var fn1, l, len2, ref1, size;
             if (!err) {
-              ref = [16, 32, 64, 180, 192, 512, 1024];
-              fn = function(size) {
+              ref1 = [16, 32, 64, 180, 192, 512, 1024];
+              fn1 = function(size) {
                 return queue.add(function() {
                   return img.clone().resize(size, size, Jimp.RESIZE_NEAREST_NEIGHBOR).getBuffer(Jimp.MIME_PNG, function(err, buffer) {
                     if (err) {
@@ -449,9 +483,9 @@ this.ExportFeatures = (function() {
                   });
                 });
               };
-              for (i = 0, len = ref.length; i < len; i++) {
-                size = ref[i];
-                fn(size);
+              for (l = 0, len2 = ref1.length; l < len2; l++) {
+                size = ref1[l];
+                fn1(size);
               }
             }
             return queue.next();

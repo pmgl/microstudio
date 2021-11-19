@@ -25,6 +25,7 @@ this.Project = (function() {
     this.type = data.type;
     this.orientation = data.orientation;
     this.graphics = data.graphics || "M1";
+    this.libs = data.libs || [];
     this.aspect = data.aspect;
     this.users = data.users;
     this.file_types = ["source", "sprite", "map", "asset", "sound", "music"];

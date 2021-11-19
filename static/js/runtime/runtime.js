@@ -4,11 +4,7 @@ this.Runtime = (function() {
     this.sources = sources;
     this.resources = resources;
     this.listener = listener;
-    if (window.graphics === "M3D") {
-      this.screen = new Screen3D(this);
-    } else {
-      this.screen = new Screen(this);
-    }
+    this.screen = new Screen(this);
     this.audio = new AudioCore(this);
     this.keyboard = new Keyboard();
     this.gamepad = new Gamepad();
@@ -163,7 +159,7 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.startReady = function() {
-    var file, global, init, meta, namespace, ref, src;
+    var file, global, init, j, len, lib, meta, namespace, ref, ref1, src;
     meta = {
       print: (function(_this) {
         return function(text) {
@@ -188,13 +184,34 @@ this.Runtime = (function() {
       fonts: window.fonts
     };
     if (window.graphics === "M3D") {
-      global.M3D = new M3D(this);
+      global.M3D = M3D;
+      M3D.runtime = this;
+    } else if (window.graphics === "M2D") {
+      global.M2D = M2D;
+      M2D.runtime = this;
+    } else if (window.graphics === "PIXI") {
+      global.PIXI = PIXI;
+      PIXI.runtime = this;
+    } else if (window.graphics === "BABYLON") {
+      global.BABYLON = BABYLON;
+      BABYLON.runtime = this;
+    }
+    ref = window.ms_libs;
+    for (j = 0, len = ref.length; j < len; j++) {
+      lib = ref[j];
+      switch (lib) {
+        case "matterjs":
+          global.Matter = Matter;
+          break;
+        case "cannonjs":
+          global.CANNON = CANNON;
+      }
     }
     namespace = location.pathname;
     this.vm = new MicroVM(meta, global, namespace, location.hash === "#transpiler");
-    ref = this.sources;
-    for (file in ref) {
-      src = ref[file];
+    ref1 = this.sources;
+    for (file in ref1) {
+      src = ref1[file];
       this.updateSource(file, src, false);
     }
     init = this.vm.context.global.init;

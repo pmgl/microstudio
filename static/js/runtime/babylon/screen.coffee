@@ -1,11 +1,11 @@
-class @Screen3D
+class @Screen
   constructor:(@runtime)->
-    @renderer = new THREE.WebGLRenderer
-      antialias: true
-    @renderer.setPixelRatio( window.devicePixelRatio )
-    @renderer.setSize 1080,1920
+    @canvas = document.createElement "canvas"
+    @canvas.width = 1000
+    @canvas.height = 800
+    @engine = new BABYLON.Engine @canvas,true
 
-    @canvas = @renderer.domElement
+    BABYLON.engine = @engine
 
     @touches = {}
     @mouse =
@@ -22,7 +22,7 @@ class @Screen3D
     @interface =
       width: @width
       height: @height
-      render: (scene,camera)->screen.render(scene,camera)
+      render: (scene)->scene.render()
 
   updateInterface:()->
     @interface.width = @width
@@ -93,13 +93,13 @@ class @Screen3D
     @camera_aspect = w/h
     @update_camera = true
 
-    @renderer.setSize( w,h )
+    @engine.resize true
 
   render:(scene,camera)->
-    if @update_camera
-      camera.camera.aspect = @camera_aspect
-      camera.camera.updateProjectionMatrix()
-      @update_camera = false
+    # if @update_camera
+    #   camera.camera.aspect = @camera_aspect
+    #   camera.camera.updateProjectionMatrix()
+    #   @update_camera = false
 
     #@renderer.shadowMap.enabled = true
     #@renderer.shadowMap.type = THREE.PCFSoftShadowMap

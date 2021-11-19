@@ -14,10 +14,6 @@ class @Concatenator
       res.setHeader("Content-Type", "text/javascript")
       res.send @player_js_concat
 
-    @webapp.app.get /^\/play3d.js$/, (req,res)=>
-      res.setHeader("Content-Type", "text/javascript")
-      res.send @player3d_js_concat
-
     @webapp.app.get /^\/audioengine.js$/, (req,res)=>
       res.setHeader("Content-Type", "text/javascript")
       if not @webapp.server.use_cache
@@ -25,6 +21,63 @@ class @Concatenator
           res.send @audioengine_js_concat
       else
         res.send @audioengine_js_concat
+
+    @alt_player_base = [
+      '/js/util/canvas2d.js'
+      "/js/microscript/random.js"
+      "/js/microscript/microvm.js"
+      "/js/microscript/tokenizer.js"
+      "/js/microscript/token.js"
+      "/js/microscript/parser.js"
+      "/js/microscript/program.js"
+      "/js/microscript/jstranspiler.js"
+      '/js/runtime/runtime.js'
+      '/js/runtime/keyboard.js'
+      '/js/runtime/gamepad.js'
+      '/js/runtime/sprite.js'
+      '/js/runtime/spriteframe.js'
+      '/js/runtime/map.js'
+      "/js/runtime/audio/audio.js"
+      "/js/runtime/audio/beeper.js"
+      "/js/runtime/audio/sound.js"
+      "/js/runtime/audio/music.js"
+      '/js/play/player.js'
+      '/js/play/playerclient.js'
+    ]
+
+    @alt_players =
+      m2d:
+        lib: ["/lib/pixijs/pixi.min.js"]
+        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"]
+        scripts: ['/js/runtime/m2d/screen.js','/js/runtime/m2d/m2d.js']
+      m3d:
+        lib: ["/lib/babylonjs/babylon.js"]
+        lib_path: ["node_modules/babylonjs/babylon.js"]
+        scripts: ['/js/runtime/m3d/screen.js','/js/runtime/m3d/m3d.js']
+      pixi:
+        lib: ["/lib/pixijs/pixi.min.js"]
+        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"]
+        scripts: ['/js/runtime/pixi/screen.js','/js/runtime/pixi/pixi.js']
+      babylon:
+        lib: ["/lib/babylonjs/babylon.js"]
+        lib_path: ["node_modules/babylonjs/babylon.js"]
+        scripts: ['/js/runtime/babylon/screen.js','/js/runtime/babylon/babylon.js']
+
+    @optional_libs =
+      matterjs:
+        title: "matter.js - 2D physics engine"
+        lib: "/lib/matterjs/matter.min.js"
+        lib_path: "node_modules/matter-js/build/matter.min.js"
+
+      cannonjs:
+        title: "cannon.js - 3D physics engine"
+        lib: "/lib/cannonjs/cannon.min.js"
+        lib_path: "node_modules/cannon/build/cannon.min.js"
+
+    for key,value of @alt_players
+      @webapp.app.get new RegExp("^\\/#{key}.js$"), (req,res)=>
+        res.setHeader("Content-Type", "text/javascript")
+        res.send @["#{key}_js_concat"]
 
     @webapp_css = [
       "/css/style.css"
@@ -166,33 +219,8 @@ class @Concatenator
       '/js/play/playerclient.js'
     ]
 
-    @player3d_js = [
-      '/js/util/canvas2d.js'
-
-      "/js/microscript/random.js"
-      "/js/microscript/microvm.js"
-      "/js/microscript/tokenizer.js"
-      "/js/microscript/token.js"
-      "/js/microscript/parser.js"
-      "/js/microscript/program.js"
-      "/js/microscript/jstranspiler.js"
-
-      '/js/runtime/m3d/screen3d.js'
-      '/js/runtime/m3d/m3d.js'
-
-      '/js/runtime/runtime.js'
-      '/js/runtime/keyboard.js'
-      '/js/runtime/gamepad.js'
-      '/js/runtime/sprite.js'
-      '/js/runtime/spriteframe.js'
-      '/js/runtime/map.js'
-      "/js/runtime/audio/audio.js"
-      "/js/runtime/audio/beeper.js"
-      "/js/runtime/audio/sound.js"
-      "/js/runtime/audio/music.js"
-      '/js/play/player.js'
-      '/js/play/playerclient.js'
-    ]
+    for key,value of @alt_players
+      @["#{key}_js"] = @alt_player_base.concat(value.scripts)
 
     @audioengine_js = [
       "/js/sound/audioengine/utils.js"
@@ -210,7 +238,8 @@ class @Concatenator
   refresh:()->
     @concat(@webapp_js,"webapp_js_concat")
     @concat(@player_js,"player_js_concat")
-    @concat(@player3d_js,"player3d_js_concat")
+    for key,value of @alt_players
+      @concat(@["#{key}_js"],"#{key}_js_concat")
     @concat(@webapp_css,"webapp_css_concat")
     @concat(@audioengine_js,"audioengine_js_concat")
 
@@ -227,16 +256,25 @@ class @Concatenator
       @webapp_css
 
   getPlayerJSFiles:(graphics)->
-    if graphics == "M3D"
+    if graphics? and typeof graphics == "string" and @alt_players[graphics.toLowerCase()]
+      g = graphics.toLowerCase()
+      player = @alt_players[g]
       if @webapp.server.use_cache and @player3d_js_concat?
-        ["/play3d.js"]
+        player.lib.concat ["/#{g}.js"]
       else
-        @player3d_js
+        player.lib.concat @["#{g}_js"]
     else
       if @webapp.server.use_cache and @player_js_concat?
         ["/play.js"]
       else
         @player_js
+
+  getEngineExport:(graphics)->
+    if graphics? and typeof graphics == "string" and @alt_players[graphics.toLowerCase()]
+      g = graphics.toLowerCase()
+      @["#{g}_js_concat"] or ""
+    else
+      @player_js_concat
 
   concat:(files,variable,callback)->
     list = (f for f in files)
