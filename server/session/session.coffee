@@ -649,8 +649,7 @@ class @Session
           project.setAspect data.value if typeof data.value == "string"
 
         when "graphics"
-          if @user.flags.m3d
-            project.setGraphics data.value if typeof data.value == "string"
+          project.setGraphics data.value if typeof data.value == "string"
 
         when "unlisted"
           project.set "unlisted",if data.value then true else false

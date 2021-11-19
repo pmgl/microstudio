@@ -1068,10 +1068,8 @@ this.Session = (function() {
           }
           break;
         case "graphics":
-          if (this.user.flags.m3d) {
-            if (typeof data.value === "string") {
-              project.setGraphics(data.value);
-            }
+          if (typeof data.value === "string") {
+            project.setGraphics(data.value);
           }
           break;
         case "unlisted":
