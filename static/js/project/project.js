@@ -20,6 +20,7 @@ this.Project = (function() {
     this.description = data.description;
     this.tags = data.tags;
     this["public"] = data["public"];
+    this.unlisted = data.unlisted;
     this.platforms = data.platforms;
     this.controls = data.controls;
     this.type = data.type;

@@ -1068,11 +1068,12 @@ this.Session = (function() {
           }
           break;
         case "graphics":
-          if (this.user.flags.m3d) {
-            if (typeof data.value === "string") {
-              project.setGraphics(data.value);
-            }
+          if (typeof data.value === "string") {
+            project.setGraphics(data.value);
           }
+          break;
+        case "unlisted":
+          project.set("unlisted", data.value ? true : false);
       }
       if (project.manager != null) {
         project.manager.propagateOptions(this);
@@ -1128,6 +1129,7 @@ this.Session = (function() {
           date_created: p.date_created,
           last_modified: p.last_modified,
           "public": p["public"],
+          unlisted: p.unlisted,
           size: p.getSize(),
           users: p.listUsers()
         });
@@ -1160,6 +1162,7 @@ this.Session = (function() {
           date_created: p.date_created,
           last_modified: p.last_modified,
           "public": p["public"],
+          unlisted: p.unlisted,
           users: p.listUsers()
         });
       }

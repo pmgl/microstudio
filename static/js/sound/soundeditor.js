@@ -5,6 +5,7 @@ this.SoundEditor = (function(superClass) {
   extend(SoundEditor, superClass);
 
   function SoundEditor(app) {
+    var synth;
     this.app = app;
     SoundEditor.__super__.constructor.call(this, this.app);
     this.folder = "sounds";
@@ -17,16 +18,32 @@ this.SoundEditor = (function(superClass) {
     this.box_width = 96;
     this.box_height = 84;
     this.init();
+    synth = document.getElementById("open-synth");
+    synth.addEventListener("click", (function(_this) {
+      return function() {
+        if (_this.synth == null) {
+          _this.app.audio_controller.init();
+          _this.synth = new Synth(_this.app);
+          return _this.synth.synth_window.show();
+        } else {
+          if (_this.synth.synth_window.shown) {
+            return _this.synth.synth_window.close();
+          } else {
+            return _this.synth.synth_window.show();
+          }
+        }
+      };
+    })(this));
   }
 
   SoundEditor.prototype.update = function() {
+    var synth;
     SoundEditor.__super__.update.call(this);
-    if ((this.app.user != null) && this.app.user.flags.admin) {
-      if (this.synth == null) {
-        this.app.audio_controller.init();
-        this.synth = new Synth(this.app);
-        return this.synth.synth_window.show();
-      }
+    synth = document.getElementById("open-synth");
+    if (this.app.user && this.app.user.flags.experimental) {
+      return synth.style.display = "inline-block";
+    } else {
+      return synth.style.display = "none";
     }
   };
 

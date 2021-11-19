@@ -12,6 +12,16 @@ div.publish-box#publish-box-online
       i.fa.fa-eye-slash
       | #{translator.get("Make private again")}
     div.publish-text #{translator.get("This project is currently public.")}
+    
+    br
+    input(type="checkbox" id="publish-unlisted")
+    label(for="publish-unlisted") #{translator.get("Unlisted")}
+    br
+    span.tip #{translator.get("If you mark your public project Unlisted, it will not show up in the main Explore section")}
+    br
+    h3 #{translator.get("Public link")}
+    a(target="_blank")#publish-public-link
+
 
   h2 #{translator.get("Make public on microStudio")}
 

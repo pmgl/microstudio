@@ -137,7 +137,7 @@ class @Content
     @top_projects = []
     @new_projects = []
     for key,project of @projects
-      if project.public and project.owner.flags["validated"] and not project.deleted and not project.owner.flags["censored"]
+      if project.public and not project.unlisted and project.owner.flags["validated"] and not project.deleted and not project.owner.flags["censored"]
         @hot_projects.push project
         @top_projects.push project
         @new_projects.push project
@@ -170,7 +170,7 @@ class @Content
     if pub and project.first_published == 0
       project.set "first_published",Date.now()
 
-    if pub
+    if pub and not project.unlisted
       @hot_projects.push(project) if @hot_projects.indexOf(project)<0
       @top_projects.push(project) if @top_projects.indexOf(project)<0
       @new_projects.push(project) if @new_projects.indexOf(project)<0

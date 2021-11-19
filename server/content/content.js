@@ -189,7 +189,7 @@ this.Content = (function() {
     ref = this.projects;
     for (key in ref) {
       project = ref[key];
-      if (project["public"] && project.owner.flags["validated"] && !project.deleted && !project.owner.flags["censored"]) {
+      if (project["public"] && !project.unlisted && project.owner.flags["validated"] && !project.deleted && !project.owner.flags["censored"]) {
         this.hot_projects.push(project);
         this.top_projects.push(project);
         this.new_projects.push(project);
@@ -231,7 +231,7 @@ this.Content = (function() {
     if (pub && project.first_published === 0) {
       project.set("first_published", Date.now());
     }
-    if (pub) {
+    if (pub && !project.unlisted) {
       if (this.hot_projects.indexOf(project) < 0) {
         this.hot_projects.push(project);
       }

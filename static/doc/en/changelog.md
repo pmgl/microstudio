@@ -1,5 +1,21 @@
 ## Changelog
 
+### Update 2021-11-19
+* Experimental features activated! (check "Experimental" in your user settings to get access):
+  * Alt graphics API PIXI.js (accelerated 2D)
+  * Alt graphics API Babylon.js (Full 3D API!)
+  * Alt graphics API M2D (simple accelerated 2D API, preview, built on PIXI.js)
+  * Alt graphics API M3D (simple 3D API, preview, built on Babylon.js)
+  * optional libs: matter.js (2D physics API) and cannon.js (3D physics API)
+  * bonus experimental feature: sound synthesizer preview (requires a MIDI keyboard and Chromium-based browser)
+  
+* You can now mark your public projects "unlisted", allowing to share them without having them published on the main Explore page
+
+### Update 2021-11-05
+* microStudio standalone app! Download on:
+  * https://microstudio.itch.io/microstudio
+  * or https://github.com/pmgl/microstudio/releases
+
 ### Update 2021-10-26
 * Text input/output for the color picker (thanks to HomineLudens for his initial contribution of this feature!)
 * Added `screen.loadFont()` and `screen.isFontReady`, allowing to deal with asynchronous loading of fonts
