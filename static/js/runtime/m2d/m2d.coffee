@@ -27,5 +27,6 @@ class M2D.Sprite extends PIXI.Sprite
     @height = height
     @anchor.x = .5
     @anchor.y = .5
+    @scale.y *= -1
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST

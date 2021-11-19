@@ -652,6 +652,9 @@ class @Session
           if @user.flags.m3d
             project.setGraphics data.value if typeof data.value == "string"
 
+        when "unlisted"
+          project.set "unlisted",if data.value then true else false
+
       if project.manager?
         project.manager.propagateOptions @
 
@@ -695,6 +698,7 @@ class @Session
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
+          unlisted: p.unlisted
           size: p.getSize()
           users: p.listUsers()
 
@@ -723,6 +727,7 @@ class @Session
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
+          unlisted: p.unlisted
           users: p.listUsers()
 
     @send

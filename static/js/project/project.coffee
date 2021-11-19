@@ -9,6 +9,7 @@ class @Project
     @description = data.description
     @tags = data.tags
     @public = data.public
+    @unlisted = data.unlisted
     @platforms = data.platforms
     @controls = data.controls
     @type = data.type

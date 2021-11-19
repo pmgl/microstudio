@@ -29,6 +29,12 @@ class @Publish
     for c in @checks
       document.getElementById("publish-check-#{c}").addEventListener "input",(event)=>@checkChecks()
 
+    document.getElementById("publish-unlisted").addEventListener "change",()=>
+      if @app.project?
+        @app.project.unlisted = document.getElementById("publish-unlisted").checked
+        @app.options.optionChanged "unlisted",document.getElementById("publish-unlisted").checked
+        @sendProjectPublic(@app.project.public)
+
   checkChecks:()->
     all = true
     for c in @checks
@@ -58,6 +64,12 @@ class @Publish
     @checkChecks()
 
     document.getElementById("publish-validate-first").style.display = if @app.user.flags["validated"] then "none" else "block"
+
+    document.getElementById("publish-unlisted").checked = project.unlisted
+
+    public_url = """#{location.origin.replace(".dev",".io")}/i/#{@app.project.owner.nick}/#{@app.project.slug}/"""
+    document.getElementById("publish-public-link").href = public_url
+    document.getElementById("publish-public-link").innerText = public_url
 
     document.querySelector("#publish-box-textarea").value = project.description
     @updateTags()
@@ -154,6 +166,9 @@ class @Publish
       document.getElementById("publish-checklist").style.display = "none"
 
     @checkDescriptionSave(true)
+    @sendProjectPublic(pub)
+
+  sendProjectPublic:(pub)->
     if @app.project?
       @app.client.sendRequest {
         name:"set_project_public"

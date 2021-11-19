@@ -44,6 +44,15 @@ this.Publish = (function() {
         };
       })(this));
     }
+    document.getElementById("publish-unlisted").addEventListener("change", (function(_this) {
+      return function() {
+        if (_this.app.project != null) {
+          _this.app.project.unlisted = document.getElementById("publish-unlisted").checked;
+          _this.app.options.optionChanged("unlisted", document.getElementById("publish-unlisted").checked);
+          return _this.sendProjectPublic(_this.app.project["public"]);
+        }
+      };
+    })(this));
   }
 
   Publish.prototype.checkChecks = function() {
@@ -67,7 +76,7 @@ this.Publish = (function() {
   };
 
   Publish.prototype.loadProject = function(project) {
-    var b, build, c, j, k, len, len1, ref, ref1;
+    var b, build, c, j, k, len, len1, public_url, ref, ref1;
     if (project["public"]) {
       document.getElementById("publish-box").style.display = "none";
       document.getElementById("unpublish-box").style.display = "block";
@@ -83,6 +92,10 @@ this.Publish = (function() {
     }
     this.checkChecks();
     document.getElementById("publish-validate-first").style.display = this.app.user.flags["validated"] ? "none" : "block";
+    document.getElementById("publish-unlisted").checked = project.unlisted;
+    public_url = (location.origin.replace(".dev", ".io")) + "/i/" + this.app.project.owner.nick + "/" + this.app.project.slug + "/";
+    document.getElementById("publish-public-link").href = public_url;
+    document.getElementById("publish-public-link").innerText = public_url;
     document.querySelector("#publish-box-textarea").value = project.description;
     this.updateTags();
     project.addListener(this);
@@ -220,6 +233,10 @@ this.Publish = (function() {
       document.getElementById("publish-checklist").style.display = "none";
     }
     this.checkDescriptionSave(true);
+    return this.sendProjectPublic(pub);
+  };
+
+  Publish.prototype.sendProjectPublic = function(pub) {
     if (this.app.project != null) {
       return this.app.client.sendRequest({
         name: "set_project_public",

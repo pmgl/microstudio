@@ -44,6 +44,7 @@ this.Project = (function() {
     this.description = data.description || "";
     this.likes = 0;
     this["public"] = data["public"];
+    this.unlisted = data.unlisted;
     this.date_created = data.date_created;
     this.last_modified = data.last_modified;
     this.first_published = data.first_published || 0;

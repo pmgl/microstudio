@@ -131,7 +131,7 @@ this.Screen = (function() {
       r = this.width / camera.fov;
     }
     scene.scale.x = r;
-    scene.scale.y = r;
+    scene.scale.y = -r;
     return this.renderer.render(scene);
   };
 

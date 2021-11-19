@@ -30,6 +30,7 @@ class @Project
     @description = data.description or ""
     @likes = 0
     @public = data.public
+    @unlisted = data.unlisted
     @date_created = data.date_created
     @last_modified = data.last_modified
     @first_published = data.first_published or 0

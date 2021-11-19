@@ -62,6 +62,7 @@ M2D.Sprite = (function(superClass) {
     this.height = height;
     this.anchor.x = .5;
     this.anchor.y = .5;
+    this.scale.y *= -1;
   }
 
   return Sprite;

@@ -111,7 +111,7 @@ class @Screen
       r = @width/camera.fov
 
     scene.scale.x = r
-    scene.scale.y = r
+    scene.scale.y = -r
     @renderer.render(scene)
 
   startControl:(@element)->
