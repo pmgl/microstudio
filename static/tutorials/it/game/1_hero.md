@@ -15,8 +15,8 @@ di 70 righe di codice.
 
 Questa serie presuppone che abbiate già fatto la serie di tutorial sulla programmazione.
 
-Quando fate questo tutorial, potete lasciare il vostro gioco in esecuzione continua, lo vedrete migliorare
-in tempo reale.
+Mentre seguite questo tutorial, potete lasciare il vostro gioco in esecuzione continua, lo vedrete migliorare
+in tempo reale!
 
 Ecco un esempio di come può apparire il gioco finale:
 
@@ -30,7 +30,7 @@ https://microstudio.io/gilles/skaterun/
 
 ### Eroe
 
-Il nostro gioco ha bisogno di un Eroe. Vai alla scheda Sprites e clicca su "Add a sprite".
+Il nostro gioco ha bisogno di un Eroe. Vai alla scheda Sprites e clicca su "Aggiungi Sprite".
 
 Assicurati di rinominare il tuo sprite in "eroe", questo ti sarà utile più tardi. Poi potete iniziare a disegnare il vostro sprite.
 Puoi dedicare tutto il tempo che vuoi al tuo eroe. Potete anche renderlo animato, aprendo la barra degli strumenti Animazione
