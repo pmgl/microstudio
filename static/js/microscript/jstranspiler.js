@@ -420,6 +420,7 @@ JSTranspiler = (function() {
     this.prepend("var " + list + " = Array.isArray(" + source + ") ? " + source + " : Object.keys(" + source + ") ;");
     this.prepend("var " + length + " = " + list + ".length ;");
     this.prepend("var " + timeout_count + " = 0 ;");
+    this.prepend("var " + forloop.iterator + " ;");
     context.local_variables[forloop.iterator] = true;
     this.prepend("for (var " + iter + " = 0 ; " + iter + "<" + length + " ; " + iter + "++ ) {\n");
     this.prepend(forloop.iterator + " = " + list + "[" + iter + "] ;");
