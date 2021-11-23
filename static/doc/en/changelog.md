@@ -1,5 +1,9 @@
 ## Changelog
 
+### Update 2021-11-23
+* Fixed a bug with transpiled `for..in` loops
+* Updates and fixes to the IT doc and tutorials (thanks @HomineLudens)
+
 ### Update 2021-11-19
 * Experimental features activated! (check "Experimental" in your user settings to get access):
   * Alt graphics API PIXI.js (accelerated 2D)
@@ -8,7 +12,7 @@
   * Alt graphics API M3D (simple 3D API, preview, built on Babylon.js)
   * optional libs: matter.js (2D physics API) and cannon.js (3D physics API)
   * bonus experimental feature: sound synthesizer preview (requires a MIDI keyboard and Chromium-based browser)
-  
+
 * You can now mark your public projects "unlisted", allowing to share them without having them published on the main Explore page
 
 ### Update 2021-11-05
