@@ -496,6 +496,7 @@ class JSTranspiler
     @prepend """var #{length} = #{list}.length ;"""
     @prepend """var #{timeout_count} = 0 ;"""
 
+    @prepend """var #{forloop.iterator} ;"""
     context.local_variables[forloop.iterator] = true
     @prepend "for (var #{iter} = 0 ; #{iter}<#{length} ; #{iter}++ ) {\n"
     @prepend "#{forloop.iterator} = #{list}[#{iter}] ;"
