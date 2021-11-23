@@ -10,7 +10,7 @@
 
 Abbiamo bisogno che il nostro eroe salti con un tocco o un clic del mouse sullo schermo. Saltare significa acquisire
 una certa velocità verticale, che influenzerà la posizione verticale dell'eroe. La velocità verticale
-stessa sarà influenzata dalla gravità.
+stessa sarà a sua volta influenzata dalla gravità.
 
 ## Jump!
 
@@ -26,7 +26,7 @@ nel corpo della nostra funzione ```draw```:
   screen.drawSprite("eroe",-80,-50+eroe_y,20)
 ```
 
-Ora la nostra posizione verticale è influenzata dalla velocità verticale. Modelliamo questo nella nostra funzione ``update`` aggiungendo
+Ora vogliamo che la nostra posizione verticale sia influenzata dalla velocità verticale. Modelliamo questo nella nostra funzione ``update``
 aggiungendo:
 
 ```
@@ -47,7 +47,7 @@ Iniziare un salto significa impostare la velocità verticale a qualche valore po
 Aggiungiamo il seguente codice al corpo della funzione ``update``:
 
 ```
-  if touch.touching and eroe_y == 0 allora
+  if touch.touching and eroe_y == 0 then
     eroe_vy = 7
   end
 ```
@@ -64,13 +64,13 @@ velocità verticale di una quantità fissa. Aggiungiamo la seguente linea al cor
   eroe_vy = eroe_vy - 0.3
 ```
 
-Abbastanza rapidamente, il nostro eroe ora cadrà... e passerà attraverso il terreno. Dobbiamo impedirlo, cambiando questa linea:
+Abbastanza rapidamente, il nostro eroe ora cadrà... e passerà attraverso il terreno. Possiamo impedirlo, cambiando questa linea:
 
 ```
   eroe_y = eroe_y + eroe_vy
 ```
 
-a
+in
 
 ```
   eroe_y = max(0,eroe_y+eroe_vy)
@@ -90,7 +90,7 @@ init = function()
 end
 
 update = function()
-  position = position+2
+  posizione = posizione+2
 
   if touch.touching and eroe_y == 0 then
     eroe_vy = 7
@@ -104,7 +104,7 @@ draw = function()
   screen.fillRect(0,0,screen.width,screen.height,"rgb(57,0,57)")
   
   for i=-6 to 6 by 1
-    screen.drawSprite("muro",i*40-position%40,-80,40)
+    screen.drawSprite("muro",i*40-posizione%40,-80,40)
   end
 
   screen.drawSprite("eroe",-80,-50+eroe_y,20)
