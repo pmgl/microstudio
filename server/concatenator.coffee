@@ -74,6 +74,18 @@ class @Concatenator
         lib: "/lib/cannonjs/cannon.min.js"
         lib_path: "node_modules/cannon/build/cannon.min.js"
 
+
+    @language_engines =
+      microscript_v1_i:
+        title: "microScript v1 - interpreted"
+        scripts: ["/js/microscript/runner_v1_i.js"]
+        lib: []
+
+      microscript_v1_t:
+        title: "microScript v1 - transpiled"
+        scripts: [ "/js/microscript/jstranspiler.js" , "/js/microscript/runner_v1_t.js" ]
+        lib: []
+
     for key,value of @alt_players
       @webapp.app.get new RegExp("^\\/#{key}.js$"), (req,res)=>
         res.setHeader("Content-Type", "text/javascript")
@@ -107,7 +119,7 @@ class @Concatenator
       "/js/microscript/token.js"
       "/js/microscript/parser.js"
       "/js/microscript/program.js"
-      "/js/microscript/jstranspiler.js"
+      "/js/microscript/runner_v1_i.js"
 
       "/js/client/client.js"
 

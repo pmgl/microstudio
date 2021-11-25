@@ -498,6 +498,8 @@ JSTranspiler = (function() {
       a = ref1[i];
       if (a["default"] != null) {
         this.prepend("if (" + a.name + " == null) " + a.name + " = " + (this.transpile(a["default"])) + " ;");
+      } else {
+        this.prepend("if (" + a.name + " == null) " + a.name + " = 0 ;");
       }
     }
     seq = func.sequence;

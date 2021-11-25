@@ -6,21 +6,23 @@ this.PlayerClient = (function() {
     this.request_id = 0;
     this.version_checked = false;
     this.reconnect_delay = 1000;
-    try {
-      this.connect();
-    } catch (error) {
-      err = error;
-      console.error(err);
+    if (location.protocol.startsWith("http")) {
+      try {
+        this.connect();
+      } catch (error) {
+        err = error;
+        console.error(err);
+      }
+      setInterval(((function(_this) {
+        return function() {
+          if (_this.socket != null) {
+            return _this.sendRequest({
+              name: "ping"
+            });
+          }
+        };
+      })(this)), 30000);
     }
-    setInterval(((function(_this) {
-      return function() {
-        if (_this.socket != null) {
-          return _this.sendRequest({
-            name: "ping"
-          });
-        }
-      };
-    })(this)), 30000);
   }
 
   PlayerClient.prototype.connect = function() {

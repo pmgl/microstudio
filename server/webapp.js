@@ -96,6 +96,7 @@ this.WebApp = (function() {
             standalone: _this.server.config.standalone === true,
             languages: _this.languages,
             optional_libs: _this.concatenator.optional_libs,
+            language_engines: _this.concatenator.language_engines,
             translation: _this.server.content.translator.languages[lang] != null ? _this.server.content.translator.languages[lang]["export"]() : "{}"
           });
         }
@@ -222,7 +223,7 @@ this.WebApp = (function() {
     })(this));
     this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+\/?)?)?$/, (function(_this) {
       return function(req, res) {
-        var access, encoding, file, jsfiles, len3, lib, manager, o, project, redir, ref4, user;
+        var access, encoding, file, jsfiles, len3, lib, manager, o, prog_lang, project, redir, ref4, user;
         if (_this.ensureIOArea(req, res)) {
           return;
         }
@@ -248,6 +249,10 @@ this.WebApp = (function() {
             jsfiles.push(_this.concatenator.optional_libs[lib].lib);
           }
         }
+        prog_lang = project.language;
+        if (_this.concatenator.language_engines[prog_lang] != null) {
+          jsfiles = jsfiles.concat(_this.concatenator.language_engines[prog_lang].scripts);
+        }
         return manager.listFiles("ms", function(sources) {
           return manager.listFiles("sprites", function(sprites) {
             return manager.listFiles("maps", function(maps) {
@@ -269,6 +274,7 @@ this.WebApp = (function() {
                     user: user,
                     javascript_files: jsfiles,
                     fonts: _this.fonts.fonts,
+                    debug: (req.query != null) && (req.query.debug != null),
                     game: {
                       name: project.slug,
                       title: project.title,

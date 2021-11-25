@@ -101,6 +101,7 @@ class @ExportFeatures
     platforms: project.platforms
     controls: project.controls
     type: project.type
+    language: project.language
     graphics: project.graphics
     libs: project.libs
     date_created: project.date_created
@@ -183,6 +184,11 @@ class @ExportFeatures
         lib = @webapp.concatenator.optional_libs[optlib]
         if lib?
           libs.push lib.lib_path
+
+      proglang = @webapp.concatenator.language_engines[project.language]
+      if proglang? and proglang.scripts
+        for s in proglang.scripts
+          libs.push "../static#{s}"
 
       queue = new JobQueue ()=>
         resources = JSON.stringify

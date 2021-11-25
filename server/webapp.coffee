@@ -85,6 +85,7 @@ class @WebApp
           standalone: @server.config.standalone == true
           languages: @languages
           optional_libs: @concatenator.optional_libs
+          language_engines: @concatenator.language_engines
           translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
 
       res.send @home_page[lang]
@@ -206,6 +207,11 @@ class @WebApp
         if @concatenator.optional_libs[lib]?
           jsfiles.push @concatenator.optional_libs[lib].lib
 
+      prog_lang = project.language
+      if @concatenator.language_engines[prog_lang]?
+        jsfiles = jsfiles.concat @concatenator.language_engines[prog_lang].scripts
+
+
       manager.listFiles "ms",(sources)=>
         manager.listFiles "sprites",(sprites)=>
           manager.listFiles "maps",(maps)=>
@@ -226,6 +232,7 @@ class @WebApp
                   user: user
                   javascript_files: jsfiles
                   fonts: @fonts.fonts
+                  debug: req.query? and req.query.debug?
                   game:
                     name: project.slug
                     title: project.title

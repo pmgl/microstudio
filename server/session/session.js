@@ -816,6 +816,7 @@ this.Session = (function() {
           clone.setType(project.type);
           clone.setOrientation(project.orientation);
           clone.setAspect(project.aspect);
+          clone.set("language", project.language);
           clone.setGraphics(project.graphics);
           clone.set("libs", project.libs);
           clone.set("files", JSON.parse(JSON.stringify(project.files)));
@@ -883,6 +884,7 @@ this.Session = (function() {
             clone.setType(project.type);
             clone.setOrientation(project.orientation);
             clone.setAspect(project.aspect);
+            clone.set("language", project.language);
             clone.setGraphics(project.graphics);
             clone.set("libs", project.libs);
             clone.set("files", JSON.parse(JSON.stringify(project.files)));
@@ -1074,6 +1076,9 @@ this.Session = (function() {
           break;
         case "unlisted":
           project.set("unlisted", data.value ? true : false);
+          break;
+        case "language":
+          project.set("language", data.value);
       }
       if (project.manager != null) {
         project.manager.propagateOptions(this);
@@ -1125,6 +1130,7 @@ this.Session = (function() {
           orientation: p.orientation,
           aspect: p.aspect,
           graphics: p.graphics,
+          language: p.language,
           libs: p.libs,
           date_created: p.date_created,
           last_modified: p.last_modified,
@@ -1158,6 +1164,7 @@ this.Session = (function() {
           orientation: p.orientation,
           aspect: p.aspect,
           graphics: p.graphics,
+          language: p.language,
           libs: p.libs,
           date_created: p.date_created,
           last_modified: p.last_modified,
@@ -1388,6 +1395,7 @@ this.Session = (function() {
           tags: p.tags,
           date_published: p.first_published,
           graphics: p.graphics,
+          language: p.language,
           libs: p.libs
         });
       }
@@ -1425,6 +1433,7 @@ this.Session = (function() {
             tags: p.tags,
             date_published: p.first_published,
             graphics: p.graphics,
+            language: p.language,
             libs: p.libs
           };
           return this.send({

@@ -1,5 +1,5 @@
 this.MicroVM = (function() {
-  function MicroVM(meta, global, namespace, transpiler) {
+  function MicroVM(meta, global, namespace) {
     var ctx, err;
     if (meta == null) {
       meta = {};
@@ -8,7 +8,6 @@ this.MicroVM = (function() {
       global = {};
     }
     this.namespace = namespace != null ? namespace : "/microstudio";
-    this.transpiler = transpiler != null ? transpiler : false;
     if (meta.print == null) {
       meta.print = function(text) {
         if (typeof text === "object") {
@@ -195,6 +194,7 @@ this.MicroVM = (function() {
       return this.sort(funk);
     };
     this.clearWarnings();
+    this.runner = new Runner(this);
   }
 
   MicroVM.prototype.clearWarnings = function() {
@@ -213,60 +213,36 @@ this.MicroVM = (function() {
     return this.context.global[key] = value;
   };
 
-  MicroVM.prototype.run = function(program, timeout, compile) {
-    var err, i, j, len, ref, res, s;
+  MicroVM.prototype.run = function(program, timeout) {
+    var err, res;
     this.program = program;
     if (timeout == null) {
       timeout = 3000;
     }
-    if (compile == null) {
-      compile = this.transpiler;
-    }
     this.error_info = null;
     this.context.timeout = Date.now() + timeout;
     this.context.stack_size = 0;
-    if (compile) {
-      try {
-        res = new JSTranspiler(this.program).exec(this.context);
-        this.checkStorage();
-        return Program.toString(res);
-      } catch (error) {
-        err = error;
-        console.error(err);
+    try {
+      res = this.runner.run(this.program);
+      this.checkStorage();
+      return Program.toString(res);
+    } catch (error) {
+      err = error;
+      if (this.context.location != null) {
         this.error_info = {
           error: err,
           line: this.context.location.token.line,
           column: this.context.location.token.column
         };
-        return this.checkStorage();
       }
-    } else {
-      try {
-        ref = this.program.statements;
-        for (i = j = 0, len = ref.length; j < len; i = ++j) {
-          s = ref[i];
-          res = s.evaluate(this.context, i === this.program.statements.length - 1);
-        }
-        this.checkStorage();
-        return Program.toString(res);
-      } catch (error) {
-        err = error;
-        if (this.context.location != null) {
-          this.error_info = {
-            error: err,
-            line: this.context.location.token.line,
-            column: this.context.location.token.column
-          };
-        }
-        console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
-        console.error(err);
-        return this.checkStorage();
-      }
+      console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
+      console.error(err);
+      return this.checkStorage();
     }
   };
 
   MicroVM.prototype.call = function(name, args, timeout) {
-    var a, err, f, i, j, ref, res;
+    var err, res;
     if (args == null) {
       args = [];
     }
@@ -276,59 +252,22 @@ this.MicroVM = (function() {
     this.error_info = null;
     this.context.timeout = Date.now() + timeout;
     this.context.stack_size = 0;
-    for (i = j = 0, ref = args.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
-      a = args[i];
-      if (typeof a === "number") {
-        args[i] = new Program.Value(null, Program.Value.TYPE_NUMBER, a);
-      } else if (typeof a === "string") {
-        args[i] = new Program.Value(null, Program.Value.TYPE_STRING, a);
-      } else {
-        args[i] = new Program.Value(null, Program.Value.TYPE_OBJECT, a);
+    try {
+      res = this.runner.call(name, args);
+      this.checkStorage();
+      return res;
+    } catch (error) {
+      err = error;
+      console.error(err);
+      if (this.context.location != null) {
+        this.error_info = {
+          error: err,
+          line: this.context.location.token.line,
+          column: this.context.location.token.column
+        };
       }
-    }
-    if (name instanceof Program.Function) {
-      f = name;
-    } else {
-      f = this.context.global[name];
-    }
-    if (f != null) {
-      if (f instanceof Program.Function) {
-        try {
-          res = new Program.FunctionCall(f.token, f, args).evaluate(this.context, true);
-          this.checkStorage();
-          return res;
-        } catch (error) {
-          err = error;
-          console.error(err);
-          if (this.context.location != null) {
-            this.error_info = {
-              error: err,
-              line: this.context.location.token.line,
-              column: this.context.location.token.column
-            };
-          }
-          console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
-          return this.checkStorage();
-        }
-      } else if (typeof f === "function") {
-        try {
-          res = f.apply(null, args);
-          this.checkStorage();
-          return res;
-        } catch (error) {
-          err = error;
-          console.error(err);
-          if (this.context.location != null) {
-            this.error_info = {
-              error: err,
-              line: this.context.location.token.line,
-              column: this.context.location.token.column
-            };
-          }
-          console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
-          return this.checkStorage();
-        }
-      }
+      console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
+      return this.checkStorage();
     }
   };
 

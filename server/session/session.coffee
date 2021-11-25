@@ -474,6 +474,7 @@ class @Session
         clone.setType project.type
         clone.setOrientation project.orientation
         clone.setAspect project.aspect
+        clone.set "language",project.language
         clone.setGraphics project.graphics
         clone.set "libs",project.libs
         clone.set "files",JSON.parse JSON.stringify project.files
@@ -522,6 +523,7 @@ class @Session
           clone.setType project.type
           clone.setOrientation project.orientation
           clone.setAspect project.aspect
+          clone.set "language",project.language
           clone.setGraphics project.graphics
           clone.set "libs",project.libs
           clone.set "files",JSON.parse JSON.stringify project.files
@@ -654,6 +656,9 @@ class @Session
         when "unlisted"
           project.set "unlisted",if data.value then true else false
 
+        when "language"
+          project.set "language",data.value
+
       if project.manager?
         project.manager.propagateOptions @
 
@@ -693,6 +698,7 @@ class @Session
           orientation: p.orientation
           aspect: p.aspect
           graphics: p.graphics
+          language: p.language
           libs: p.libs
           date_created: p.date_created
           last_modified: p.last_modified
@@ -722,6 +728,7 @@ class @Session
           orientation: p.orientation
           aspect: p.aspect
           graphics: p.graphics
+          language: p.language
           libs: p.libs
           date_created: p.date_created
           last_modified: p.last_modified
@@ -874,6 +881,7 @@ class @Session
           tags: p.tags
           date_published: p.first_published
           graphics: p.graphics
+          language: p.language
           libs: p.libs
 
     @send
@@ -905,6 +913,7 @@ class @Session
             tags: p.tags
             date_published: p.first_published
             graphics: p.graphics
+            language: p.language
             libs: p.libs
 
           @send

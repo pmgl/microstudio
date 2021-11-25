@@ -17,6 +17,7 @@ class @Options
     @selectInput "projectoption-orientation",(value)=>@orientationChanged(value)
     @selectInput "projectoption-aspect",(value)=>@aspectChanged(value)
     @selectInput "projectoption-graphics",(value)=>@graphicsChanged(value)
+    @selectInput "projectoption-language",(value)=>@languageChanged(value)
 
     @app.appui.setAction "add-project-user",()=>
       @addProjectUser()
@@ -59,6 +60,7 @@ class @Options
     document.getElementById("projectoption-orientation").value = @app.project.orientation
     document.getElementById("projectoption-aspect").value = @app.project.aspect
     document.getElementById("projectoption-graphics").value = @app.project.graphics or "M1"
+    document.getElementById("projectoption-language").value = @app.project.language or "microscript_v1_i"
 
     list = document.querySelectorAll("#project-option-libs input")
     for input in list
@@ -149,6 +151,15 @@ class @Options
       value: value
     },(msg)=>
     @app.appui.updateAllowedSections()
+
+  languageChanged:(value)->
+    @app.project.setGraphics(value)
+    @app.client.sendRequest {
+      name: "set_project_option"
+      project: @app.project.id
+      option: "language"
+      value: value
+    },(msg)=>
 
   setType:(type)->
     if type != @app.project.type

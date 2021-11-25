@@ -84,21 +84,12 @@ this.RunWindow = (function() {
         return localStorage.setItem("console_warning_assign", _this.warning_assign);
       };
     })(this));
-    document.getElementById("console-options-transpiler").addEventListener("change", (function(_this) {
-      return function() {
-        _this.transpiler = document.getElementById("console-options-transpiler").checked;
-        if (_this.local_vm) {
-          return _this.local_vm.transpiler = _this.transpiler;
-        }
-      };
-    })(this));
     this.warning_undefined = localStorage.getItem("console_warning_undefined") === "true" || false;
     this.warning_nonfunction = localStorage.getItem("console_warning_nonfunction") !== "false";
     this.warning_assign = localStorage.getItem("console_warning_assign") !== "false";
     document.getElementById("console-options-warning-undefined").checked = this.warning_undefined;
     document.getElementById("console-options-warning-nonfunction").checked = this.warning_nonfunction;
-    document.getElementById("console-options-warning-assign").checked = this.warning_assign;
-    return document.getElementById("console-options-transpiler").checked = false;
+    return document.getElementById("console-options-warning-assign").checked = this.warning_assign;
   };
 
   RunWindow.prototype.detach = function() {
@@ -161,12 +152,9 @@ this.RunWindow = (function() {
     device = document.getElementById("device");
     code = this.app.project["public"] ? "" : this.app.project.code + "/";
     url = (location.origin.replace(".dev", ".io")) + "/" + this.app.project.owner.nick + "/" + this.app.project.slug + "/" + code;
-    if (this.transpiler) {
-      url += "#transpiler";
-    }
     return this.app.project.savePendingChanges((function(_this) {
       return function() {
-        device.innerHTML = "<iframe id='runiframe' allow='autoplay;gamepad' src='" + url + "'></iframe>";
+        device.innerHTML = "<iframe id='runiframe' allow='autoplay;gamepad' src='" + url + "?debug'></iframe>";
         return _this.windowResized();
       };
     })(this));
@@ -502,7 +490,7 @@ this.RunWindow = (function() {
           })(this)
         };
         global = {};
-        this.local_vm = new MicroVM(meta, global, null, this.transpiler);
+        this.local_vm = new MicroVM(meta, global, null);
       }
       if (this.multiline != null) {
         this.multiline += "\n" + command;

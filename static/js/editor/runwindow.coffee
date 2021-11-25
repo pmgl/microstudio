@@ -43,11 +43,6 @@ class @RunWindow
       @warning_assign = document.getElementById("console-options-warning-assign").checked
       localStorage.setItem "console_warning_assign", @warning_assign
 
-    document.getElementById("console-options-transpiler").addEventListener "change",()=>
-      @transpiler = document.getElementById("console-options-transpiler").checked
-      if @local_vm
-        @local_vm.transpiler = @transpiler
-
     @warning_undefined = localStorage.getItem("console_warning_undefined") == "true" or false
     @warning_nonfunction = localStorage.getItem("console_warning_nonfunction") != "false"
     @warning_assign = localStorage.getItem("console_warning_assign") != "false"
@@ -55,8 +50,6 @@ class @RunWindow
     document.getElementById("console-options-warning-undefined").checked = @warning_undefined
     document.getElementById("console-options-warning-nonfunction").checked = @warning_nonfunction
     document.getElementById("console-options-warning-assign").checked = @warning_assign
-    document.getElementById("console-options-transpiler").checked = false
-
 
   detach:()->
     if @detached
@@ -114,9 +107,8 @@ class @RunWindow
     code = if @app.project.public then "" else "#{@app.project.code}/"
     url = "#{location.origin.replace(".dev",".io")}/#{@app.project.owner.nick}/#{@app.project.slug}/#{code}"
 
-    if @transpiler then url += "#transpiler"
     @app.project.savePendingChanges ()=>
-      device.innerHTML = "<iframe id='runiframe' allow='autoplay;gamepad' src='#{url}'></iframe>"
+      device.innerHTML = "<iframe id='runiframe' allow='autoplay;gamepad' src='#{url}?debug'></iframe>"
       #document.getElementById("runiframe").focus()
       @windowResized()
 
@@ -379,7 +371,7 @@ class @RunWindow
             return
 
         global = {}
-        @local_vm = new MicroVM(meta,global,null,@transpiler)
+        @local_vm = new MicroVM(meta,global,null)
 
       if @multiline?
         @multiline += "\n"+command

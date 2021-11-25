@@ -597,6 +597,8 @@ class JSTranspiler
     for a,i in func.args
       if a.default?
         @prepend """if (#{a.name} == null) #{a.name} = #{@transpile(a.default)} ;"""
+      else
+        @prepend """if (#{a.name} == null) #{a.name} = 0 ;"""
 
     seq = func.sequence
     if seq.length>0

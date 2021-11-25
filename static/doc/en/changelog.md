@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2021-11-25
+* Using interpreter or transpiler is now an option of your project
+* You can thus now publish, export HTML5 or export to any target with transpiler active!
+* Fixed transpiler bug when functions are called with omitted arguments
+* Fixed cache interference when relaunching project
+
 ### Update 2021-11-23
 * Fixed a bug with transpiled `for..in` loops
 * Updates and fixes to the IT doc and tutorials (thanks @HomineLudens)

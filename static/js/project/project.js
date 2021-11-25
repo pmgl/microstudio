@@ -26,6 +26,7 @@ this.Project = (function() {
     this.type = data.type;
     this.orientation = data.orientation;
     this.graphics = data.graphics || "M1";
+    this.language = data.language || "microscript_v1_i";
     this.libs = data.libs || [];
     this.aspect = data.aspect;
     this.users = data.users;

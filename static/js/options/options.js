@@ -34,6 +34,11 @@ this.Options = (function() {
         return _this.graphicsChanged(value);
       };
     })(this));
+    this.selectInput("projectoption-language", (function(_this) {
+      return function(value) {
+        return _this.languageChanged(value);
+      };
+    })(this));
     this.app.appui.setAction("add-project-user", (function(_this) {
       return function() {
         return _this.addProjectUser();
@@ -103,6 +108,7 @@ this.Options = (function() {
     document.getElementById("projectoption-orientation").value = this.app.project.orientation;
     document.getElementById("projectoption-aspect").value = this.app.project.aspect;
     document.getElementById("projectoption-graphics").value = this.app.project.graphics || "M1";
+    document.getElementById("projectoption-language").value = this.app.project.language || "microscript_v1_i";
     list = document.querySelectorAll("#project-option-libs input");
     for (i = 0, len = list.length; i < len; i++) {
       input = list[i];
@@ -222,6 +228,18 @@ this.Options = (function() {
       return function(msg) {};
     })(this));
     return this.app.appui.updateAllowedSections();
+  };
+
+  Options.prototype.languageChanged = function(value) {
+    this.app.project.setGraphics(value);
+    return this.app.client.sendRequest({
+      name: "set_project_option",
+      project: this.app.project.id,
+      option: "language",
+      value: value
+    }, (function(_this) {
+      return function(msg) {};
+    })(this));
   };
 
   Options.prototype.setType = function(type) {

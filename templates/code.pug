@@ -70,8 +70,8 @@ div.runtime-container#runtime-container
       input#console-options-warning-assign(type="checkbox")
       label(for="console-options-warning-assign") #{translator.get("Display warning when setting property on an undefined variable")}
       br
-      input#console-options-transpiler(type="checkbox")
-      label(for="console-options-transpiler") #{translator.get("Use transpiler [Caution: alpha version, may not work]")}
+      em
+        small #{translator.get("(Transpiler activation was moved to project settings)")}
 
   div.runtime-terminal#runtime-terminal
     div#terminal
