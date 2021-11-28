@@ -373,6 +373,9 @@ class @Project
   setGraphics:(@graphics)->
     #window.dispatchEvent(new Event('resize'))
 
+  setLanguage:(@language)->
+    #window.dispatchEvent(new Event('resize'))
+
   addPendingChange:(item)->
     if @pending_changes.indexOf(item)<0
       @pending_changes.push item

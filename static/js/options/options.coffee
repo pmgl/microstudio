@@ -153,7 +153,8 @@ class @Options
     @app.appui.updateAllowedSections()
 
   languageChanged:(value)->
-    @app.project.setGraphics(value)
+    @app.project.setLanguage(value)
+    @app.editor.updateLanguage()
     @app.client.sendRequest {
       name: "set_project_option"
       project: @app.project.id

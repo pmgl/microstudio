@@ -28,7 +28,7 @@ this.Runtime = (function() {
   }
 
   Runtime.prototype.updateSource = function(file, src, reinit) {
-    var err, init, parser;
+    var err, init;
     if (reinit == null) {
       reinit = false;
     }
@@ -42,21 +42,11 @@ this.Runtime = (function() {
     this.audio.cancelBeeps();
     this.screen.clear();
     try {
-      parser = new Parser(src, file);
-      parser.parse();
-      if (parser.error_info != null) {
-        err = parser.error_info;
-        err.type = "compile";
-        err.file = file;
-        this.listener.reportError(err);
-        return false;
-      } else {
-        this.listener.postMessage({
-          name: "compile_success",
-          file: file
-        });
-      }
-      this.vm.run(parser.program);
+      this.vm.run(src);
+      this.listener.postMessage({
+        name: "compile_success",
+        file: file
+      });
       this.reportWarnings();
       if (this.vm.error_info != null) {
         err = this.vm.error_info;
@@ -241,19 +231,11 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.runCommand = function(command) {
-    var err, parser, res, warnings;
+    var err, res, warnings;
     try {
-      parser = new Parser(command);
-      parser.parse();
-      if (parser.error_info != null) {
-        err = parser.error_info;
-        err.type = "compile";
-        this.listener.reportError(err);
-        return 0;
-      }
       warnings = this.vm.context.warnings;
       this.vm.clearWarnings();
-      res = this.vm.run(parser.program);
+      res = this.vm.run(command);
       this.reportWarnings();
       this.vm.context.warnings = warnings;
       if (this.vm.error_info != null) {

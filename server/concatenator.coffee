@@ -24,13 +24,13 @@ class @Concatenator
 
     @alt_player_base = [
       '/js/util/canvas2d.js'
-      "/js/microscript/random.js"
-      "/js/microscript/microvm.js"
-      "/js/microscript/tokenizer.js"
-      "/js/microscript/token.js"
-      "/js/microscript/parser.js"
-      "/js/microscript/program.js"
-      "/js/microscript/jstranspiler.js"
+      "/js/languages/microscript/random.js"
+      "/js/runtime/microvm.js"
+      "/js/languages/microscript/tokenizer.js"
+      "/js/languages/microscript/token.js"
+      "/js/languages/microscript/parser.js"
+      "/js/languages/microscript/program.js"
+      "/js/languages/microscript/jstranspiler.js"
       '/js/runtime/runtime.js'
       '/js/runtime/keyboard.js'
       '/js/runtime/gamepad.js'
@@ -78,12 +78,32 @@ class @Concatenator
     @language_engines =
       microscript_v1_i:
         title: "microScript v1 - interpreted"
-        scripts: ["/js/microscript/runner_v1_i.js"]
+        scripts: ["/js/languages/microscript/runner_v1_i.js"]
         lib: []
 
       microscript_v1_t:
         title: "microScript v1 - transpiled"
-        scripts: [ "/js/microscript/jstranspiler.js" , "/js/microscript/runner_v1_t.js" ]
+        scripts: [ "/js/languages/microscript/jstranspiler.js" , "/js/languages/microscript/runner_v1_t.js" ]
+        lib: []
+
+      python:
+        title: "Python"
+        scripts: ["/js/languages/python/runner.js"]
+        lib:["/lib/brython/brython.js"]
+
+      lua:
+        title: "Lua"
+        scripts: ["/js/languages/lua/runner.js"]
+        lib:["/lib/fengari/fengari-web.js"]
+
+      javascript:
+        title: "JavaScript"
+        scripts: ["/js/languages/javascript/runner.js"]
+        lib: []
+
+      blockly:
+        title: "Blockly"
+        scripts: []
         lib: []
 
     for key,value of @alt_players
@@ -113,13 +133,17 @@ class @Concatenator
     ]
 
     @webapp_js = [
-      "/js/microscript/random.js"
-      "/js/microscript/microvm.js"
-      "/js/microscript/tokenizer.js"
-      "/js/microscript/token.js"
-      "/js/microscript/parser.js"
-      "/js/microscript/program.js"
-      "/js/microscript/runner_v1_i.js"
+      "/js/languages/microscript/random.js"
+      "/js/languages/microscript/tokenizer.js"
+      "/js/languages/microscript/token.js"
+      "/js/languages/microscript/parser.js"
+      "/js/languages/microscript/program.js"
+      "/js/languages/microscript/runner_v1_i.js"
+
+      "/js/languages/microscript/microscript.js"
+      "/js/languages/python/python.js"
+      "/js/languages/javascript/javascript.js"
+      "/js/languages/lua/lua.js"
 
       "/js/client/client.js"
 
@@ -180,6 +204,7 @@ class @Concatenator
       "/js/util/pixelartscaler.js"
       "/js/util/pixelatedimage.js"
 
+      "/js/runtime/microvm.js"
       "/js/runtime/sprite.js"
       "/js/runtime/spriteframe.js"
       "/js/runtime/map.js"
@@ -208,13 +233,13 @@ class @Concatenator
     @player_js = [
       '/js/util/canvas2d.js'
 
-      "/js/microscript/random.js"
-      "/js/microscript/microvm.js"
-      "/js/microscript/tokenizer.js"
-      "/js/microscript/token.js"
-      "/js/microscript/parser.js"
-      "/js/microscript/program.js"
-      "/js/microscript/jstranspiler.js"
+      "/js/languages/microscript/random.js"
+      "/js/runtime/microvm.js"
+      "/js/languages/microscript/tokenizer.js"
+      "/js/languages/microscript/token.js"
+      "/js/languages/microscript/parser.js"
+      "/js/languages/microscript/program.js"
+      "/js/languages/microscript/jstranspiler.js"
 
       '/js/runtime/runtime.js'
       '/js/runtime/screen.js'

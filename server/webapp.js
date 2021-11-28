@@ -252,6 +252,7 @@ this.WebApp = (function() {
         prog_lang = project.language;
         if (_this.concatenator.language_engines[prog_lang] != null) {
           jsfiles = jsfiles.concat(_this.concatenator.language_engines[prog_lang].scripts);
+          jsfiles = jsfiles.concat(_this.concatenator.language_engines[prog_lang].lib);
         }
         return manager.listFiles("ms", function(sources) {
           return manager.listFiles("sprites", function(sprites) {
@@ -275,6 +276,7 @@ this.WebApp = (function() {
                     javascript_files: jsfiles,
                     fonts: _this.fonts.fonts,
                     debug: (req.query != null) && (req.query.debug != null),
+                    language: project.language,
                     game: {
                       name: project.slug,
                       title: project.title,

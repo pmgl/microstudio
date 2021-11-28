@@ -1,7 +1,16 @@
 class @Runner
   constructor:(@microvm)->
 
-  run:(program)->
+  run:(src)->
+    parser = new Parser(src)
+    parser.parse()
+    if parser.error_info?
+      err = parser.error_info
+      err.type = "compile"
+      throw err
+
+    program = parser.program
+
     res = 0
     context = @microvm.context
     for s,i in program.statements

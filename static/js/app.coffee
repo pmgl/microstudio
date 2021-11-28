@@ -5,6 +5,12 @@ window.addEventListener "load",()->
 
 class App
   constructor:()->
+    @languages =
+      microscript: LANGUAGE_MICROSCRIPT
+      python: LANGUAGE_PYTHON
+      javascript: LANGUAGE_JAVASCRIPT
+      lua: LANGUAGE_LUA
+
     @translator = new Translator @
     @app_state = new AppState @
 

@@ -3,8 +3,16 @@ this.Runner = (function() {
     this.microvm = microvm;
   }
 
-  Runner.prototype.run = function(program) {
-    var res;
+  Runner.prototype.run = function(src) {
+    var err, parser, program, res;
+    parser = new Parser(src);
+    parser.parse();
+    if (parser.error_info != null) {
+      err = parser.error_info;
+      err.type = "compile";
+      throw err;
+    }
+    program = parser.program;
     res = new JSTranspiler(program).exec(this.microvm.context);
     return res;
   };

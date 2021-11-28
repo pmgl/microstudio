@@ -1,9 +1,11 @@
 class @Editor
   constructor:(@app)->
+    @language = @app.languages.microscript
+
     @editor = ace.edit "editor-view"
     @editor.$blockScrolling = Infinity
     @editor.setTheme("ace/theme/tomorrow_night_bright")
-    @editor.getSession().setMode("ace/mode/microscript")
+    @editor.getSession().setMode(@language.ace_mode)
     @editor.setFontSize("14px")
     @editor.getSession().setOptions
       tabSize: 2
@@ -127,6 +129,17 @@ class @Editor
       @editor.setOptions({ fontSize: @font_size })
       localStorage.setItem("code_editor_font_size",@font_size)
 
+  updateLanguage:()->
+    if @app.project
+      switch @app.project.language
+        when "python" then @language = @app.languages.python
+        when "javascript" then @language = @app.languages.javascript
+        when "lua" then @language = @app.languages.lua
+        else
+          @language = @app.languages.microscript
+
+    @editor.getSession().setMode(@language.ace_mode)
+
   toggleFileList:(close)->
     view = document.getElementById("editor-view")
     list = document.getElementById("source-list-panel")
@@ -165,9 +178,12 @@ class @Editor
   check:()->
     if @update_time>0 and (@value_tool or Date.now()>@update_time+@update_delay)
       @update_time = 0
-      parser = new Parser(@editor.getValue())
-      p = parser.parse()
-      if not parser.error_info?
+      if @language.parser
+        parser = new @language.parser(@editor.getValue())
+        p = parser.parse()
+        if not parser.error_info?
+          @app.runwindow.updateCode(@selected_source+".ms",@getCode())
+      else
         @app.runwindow.updateCode(@selected_source+".ms",@getCode())
 
   getCurrentLine:()->
@@ -501,6 +517,7 @@ class @Editor
     @app.runwindow.windowResized()
     @setSelectedSource null
     @updateRunLink()
+    @updateLanguage()
 
   projectUpdate:(change)->
     if change == "sourcelist"

@@ -4,10 +4,11 @@ this.Editor = (function() {
   function Editor(app) {
     var f;
     this.app = app;
+    this.language = this.app.languages.microscript;
     this.editor = ace.edit("editor-view");
     this.editor.$blockScrolling = 2e308;
     this.editor.setTheme("ace/theme/tomorrow_night_bright");
-    this.editor.getSession().setMode("ace/mode/microscript");
+    this.editor.getSession().setMode(this.language.ace_mode);
     this.editor.setFontSize("14px");
     this.editor.getSession().setOptions({
       tabSize: 2,
@@ -179,6 +180,25 @@ this.Editor = (function() {
     })(this));
   }
 
+  Editor.prototype.updateLanguage = function() {
+    if (this.app.project) {
+      switch (this.app.project.language) {
+        case "python":
+          this.language = this.app.languages.python;
+          break;
+        case "javascript":
+          this.language = this.app.languages.javascript;
+          break;
+        case "lua":
+          this.language = this.app.languages.lua;
+          break;
+        default:
+          this.language = this.app.languages.microscript;
+      }
+    }
+    return this.editor.getSession().setMode(this.language.ace_mode);
+  };
+
   Editor.prototype.toggleFileList = function(close) {
     var list, view;
     view = document.getElementById("editor-view");
@@ -236,9 +256,13 @@ this.Editor = (function() {
     var p, parser;
     if (this.update_time > 0 && (this.value_tool || Date.now() > this.update_time + this.update_delay)) {
       this.update_time = 0;
-      parser = new Parser(this.editor.getValue());
-      p = parser.parse();
-      if (parser.error_info == null) {
+      if (this.language.parser) {
+        parser = new this.language.parser(this.editor.getValue());
+        p = parser.parse();
+        if (parser.error_info == null) {
+          return this.app.runwindow.updateCode(this.selected_source + ".ms", this.getCode());
+        }
+      } else {
         return this.app.runwindow.updateCode(this.selected_source + ".ms", this.getCode());
       }
     }
@@ -697,7 +721,8 @@ this.Editor = (function() {
     this.app.runwindow.resetButtons();
     this.app.runwindow.windowResized();
     this.setSelectedSource(null);
-    return this.updateRunLink();
+    this.updateRunLink();
+    return this.updateLanguage();
   };
 
   Editor.prototype.projectUpdate = function(change) {

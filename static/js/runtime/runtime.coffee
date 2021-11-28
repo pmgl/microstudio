@@ -30,20 +30,12 @@ class @Runtime
     @screen.clear()
 
     try
-      parser = new Parser(src,file)
-      parser.parse()
-      if parser.error_info?
-        err = parser.error_info
-        err.type = "compile"
-        err.file = file
-        @listener.reportError err
-        return false
-      else
-        @listener.postMessage
-          name: "compile_success"
-          file: file
+      @vm.run(src)
 
-      @vm.run(parser.program)
+      @listener.postMessage
+        name: "compile_success"
+        file: file
+
       @reportWarnings()
       if @vm.error_info?
         err = @vm.error_info
@@ -174,17 +166,9 @@ class @Runtime
 
   runCommand:(command)->
     try
-      parser = new Parser(command)
-      parser.parse()
-      if parser.error_info?
-        err = parser.error_info
-        err.type = "compile"
-        @listener.reportError err
-        return 0
-
       warnings = @vm.context.warnings
       @vm.clearWarnings()
-      res = @vm.run(parser.program)
+      res = @vm.run(command)
       @reportWarnings()
       @vm.context.warnings = warnings
       if @vm.error_info?
