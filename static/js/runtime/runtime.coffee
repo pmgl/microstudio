@@ -44,10 +44,11 @@ class @Runtime
         @listener.reportError err
         return false
 
-      init = @vm.context.global.init
-      if init? and init.source != @previous_init and reinit
-        @previous_init = init.source
-        @vm.call("init")
+      if @vm.runner.getFunctionSource?
+        init = @vm.runner.getFunctionSource "init"
+        if init? and init != @previous_init and reinit
+          @previous_init = init
+          @vm.call("init")
 
       return true
     catch err
@@ -147,9 +148,12 @@ class @Runtime
     for file,src of @sources
       @updateSource(file,src,false)
 
-    init = @vm.context.global.init
-    if init?
-      @previous_init = init.source
+    if @vm.runner.getFunctionSource?
+      init = @vm.runner.getFunctionSource "init"
+      if init?
+        @previous_init = init
+        @vm.call("init")
+    else
       @vm.call("init")
 
     @dt = 1000/60

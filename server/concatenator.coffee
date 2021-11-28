@@ -89,7 +89,7 @@ class @Concatenator
       python:
         title: "Python"
         scripts: ["/js/languages/python/runner.js"]
-        lib:["/lib/brython/brython.js"]
+        lib:["/lib/brython/brython.js","/lib/brython/brython_stdlib.js"]
 
       lua:
         title: "Lua"

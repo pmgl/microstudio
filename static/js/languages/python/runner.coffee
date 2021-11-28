@@ -10,9 +10,17 @@ class @Runner
 
     window.stdout =
       write:(text)=>
-        @microvm.context.global.print(text)
+        @microvm.context.meta.print(text)
+
+    window.stderr =
+      write:(text)=>
+        console.error text
+
     src += """
-stdout = window.stdout\n
+import sys
+
+sys.stdout = window.stdout\n
+sys.stderr = window.stderr\n
     """
 
     @run(src)
