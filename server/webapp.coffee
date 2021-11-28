@@ -210,6 +210,7 @@ class @WebApp
       prog_lang = project.language
       if @concatenator.language_engines[prog_lang]?
         jsfiles = jsfiles.concat @concatenator.language_engines[prog_lang].scripts
+        jsfiles = jsfiles.concat @concatenator.language_engines[prog_lang].lib
 
 
       manager.listFiles "ms",(sources)=>
@@ -233,6 +234,7 @@ class @WebApp
                   javascript_files: jsfiles
                   fonts: @fonts.fonts
                   debug: req.query? and req.query.debug?
+                  language: project.language
                   game:
                     name: project.slug
                     title: project.title

@@ -559,6 +559,10 @@ this.Project = (function() {
     this.graphics = graphics;
   };
 
+  Project.prototype.setLanguage = function(language) {
+    this.language = language;
+  };
+
   Project.prototype.addPendingChange = function(item) {
     if (this.pending_changes.indexOf(item) < 0) {
       this.pending_changes.push(item);

@@ -231,7 +231,8 @@ this.Options = (function() {
   };
 
   Options.prototype.languageChanged = function(value) {
-    this.app.project.setGraphics(value);
+    this.app.project.setLanguage(value);
+    this.app.editor.updateLanguage();
     return this.app.client.sendRequest({
       name: "set_project_option",
       project: this.app.project.id,

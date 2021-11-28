@@ -77,3 +77,21 @@ html
 
   script(id="code" type="text/x-project-code").
     !{game.code}
+    
+  if language == "python"
+    script(type="text/python").
+      from browser import window
+
+      def execute(str):
+        try:
+          return exec(str,globals())
+        except BaseException as err:
+          print(err)
+        except Error as err:
+          print("Unexpected error")
+
+      window.python = execute
+      window.glob = globals()
+      
+    script.
+      brython()

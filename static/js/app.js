@@ -8,6 +8,12 @@ window.addEventListener("load", function() {
 
 App = (function() {
   function App() {
+    this.languages = {
+      microscript: LANGUAGE_MICROSCRIPT,
+      python: LANGUAGE_PYTHON,
+      javascript: LANGUAGE_JAVASCRIPT,
+      lua: LANGUAGE_LUA
+    };
     this.translator = new Translator(this);
     this.app_state = new AppState(this);
     this.appui = new AppUI(this);
