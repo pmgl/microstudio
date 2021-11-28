@@ -266,7 +266,9 @@ this.MicroVM = (function() {
           column: this.context.location.token.column
         };
       }
-      console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
+      if ((this.context.location != null) && (this.context.location.token != null)) {
+        console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
+      }
       return this.checkStorage();
     }
   };

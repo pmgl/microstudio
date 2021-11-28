@@ -55,10 +55,12 @@ this.Runtime = (function() {
         this.listener.reportError(err);
         return false;
       }
-      init = this.vm.context.global.init;
-      if ((init != null) && init.source !== this.previous_init && reinit) {
-        this.previous_init = init.source;
-        this.vm.call("init");
+      if (this.vm.runner.getFunctionSource != null) {
+        init = this.vm.runner.getFunctionSource("init");
+        if ((init != null) && init !== this.previous_init && reinit) {
+          this.previous_init = init;
+          this.vm.call("init");
+        }
       }
       return true;
     } catch (error) {
@@ -204,9 +206,13 @@ this.Runtime = (function() {
       src = ref1[file];
       this.updateSource(file, src, false);
     }
-    init = this.vm.context.global.init;
-    if (init != null) {
-      this.previous_init = init.source;
+    if (this.vm.runner.getFunctionSource != null) {
+      init = this.vm.runner.getFunctionSource("init");
+      if (init != null) {
+        this.previous_init = init;
+        this.vm.call("init");
+      }
+    } else {
       this.vm.call("init");
     }
     this.dt = 1000 / 60;

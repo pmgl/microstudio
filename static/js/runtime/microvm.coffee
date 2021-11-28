@@ -173,7 +173,8 @@ class @MicroVM
           error: err
           line: @context.location.token.line
           column: @context.location.token.column
-      console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
+      if @context.location? and @context.location.token?
+        console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
       @checkStorage()
 
   createStorageService:()->

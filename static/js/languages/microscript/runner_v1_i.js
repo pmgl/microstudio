@@ -51,6 +51,14 @@ this.Runner = (function() {
     }
   };
 
+  Runner.prototype.getFunctionSource = function(name) {
+    if (this.microvm.context.global[name] != null) {
+      return this.microvm.context.global[name].source;
+    } else {
+      return null;
+    }
+  };
+
   return Runner;
 
 })();

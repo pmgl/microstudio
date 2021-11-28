@@ -39,3 +39,10 @@ class @Runner
         return f.apply(null,args)
     else
       return 0
+
+
+  getFunctionSource:(name)->
+    if @microvm.context.global[name]?
+      @microvm.context.global[name].source
+    else
+      null

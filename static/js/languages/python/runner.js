@@ -14,11 +14,18 @@ this.Runner = (function() {
     window.stdout = {
       write: (function(_this) {
         return function(text) {
-          return _this.microvm.context.global.print(text);
+          return _this.microvm.context.meta.print(text);
         };
       })(this)
     };
-    src += "stdout = window.stdout\n";
+    window.stderr = {
+      write: (function(_this) {
+        return function(text) {
+          return console.error(text);
+        };
+      })(this)
+    };
+    src += "import sys\n\nsys.stdout = window.stdout\n\nsys.stderr = window.stderr\n";
     return this.run(src);
   };
 
