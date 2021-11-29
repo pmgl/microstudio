@@ -294,6 +294,7 @@ class AppUI
       @code_splitbar.update()
       @runtime_splitbar.update()
       @app.runwindow.windowResized()
+      @app.editor.editor.resize()
 
     if section == "sprites"
       @sprites_splitbar.update()

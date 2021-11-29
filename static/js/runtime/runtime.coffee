@@ -30,7 +30,7 @@ class @Runtime
     @screen.clear()
 
     try
-      @vm.run(src)
+      @vm.run(src,3000,file)
 
       @listener.postMessage
         name: "compile_success"

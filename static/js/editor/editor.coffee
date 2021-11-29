@@ -253,7 +253,7 @@ class @Editor
 
   liveHelp:()->
     return if not @show_help
-    line = @getCurrentLine()
+    line = @getCurrentLine().replace(":",".")
     column = @editor.getSelectionRange().start.column
     suggest = @app.documentation.findSuggestMatch(line,column)
     content = document.querySelector("#help-window .content")
@@ -283,7 +283,7 @@ class @Editor
       @addDocButton(suggest[0].pointer)
 
   tokenizeLine:(line)->
-    tokenizer = new Tokenizer(line)
+    tokenizer = new Tokenizer(line.replace(":","."))
     index = 0
     list = []
     try
@@ -401,27 +401,43 @@ class @Editor
     try
       res = @analyzeLine(row,column)
       if res?
-        if res.function.indexOf("Polygon")>0 or res.function == "drawLine"
-          args = []
-          funk = (i)=>
-            @app.runwindow.runCommand res.args[i],(v)=>
-              args[i] = v
-              if i<res.args.length-1
-                funk(i+1)
-              else
-                @app.runwindow.rulercanvas.showPolygon(args,res.arg)
-          funk(0)
+        if @app.project.language.startsWith("microscript")
+          if res.function.indexOf("Polygon")>0 or res.function == "drawLine"
+            args = []
+            funk = (i)=>
+              @app.runwindow.runCommand res.args[i],(v)=>
+                args[i] = v
+                if i<res.args.length-1
+                  funk(i+1)
+                else
+                  @app.runwindow.rulercanvas.showPolygon(args,res.arg)
+            funk(0)
+          else
+            @app.runwindow.runCommand res.args[0],(v1)=>
+              @app.runwindow.runCommand res.args[1],(v2)=>
+                @app.runwindow.runCommand res.args[2],(v3)=>
+                  @app.runwindow.runCommand res.args[3],(v4)=>
+                    switch res.arg
+                      when 0 then @app.runwindow.rulercanvas.showX(v1,v2,v3,v4)
+                      when 1 then @app.runwindow.rulercanvas.showY(v1,v2,v3,v4)
+                      when 2 then @app.runwindow.rulercanvas.showW(v1,v2,v3,v4)
+                      when 3 then @app.runwindow.rulercanvas.showH(v1,v2,v3,v4)
+                      else @app.runwindow.rulercanvas.showBox(v1,v2,v3,v4)
         else
-          @app.runwindow.runCommand res.args[0],(v1)=>
-            @app.runwindow.runCommand res.args[1],(v2)=>
-              @app.runwindow.runCommand res.args[2],(v3)=>
-                @app.runwindow.runCommand res.args[3],(v4)=>
-                  switch res.arg
-                    when 0 then @app.runwindow.rulercanvas.showX(v1,v2,v3,v4)
-                    when 1 then @app.runwindow.rulercanvas.showY(v1,v2,v3,v4)
-                    when 2 then @app.runwindow.rulercanvas.showW(v1,v2,v3,v4)
-                    when 3 then @app.runwindow.rulercanvas.showH(v1,v2,v3,v4)
-                    else @app.runwindow.rulercanvas.showBox(v1,v2,v3,v4)
+          if res.function.indexOf("Polygon")>0 or res.function == "drawLine"
+            args = res.args
+            @app.runwindow.rulercanvas.showPolygon(args,res.arg)
+          else
+            args = res.args
+            for i in [0..args.length-1] by 1
+              args[i] = args[i]|0
+
+            switch res.arg
+              when 0 then @app.runwindow.rulercanvas.showX(args[0],args[1],args[2],args[3])
+              when 1 then @app.runwindow.rulercanvas.showY(args[0],args[1],args[2],args[3])
+              when 2 then @app.runwindow.rulercanvas.showW(args[0],args[1],args[2],args[3])
+              when 3 then @app.runwindow.rulercanvas.showH(args[0],args[1],args[2],args[3])
+              else @app.runwindow.rulercanvas.showBox(args[0],args[1],args[2],args[3])
       else
         @app.runwindow.rulercanvas.hide()
 
@@ -435,7 +451,7 @@ class @Editor
       column = range.start.column
     line = @editor.session.getLine(row)
 
-    parser = new Parser(line+" ")
+    parser = new Parser(line.replace(":",".")+" ")
     p = parser.parse()
 
     if parser.last_function_call?
@@ -476,6 +492,12 @@ class @Editor
 
     null
 
+  setTitleSourceName:()->
+    if @selected_source?
+      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> "+@selected_source
+      lang = @app.project.language.split("_")[0]
+      document.getElementById("code-toolbar").innerHTML += "<span class='language #{lang}'>#{lang}</span>"
+
   setSelectedSource:(name)->
     @checkSave(true)
     if @selected_source?
@@ -488,7 +510,7 @@ class @Editor
     list = document.getElementById("source-list").childNodes
 
     if @selected_source?
-      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> "+@selected_source
+      @setTitleSourceName()
       for e in list
         if e.getAttribute("id") == "source-list-item-#{name}"
           e.classList.add("selected")

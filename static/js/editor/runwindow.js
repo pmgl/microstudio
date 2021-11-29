@@ -375,7 +375,10 @@ this.RunWindow = (function() {
     }
     if (err.line != null) {
       if (err.file) {
-        text = this.app.translator.get("%ERROR%, in file %FILE% at line %LINE%, column %COLUMN%");
+        text = this.app.translator.get("%ERROR%, in file \"%FILE%\" at line %LINE%");
+        if (err.column) {
+          text += ", column %COLUMN%";
+        }
         return this.terminal.error(text.replace("%ERROR%", error).replace("%FILE%", err.file).replace("%LINE%", err.line).replace("%COLUMN%", err.column));
       } else {
         return this.terminal.error(error);

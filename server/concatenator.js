@@ -96,11 +96,6 @@ this.Concatenator = (function() {
         title: "JavaScript",
         scripts: ["/js/languages/javascript/runner.js"],
         lib: []
-      },
-      blockly: {
-        title: "Blockly",
-        scripts: [],
-        lib: []
       }
     };
     ref = this.alt_players;

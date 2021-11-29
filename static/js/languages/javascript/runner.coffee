@@ -15,13 +15,19 @@ class @Runner
 
     console.info program
 
-    f = ()->
-      eval(program)
+    try
+      f = ()->
+        eval(program)
 
-    f.call(@microvm.context.global)
+      res = f.call(@microvm.context.global)
+    catch err
+      throw err.toString()
 
   call:(name,args)->
-    f = ()->
-      eval("""if (typeof #{name} != "undefined") #{name}() ;""")
+    try
+      f = ()->
+        eval("""if (typeof #{name} != "undefined") #{name}() ;""")
 
-    f.call(@microvm.context.global)
+      f.call(@microvm.context.global)
+    catch err
+      throw err.toString()

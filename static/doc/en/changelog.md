@@ -1,5 +1,13 @@
 ## Changelog
 
+### Update
+* microScript: Hot reloading of classes: Changing your class while the program is running will affect all already instanciated objects!
+* microScript: Fixed transpiler parent class linking at runtime
+* New languages!!! Pick your desired programming language in the project options. You have access to the whole standard microStudio APIs and all optional libs (Pixi, Babylon, Matter.js ...) from your code in Python, JavaScript or Lua. Enjoy all the microStudio goodness: live coding, visual screen positionning help, contextual help and of course export to all target platforms, whatever the language or the optional libs.
+* New language: Python!
+* New language: JavaScript!
+* New language: Lua!
+
 ### Update 2021-11-25
 * Using interpreter or transpiler is now an option of your project
 * You can thus now publish, export HTML5 or export to any target with transpiler active!

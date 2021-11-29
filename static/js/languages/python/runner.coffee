@@ -30,38 +30,31 @@ sys.stderr = window.stderr\n
       @init()
 
     #console.info program
+    try
+      res = python(program)
 
-    res = python(program)
+      program = """
+  if "draw" in globals():
+    window.draw = draw
 
-    program = """
-if "draw" in globals():
-  window.draw = draw
+  if "update" in globals():
+    window.update = update
 
-if "update" in globals():
-  window.update = update
+  if "init" in globals():
+    window.init = init
+      """
 
-if "init" in globals():
-  window.init = init
-    """
+      python(program)
 
-    python(program)
-
-    return res
+      return res
+    catch err
+      throw err.toString()
 
   call:(name,args)->
     if name in ["draw","update","init"] and typeof window[name] == "function"
-      return window[name]()
+      try
+        return window[name]()
+      catch err
+        throw err.toString()
     else
       return
-
-    time = Date.now()
-
-    prg = """
-try:
-  #{name}(#{args.join(",")})
-except NameError:
-  0
-    """
-    res = python(prg)
-    console.info("calling #{name} took: #{Date.now()-time} ms")
-    res

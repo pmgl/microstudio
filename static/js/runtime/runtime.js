@@ -42,7 +42,7 @@ this.Runtime = (function() {
     this.audio.cancelBeeps();
     this.screen.clear();
     try {
-      this.vm.run(src);
+      this.vm.run(src, 3000, file);
       this.listener.postMessage({
         name: "compile_success",
         file: file

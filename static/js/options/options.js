@@ -1,4 +1,5 @@
-var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var DEFAULT_CODE,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 this.Options = (function() {
   function Options(app) {
@@ -231,6 +232,26 @@ this.Options = (function() {
   };
 
   Options.prototype.languageChanged = function(value) {
+    if (value !== this.app.project.language) {
+      if (this.app.project.source_list.length === 1 && this.app.project.source_list[0].content.split("\n").length < 20) {
+        if (!this.app.project.language.startsWith("microscript") || !value.startsWith("microscript")) {
+          if (!confirm(this.app.translator.get("Your current code will be overwritten. Do you wish to proceed?"))) {
+            document.getElementById("projectoption-language").value = this.app.project.language;
+            return;
+          } else {
+            this.app.project.setLanguage(value);
+            this.app.editor.updateLanguage();
+            if (DEFAULT_CODE[value] != null) {
+              this.app.editor.setCode(DEFAULT_CODE[value]);
+            } else {
+              this.app.editor.setCode(DEFAULT_CODE["microscript"]);
+            }
+            this.app.editor.editorContentsChanged();
+            this.app.editor.setTitleSourceName();
+          }
+        }
+      }
+    }
     this.app.project.setLanguage(value);
     this.app.editor.updateLanguage();
     return this.app.client.sendRequest({
@@ -312,3 +333,10 @@ this.Options = (function() {
   return Options;
 
 })();
+
+DEFAULT_CODE = {
+  python: "def init():\n  pass\n\ndef update():\n  pass\n\ndef draw():\n  pass",
+  javascript: "init = function() {\n}\n\nupdate = function() {\n}\n\ndraw = function() {\n}",
+  lua: "init = function()\nend\n\nupdate = function()\nend\n\ndraw = function()\nend",
+  microscript: "init = function()\nend\n\nupdate = function()\nend\n\ndraw = function()\nend"
+};

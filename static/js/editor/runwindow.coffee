@@ -287,7 +287,10 @@ class @RunWindow
 
     if err.line?
       if err.file
-        text = @app.translator.get("%ERROR%, in file %FILE% at line %LINE%, column %COLUMN%")
+        text = @app.translator.get("%ERROR%, in file \"%FILE%\" at line %LINE%")
+        if err.column
+          text += ", column %COLUMN%"
+
         @terminal.error text.replace("%ERROR%",error).replace("%FILE%",err.file).replace("%LINE%",err.line).replace("%COLUMN%",err.column)
       else
         @terminal.error error
