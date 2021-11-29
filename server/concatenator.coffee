@@ -101,10 +101,10 @@ class @Concatenator
         scripts: ["/js/languages/javascript/runner.js"]
         lib: []
 
-      blockly:
-        title: "Blockly"
-        scripts: []
-        lib: []
+      #blockly:
+      #  title: "Blockly"
+      #  scripts: []
+      #  lib: []
 
     for key,value of @alt_players
       @webapp.app.get new RegExp("^\\/#{key}.js$"), (req,res)=>

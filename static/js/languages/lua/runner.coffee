@@ -12,16 +12,44 @@ class @Runner
 
     @run(src)
 
-  run:(program)->
+  run:(program,name="")->
     if not @initialized
       @init()
 
     #console.info program
+    try
+      res = fengari.load(program,name)()
+    catch err
 
-    res = fengari.load(program)()
+      line = err.toString().split("]:")[1]
+      if line?
+        line = line.split(":")[0] or 1
+      else
+        line = 0
+
+      @microvm.context.location =
+        token:
+          line: line
+          column: 0
+      throw err.toString()
 
     return res
 
   call:(name,args)->
-    res = fengari.load("if #{name} then #{name}() end")()
-    res
+    try
+      res = fengari.load("if #{name} then #{name}() end")()
+      res
+    catch err
+      line = err.toString().split("]:")[1]
+      if line?
+        line = line.split(":")[0] or 1
+      else
+        line = 0
+
+      file = err.toString().split('"')[1] or ""
+      @microvm.context.location =
+        token:
+          line: line
+          column: 0
+          file: file
+      throw err.toString()

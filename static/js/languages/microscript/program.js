@@ -35,6 +35,18 @@ this.Program.Assignment = (function() {
     this.field = field1;
     this.expression = expression1;
     this.local = local1;
+    if (this.expression instanceof Program.CreateClass && this.field instanceof Program.Variable) {
+      this.evaluate = (function(_this) {
+        return function(context, hold) {
+          context.location = _this;
+          if (_this.local) {
+            return _this.field.hotUpdate(context, context.local, _this.expression.evaluate(context, true));
+          } else {
+            return _this.field.hotUpdate(context, null, _this.expression.evaluate(context, true));
+          }
+        };
+      })(this);
+    }
   }
 
   Assignment.prototype.evaluate = function(context, hold) {
@@ -149,6 +161,27 @@ this.Program.Variable = (function() {
       }
     }
     return scope[this.identifier] = value;
+  };
+
+  Variable.prototype.hotUpdate = function(context, scope, value) {
+    var key, results, val;
+    if (scope == null) {
+      if (context.local[this.identifier] != null) {
+        scope = context.local;
+      } else {
+        scope = context.object;
+      }
+    }
+    if (scope[this.identifier] != null) {
+      results = [];
+      for (key in value) {
+        val = value[key];
+        results.push(scope[this.identifier][key] = val);
+      }
+      return results;
+    } else {
+      return scope[this.identifier] = value;
+    }
   };
 
   Variable.prototype.ensureCreated = function(context) {

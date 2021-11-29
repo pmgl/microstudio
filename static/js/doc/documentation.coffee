@@ -152,7 +152,7 @@ class @Documentation
 
     within = false
     for r in res
-      if r.ref == r.radix and r.index<=position and r.index+r.ref.length>=position
+      if r.ref == r.radix and r.radix.length == best and r.index+r.radix.length<line.length
         return [r]
       within = within or r.within
 

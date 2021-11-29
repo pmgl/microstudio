@@ -15,23 +15,33 @@ this.Runner = (function() {
   };
 
   Runner.prototype.run = function(program) {
-    var f;
+    var err, f, res;
     if (!this.initialized) {
       this.init();
     }
     console.info(program);
-    f = function() {
-      return eval(program);
-    };
-    return f.call(this.microvm.context.global);
+    try {
+      f = function() {
+        return eval(program);
+      };
+      return res = f.call(this.microvm.context.global);
+    } catch (error) {
+      err = error;
+      throw err.toString();
+    }
   };
 
   Runner.prototype.call = function(name, args) {
-    var f;
-    f = function() {
-      return eval("if (typeof " + name + " != \"undefined\") " + name + "() ;");
-    };
-    return f.call(this.microvm.context.global);
+    var err, f;
+    try {
+      f = function() {
+        return eval("if (typeof " + name + " != \"undefined\") " + name + "() ;");
+      };
+      return f.call(this.microvm.context.global);
+    } catch (error) {
+      err = error;
+      throw err.toString();
+    }
   };
 
   return Runner;

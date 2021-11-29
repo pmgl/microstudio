@@ -213,29 +213,38 @@ this.MicroVM = (function() {
     return this.context.global[key] = value;
   };
 
-  MicroVM.prototype.run = function(program, timeout) {
+  MicroVM.prototype.run = function(program, timeout, filename) {
     var err, res;
     this.program = program;
     if (timeout == null) {
       timeout = 3000;
     }
+    if (filename == null) {
+      filename = "";
+    }
     this.error_info = null;
     this.context.timeout = Date.now() + timeout;
     this.context.stack_size = 0;
     try {
-      res = this.runner.run(this.program);
+      res = this.runner.run(this.program, filename);
       this.checkStorage();
       return Program.toString(res);
     } catch (error) {
       err = error;
-      if (this.context.location != null) {
+      if ((this.context.location != null) && (this.context.location.token != null)) {
         this.error_info = {
           error: err,
+          file: filename,
           line: this.context.location.token.line,
           column: this.context.location.token.column
         };
+        console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
+      } else {
+        this.error_info = {
+          error: err,
+          file: filename
+        };
       }
-      console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
       console.error(err);
       return this.checkStorage();
     }
@@ -259,11 +268,16 @@ this.MicroVM = (function() {
     } catch (error) {
       err = error;
       console.error(err);
-      if (this.context.location != null) {
+      if ((this.context.location != null) && (this.context.location.token != null)) {
         this.error_info = {
           error: err,
           line: this.context.location.token.line,
-          column: this.context.location.token.column
+          column: this.context.location.token.column,
+          file: this.context.location.token.file
+        };
+      } else {
+        this.error_info = {
+          error: err
         };
       }
       if ((this.context.location != null) && (this.context.location.token != null)) {

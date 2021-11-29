@@ -138,22 +138,28 @@ class @MicroVM
   setGlobal:(key,value)->
     @context.global[key] = value
 
-  run:(@program,timeout=3000)->
+  run:(@program,timeout=3000,filename="")->
     @error_info = null
     @context.timeout = Date.now()+timeout
     @context.stack_size = 0
 
     try
-      res = @runner.run @program
+      res = @runner.run @program,filename
       @checkStorage()
       return Program.toString res
     catch err
-      if @context.location?
+      if @context.location? and @context.location.token?
         @error_info =
           error: err
+          file: filename
           line: @context.location.token.line
           column: @context.location.token.column
-      console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
+        console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
+      else
+        @error_info =
+          error: err
+          file: filename
+
       console.error err
       @checkStorage()
 
@@ -168,11 +174,16 @@ class @MicroVM
       res
     catch err
       console.error err
-      if @context.location?
+      if @context.location? and @context.location.token?
         @error_info =
           error: err
           line: @context.location.token.line
           column: @context.location.token.column
+          file: @context.location.token.file
+      else
+        @error_info =
+          error: err
+        
       if @context.location? and @context.location.token?
         console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
       @checkStorage()

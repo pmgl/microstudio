@@ -200,7 +200,7 @@ this.Documentation = (function() {
     within = false;
     for (k = 0, len1 = res.length; k < len1; k++) {
       r = res[k];
-      if (r.ref === r.radix && r.index <= position && r.index + r.ref.length >= position) {
+      if (r.ref === r.radix && r.radix.length === best && r.index + r.radix.length < line.length) {
         return [r];
       }
       within = within || r.within;

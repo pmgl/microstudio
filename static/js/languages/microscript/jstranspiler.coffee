@@ -33,8 +33,7 @@ class JSTranspiler
         }
         _msResolveParentClass(obj.class);
       }
-
-      if (obj.class != null) {
+      else if (obj.class != null) {
         _msResolveParentClass(obj.class);
       }
     } ;
@@ -229,6 +228,8 @@ class JSTranspiler
       if statement.field instanceof Program.Variable
         if context.local_variables[statement.field.identifier]
           return """#{statement.field.identifier} = #{@transpile(statement.expression,context,true)}#{if retain then "" else ";"}"""
+        else if statement.expression instanceof Program.CreateClass
+          return """context.object["#{statement.field.identifier}"] = #{@transpileUpdateClass(statement.expression,context,statement.field.identifier)}"""
         else
           return """context.object["#{statement.field.identifier}"] = #{@transpile(statement.expression,context,true)}"""
       else
@@ -707,6 +708,36 @@ class JSTranspiler
     res += "}"
     res
 
+  transpileUpdateClass:(statement,context,variable)->
+    if statement.ext?
+      classvar = @createTempVariable context
+      @prepend "var #{classvar} = #{@transpile(statement.ext,context,true)} ;"
+      if statement.ext instanceof Program.Variable
+        @prepend """if (!#{classvar}) { #{classvar} = "#{statement.ext.identifier}" }"""
+
+    res = "{\n"
+    for f in statement.fields
+      res += """  "#{@formatField(f.field)}": #{@transpile(f.value,context,true)},\n"""
+
+    if statement.ext?
+      res += """  "class": #{classvar} , """
+
+    res += "}"
+
+    cls = @createTempVariable context
+    key = @createTempVariable context
+    @prepend """if (context.object["#{variable}"] != null) {
+      for (#{key} in #{res}) {
+        context.object["#{variable}"][#{key}] = #{res}[#{key}] ;
+      }
+      #{cls} = context.object["#{variable}"] ;
+    }
+    else {
+      #{cls} = #{res} ;
+    }"""
+
+    cls
+
   transpileNewCall:(statement,context)->
     funcall = statement.expression
 
@@ -729,6 +760,7 @@ class JSTranspiler
       var #{objvar} = #{fconstructor} ;
     } else {
       var #{objvar} = { "class": #{classvar}} ;
+      _msResolveParentClass(#{objvar}) ;
       #{constructor}
     } """
 
