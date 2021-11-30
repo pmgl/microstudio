@@ -96,7 +96,7 @@ header li i {
 }
 
 header li.selected, header li:hover {
-  background:rgba(255,255,255,.1) ;
+  background:rgba(255,255,255,.15) ;
 }
 
 header li .fa-patreon {
@@ -1099,7 +1099,7 @@ padding-left: 2px ;
   bottom: 0;
   left: 0;
   right: 0;
-  overflow: auto ;
+  overflow: hidden ;
 }
 .doc-render.documentation {
   padding: 50px ;
@@ -1108,6 +1108,10 @@ padding-left: 2px ;
 .help-sections {
   background: hsl(200,23%,23%);
   padding: 0 10px 10px 0 ;
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  right: 0 ;
 }
 .help-section-category {
   display: inline-block ;
@@ -1158,13 +1162,19 @@ padding-left: 2px ;
   border: solid 2px rgba(255,255,255,.8) ;
 }
 .help-document {
-  position: relative ;
+  position: absolute ;
+  top: 200px ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
 }
 .help-view {
   position: absolute ;
   top: 0 ;
+  bottom: 0 ;
   left: 300px ;
   right: 0 ;
+  overflow: auto ;
 }
 .help-view i {
   padding: 4px 6px;
@@ -1176,6 +1186,7 @@ padding-left: 2px ;
 .helplist {
   position: absolute ;
   top: 0 ;
+  bottom:0 ;
   left: 0px ;
   width: 260px ;
   overflow: auto ;
@@ -1185,32 +1196,32 @@ padding-left: 2px ;
 }
 
 .help-section div::-webkit-scrollbar-track {
-  background: rgba(0,0,0,.15);
+  background: rgba(255,255,255,.15);
   border-radius: 5px;
   margin: 4px 2px;
 }
 
 .help-section div::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,.25);
+  background-color: rgba(255,255,255,.25);
   border-radius: 5px;
   margin: 4px 1px;
 }
 .help-list h1 {
-  color: hsl(200,80%,80%);
+  color: hsl(0,60%,60%);
   font-size: 20px;
   margin: 40px 0 0 0 ;
   padding: 0 ;
   cursor: pointer ;
 }
 .help-list h2 {
-  color: hsl(200,80%,80%);
+  color: hsl(20,80%,70%);
   font-size: 18px;
   margin: 10px 0 5px 20px ;
   padding: 0 ;
   cursor: pointer ;
 }
 .help-list h3 {
-    color: hsl(200,80%,80%);
+    color: hsla(20,80%,100%,.8);
     font-size: 16px;
     margin: 0 0 0 22px;
     padding: 0;

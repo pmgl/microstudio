@@ -379,6 +379,9 @@ class AppUI
     if section == "explore"
       @app.explore.update()
 
+    if section == "help"
+      @app.documentation.updateViewPos()
+
     if section == "about"
       @app.about.setSection("about")
 

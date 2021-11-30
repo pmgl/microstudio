@@ -236,7 +236,7 @@ class @Editor
     @editor.getSession().setUndoManager(new ace.UndoManager())
     @ignore_changes = false
 
-  addDocButton:(pointer)->
+  addDocButton:(pointer,section)->
     content = document.querySelector("#help-window .content")
     button = document.createElement "div"
     button.classList.add "see-doc-button"
@@ -244,6 +244,7 @@ class @Editor
     button.addEventListener "click",(event)=>
       event.stopPropagation()
       @app.appui.setMainSection "help",true
+      @app.documentation.setSection section or "api"
       element = document.getElementById pointer
       if element?
         element.scrollIntoView()
@@ -264,7 +265,7 @@ class @Editor
         content.innerHTML = DOMPurify.sanitize marked help[0].value
         content.style.display = "block"
         document.querySelector("#help-window").classList.add("showing")
-        @addDocButton(help[0].pointer)
+        @addDocButton(help[0].pointer,help[0].section)
       else
         content.innerHTML = ""
         content.style.display = "none"
@@ -272,7 +273,7 @@ class @Editor
       content.innerHTML = DOMPurify.sanitize marked suggest[0].value
       content.style.display = "block"
       document.querySelector("#help-window").classList.add("showing")
-      @addDocButton(suggest[0].pointer)
+      @addDocButton(suggest[0].pointer,suggest[0].section)
     else
       md = ""
       for res in suggest
@@ -280,7 +281,7 @@ class @Editor
       content.innerHTML = DOMPurify.sanitize marked md
       content.style.display = "block"
       document.querySelector("#help-window").classList.add("showing")
-      @addDocButton(suggest[0].pointer)
+      @addDocButton(suggest[0].pointer,suggest[0].section)
 
   tokenizeLine:(line)->
     tokenizer = new Tokenizer(line.replace(":","."))

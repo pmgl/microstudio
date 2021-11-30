@@ -32,12 +32,11 @@ this.Runner = (function() {
   };
 
   Runner.prototype.call = function(name, args) {
-    var err, f;
+    var err;
     try {
-      f = function() {
-        return eval("if (typeof " + name + " != \"undefined\") " + name + "() ;");
-      };
-      return f.call(this.microvm.context.global);
+      if (window[name] != null) {
+        return window[name].apply(this.microvm.context.global, args);
+      }
     } catch (error) {
       err = error;
       throw err.toString();

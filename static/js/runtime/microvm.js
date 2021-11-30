@@ -1,5 +1,5 @@
 this.MicroVM = (function() {
-  function MicroVM(meta, global, namespace) {
+  function MicroVM(meta, global, namespace1) {
     var ctx, err;
     if (meta == null) {
       meta = {};
@@ -7,7 +7,7 @@ this.MicroVM = (function() {
     if (global == null) {
       global = {};
     }
-    this.namespace = namespace != null ? namespace : "/microstudio";
+    this.namespace = namespace1 != null ? namespace1 : "/microstudio";
     if (meta.print == null) {
       meta.print = function(text) {
         if (typeof text === "object") {
@@ -169,7 +169,8 @@ this.MicroVM = (function() {
     } catch (error) {
       err = error;
     }
-    global.storage = this.createStorageService();
+    this.storage_service = this.createStorageService();
+    global.storage = this.storage_service.api;
     meta.global = global;
     this.context = {
       meta: meta,
@@ -227,7 +228,7 @@ this.MicroVM = (function() {
     this.context.stack_size = 0;
     try {
       res = this.runner.run(this.program, filename);
-      this.checkStorage();
+      this.storage_service.check();
       return Program.toString(res);
     } catch (error) {
       err = error;
@@ -246,7 +247,7 @@ this.MicroVM = (function() {
         };
       }
       console.error(err);
-      return this.checkStorage();
+      return this.storage_service.check();
     }
   };
 
@@ -263,7 +264,7 @@ this.MicroVM = (function() {
     this.context.stack_size = 0;
     try {
       res = this.runner.call(name, args);
-      this.checkStorage();
+      this.storage_service.check();
       return res;
     } catch (error) {
       err = error;
@@ -283,54 +284,64 @@ this.MicroVM = (function() {
       if ((this.context.location != null) && (this.context.location.token != null)) {
         console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
       }
-      return this.checkStorage();
+      return this.storage_service.check();
     }
   };
 
   MicroVM.prototype.createStorageService = function() {
-    var err, s;
-    this.storage = {};
+    var err, ls, namespace, s, service, storage, write_storage;
+    ls = window.localStorage;
     try {
-      s = localStorage.getItem("ms" + this.namespace);
+      delete window.localStorage;
+    } catch (error) {
+      err = error;
+    }
+    storage = {};
+    write_storage = false;
+    namespace = this.namespace;
+    try {
+      s = ls.getItem("ms" + namespace);
       if (s) {
-        this.storage = JSON.parse(s);
+        storage = JSON.parse(s);
       }
     } catch (error) {
       err = error;
     }
-    return {
-      set: (function(_this) {
-        return function(name, value) {
-          value = _this.storableObject(value);
-          if ((name != null) && (value != null)) {
-            _this.storage[name] = value;
-            _this.write_storage = true;
-          }
-          return value;
-        };
-      })(this),
-      get: (function(_this) {
-        return function(name) {
-          if (name != null) {
-            return _this.storage[name];
-          } else {
-            return 0;
+    return service = {
+      api: {
+        set: (function(_this) {
+          return function(name, value) {
+            value = _this.storableObject(value);
+            if ((name != null) && (value != null)) {
+              storage[name] = value;
+              write_storage = true;
+            }
+            return value;
+          };
+        })(this),
+        get: (function(_this) {
+          return function(name) {
+            if (name != null) {
+              return storage[name];
+            } else {
+              return 0;
+            }
+          };
+        })(this)
+      },
+      check: (function(_this) {
+        return function() {
+          if (write_storage) {
+            write_storage = false;
+            try {
+              return ls.setItem("ms" + namespace, JSON.stringify(storage));
+            } catch (error) {
+              err = error;
+            }
           }
         };
       })(this)
     };
-  };
-
-  MicroVM.prototype.checkStorage = function() {
-    var err;
-    if (this.write_storage) {
-      this.write_storage = false;
-      try {
-        return localStorage.setItem("ms" + this.namespace, JSON.stringify(this.storage));
-      } catch (error) {
-        err = error;
-      }
-    }
   };
 
   MicroVM.prototype.storableObject = function(value) {

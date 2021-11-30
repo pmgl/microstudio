@@ -25,9 +25,7 @@ class @Runner
 
   call:(name,args)->
     try
-      f = ()->
-        eval("""if (typeof #{name} != "undefined") #{name}() ;""")
-
-      f.call(@microvm.context.global)
+      if window[name]?
+        window[name].apply @microvm.context.global,args
     catch err
       throw err.toString()

@@ -339,7 +339,7 @@ this.Editor = (function() {
     return this.ignore_changes = false;
   };
 
-  Editor.prototype.addDocButton = function(pointer) {
+  Editor.prototype.addDocButton = function(pointer, section) {
     var button, content;
     content = document.querySelector("#help-window .content");
     button = document.createElement("div");
@@ -350,6 +350,7 @@ this.Editor = (function() {
         var element;
         event.stopPropagation();
         _this.app.appui.setMainSection("help", true);
+        _this.app.documentation.setSection(section || "api");
         element = document.getElementById(pointer);
         if (element != null) {
           return element.scrollIntoView();
@@ -374,7 +375,7 @@ this.Editor = (function() {
         content.innerHTML = DOMPurify.sanitize(marked(help[0].value));
         content.style.display = "block";
         document.querySelector("#help-window").classList.add("showing");
-        return this.addDocButton(help[0].pointer);
+        return this.addDocButton(help[0].pointer, help[0].section);
       } else {
         content.innerHTML = "";
         return content.style.display = "none";
@@ -383,7 +384,7 @@ this.Editor = (function() {
       content.innerHTML = DOMPurify.sanitize(marked(suggest[0].value));
       content.style.display = "block";
       document.querySelector("#help-window").classList.add("showing");
-      return this.addDocButton(suggest[0].pointer);
+      return this.addDocButton(suggest[0].pointer, suggest[0].section);
     } else {
       md = "";
       for (j = 0, len = suggest.length; j < len; j++) {
@@ -393,7 +394,7 @@ this.Editor = (function() {
       content.innerHTML = DOMPurify.sanitize(marked(md));
       content.style.display = "block";
       document.querySelector("#help-window").classList.add("showing");
-      return this.addDocButton(suggest[0].pointer);
+      return this.addDocButton(suggest[0].pointer, suggest[0].section);
     }
   };
 
