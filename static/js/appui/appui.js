@@ -503,6 +503,9 @@ AppUI = (function() {
     if (section === "explore") {
       this.app.explore.update();
     }
+    if (section === "help") {
+      this.app.documentation.updateViewPos();
+    }
     if (section === "about") {
       this.app.about.setSection("about");
     }

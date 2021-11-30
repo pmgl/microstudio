@@ -101,7 +101,8 @@ class @MicroVM
     catch err
 
 
-    global.storage = @createStorageService()
+    @storage_service = @createStorageService()
+    global.storage = @storage_service.api
 
     meta.global = global
 
@@ -145,7 +146,7 @@ class @MicroVM
 
     try
       res = @runner.run @program,filename
-      @checkStorage()
+      @storage_service.check()
       return Program.toString res
     catch err
       if @context.location? and @context.location.token?
@@ -161,7 +162,7 @@ class @MicroVM
           file: filename
 
       console.error err
-      @checkStorage()
+      @storage_service.check()
 
   call:(name,args=[],timeout=3000)->
     @error_info = null
@@ -170,7 +171,7 @@ class @MicroVM
 
     try
       res = @runner.call name,args
-      @checkStorage()
+      @storage_service.check()
       res
     catch err
       console.error err
@@ -183,40 +184,48 @@ class @MicroVM
       else
         @error_info =
           error: err
-        
+
       if @context.location? and @context.location.token?
         console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
-      @checkStorage()
+      @storage_service.check()
 
   createStorageService:()->
-    @storage = {}
+    ls = window.localStorage
     try
-      s = localStorage.getItem("ms#{@namespace}")
-      if s
-        @storage = JSON.parse(s)
+      delete window.localStorage
     catch err
 
-    return {
-      set: (name,value)=>
-        value = @storableObject(value)
-        if name? and value?
-          @storage[name] = value
-          @write_storage = true
-        value
+    storage = {}
+    write_storage = false
+    namespace = @namespace
 
-      get: (name)=>
-        if name?
-          @storage[name]
-        else
-          0
-    }
+    try
+      s = ls.getItem("ms#{namespace}")
+      if s
+        storage = JSON.parse(s)
+    catch err
 
-  checkStorage:()->
-    if @write_storage
-      @write_storage = false
-      try
-        localStorage.setItem("ms#{@namespace}",JSON.stringify(@storage))
-      catch err
+    service =
+      api:
+        set: (name,value)=>
+          value = @storableObject(value)
+          if name? and value?
+            storage[name] = value
+            write_storage = true
+          value
+
+        get:(name)=>
+          if name?
+            storage[name]
+          else
+            0
+
+      check:()=>
+        if write_storage
+          write_storage = false
+          try
+            ls.setItem("ms#{namespace}",JSON.stringify(storage))
+          catch err
 
   storableObject:(value)->
     referenced = [
