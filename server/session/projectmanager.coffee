@@ -424,17 +424,21 @@ class @ProjectManager
         filename = files.splice(0,1)[0]
         value = contents.files[filename]
 
-        if /^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(filename)
-          type = if filename.split(".")[1] in ["ms","json","md"] then "string" else "nodebuffer"
+        if /^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|py|js|lua|png|json|wav|mp3|md|glb|jpg)$/.test(filename)
+          dest = filename
+          if dest.endsWith ".js" then dest = dest.replace(".js",".ms")
+          if dest.endsWith ".py" then dest = dest.replace(".py",".ms")
+          if dest.endsWith ".lua" then dest = dest.replace(".lua",".ms")
+          type = if dest.split(".")[1] in ["ms","json","md"] then "string" else "nodebuffer"
           try
             contents.file(filename).async(type).then ((fileContent)=>
               if fileContent?
-                @project.content.files.write "#{@project.owner.id}/#{@project.id}/#{filename}", fileContent, funk
+                @project.content.files.write "#{@project.owner.id}/#{@project.id}/#{dest}", fileContent, funk
               else
                 funk()
             ),()=>
               funk()
-              
+
           catch err
             console.error err
             console.log filename

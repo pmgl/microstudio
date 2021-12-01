@@ -616,16 +616,26 @@ this.ProjectManager = (function() {
     }
     funk = (function(_this) {
       return function() {
-        var err, ref, type, value;
+        var dest, err, ref, type, value;
         if (files.length > 0) {
           filename = files.splice(0, 1)[0];
           value = contents.files[filename];
-          if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(filename)) {
-            type = (ref = filename.split(".")[1]) === "ms" || ref === "json" || ref === "md" ? "string" : "nodebuffer";
+          if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|py|js|lua|png|json|wav|mp3|md|glb|jpg)$/.test(filename)) {
+            dest = filename;
+            if (dest.endsWith(".js")) {
+              dest = dest.replace(".js", ".ms");
+            }
+            if (dest.endsWith(".py")) {
+              dest = dest.replace(".py", ".ms");
+            }
+            if (dest.endsWith(".lua")) {
+              dest = dest.replace(".lua", ".ms");
+            }
+            type = (ref = dest.split(".")[1]) === "ms" || ref === "json" || ref === "md" ? "string" : "nodebuffer";
             try {
               return contents.file(filename).async(type).then((function(fileContent) {
                 if (fileContent != null) {
-                  return _this.project.content.files.write(_this.project.owner.id + "/" + _this.project.id + "/" + filename, fileContent, funk);
+                  return _this.project.content.files.write(_this.project.owner.id + "/" + _this.project.id + "/" + dest, fileContent, funk);
                 } else {
                   return funk();
                 }
