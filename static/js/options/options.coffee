@@ -19,6 +19,17 @@ class @Options
     @selectInput "projectoption-graphics",(value)=>@graphicsChanged(value)
     @selectInput "projectoption-language",(value)=>@languageChanged(value)
 
+    advanced = document.getElementById("advanced-project-options-button")
+    advanced.addEventListener "click",()=>
+      if advanced.classList.contains "open"
+        advanced.classList.remove "open"
+        document.getElementById("advanced-project-options").style.display = "none"
+        advanced.childNodes[1].innerText = @app.translator.get "Show advanced options"
+      else
+        advanced.classList.add "open"
+        document.getElementById("advanced-project-options").style.display = "block"
+        advanced.childNodes[1].innerText = @app.translator.get "Hide advanced options"
+
     @app.appui.setAction "add-project-user",()=>
       @addProjectUser()
 

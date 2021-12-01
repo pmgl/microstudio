@@ -3,7 +3,7 @@ var DEFAULT_CODE,
 
 this.Options = (function() {
   function Options(app) {
-    var fn, i, input, len, list;
+    var advanced, fn, i, input, len, list;
     this.app = app;
     this.textInput("projectoption-name", (function(_this) {
       return function(value) {
@@ -38,6 +38,20 @@ this.Options = (function() {
     this.selectInput("projectoption-language", (function(_this) {
       return function(value) {
         return _this.languageChanged(value);
+      };
+    })(this));
+    advanced = document.getElementById("advanced-project-options-button");
+    advanced.addEventListener("click", (function(_this) {
+      return function() {
+        if (advanced.classList.contains("open")) {
+          advanced.classList.remove("open");
+          document.getElementById("advanced-project-options").style.display = "none";
+          return advanced.childNodes[1].innerText = _this.app.translator.get("Show advanced options");
+        } else {
+          advanced.classList.add("open");
+          document.getElementById("advanced-project-options").style.display = "block";
+          return advanced.childNodes[1].innerText = _this.app.translator.get("Hide advanced options");
+        }
       };
     })(this));
     this.app.appui.setAction("add-project-user", (function(_this) {

@@ -90,11 +90,13 @@ class @Concatenator
         title: "Python"
         scripts: ["/js/languages/python/runner.js"]
         lib:["/lib/brython/brython.js","/lib/brython/brython_stdlib.js"]
+        lib_path:["node_modules/brython/brython.js","node_modules/brython/brython_stdlib.js"]
 
       lua:
         title: "Lua"
         scripts: ["/js/languages/lua/runner.js"]
         lib:["/lib/fengari/fengari-web.js"]
+        lib_path:["node_modules/fengari-web/dist/fengari-web.js"]
 
       javascript:
         title: "JavaScript"

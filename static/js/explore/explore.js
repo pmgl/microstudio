@@ -256,6 +256,9 @@ this.Explore = (function() {
     if (p.graphics !== "M1") {
       desc = ("<p><i class=\"fas fa-exclamation-triangle\" style=\"color:hsl(20,100%,70%)\"></i> " + (this.app.translator.get("This project uses an experimental integration of graphics API:")) + " " + p.graphics + "</p>") + desc;
     }
+    if (p.language != null) {
+      desc = ("<br /><div class=\"explore-project-language " + (p.language.split("_")[0]) + "\">" + (p.language.split("_")[0]) + "</div><br />") + desc;
+    }
     this.get("project-details-description").innerHTML = desc;
     document.querySelector("#project-details-author").innerHTML = "";
     document.querySelector("#project-details-author").appendChild(this.app.appui.createUserTag(p.owner, p.owner_info.tier, p.owner_info.profile_image, 12));
