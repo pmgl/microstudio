@@ -17,7 +17,8 @@ Merci beaucoup à tous les contributeurs et spécialement à nos merveilleux Fon
 Merci beaucoup à nos traducteurs :
 * FeniXb3 (langue polonaise)
 * TinkerSmith (langue allemande)
-* HomineLudens (langue italienne, en cours de traduction)
+* HomineLudens (langue italienne)
+* Ondinha (Brésilien-Portuguais)
 
 <br />
 

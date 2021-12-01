@@ -17,7 +17,8 @@ Many thanks to all the contributors and especially to our wonderful Founders: St
 Thanks a lot to our awesome translators:
 * FeniXb3 (contributed Polish language)
 * TinkerSmith (contributed German language)
-* HomineLudens (currently working on the Italian translation)
+* HomineLudens (contributed Italian language)
+* Ondinha (contributed Brazilian Portuguese language)
 
 <i class="fab fa-discord"></i> Join us on Discord: [https://discord.gg/BDMqjxd](https://discord.gg/BDMqjxd)
 
