@@ -8,8 +8,6 @@ Your Python microStudio project can be exported to any target (HTML5, Windows, M
 
 ## Tips
 
-
-
 ### Checking user inputs
 
 User inputs can be scanned in microStudio by checking fields in `keyboard`, `touch`, `mouse` or `gamepad` interfaces. For example, to check if the key `A` is pressed, you can check `keyboard.A`. This field can actually have 3 different statuses:
@@ -25,6 +23,7 @@ To check for such fields in Python without errors, you need to check whether the
       doSomething()
 ```
 
+Here is a helper function that you may find useful:
 
 ```
 def checkInput(obj,val):
@@ -35,10 +34,42 @@ def checkInput(obj,val):
 
 ### Instanciating classes
 
+Especially when using alternative graphics libs or optional libs, you may have to
+instantiate JavaScript objects as if you were using the `new` operator in JavaScript.
+To do this, simply call `.new` on the class you want to instantiate:
+
 ```
   light = BABYLON.HemisphericLight.new("light", BABYLON.Vector3.new(0, 1, 0), scene)
 ```
 
-## Example
+## Simple Example
 
-## Limitations
+```
+def init():
+  global x,y
+  x = 0
+  y = 0
+
+def checkInput(obj,val):
+  if hasattr(obj,val):
+    return obj[val] != 0
+  return 0
+
+def update():
+  global x,y
+  if checkInput(keyboard,"LEFT"):
+    x = x-1
+  if checkInput(keyboard,"RIGHT"):
+    x = x+1
+  if checkInput(keyboard,"UP"):
+    y = y+1
+  if checkInput(keyboard,"DOWN"):
+    y = y-1
+  pass
+
+def draw():
+  global x,y
+  screen.clear()
+  screen.drawSprite("icon",x,y,30)
+  pass
+```
