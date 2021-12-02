@@ -1,5 +1,23 @@
 ## Changelog
 
+### Update 2021-12-02
+* microScript: Hot reloading of classes: Changing your class while the program is running will affect all already instanciated objects!
+* microScript: Fixed transpiler parent class linking at runtime
+* New languages!!! Pick your desired programming language in the project options. You have access to the whole standard microStudio APIs and all optional libs (Pixi, Babylon, Matter.js ...) from your code in Python, JavaScript or Lua. Enjoy all the microStudio goodness: live coding, visual screen positioning help, contextual help and of course export to all target platforms, whatever the language or the optional libs.
+* New language: Python!
+* New language: JavaScript!
+* New language: Lua!
+
+### Update 2021-11-25
+* Using interpreter or transpiler is now an option of your project
+* You can thus now publish, export HTML5 or export to any target with transpiler active!
+* Fixed transpiler bug when functions are called with omitted arguments
+* Fixed cache interference when relaunching project
+
+### Update 2021-11-23
+* Fixed a bug with transpiled `for..in` loops
+* Updates and fixes to the IT doc and tutorials (thanks @HomineLudens)
+
 ### Update 2021-11-19
 * Experimental features activated! (check "Experimental" in your user settings to get access):
   * Alt graphics API PIXI.js (accelerated 2D)
@@ -8,7 +26,7 @@
   * Alt graphics API M3D (simple 3D API, preview, built on Babylon.js)
   * optional libs: matter.js (2D physics API) and cannon.js (3D physics API)
   * bonus experimental feature: sound synthesizer preview (requires a MIDI keyboard and Chromium-based browser)
-  
+
 * You can now mark your public projects "unlisted", allowing to share them without having them published on the main Explore page
 
 ### Update 2021-11-05

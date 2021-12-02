@@ -6,7 +6,7 @@ JSTranspiler = (function() {
     this.program = program;
     this.strict = strict != null ? strict : false;
     this.code_saves = [];
-    this.code = "var _msResolveVariable = function(v) {\n  let res = context.meta[v] ;\n  if (res == null) {\n    res = context.object[v] ;\n    if (res == null) {\n      res = context.global[v] ;\n    }\n  }\n  return res == null? 0 : res ;\n};\n\nvar _msResolveField = function(v,f) {\n  var res = v[f];\n  while (res == null && v[\"class\"] != null) {\n    v = v[\"class\"] ;\n    res = v[f] ;\n  }\n  return res!=null? res: 0 ;\n} ;\n\nvar _msResolveParentClass = function(obj) {\n  if (obj.class != null && typeof obj.class == \"string\") {\n    if (context.global[obj.class] != null) {\n      obj.class = context.global[obj.class] ;\n    }\n    _msResolveParentClass(obj.class);\n  }\n\n  if (obj.class != null) {\n    _msResolveParentClass(obj.class);\n  }\n} ;\n\nvar _msApply = function(parent,field, ...args) {\n  let save = context.object ;\n  let currentClass = context.currentClass ;\n  let childName = context.childName ;\n\n  context.object = parent ;\n  context.currentClass = parent ;\n  context.childName = field ;\n\n  let c = parent ;\n  let f = c[field] ;\n  while (f == null && c[\"class\"] != null) {\n    c = c[\"class\"] ;\n    f = c[field] ;\n    context.currentClass = c ;\n  }\n\n  let res = 0 ;\n  if (f != null) {\n    if (typeof f == \"function\") {\n      res = f.apply(parent,args) ;\n    }\n    else {\n      res = f ;\n    }\n  }\n\n  context.object = save ;\n  context.currentClass = currentClass ;\n  context.childName = childName ;\n\n  if (res != null) {\n    return res ;\n  }\n  else {\n    return 0 ;\n  }\n};\n\nvar _msInvoke = function(field, ...args) {\n  let f = null ;\n  let res = 0 ;\n\n  if (context.meta.hasOwnProperty(field)) {\n    f = context.meta[field] ;\n    res = f.apply(null,args) ;\n  }\n  else {\n    let currentClass = context.currentClass ;\n    let childName = context.childName ;\n\n    if (field == \"super\") {\n      let c = currentClass ;\n      f = null ;\n      while (f == null && c[\"class\"] != null) {\n        c = c[\"class\"] ;\n        f = c[childName] ;\n        context.currentClass = c ;\n      }\n    }\n    else {\n      context.currentClass = context.object ;\n      context.childName = field ;\n      let c = context.object ;\n      f = c[field] ;\n      while (f == null && c[\"class\"] != null) {\n        c = c[\"class\"] ;\n        f = c[field] ;\n        context.currentClass = c ;\n      }\n    }\n\n    if (f != null) {\n      if (typeof f == \"function\") {\n        res = f.apply(context.object,args) ;\n      }\n      else {\n        res = f ;\n      }\n    }\n    else if (context.global[field] != null) {\n      f = context.global[field] ;\n      let save = context.object ;\n      context.object = context.global ;\n      if (typeof f == \"function\") {\n        res = f.apply(context.object,args) ;\n      }\n      else {\n        res = f ;\n      }\n      context.object = save ;\n    }\n\n    context.currentClass = currentClass ;\n    context.childName = childName ;\n  }\n\n  if (res != null) {\n    return res ;\n  }\n  else {\n    return 0 ;\n  }\n};\n";
+    this.code = "var _msResolveVariable = function(v) {\n  let res = context.meta[v] ;\n  if (res == null) {\n    res = context.object[v] ;\n    if (res == null) {\n      res = context.global[v] ;\n    }\n  }\n  return res == null? 0 : res ;\n};\n\nvar _msResolveField = function(v,f) {\n  var res = v[f];\n  while (res == null && v[\"class\"] != null) {\n    v = v[\"class\"] ;\n    res = v[f] ;\n  }\n  return res!=null? res: 0 ;\n} ;\n\nvar _msResolveParentClass = function(obj) {\n  if (obj.class != null && typeof obj.class == \"string\") {\n    if (context.global[obj.class] != null) {\n      obj.class = context.global[obj.class] ;\n    }\n    _msResolveParentClass(obj.class);\n  }\n  else if (obj.class != null) {\n    _msResolveParentClass(obj.class);\n  }\n} ;\n\nvar _msApply = function(parent,field, ...args) {\n  let save = context.object ;\n  let currentClass = context.currentClass ;\n  let childName = context.childName ;\n\n  context.object = parent ;\n  context.currentClass = parent ;\n  context.childName = field ;\n\n  let c = parent ;\n  let f = c[field] ;\n  while (f == null && c[\"class\"] != null) {\n    c = c[\"class\"] ;\n    f = c[field] ;\n    context.currentClass = c ;\n  }\n\n  let res = 0 ;\n  if (f != null) {\n    if (typeof f == \"function\") {\n      res = f.apply(parent,args) ;\n    }\n    else {\n      res = f ;\n    }\n  }\n\n  context.object = save ;\n  context.currentClass = currentClass ;\n  context.childName = childName ;\n\n  if (res != null) {\n    return res ;\n  }\n  else {\n    return 0 ;\n  }\n};\n\nvar _msInvoke = function(field, ...args) {\n  let f = null ;\n  let res = 0 ;\n\n  if (context.meta.hasOwnProperty(field)) {\n    f = context.meta[field] ;\n    res = f.apply(null,args) ;\n  }\n  else {\n    let currentClass = context.currentClass ;\n    let childName = context.childName ;\n\n    if (field == \"super\") {\n      let c = currentClass ;\n      f = null ;\n      while (f == null && c[\"class\"] != null) {\n        c = c[\"class\"] ;\n        f = c[childName] ;\n        context.currentClass = c ;\n      }\n    }\n    else {\n      context.currentClass = context.object ;\n      context.childName = field ;\n      let c = context.object ;\n      f = c[field] ;\n      while (f == null && c[\"class\"] != null) {\n        c = c[\"class\"] ;\n        f = c[field] ;\n        context.currentClass = c ;\n      }\n    }\n\n    if (f != null) {\n      if (typeof f == \"function\") {\n        res = f.apply(context.object,args) ;\n      }\n      else {\n        res = f ;\n      }\n    }\n    else if (context.global[field] != null) {\n      f = context.global[field] ;\n      let save = context.object ;\n      context.object = context.global ;\n      if (typeof f == \"function\") {\n        res = f.apply(context.object,args) ;\n      }\n      else {\n        res = f ;\n      }\n      context.object = save ;\n    }\n\n    context.currentClass = currentClass ;\n    context.childName = childName ;\n  }\n\n  if (res != null) {\n    return res ;\n  }\n  else {\n    return 0 ;\n  }\n};\n";
     this.code = [this.code];
     context = {
       local_variables: {},
@@ -103,6 +103,8 @@ JSTranspiler = (function() {
       if (statement.field instanceof Program.Variable) {
         if (context.local_variables[statement.field.identifier]) {
           return statement.field.identifier + " = " + (this.transpile(statement.expression, context, true)) + (retain ? "" : ";");
+        } else if (statement.expression instanceof Program.CreateClass) {
+          return "context.object[\"" + statement.field.identifier + "\"] = " + (this.transpileUpdateClass(statement.expression, context, statement.field.identifier));
         } else {
           return "context.object[\"" + statement.field.identifier + "\"] = " + (this.transpile(statement.expression, context, true));
         }
@@ -498,6 +500,8 @@ JSTranspiler = (function() {
       a = ref1[i];
       if (a["default"] != null) {
         this.prepend("if (" + a.name + " == null) " + a.name + " = " + (this.transpile(a["default"])) + " ;");
+      } else {
+        this.prepend("if (" + a.name + " == null) " + a.name + " = 0 ;");
       }
     }
     seq = func.sequence;
@@ -638,6 +642,31 @@ JSTranspiler = (function() {
     return res;
   };
 
+  JSTranspiler.prototype.transpileUpdateClass = function(statement, context, variable) {
+    var classvar, cls, f, j, key, len, ref, res;
+    if (statement.ext != null) {
+      classvar = this.createTempVariable(context);
+      this.prepend("var " + classvar + " = " + (this.transpile(statement.ext, context, true)) + " ;");
+      if (statement.ext instanceof Program.Variable) {
+        this.prepend("if (!" + classvar + ") { " + classvar + " = \"" + statement.ext.identifier + "\" }");
+      }
+    }
+    res = "{\n";
+    ref = statement.fields;
+    for (j = 0, len = ref.length; j < len; j++) {
+      f = ref[j];
+      res += "  \"" + (this.formatField(f.field)) + "\": " + (this.transpile(f.value, context, true)) + ",\n";
+    }
+    if (statement.ext != null) {
+      res += "  \"class\": " + classvar + " , ";
+    }
+    res += "}";
+    cls = this.createTempVariable(context);
+    key = this.createTempVariable(context);
+    this.prepend("if (context.object[\"" + variable + "\"] != null) {\n  for (" + key + " in " + res + ") {\n    context.object[\"" + variable + "\"][" + key + "] = " + res + "[" + key + "] ;\n  }\n  " + cls + " = context.object[\"" + variable + "\"] ;\n}\nelse {\n  " + cls + " = " + res + " ;\n}");
+    return cls;
+  };
+
   JSTranspiler.prototype.transpileNewCall = function(statement, context) {
     var a, classvar, constructor, fconstructor, funcall, i, j, len, objvar, ref;
     funcall = statement.expression;
@@ -659,7 +688,7 @@ JSTranspiler = (function() {
     constructor += ") ;";
     fconstructor += ") ;";
     this.prepend("var " + classvar + " = " + (this.transpile(funcall.expression, context, true)) + " ;");
-    this.prepend("if (typeof " + classvar + " == \"function\") {\n  var " + objvar + " = " + fconstructor + " ;\n} else {\n  var " + objvar + " = { \"class\": " + classvar + "} ;\n  " + constructor + "\n} ");
+    this.prepend("if (typeof " + classvar + " == \"function\") {\n  var " + objvar + " = " + fconstructor + " ;\n} else {\n  var " + objvar + " = { \"class\": " + classvar + "} ;\n  _msResolveParentClass(" + objvar + ") ;\n  " + constructor + "\n} ");
     return objvar;
   };
 

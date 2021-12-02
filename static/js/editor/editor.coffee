@@ -1,9 +1,11 @@
 class @Editor
   constructor:(@app)->
+    @language = @app.languages.microscript
+
     @editor = ace.edit "editor-view"
     @editor.$blockScrolling = Infinity
     @editor.setTheme("ace/theme/tomorrow_night_bright")
-    @editor.getSession().setMode("ace/mode/microscript")
+    @editor.getSession().setMode(@language.ace_mode)
     @editor.setFontSize("14px")
     @editor.getSession().setOptions
       tabSize: 2
@@ -127,6 +129,17 @@ class @Editor
       @editor.setOptions({ fontSize: @font_size })
       localStorage.setItem("code_editor_font_size",@font_size)
 
+  updateLanguage:()->
+    if @app.project
+      switch @app.project.language
+        when "python" then @language = @app.languages.python
+        when "javascript" then @language = @app.languages.javascript
+        when "lua" then @language = @app.languages.lua
+        else
+          @language = @app.languages.microscript
+
+    @editor.getSession().setMode(@language.ace_mode)
+
   toggleFileList:(close)->
     view = document.getElementById("editor-view")
     list = document.getElementById("source-list-panel")
@@ -165,9 +178,12 @@ class @Editor
   check:()->
     if @update_time>0 and (@value_tool or Date.now()>@update_time+@update_delay)
       @update_time = 0
-      parser = new Parser(@editor.getValue())
-      p = parser.parse()
-      if not parser.error_info?
+      if @language.parser
+        parser = new @language.parser(@editor.getValue())
+        p = parser.parse()
+        if not parser.error_info?
+          @app.runwindow.updateCode(@selected_source+".ms",@getCode())
+      else
         @app.runwindow.updateCode(@selected_source+".ms",@getCode())
 
   getCurrentLine:()->
@@ -220,7 +236,7 @@ class @Editor
     @editor.getSession().setUndoManager(new ace.UndoManager())
     @ignore_changes = false
 
-  addDocButton:(pointer)->
+  addDocButton:(pointer,section)->
     content = document.querySelector("#help-window .content")
     button = document.createElement "div"
     button.classList.add "see-doc-button"
@@ -228,6 +244,7 @@ class @Editor
     button.addEventListener "click",(event)=>
       event.stopPropagation()
       @app.appui.setMainSection "help",true
+      @app.documentation.setSection section or "api"
       element = document.getElementById pointer
       if element?
         element.scrollIntoView()
@@ -237,7 +254,7 @@ class @Editor
 
   liveHelp:()->
     return if not @show_help
-    line = @getCurrentLine()
+    line = @getCurrentLine().replace(":",".")
     column = @editor.getSelectionRange().start.column
     suggest = @app.documentation.findSuggestMatch(line,column)
     content = document.querySelector("#help-window .content")
@@ -248,7 +265,7 @@ class @Editor
         content.innerHTML = DOMPurify.sanitize marked help[0].value
         content.style.display = "block"
         document.querySelector("#help-window").classList.add("showing")
-        @addDocButton(help[0].pointer)
+        @addDocButton(help[0].pointer,help[0].section)
       else
         content.innerHTML = ""
         content.style.display = "none"
@@ -256,7 +273,7 @@ class @Editor
       content.innerHTML = DOMPurify.sanitize marked suggest[0].value
       content.style.display = "block"
       document.querySelector("#help-window").classList.add("showing")
-      @addDocButton(suggest[0].pointer)
+      @addDocButton(suggest[0].pointer,suggest[0].section)
     else
       md = ""
       for res in suggest
@@ -264,10 +281,10 @@ class @Editor
       content.innerHTML = DOMPurify.sanitize marked md
       content.style.display = "block"
       document.querySelector("#help-window").classList.add("showing")
-      @addDocButton(suggest[0].pointer)
+      @addDocButton(suggest[0].pointer,suggest[0].section)
 
   tokenizeLine:(line)->
-    tokenizer = new Tokenizer(line)
+    tokenizer = new Tokenizer(line.replace(":","."))
     index = 0
     list = []
     try
@@ -385,27 +402,43 @@ class @Editor
     try
       res = @analyzeLine(row,column)
       if res?
-        if res.function.indexOf("Polygon")>0 or res.function == "drawLine"
-          args = []
-          funk = (i)=>
-            @app.runwindow.runCommand res.args[i],(v)=>
-              args[i] = v
-              if i<res.args.length-1
-                funk(i+1)
-              else
-                @app.runwindow.rulercanvas.showPolygon(args,res.arg)
-          funk(0)
+        if @app.project.language.startsWith("microscript")
+          if res.function.indexOf("Polygon")>0 or res.function == "drawLine"
+            args = []
+            funk = (i)=>
+              @app.runwindow.runCommand res.args[i],(v)=>
+                args[i] = v
+                if i<res.args.length-1
+                  funk(i+1)
+                else
+                  @app.runwindow.rulercanvas.showPolygon(args,res.arg)
+            funk(0)
+          else
+            @app.runwindow.runCommand res.args[0],(v1)=>
+              @app.runwindow.runCommand res.args[1],(v2)=>
+                @app.runwindow.runCommand res.args[2],(v3)=>
+                  @app.runwindow.runCommand res.args[3],(v4)=>
+                    switch res.arg
+                      when 0 then @app.runwindow.rulercanvas.showX(v1,v2,v3,v4)
+                      when 1 then @app.runwindow.rulercanvas.showY(v1,v2,v3,v4)
+                      when 2 then @app.runwindow.rulercanvas.showW(v1,v2,v3,v4)
+                      when 3 then @app.runwindow.rulercanvas.showH(v1,v2,v3,v4)
+                      else @app.runwindow.rulercanvas.showBox(v1,v2,v3,v4)
         else
-          @app.runwindow.runCommand res.args[0],(v1)=>
-            @app.runwindow.runCommand res.args[1],(v2)=>
-              @app.runwindow.runCommand res.args[2],(v3)=>
-                @app.runwindow.runCommand res.args[3],(v4)=>
-                  switch res.arg
-                    when 0 then @app.runwindow.rulercanvas.showX(v1,v2,v3,v4)
-                    when 1 then @app.runwindow.rulercanvas.showY(v1,v2,v3,v4)
-                    when 2 then @app.runwindow.rulercanvas.showW(v1,v2,v3,v4)
-                    when 3 then @app.runwindow.rulercanvas.showH(v1,v2,v3,v4)
-                    else @app.runwindow.rulercanvas.showBox(v1,v2,v3,v4)
+          if res.function.indexOf("Polygon")>0 or res.function == "drawLine"
+            args = res.args
+            @app.runwindow.rulercanvas.showPolygon(args,res.arg)
+          else
+            args = res.args
+            for i in [0..args.length-1] by 1
+              args[i] = args[i]|0
+
+            switch res.arg
+              when 0 then @app.runwindow.rulercanvas.showX(args[0],args[1],args[2],args[3])
+              when 1 then @app.runwindow.rulercanvas.showY(args[0],args[1],args[2],args[3])
+              when 2 then @app.runwindow.rulercanvas.showW(args[0],args[1],args[2],args[3])
+              when 3 then @app.runwindow.rulercanvas.showH(args[0],args[1],args[2],args[3])
+              else @app.runwindow.rulercanvas.showBox(args[0],args[1],args[2],args[3])
       else
         @app.runwindow.rulercanvas.hide()
 
@@ -419,7 +452,7 @@ class @Editor
       column = range.start.column
     line = @editor.session.getLine(row)
 
-    parser = new Parser(line+" ")
+    parser = new Parser(line.replace(":",".")+" ")
     p = parser.parse()
 
     if parser.last_function_call?
@@ -460,6 +493,12 @@ class @Editor
 
     null
 
+  setTitleSourceName:()->
+    if @selected_source?
+      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> "+@selected_source
+      lang = @app.project.language.split("_")[0]
+      document.getElementById("code-toolbar").innerHTML += "<span class='language #{lang}'>#{lang}</span>"
+
   setSelectedSource:(name)->
     @checkSave(true)
     if @selected_source?
@@ -472,7 +511,7 @@ class @Editor
     list = document.getElementById("source-list").childNodes
 
     if @selected_source?
-      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> "+@selected_source
+      @setTitleSourceName()
       for e in list
         if e.getAttribute("id") == "source-list-item-#{name}"
           e.classList.add("selected")
@@ -501,6 +540,7 @@ class @Editor
     @app.runwindow.windowResized()
     @setSelectedSource null
     @updateRunLink()
+    @updateLanguage()
 
   projectUpdate:(change)->
     if change == "sourcelist"

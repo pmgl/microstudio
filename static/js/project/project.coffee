@@ -15,6 +15,7 @@ class @Project
     @type = data.type
     @orientation = data.orientation
     @graphics = data.graphics or "M1"
+    @language = data.language or "microscript_v1_i"
     @libs = data.libs or []
     @aspect = data.aspect
     @users = data.users
@@ -370,6 +371,9 @@ class @Project
     #window.dispatchEvent(new Event('resize'))
 
   setGraphics:(@graphics)->
+    #window.dispatchEvent(new Event('resize'))
+
+  setLanguage:(@language)->
     #window.dispatchEvent(new Event('resize'))
 
   addPendingChange:(item)->

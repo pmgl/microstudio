@@ -32,11 +32,14 @@
 }
 .md h5 {
   font-size: 15px ;
+  font-weight: normal ;
+  font-family: "Ubuntu Mono" ;
   background: rgba(0,0,0,.1);
-  border-radius: 5px ;
-  padding: 5px ;
-  margin-top: 20px ;
+  border-radius: 0px ;
+  padding: 10px 10px 10px 20px ;
+  margin-top: 40px ;
   margin-bottom: 10px ;
+  border-left: solid 10px rgba(0,0,0,.2);
 }
 
 .md table {
@@ -119,7 +122,11 @@
 
 .dark.md h1,.dark.md h2,.dark.md h3,.dark.md h4,.dark.md h5,.dark.md h6 {
   color: rgba(255,255,255,.8);
-  font-family: Helvetica,sans-serif;
+}
+
+.dark.md h5 {
+  background: rgba(255,255,255,.1);
+  border-left: solid 10px hsla(30,100%,50%,.5);
 }
 
 .dark.md pre code, .dark.md code {

@@ -61,7 +61,7 @@ html(lang=language)
 
     script(src="/lib/marked/marked.js")
     script(src="/lib/dompurify/purify.js")
-    
+
     script.
       window.ms_languages = !{JSON.stringify(languages)};
       window.ms_standalone = !{standalone} ;
@@ -83,11 +83,11 @@ html(lang=language)
           img(style="display: none;")
           i.fa.fa-user
           span#user-nick
-            
+
       div#header-progress-summary.hidden
         div#header-progress-level Level 0
         div#header-progress-xp 0
-          
+
       div#language-setting
         i.fas.fa-comment
         div.lang.notranslate(translate="no") #{language.toUpperCase()}
@@ -162,8 +162,8 @@ html(lang=language)
         div.part
           div.center
             h2 #{translator.get("Get into programming")}
-            p #{translator.get("Write your game code in microScript, a simple language inspired by Lua.")}
-            p #{translator.get("The documentation is always there to help. Create cool demos in just a few lines of code.")}
+            p #{translator.get("Write your game code in microScript, a simple language inspired by Lua.")+" "+translator.get("The documentation is always there to help. Create cool demos in just a few lines of code.")}
+            p #{translator.get("microScript shines by its simplicity and interactivity. But you can also code in JavaScript, Python or Lua if you prefer.")}
           div.center
             img.screen(src="/img/codeeditor.jpg" alt="Code Editor")
 
@@ -222,6 +222,20 @@ html(lang=language)
             i.fa.fa-pencil-alt
             br
             span #{translator.get("Start creating!")}
+
+
+        div.part
+          h2 #{translator.get("Standalone, offline application")}
+          div.center
+            p #{translator.get("Would you like to work completely offline? Download the microStudio standalone app for Windows, Mac, Linux and Raspberry Pi:")}
+            p
+              a(href="https://microstudio.itch.io/microstudio") https://microstudio.itch.io/microstudio
+          div.center
+            img(src="/img/windows.svg" alt="Windows" style="box-shadow: none; width: 100px; margin: 20px 40px")
+            img(src="/img/macos.svg" alt="macOS" style="box-shadow: none; width: 100px; margin: 20px 40px")
+            br
+            img(src="/img/ubuntu.svg" alt="Linux" style="box-shadow: none; width: 100px; margin: 20px 40px")
+            img(src="/img/raspberry.svg" alt="Raspberry Pi OS" style="box-shadow: none; width: 100px; margin: 20px 40px")
 
         div.footer
           p #{translator.get("Created in Strasbourg, France. See 'About' for more information")}

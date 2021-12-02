@@ -1,5 +1,5 @@
 class @MicroVM
-  constructor:(meta={},global = {},@namespace = "/microstudio",@transpiler = false)->
+  constructor:(meta={},global = {},@namespace = "/microstudio")->
     if not meta.print?
       meta.print = (text)->
         if typeof text == "object"
@@ -101,7 +101,8 @@ class @MicroVM
     catch err
 
 
-    global.storage = @createStorageService()
+    @storage_service = @createStorageService()
+    global.storage = @storage_service.api
 
     meta.global = global
 
@@ -124,6 +125,7 @@ class @MicroVM
       this.sort(funk)
 
     @clearWarnings()
+    @runner = new Runner @
 
   clearWarnings:()->
     @context.warnings =
@@ -137,120 +139,93 @@ class @MicroVM
   setGlobal:(key,value)->
     @context.global[key] = value
 
-  run:(@program,timeout=3000,compile = @transpiler)->
+  run:(@program,timeout=3000,filename="")->
     @error_info = null
     @context.timeout = Date.now()+timeout
     @context.stack_size = 0
 
-    if compile
-      try
-        res = new JSTranspiler(@program).exec(@context)
-        @checkStorage()
-        return Program.toString res
-      catch err
-        console.error err
+    try
+      res = @runner.run @program,filename
+      @storage_service.check()
+      return Program.toString res
+    catch err
+      if @context.location? and @context.location.token?
         @error_info =
           error: err
+          file: filename
           line: @context.location.token.line
           column: @context.location.token.column
-        @checkStorage()
-    else
-      try
-        for s,i in @program.statements
-          res = s.evaluate @context,i == @program.statements.length-1
-        @checkStorage()
-        return Program.toString res
-      catch err
-        if @context.location?
-          @error_info =
-            error: err
-            line: @context.location.token.line
-            column: @context.location.token.column
         console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
-        console.error err
-        @checkStorage()
+      else
+        @error_info =
+          error: err
+          file: filename
 
-
+      console.error err
+      @storage_service.check()
 
   call:(name,args=[],timeout=3000)->
     @error_info = null
     @context.timeout = Date.now()+timeout
     @context.stack_size = 0
-    for i in [0..args.length-1]
-      a = args[i]
-      if typeof a == "number"
-        args[i] = new Program.Value null,Program.Value.TYPE_NUMBER,a
-      else if typeof a == "string"
-        args[i] = new Program.Value null,Program.Value.TYPE_STRING,a
+
+    try
+      res = @runner.call name,args
+      @storage_service.check()
+      res
+    catch err
+      console.error err
+      if @context.location? and @context.location.token?
+        @error_info =
+          error: err
+          line: @context.location.token.line
+          column: @context.location.token.column
+          file: @context.location.token.file
       else
-        args[i] = new Program.Value null,Program.Value.TYPE_OBJECT,a
+        @error_info =
+          error: err
 
-    if name instanceof Program.Function
-      f = name
-    else
-      f = @context.global[name]
-
-    if f?
-      if f instanceof Program.Function
-        try
-          res = new Program.FunctionCall(f.token,f,args).evaluate(@context,true)
-          @checkStorage()
-          res
-        catch err
-          console.error err
-          if @context.location?
-            @error_info =
-              error: err
-              line: @context.location.token.line
-              column: @context.location.token.column
-          console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
-          @checkStorage()
-      else if typeof f == "function"
-        try
-          res = f.apply(null,args)
-          @checkStorage()
-          res
-        catch err
-          console.error err
-          if @context.location?
-            @error_info =
-              error: err
-              line: @context.location.token.line
-              column: @context.location.token.column
-          console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
-
-          @checkStorage()
-
+      if @context.location? and @context.location.token?
+        console.info "Error at line: #{@context.location.token.line} column: #{@context.location.token.column}"
+      @storage_service.check()
 
   createStorageService:()->
-    @storage = {}
+    ls = window.localStorage
     try
-      s = localStorage.getItem("ms#{@namespace}")
-      if s
-        @storage = JSON.parse(s)
+      delete window.localStorage
     catch err
 
-    return {
-      set: (name,value)=>
-        value = @storableObject(value)
-        if name? and value?
-          @storage[name] = value
-          @write_storage = true
-        value
+    storage = {}
+    write_storage = false
+    namespace = @namespace
 
-      get: (name)=>
-        if name?
-          @storage[name]
-        else
-          0
-    }
+    try
+      s = ls.getItem("ms#{namespace}")
+      if s
+        storage = JSON.parse(s)
+    catch err
 
-  checkStorage:()->
-    if @write_storage
-      @write_storage = false
-      try
-        localStorage.setItem("ms#{@namespace}",JSON.stringify(@storage))
-      catch err
+    service =
+      api:
+        set: (name,value)=>
+          value = @storableObject(value)
+          if name? and value?
+            storage[name] = value
+            write_storage = true
+          value
+
+        get:(name)=>
+          if name?
+            storage[name]
+          else
+            0
+
+      check:()=>
+        if write_storage
+          write_storage = false
+          try
+            ls.setItem("ms#{namespace}",JSON.stringify(storage))
+          catch err
 
   storableObject:(value)->
     referenced = [

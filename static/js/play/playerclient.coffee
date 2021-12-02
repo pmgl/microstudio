@@ -4,12 +4,14 @@ class @PlayerClient
     @request_id = 0
     @version_checked = false
     @reconnect_delay = 1000
-    try
-      @connect()
-    catch err
-      console.error err
 
-    setInterval (()=>@sendRequest({name:"ping"}) if @socket?),30000
+    if location.protocol.startsWith "http"
+      try
+        @connect()
+      catch err
+        console.error err
+
+      setInterval (()=>@sendRequest({name:"ping"}) if @socket?),30000
 
   connect:()->
     @socket = new WebSocket(window.location.origin.replace("http","ws"))

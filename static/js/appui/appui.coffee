@@ -294,6 +294,7 @@ class AppUI
       @code_splitbar.update()
       @runtime_splitbar.update()
       @app.runwindow.windowResized()
+      @app.editor.editor.resize()
 
     if section == "sprites"
       @sprites_splitbar.update()
@@ -377,6 +378,9 @@ class AppUI
 
     if section == "explore"
       @app.explore.update()
+
+    if section == "help"
+      @app.documentation.updateViewPos()
 
     if section == "about"
       @app.about.setSection("about")
@@ -598,13 +602,6 @@ class AppUI
       #if @app.user.flags.admin
       @allowed_sections.sounds = true
       @allowed_sections.music = true
-
-      if @app.user.flags.experimental
-        document.getElementById("project-option-graphics").style.display = "block"
-        document.getElementById("project-option-libs").style.display = "block"
-        #@allowed_sections.assets = @app.project? and @app.project.graphics == "M3D"
-        #if @app.project? and @app.project.graphics == "M3D"
-        #  @app.assets_manager.init()
 
     for s in @sections
       e = document.getElementById("menuitem-#{s}")

@@ -15,9 +15,9 @@ giocatore colpisce una lama. Una volta che *gameover* è impostato, abbiamo biso
 * aspettare 5 secondi
 * riavviare il gioco
 
-Fermeremo il gioco saltando tutto il nostro codice nella funzione *update*. Aspetteremo 5
+Possiamo fermare il gioco saltando tutto il nostro codice nella funzione *update*. Aspetteremo 5
 secondi incrementando il valore di gameover nella funzione update fino a raggiungere 300.
-Riavvieremo il gioco richiamando la funzione *init*, dopo esserci assicurati che abbia correttamente
+Riavvieremo quindi il gioco richiamando la funzione *init*, dopo esserci assicurati che abbia correttamente
 resettato tutto ciò di cui abbiamo bisogno.
 
 ## Game over
@@ -31,12 +31,12 @@ Modificheremo quindi il contenuto della funzione *update* come segue:
     gameover = gameover+1
     if gameover>300 then init() end
   else
-    // gli altri contenuti della funzione di aggiornamento vanno qui
+    // gli altri contenuti della funzione di aggiornamento vanno inseriti qui
   end
 ```
 
 La funzione *init* è ora usata per riavviare il gioco 5 secondi dopo la fine della partita. Per fa funzionare questo
-correttamente, hai bisogno di azzerare il *punteggio*, la *posizione* iniziale e di resettare il valore di *gameover*
+correttamente, c'è bisogno di azzerare il *punteggio*, la *posizione* iniziale e di resettare il valore di *gameover*
 a zero:
 
 ```
@@ -68,8 +68,8 @@ che copre tutta l'interfaccia di gioco e disegneremo il testo GAME OVER. Aggiung
 
 ### Accelerare il gameplay
 
-Il nostro gioco è troppo facile. Rendiamolo più difficile! Accelereremo progressivamente l'eroe durante il gioco.
-Lo facciamo creando una variabile *speed* che inizializziamo al valore 2 nella funzione *init*:
+Il nostro gioco è troppo facile. Rendiamolo più difficile! Acceleriamo progressivamente l'eroe durante il gioco.
+Lo facciamo creando una variabile *movimento* che inizializziamo al valore 2 nella funzione *init*:
 
 ```
   movimento = 2
@@ -93,10 +93,10 @@ Abbiamo finito di creare il nostro gioco. Il codice completo è riportato di nuo
 abbiamo aggiunto una variabile *esecuzione* il cui scopo è aspettare che il giocatore tocchi lo schermo prima di
 iniziare il gioco.
 
-Abbiamo anche aggiunto alcuni suoni che vengono prodotti chiamando la funzione ```audio.beep()```. Puoi verificare anche questo nel
+Abbiamo anche aggiunto alcuni suoni che vengono prodotti chiamando la funzione ```audio.beep()```. Puoi vedere come nel
 codice qui sotto.
 
-Puoi anche iniziare ad aggiungere altre caratteristiche al gioco. Perché non alcuni oggetti volanti che dovrebbero essere evitati
+Potresti anche iniziare ad aggiungere altre caratteristiche al gioco. Perché non alcuni oggetti volanti che devono essere evitati
 quando si salta? Dipende tutto da voi!
 
 Grazie per aver letto questo tutorial e buon divertimento con microStudio!
@@ -117,7 +117,7 @@ update = function()
   if gameover>0 then
     gameover = gameover+1
     if gameover>300 then init() end
-  else esecuzione then
+  elsif esecuzione then
     posizione = posizione + movimento
     movimento = movimento + 0.001
     
@@ -163,7 +163,7 @@ draw = function()
     screen.drawSprite("lama",lame[i]-posizione-80,-50,20)
   end
   
-  screen.drawText(score,120,80,20, "#FFF")
+  screen.drawText(punteggio,120,80,20, "#FFF")
   if gameover then
     screen.fillRect(0,0,screen.width,screen.height, "rgba(255,0,0,.5)")
     screen.drawText("GAME OVER",0,0,50, "#FFF")

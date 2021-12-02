@@ -85,6 +85,8 @@ class @Server
     app.use("/lib/babylonjs",express.static("node_modules/babylonjs"))
     app.use("/lib/matterjs",express.static("node_modules/matter-js/build"))
     app.use("/lib/cannonjs",express.static("node_modules/cannon/build"))
+    app.use("/lib/brython",express.static("node_modules/brython"))
+    app.use("/lib/fengari",express.static("node_modules/fengari-web/dist"))
 
     @db = new DB "#{@app_data}/data",(db)=>
       for plugin in @plugins

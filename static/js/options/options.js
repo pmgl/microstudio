@@ -1,8 +1,9 @@
-var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var DEFAULT_CODE,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 this.Options = (function() {
   function Options(app) {
-    var fn, i, input, len, list;
+    var advanced, fn, i, input, len, list;
     this.app = app;
     this.textInput("projectoption-name", (function(_this) {
       return function(value) {
@@ -32,6 +33,25 @@ this.Options = (function() {
     this.selectInput("projectoption-graphics", (function(_this) {
       return function(value) {
         return _this.graphicsChanged(value);
+      };
+    })(this));
+    this.selectInput("projectoption-language", (function(_this) {
+      return function(value) {
+        return _this.languageChanged(value);
+      };
+    })(this));
+    advanced = document.getElementById("advanced-project-options-button");
+    advanced.addEventListener("click", (function(_this) {
+      return function() {
+        if (advanced.classList.contains("open")) {
+          advanced.classList.remove("open");
+          document.getElementById("advanced-project-options").style.display = "none";
+          return advanced.childNodes[1].innerText = _this.app.translator.get("Show advanced options");
+        } else {
+          advanced.classList.add("open");
+          document.getElementById("advanced-project-options").style.display = "block";
+          return advanced.childNodes[1].innerText = _this.app.translator.get("Hide advanced options");
+        }
       };
     })(this));
     this.app.appui.setAction("add-project-user", (function(_this) {
@@ -103,6 +123,7 @@ this.Options = (function() {
     document.getElementById("projectoption-orientation").value = this.app.project.orientation;
     document.getElementById("projectoption-aspect").value = this.app.project.aspect;
     document.getElementById("projectoption-graphics").value = this.app.project.graphics || "M1";
+    document.getElementById("projectoption-language").value = this.app.project.language || "microscript_v1_i";
     list = document.querySelectorAll("#project-option-libs input");
     for (i = 0, len = list.length; i < len; i++) {
       input = list[i];
@@ -224,6 +245,39 @@ this.Options = (function() {
     return this.app.appui.updateAllowedSections();
   };
 
+  Options.prototype.languageChanged = function(value) {
+    if (value !== this.app.project.language) {
+      if (this.app.project.source_list.length === 1 && this.app.project.source_list[0].content.split("\n").length < 20) {
+        if (!this.app.project.language.startsWith("microscript") || !value.startsWith("microscript")) {
+          if (!confirm(this.app.translator.get("Your current code will be overwritten. Do you wish to proceed?"))) {
+            document.getElementById("projectoption-language").value = this.app.project.language;
+            return;
+          } else {
+            this.app.project.setLanguage(value);
+            this.app.editor.updateLanguage();
+            if (DEFAULT_CODE[value] != null) {
+              this.app.editor.setCode(DEFAULT_CODE[value]);
+            } else {
+              this.app.editor.setCode(DEFAULT_CODE["microscript"]);
+            }
+            this.app.editor.editorContentsChanged();
+            this.app.editor.setTitleSourceName();
+          }
+        }
+      }
+    }
+    this.app.project.setLanguage(value);
+    this.app.editor.updateLanguage();
+    return this.app.client.sendRequest({
+      name: "set_project_option",
+      project: this.app.project.id,
+      option: "language",
+      value: value
+    }, (function(_this) {
+      return function(msg) {};
+    })(this));
+  };
+
   Options.prototype.setType = function(type) {
     if (type !== this.app.project.type) {
       console.info("setting type to " + type);
@@ -293,3 +347,10 @@ this.Options = (function() {
   return Options;
 
 })();
+
+DEFAULT_CODE = {
+  python: "def init():\n  pass\n\ndef update():\n  pass\n\ndef draw():\n  pass",
+  javascript: "init = function() {\n}\n\nupdate = function() {\n}\n\ndraw = function() {\n}",
+  lua: "init = function()\nend\n\nupdate = function()\nend\n\ndraw = function()\nend",
+  microscript: "init = function()\nend\n\nupdate = function()\nend\n\ndraw = function()\nend"
+};

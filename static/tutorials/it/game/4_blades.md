@@ -31,7 +31,7 @@ elencherà la posizione delle nostre 3 lame. Il secondo array, ```superate``` sa
 init = funzione()
   lame = [200,300,400]
   superate = [0,0,0]
-fine
+end
 ```
 
 ## Creare il "comportamento" delle lame
@@ -44,7 +44,7 @@ posizione casuale. Il codice qui sotto itera sulla nostra lista di lame e fa esa
 inserito nel corpo della funzione ```update```.
 
 ```
-  for i=0 a lame.length-1
+  for i=0 to lame.length-1
     if lame[i]<posizione-120 then
       lame[i] = posizione+280+random.next()*200
       superate[i] = 0
@@ -63,7 +63,7 @@ Ora dovremmo visualizzare le lame sullo schermo. Per farlo, aggiungiamo il codic
 Questo codice itera sulle posizioni delle lame, e disegna lo sprite "blade" nella loro posizione. 
 
 ```
-  for i=0 a lame.length-1
+  for i=0 to lame.length-1
     screen.drawSprite("lama",lame[i]-posizione-80,-50,20)
   end
 ```
@@ -77,7 +77,7 @@ Così, quando la posizione della lama è uguale alla posizione dell'eroe, entram
 
 Ora controlleremo se l'eroe si scontra con una lama, o se sta saltando sopra di essa. Per ogni lama, controlleremo la differenza
 tra la posizione della lama e quella dell'eroe. Se il valore assoluto della differenza è abbastanza piccolo, possiamo considerare i due
-essere sovrapposti. Ora, se la posizione verticale dell'eroe è abbastanza alta, l'eroe sta saltando e non è effettivamente ferito dalla lama.
+come sovrapposti. Ora, se la posizione verticale dell'eroe è abbastanza alta, l'eroe sta saltando e non è effettivamente ferito dalla lama.
 Ecco come questo si traduce in codice, da inserire nel *for loop* nel corpo della funzione *update*:
 
 ```
@@ -98,7 +98,7 @@ usarlo come punteggio.
 Ecco il codice completo del *ciclo for* all'interno della funzione *update*:
 
 ```
-  for i=0 a lame.length-1
+  for i=0 to lame.length-1
     if lame[i]<posizione-120 then
       lame[i] = posizione+280+random.next()*200
       superate[i] = 0
@@ -150,7 +150,7 @@ update = function()
   eroe_y = max(0,eroe_y+eroe_vy)
 
   for i=0 to lame.length-1
-    if blades[i]<posizione-120 then
+    if lame[i]<posizione-120 then
       lame[i] = posizione+280+random.next()*200
       superate[i] = 0
     end
@@ -169,12 +169,12 @@ draw = function()
   screen.fillRect(0,0,screen.width,screen.height,"rgb(57,0,57)")
   
   for i=-6 to 6 by 1
-    screen.drawSprite("wall",i*40-posizione%40,-80,40)
+    screen.drawSprite("muro",i*40-posizione%40,-80,40)
   end
-
-  screen.drawSprite("hero",-80,-50+eroe_y,20)
   
-  for i=0 to blades.length-1
+  screen.drawSprite("eroe",-80,-50+eroe_y,20)
+  
+  for i=0 to lame.length-1
     screen.drawSprite("lama",lame[i]-posizione-80,-50,20)
   end
   

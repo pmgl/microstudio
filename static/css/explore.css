@@ -615,3 +615,24 @@
   font-size: 14px;
   font-family: "Source Sans Pro",Verdana;
 }
+.explore-project-language {
+  padding: 5px 10px ;
+  border-radius: 10px ;
+  font-size: 12px ;
+  font-family: "Ubuntu Mono" ;
+  color: rgba(255,255,255,.9) ;
+  display: inline-block ;
+  margin: 20px 10px 20px 0 ;
+}
+.explore-project-language.python {
+  background-color: hsl(160,40%,40%) ;
+}
+.explore-project-language.lua {
+  background-color: hsl(20,40%,40%) ;
+}
+.explore-project-language.javascript {
+  background-color: hsl(300,40%,40%) ;
+}
+.explore-project-language.microscript {
+  background-color: hsl(200,40%,40%) ;
+}

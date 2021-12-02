@@ -17,6 +17,18 @@ class @Options
     @selectInput "projectoption-orientation",(value)=>@orientationChanged(value)
     @selectInput "projectoption-aspect",(value)=>@aspectChanged(value)
     @selectInput "projectoption-graphics",(value)=>@graphicsChanged(value)
+    @selectInput "projectoption-language",(value)=>@languageChanged(value)
+
+    advanced = document.getElementById("advanced-project-options-button")
+    advanced.addEventListener "click",()=>
+      if advanced.classList.contains "open"
+        advanced.classList.remove "open"
+        document.getElementById("advanced-project-options").style.display = "none"
+        advanced.childNodes[1].innerText = @app.translator.get "Show advanced options"
+      else
+        advanced.classList.add "open"
+        document.getElementById("advanced-project-options").style.display = "block"
+        advanced.childNodes[1].innerText = @app.translator.get "Hide advanced options"
 
     @app.appui.setAction "add-project-user",()=>
       @addProjectUser()
@@ -59,6 +71,7 @@ class @Options
     document.getElementById("projectoption-orientation").value = @app.project.orientation
     document.getElementById("projectoption-aspect").value = @app.project.aspect
     document.getElementById("projectoption-graphics").value = @app.project.graphics or "M1"
+    document.getElementById("projectoption-language").value = @app.project.language or "microscript_v1_i"
 
     list = document.querySelectorAll("#project-option-libs input")
     for input in list
@@ -150,6 +163,32 @@ class @Options
     },(msg)=>
     @app.appui.updateAllowedSections()
 
+  languageChanged:(value)->
+    if value != @app.project.language
+      if @app.project.source_list.length == 1 and @app.project.source_list[0].content.split("\n").length<20
+        if not @app.project.language.startsWith("microscript") or not value.startsWith("microscript")
+          if not confirm(@app.translator.get("Your current code will be overwritten. Do you wish to proceed?"))
+            document.getElementById("projectoption-language").value = @app.project.language
+            return
+          else
+            @app.project.setLanguage(value)
+            @app.editor.updateLanguage()
+            if DEFAULT_CODE[value]?
+              @app.editor.setCode DEFAULT_CODE[value]
+            else
+              @app.editor.setCode DEFAULT_CODE["microscript"]
+            @app.editor.editorContentsChanged()
+            @app.editor.setTitleSourceName()
+
+    @app.project.setLanguage(value)
+    @app.editor.updateLanguage()
+    @app.client.sendRequest {
+      name: "set_project_option"
+      project: @app.project.id
+      option: "language"
+      value: value
+    },(msg)=>
+
   setType:(type)->
     if type != @app.project.type
       console.info("setting type to #{type}")
@@ -197,3 +236,46 @@ class @Options
 
         div.appendChild e
     return
+
+
+DEFAULT_CODE =
+  python: """
+def init():
+  pass
+
+def update():
+  pass
+
+def draw():
+  pass
+  """
+  javascript: """
+init = function() {
+}
+
+update = function() {
+}
+
+draw = function() {
+}
+  """
+  lua: """
+init = function()
+end
+
+update = function()
+end
+
+draw = function()
+end
+  """
+  microscript: """
+init = function()
+end
+
+update = function()
+end
+
+draw = function()
+end
+  """

@@ -174,10 +174,6 @@
   margin-right: 10px ;
 }
 
-#project-option-graphics, #project-option-libs {
-  display: none ;
-}
-
 .projectoptions .validate-button-container {
   display: inline-block ;
   width: 100px ;
@@ -197,4 +193,25 @@
   color: #FFF ;
   cursor: pointer ;
   white-space: nowrap;
+}
+
+#advanced-project-options-button {
+  display: inline-block ;
+  border-radius: 5px ;
+  color: hsl(10,100%,70%) ;
+  margin: 0 0 40px 0 ;
+  cursor: pointer ;
+}
+#advanced-project-options-button i {
+  margin-right: 10px ;
+}
+#advanced-project-options-button i:before {
+  content: "\f063";
+}
+#advanced-project-options-button.open i:before {
+  content: "\f062";
+}
+
+#advanced-project-options {
+  display: none ;
 }

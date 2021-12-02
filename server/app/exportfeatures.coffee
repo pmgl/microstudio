@@ -46,7 +46,14 @@ class @ExportFeatures
                 #console.info "reading: "+JSON.stringify f
                 @webapp.server.content.files.read "#{user.id}/#{project.id}/#{folder}/#{f.file}",fileType,(content)=>
                   if content?
-                    zip.folder(folder).file(f.file,content)
+                    name = f.file
+                    if name.endsWith(".ms")
+                      switch project.language
+                        when "javascript" then name = name.replace ".ms",".js"
+                        when "python" then name = name.replace ".ms",".py"
+                        when "lua" then name = name.replace ".ms",".lua"
+
+                    zip.folder(folder).file(name,content)
                     #zip.folder(folder).file("#{f.file}.meta", JSON.stringify f)
                   queue.next()
           queue.next()
@@ -101,6 +108,7 @@ class @ExportFeatures
     platforms: project.platforms
     controls: project.controls
     type: project.type
+    language: project.language
     graphics: project.graphics
     libs: project.libs
     date_created: project.date_created
@@ -184,6 +192,15 @@ class @ExportFeatures
         if lib?
           libs.push lib.lib_path
 
+      proglang = @webapp.concatenator.language_engines[project.language]
+      if proglang? and proglang.scripts
+        for s in proglang.scripts
+          libs.push "../static#{s}"
+
+      if proglang? and proglang.lib_path?
+        for s in proglang.lib_path
+          libs.push s
+
       queue = new JobQueue ()=>
         resources = JSON.stringify
           images: images
@@ -210,6 +227,7 @@ class @ExportFeatures
             aspect: project.aspect
             libs: JSON.stringify project.libs
             code: fullsource
+            language: project.language
 
         zip.file("index.html",html)
 

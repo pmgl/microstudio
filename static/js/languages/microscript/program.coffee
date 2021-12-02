@@ -16,6 +16,13 @@ class @Program.Expression
 
 class @Program.Assignment
   constructor:(@token,@field,@expression,@local)->
+    if @expression instanceof Program.CreateClass and @field instanceof Program.Variable
+      @evaluate = (context,hold)=>
+        context.location = @
+        if @local
+          @field.hotUpdate(context,context.local,@expression.evaluate(context,true))
+        else
+          @field.hotUpdate(context,null,@expression.evaluate(context,true))
 
   evaluate:(context,hold)->
     context.location = @
@@ -96,6 +103,18 @@ class @Program.Variable
         scope = context.object
 
     scope[@identifier] = value
+
+  hotUpdate:(context,scope,value)->
+    if not scope?
+      if context.local[@identifier]?
+        scope = context.local
+      else
+        scope = context.object
+    if scope[@identifier]?
+      for key,val of value
+        scope[@identifier][key] = val
+    else
+      scope[@identifier] = value
 
   ensureCreated:(context)->
     return context.object if @identifier == "this"

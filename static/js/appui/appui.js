@@ -394,6 +394,7 @@ AppUI = (function() {
       this.code_splitbar.update();
       this.runtime_splitbar.update();
       this.app.runwindow.windowResized();
+      this.app.editor.editor.resize();
     }
     if (section === "sprites") {
       this.sprites_splitbar.update();
@@ -501,6 +502,9 @@ AppUI = (function() {
     }
     if (section === "explore") {
       this.app.explore.update();
+    }
+    if (section === "help") {
+      this.app.documentation.updateViewPos();
     }
     if (section === "about") {
       this.app.about.setSection("about");
@@ -810,10 +814,6 @@ AppUI = (function() {
     if (this.app.user != null) {
       this.allowed_sections.sounds = true;
       this.allowed_sections.music = true;
-      if (this.app.user.flags.experimental) {
-        document.getElementById("project-option-graphics").style.display = "block";
-        document.getElementById("project-option-libs").style.display = "block";
-      }
     }
     ref = this.sections;
     for (j = 0, len = ref.length; j < len; j++) {

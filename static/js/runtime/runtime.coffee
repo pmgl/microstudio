@@ -30,20 +30,12 @@ class @Runtime
     @screen.clear()
 
     try
-      parser = new Parser(src,file)
-      parser.parse()
-      if parser.error_info?
-        err = parser.error_info
-        err.type = "compile"
-        err.file = file
-        @listener.reportError err
-        return false
-      else
-        @listener.postMessage
-          name: "compile_success"
-          file: file
+      @vm.run(src,3000,file)
 
-      @vm.run(parser.program)
+      @listener.postMessage
+        name: "compile_success"
+        file: file
+
       @reportWarnings()
       if @vm.error_info?
         err = @vm.error_info
@@ -52,10 +44,11 @@ class @Runtime
         @listener.reportError err
         return false
 
-      init = @vm.context.global.init
-      if init? and init.source != @previous_init and reinit
-        @previous_init = init.source
-        @vm.call("init")
+      if @vm.runner.getFunctionSource?
+        init = @vm.runner.getFunctionSource "init"
+        if init? and init != @previous_init and reinit
+          @previous_init = init
+          @vm.call("init")
 
       return true
     catch err
@@ -155,9 +148,12 @@ class @Runtime
     for file,src of @sources
       @updateSource(file,src,false)
 
-    init = @vm.context.global.init
-    if init?
-      @previous_init = init.source
+    if @vm.runner.getFunctionSource?
+      init = @vm.runner.getFunctionSource "init"
+      if init?
+        @previous_init = init
+        @vm.call("init")
+    else
       @vm.call("init")
 
     @dt = 1000/60
@@ -174,17 +170,9 @@ class @Runtime
 
   runCommand:(command)->
     try
-      parser = new Parser(command)
-      parser.parse()
-      if parser.error_info?
-        err = parser.error_info
-        err.type = "compile"
-        @listener.reportError err
-        return 0
-
       warnings = @vm.context.warnings
       @vm.clearWarnings()
-      res = @vm.run(parser.program)
+      res = @vm.run(command)
       @reportWarnings()
       @vm.context.warnings = warnings
       if @vm.error_info?

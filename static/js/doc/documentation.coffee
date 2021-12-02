@@ -4,33 +4,78 @@ class @Documentation
     @help = {}
     @suggest = {}
     @title_elements = []
-    setTimeout (()=>@load()),1000
 
-  load:()->
+    setTimeout (()=>@load "api",(src)=>
+      @buildLiveHelp src,"api"
+      setTimeout (()=>@setSection "quickstart",()=>
+        @buildLiveHelp @doc,"quickstart"
+      ),1000
+    ),1000
+
+    @sections = {}
+
+    list = document.getElementsByClassName "help-section-category"
+    for e in list
+      do (e)=>
+        title = e.getElementsByClassName("help-section-title")[0]
+        title.addEventListener "click",()=>
+          if e.classList.contains "collapsed"
+            e.classList.remove "collapsed"
+          else
+            e.classList.add "collapsed"
+          @updateViewPos()
+
+    list = document.getElementsByClassName "help-section-button"
+    for e in list
+      do (e)=>
+        e.addEventListener "click",()=>
+          id = e.id.split("-")[1]
+          @setSection id
+
+    window.addEventListener "resize",()=>@updateViewPos()
+
+  setSection:(id,callback)->
+    @load id,(@doc)=>
+      @update()
+      callback() if callback?
+
+    list = document.getElementsByClassName "help-section-button"
+    for e in list
+      do (e)=>
+        if e.id == "documentation-#{id}"
+          e.classList.add "selected"
+          e.parentNode.parentNode.classList.remove "collapsed"
+        else
+          e.classList.remove "selected"
+
+    return
+
+  load:(id="quickstart",callback=(->),lang=@app.translator.lang)->
+    if @sections[id]?
+      return callback @sections[id]
+
+    if not lang in ["fr","de","pl","it","pt"]
+      lang = "en"
+
     req = new XMLHttpRequest()
     req.onreadystatechange = (event) =>
       if req.readyState == XMLHttpRequest.DONE
         if req.status == 200
-          @doc = req.responseText
-          @update()
+          @sections[id] = req.responseText
+          callback(@sections[id])
+        else if lang != "en"
+          @load(id,callback,"en")
 
-    switch @app.translator.lang
-      when "fr"
-        req.open "GET","/doc/fr/doc.md"
-      when "de"
-        req.open "GET","/doc/de/doc.md"
-      when "pl"
-        req.open "GET","/doc/pl/doc.md"
-      when "it"
-        req.open "GET","/doc/it/doc.md"
-      when "pt"
-        req.open "GET","/doc/pt/doc.md"
-      else
-        req.open "GET","/doc/en/doc.md"
-
+    req.open "GET","/doc/#{lang}/#{id}.md"
     req.send()
 
+  updateViewPos:()->
+    sections = document.getElementById("help-sections")
+    doc = document.getElementById("help-document")
+    doc.style.top = "#{sections.offsetHeight}px"
+
   update:()->
+    return if not @doc?
     element = document.getElementById("documentation")
     marked.setOptions
       headerPrefix: "documentation_"
@@ -43,7 +88,7 @@ class @Documentation
     #lexer = new marked.Lexer({})
     #console.info lexer.lex @doc
     @buildToc()
-    @buildLiveHelp()
+    @updateViewPos()
 
   buildToc:()->
     element = document.getElementById("documentation")
@@ -78,8 +123,8 @@ class @Documentation
 
     return
 
-  buildLiveHelp:()->
-    lines = @doc.split("\n")
+  buildLiveHelp:(src,section)->
+    lines = src.split("\n")
     index = 0
     current_section = ""
     slugger = new marked.Slugger
@@ -109,6 +154,7 @@ class @Documentation
             @help[ref]=
               pointer: current_section
               value: content
+              section: section
             break
           else
             content += line+"\n"
@@ -125,6 +171,7 @@ class @Documentation
             @suggest[ref] =
               pointer: current_section
               value: content
+              section: section
             break
           else
             content += line+"\n"
@@ -152,7 +199,7 @@ class @Documentation
 
     within = false
     for r in res
-      if r.ref == r.radix and r.index<=position and r.index+r.ref.length>=position
+      if r.ref == r.radix and r.radix.length == best and r.index+r.radix.length<line.length
         return [r]
       within = within or r.within
 

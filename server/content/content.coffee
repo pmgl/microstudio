@@ -289,6 +289,7 @@ class @Content
       owner: owner.id
       orientation: data.orientation
       aspect: data.aspect
+      language: data.language
       graphics: data.graphics
       libs: data.libs
 

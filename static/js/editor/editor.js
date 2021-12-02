@@ -4,10 +4,11 @@ this.Editor = (function() {
   function Editor(app) {
     var f;
     this.app = app;
+    this.language = this.app.languages.microscript;
     this.editor = ace.edit("editor-view");
     this.editor.$blockScrolling = 2e308;
     this.editor.setTheme("ace/theme/tomorrow_night_bright");
-    this.editor.getSession().setMode("ace/mode/microscript");
+    this.editor.getSession().setMode(this.language.ace_mode);
     this.editor.setFontSize("14px");
     this.editor.getSession().setOptions({
       tabSize: 2,
@@ -179,6 +180,25 @@ this.Editor = (function() {
     })(this));
   }
 
+  Editor.prototype.updateLanguage = function() {
+    if (this.app.project) {
+      switch (this.app.project.language) {
+        case "python":
+          this.language = this.app.languages.python;
+          break;
+        case "javascript":
+          this.language = this.app.languages.javascript;
+          break;
+        case "lua":
+          this.language = this.app.languages.lua;
+          break;
+        default:
+          this.language = this.app.languages.microscript;
+      }
+    }
+    return this.editor.getSession().setMode(this.language.ace_mode);
+  };
+
   Editor.prototype.toggleFileList = function(close) {
     var list, view;
     view = document.getElementById("editor-view");
@@ -236,9 +256,13 @@ this.Editor = (function() {
     var p, parser;
     if (this.update_time > 0 && (this.value_tool || Date.now() > this.update_time + this.update_delay)) {
       this.update_time = 0;
-      parser = new Parser(this.editor.getValue());
-      p = parser.parse();
-      if (parser.error_info == null) {
+      if (this.language.parser) {
+        parser = new this.language.parser(this.editor.getValue());
+        p = parser.parse();
+        if (parser.error_info == null) {
+          return this.app.runwindow.updateCode(this.selected_source + ".ms", this.getCode());
+        }
+      } else {
         return this.app.runwindow.updateCode(this.selected_source + ".ms", this.getCode());
       }
     }
@@ -315,7 +339,7 @@ this.Editor = (function() {
     return this.ignore_changes = false;
   };
 
-  Editor.prototype.addDocButton = function(pointer) {
+  Editor.prototype.addDocButton = function(pointer, section) {
     var button, content;
     content = document.querySelector("#help-window .content");
     button = document.createElement("div");
@@ -326,6 +350,7 @@ this.Editor = (function() {
         var element;
         event.stopPropagation();
         _this.app.appui.setMainSection("help", true);
+        _this.app.documentation.setSection(section || "api");
         element = document.getElementById(pointer);
         if (element != null) {
           return element.scrollIntoView();
@@ -340,7 +365,7 @@ this.Editor = (function() {
     if (!this.show_help) {
       return;
     }
-    line = this.getCurrentLine();
+    line = this.getCurrentLine().replace(":", ".");
     column = this.editor.getSelectionRange().start.column;
     suggest = this.app.documentation.findSuggestMatch(line, column);
     content = document.querySelector("#help-window .content");
@@ -350,7 +375,7 @@ this.Editor = (function() {
         content.innerHTML = DOMPurify.sanitize(marked(help[0].value));
         content.style.display = "block";
         document.querySelector("#help-window").classList.add("showing");
-        return this.addDocButton(help[0].pointer);
+        return this.addDocButton(help[0].pointer, help[0].section);
       } else {
         content.innerHTML = "";
         return content.style.display = "none";
@@ -359,7 +384,7 @@ this.Editor = (function() {
       content.innerHTML = DOMPurify.sanitize(marked(suggest[0].value));
       content.style.display = "block";
       document.querySelector("#help-window").classList.add("showing");
-      return this.addDocButton(suggest[0].pointer);
+      return this.addDocButton(suggest[0].pointer, suggest[0].section);
     } else {
       md = "";
       for (j = 0, len = suggest.length; j < len; j++) {
@@ -369,13 +394,13 @@ this.Editor = (function() {
       content.innerHTML = DOMPurify.sanitize(marked(md));
       content.style.display = "block";
       document.querySelector("#help-window").classList.add("showing");
-      return this.addDocButton(suggest[0].pointer);
+      return this.addDocButton(suggest[0].pointer, suggest[0].section);
     }
   };
 
   Editor.prototype.tokenizeLine = function(line) {
     var err, index, list, token, tokenizer;
-    tokenizer = new Tokenizer(line);
+    tokenizer = new Tokenizer(line.replace(":", "."));
     index = 0;
     list = [];
     try {
@@ -541,48 +566,72 @@ this.Editor = (function() {
   };
 
   Editor.prototype.drawHelper = function(row, column) {
-    var args, err, funk, res;
+    var args, err, funk, i, j, ref, res;
     try {
       res = this.analyzeLine(row, column);
       if (res != null) {
-        if (res["function"].indexOf("Polygon") > 0 || res["function"] === "drawLine") {
-          args = [];
-          funk = (function(_this) {
-            return function(i) {
-              return _this.app.runwindow.runCommand(res.args[i], function(v) {
-                args[i] = v;
-                if (i < res.args.length - 1) {
-                  return funk(i + 1);
-                } else {
-                  return _this.app.runwindow.rulercanvas.showPolygon(args, res.arg);
-                }
-              });
-            };
-          })(this);
-          return funk(0);
-        } else {
-          return this.app.runwindow.runCommand(res.args[0], (function(_this) {
-            return function(v1) {
-              return _this.app.runwindow.runCommand(res.args[1], function(v2) {
-                return _this.app.runwindow.runCommand(res.args[2], function(v3) {
-                  return _this.app.runwindow.runCommand(res.args[3], function(v4) {
-                    switch (res.arg) {
-                      case 0:
-                        return _this.app.runwindow.rulercanvas.showX(v1, v2, v3, v4);
-                      case 1:
-                        return _this.app.runwindow.rulercanvas.showY(v1, v2, v3, v4);
-                      case 2:
-                        return _this.app.runwindow.rulercanvas.showW(v1, v2, v3, v4);
-                      case 3:
-                        return _this.app.runwindow.rulercanvas.showH(v1, v2, v3, v4);
-                      default:
-                        return _this.app.runwindow.rulercanvas.showBox(v1, v2, v3, v4);
-                    }
+        if (this.app.project.language.startsWith("microscript")) {
+          if (res["function"].indexOf("Polygon") > 0 || res["function"] === "drawLine") {
+            args = [];
+            funk = (function(_this) {
+              return function(i) {
+                return _this.app.runwindow.runCommand(res.args[i], function(v) {
+                  args[i] = v;
+                  if (i < res.args.length - 1) {
+                    return funk(i + 1);
+                  } else {
+                    return _this.app.runwindow.rulercanvas.showPolygon(args, res.arg);
+                  }
+                });
+              };
+            })(this);
+            return funk(0);
+          } else {
+            return this.app.runwindow.runCommand(res.args[0], (function(_this) {
+              return function(v1) {
+                return _this.app.runwindow.runCommand(res.args[1], function(v2) {
+                  return _this.app.runwindow.runCommand(res.args[2], function(v3) {
+                    return _this.app.runwindow.runCommand(res.args[3], function(v4) {
+                      switch (res.arg) {
+                        case 0:
+                          return _this.app.runwindow.rulercanvas.showX(v1, v2, v3, v4);
+                        case 1:
+                          return _this.app.runwindow.rulercanvas.showY(v1, v2, v3, v4);
+                        case 2:
+                          return _this.app.runwindow.rulercanvas.showW(v1, v2, v3, v4);
+                        case 3:
+                          return _this.app.runwindow.rulercanvas.showH(v1, v2, v3, v4);
+                        default:
+                          return _this.app.runwindow.rulercanvas.showBox(v1, v2, v3, v4);
+                      }
+                    });
                   });
                 });
-              });
-            };
-          })(this));
+              };
+            })(this));
+          }
+        } else {
+          if (res["function"].indexOf("Polygon") > 0 || res["function"] === "drawLine") {
+            args = res.args;
+            return this.app.runwindow.rulercanvas.showPolygon(args, res.arg);
+          } else {
+            args = res.args;
+            for (i = j = 0, ref = args.length - 1; j <= ref; i = j += 1) {
+              args[i] = args[i] | 0;
+            }
+            switch (res.arg) {
+              case 0:
+                return this.app.runwindow.rulercanvas.showX(args[0], args[1], args[2], args[3]);
+              case 1:
+                return this.app.runwindow.rulercanvas.showY(args[0], args[1], args[2], args[3]);
+              case 2:
+                return this.app.runwindow.rulercanvas.showW(args[0], args[1], args[2], args[3]);
+              case 3:
+                return this.app.runwindow.rulercanvas.showH(args[0], args[1], args[2], args[3]);
+              default:
+                return this.app.runwindow.rulercanvas.showBox(args[0], args[1], args[2], args[3]);
+            }
+          }
         }
       } else {
         return this.app.runwindow.rulercanvas.hide();
@@ -601,7 +650,7 @@ this.Editor = (function() {
       column = range.start.column;
     }
     line = this.editor.session.getLine(row);
-    parser = new Parser(line + " ");
+    parser = new Parser(line.replace(":", ".") + " ");
     p = parser.parse();
     if (parser.last_function_call != null) {
       f = parser.last_function_call;
@@ -649,6 +698,15 @@ this.Editor = (function() {
     return null;
   };
 
+  Editor.prototype.setTitleSourceName = function() {
+    var lang;
+    if (this.selected_source != null) {
+      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> " + this.selected_source;
+      lang = this.app.project.language.split("_")[0];
+      return document.getElementById("code-toolbar").innerHTML += "<span class='language " + lang + "'>" + lang + "</span>";
+    }
+  };
+
   Editor.prototype.setSelectedSource = function(name) {
     var different, e, j, k, len, len1, list, source;
     this.checkSave(true);
@@ -661,7 +719,7 @@ this.Editor = (function() {
     this.selected_source = name;
     list = document.getElementById("source-list").childNodes;
     if (this.selected_source != null) {
-      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> " + this.selected_source;
+      this.setTitleSourceName();
       for (j = 0, len = list.length; j < len; j++) {
         e = list[j];
         if (e.getAttribute("id") === ("source-list-item-" + name)) {
@@ -697,7 +755,8 @@ this.Editor = (function() {
     this.app.runwindow.resetButtons();
     this.app.runwindow.windowResized();
     this.setSelectedSource(null);
-    return this.updateRunLink();
+    this.updateRunLink();
+    return this.updateLanguage();
   };
 
   Editor.prototype.projectUpdate = function(change) {

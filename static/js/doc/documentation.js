@@ -1,5 +1,6 @@
 this.Documentation = (function() {
   function Documentation(app) {
+    var e, fn, fn1, j, k, len1, len2, list;
     this.app = app;
     this.doc = "";
     this.help = {};
@@ -7,48 +8,131 @@ this.Documentation = (function() {
     this.title_elements = [];
     setTimeout(((function(_this) {
       return function() {
-        return _this.load();
+        return _this.load("api", function(src) {
+          _this.buildLiveHelp(src, "api");
+          return setTimeout((function() {
+            return _this.setSection("quickstart", function() {
+              return _this.buildLiveHelp(_this.doc, "quickstart");
+            });
+          }), 1000);
+        });
       };
     })(this)), 1000);
+    this.sections = {};
+    list = document.getElementsByClassName("help-section-category");
+    fn = (function(_this) {
+      return function(e) {
+        var title;
+        title = e.getElementsByClassName("help-section-title")[0];
+        return title.addEventListener("click", function() {
+          if (e.classList.contains("collapsed")) {
+            e.classList.remove("collapsed");
+          } else {
+            e.classList.add("collapsed");
+          }
+          return _this.updateViewPos();
+        });
+      };
+    })(this);
+    for (j = 0, len1 = list.length; j < len1; j++) {
+      e = list[j];
+      fn(e);
+    }
+    list = document.getElementsByClassName("help-section-button");
+    fn1 = (function(_this) {
+      return function(e) {
+        return e.addEventListener("click", function() {
+          var id;
+          id = e.id.split("-")[1];
+          return _this.setSection(id);
+        });
+      };
+    })(this);
+    for (k = 0, len2 = list.length; k < len2; k++) {
+      e = list[k];
+      fn1(e);
+    }
+    window.addEventListener("resize", (function(_this) {
+      return function() {
+        return _this.updateViewPos();
+      };
+    })(this));
   }
 
-  Documentation.prototype.load = function() {
-    var req;
+  Documentation.prototype.setSection = function(id, callback) {
+    var e, fn, j, len1, list;
+    this.load(id, (function(_this) {
+      return function(doc1) {
+        _this.doc = doc1;
+        _this.update();
+        if (callback != null) {
+          return callback();
+        }
+      };
+    })(this));
+    list = document.getElementsByClassName("help-section-button");
+    fn = (function(_this) {
+      return function(e) {
+        if (e.id === ("documentation-" + id)) {
+          e.classList.add("selected");
+          return e.parentNode.parentNode.classList.remove("collapsed");
+        } else {
+          return e.classList.remove("selected");
+        }
+      };
+    })(this);
+    for (j = 0, len1 = list.length; j < len1; j++) {
+      e = list[j];
+      fn(e);
+    }
+  };
+
+  Documentation.prototype.load = function(id, callback, lang) {
+    var ref1, req;
+    if (id == null) {
+      id = "quickstart";
+    }
+    if (callback == null) {
+      callback = (function() {});
+    }
+    if (lang == null) {
+      lang = this.app.translator.lang;
+    }
+    if (this.sections[id] != null) {
+      return callback(this.sections[id]);
+    }
+    if ((ref1 = !lang) === "fr" || ref1 === "de" || ref1 === "pl" || ref1 === "it" || ref1 === "pt") {
+      lang = "en";
+    }
     req = new XMLHttpRequest();
     req.onreadystatechange = (function(_this) {
       return function(event) {
         if (req.readyState === XMLHttpRequest.DONE) {
           if (req.status === 200) {
-            _this.doc = req.responseText;
-            return _this.update();
+            _this.sections[id] = req.responseText;
+            return callback(_this.sections[id]);
+          } else if (lang !== "en") {
+            return _this.load(id, callback, "en");
           }
         }
       };
     })(this);
-    switch (this.app.translator.lang) {
-      case "fr":
-        req.open("GET", "/doc/fr/doc.md");
-        break;
-      case "de":
-        req.open("GET", "/doc/de/doc.md");
-        break;
-      case "pl":
-        req.open("GET", "/doc/pl/doc.md");
-        break;
-      case "it":
-        req.open("GET", "/doc/it/doc.md");
-        break;
-      case "pt":
-        req.open("GET", "/doc/pt/doc.md");
-        break;
-      default:
-        req.open("GET", "/doc/en/doc.md");
-    }
+    req.open("GET", "/doc/" + lang + "/" + id + ".md");
     return req.send();
+  };
+
+  Documentation.prototype.updateViewPos = function() {
+    var doc, sections;
+    sections = document.getElementById("help-sections");
+    doc = document.getElementById("help-document");
+    return doc.style.top = sections.offsetHeight + "px";
   };
 
   Documentation.prototype.update = function() {
     var e, element, j, len1, list;
+    if (this.doc == null) {
+      return;
+    }
     element = document.getElementById("documentation");
     marked.setOptions({
       headerPrefix: "documentation_"
@@ -60,7 +144,7 @@ this.Documentation = (function() {
       e.target = "_blank";
     }
     this.buildToc();
-    return this.buildLiveHelp();
+    return this.updateViewPos();
   };
 
   Documentation.prototype.buildToc = function() {
@@ -109,9 +193,9 @@ this.Documentation = (function() {
     }
   };
 
-  Documentation.prototype.buildLiveHelp = function() {
+  Documentation.prototype.buildLiveHelp = function(src, section) {
     var content, current_section, index, line, lines, ref, slugger, tline;
-    lines = this.doc.split("\n");
+    lines = src.split("\n");
     index = 0;
     current_section = "";
     slugger = new marked.Slugger;
@@ -139,7 +223,8 @@ this.Documentation = (function() {
           if (line.indexOf("help_end") > 0) {
             this.help[ref] = {
               pointer: current_section,
-              value: content
+              value: content,
+              section: section
             };
             break;
           } else {
@@ -158,7 +243,8 @@ this.Documentation = (function() {
           if (line.indexOf("suggest_end") > 0) {
             this.suggest[ref] = {
               pointer: current_section,
-              value: content
+              value: content,
+              section: section
             };
             break;
           } else {
@@ -200,7 +286,7 @@ this.Documentation = (function() {
     within = false;
     for (k = 0, len1 = res.length; k < len1; k++) {
       r = res[k];
-      if (r.ref === r.radix && r.index <= position && r.index + r.ref.length >= position) {
+      if (r.ref === r.radix && r.radix.length === best && r.index + r.radix.length < line.length) {
         return [r];
       }
       within = within || r.within;
