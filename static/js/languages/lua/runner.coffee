@@ -5,10 +5,12 @@ class @Runner
     @initialized = true
 
     window.ctx = @microvm.context.global
-    window.ctx.print = @microvm.context.meta.print
+    window.ctx.print = (text)=> @microvm.context.meta.print text
     src = "js = require 'js'"
     for key of @microvm.context.global
       src += """#{key} =  js.global.ctx.#{key}\n"""
+
+    src += """print = function(text) js.global.ctx:print(text) end\n"""
 
     @run(src)
 

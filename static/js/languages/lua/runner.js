@@ -7,11 +7,16 @@ this.Runner = (function() {
     var key, src;
     this.initialized = true;
     window.ctx = this.microvm.context.global;
-    window.ctx.print = this.microvm.context.meta.print;
+    window.ctx.print = (function(_this) {
+      return function(text) {
+        return _this.microvm.context.meta.print(text);
+      };
+    })(this);
     src = "js = require 'js'";
     for (key in this.microvm.context.global) {
       src += key + " =  js.global.ctx." + key + "\n";
     }
+    src += "print = function(text) js.global.ctx:print(text) end\n";
     return this.run(src);
   };
 

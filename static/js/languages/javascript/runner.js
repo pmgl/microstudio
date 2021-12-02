@@ -7,6 +7,11 @@ this.Runner = (function() {
     var key, src;
     this.initialized = true;
     window.ctx = this.microvm.context.global;
+    window.ctx.print = (function(_this) {
+      return function(text) {
+        return _this.microvm.context.meta.print(text);
+      };
+    })(this);
     src = "";
     for (key in this.microvm.context.global) {
       src += key + " =  window.ctx." + key + ";\n";
