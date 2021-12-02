@@ -1,54 +1,59 @@
 # Pixi.js
-## Accelerated 2D rendering API
+## Accelerated 2D rendering
 
+Pixi.js is an open source JavaScript API for accelerated 2D rendering, taking benefit from the GPU through WebGL.
 
+Website: https://pixijs.com/
 
-### Pixi.js reference documentation
+Github: https://github.com/pixijs/pixijs
 
-https://pixijs.download/dev/docs/index.html
+## Basics
 
-### Full Example
+### Enable Pixi.js
+
+After creating your project, open the settings tab, click "Show advanced settings" and choose Pixi.js as "Graphics library".
+
+### Creating a stage
+
+The scene or "stage" is a normal Pixi Container:
 
 ```
-init = function()
-  stage = new PIXI.Container()
-  list = []
-  for i=1 to 1000
-    local s = PIXI.Sprite.from("icon")
-    list.push(s)
-    s.x = random.next()*1500
-    s.y = random.next()*1000
-    s.vx = (random.next()-.5)*10
-    s.vy = (random.next()-.5)*10
-    s.vr = (random.next()-.5)*0.1
-    s.scale.x = 2
-    s.scale.y = 2
-    stage.addChild(s)
-  end
-end
+stage = new PIXI.Container()
+```
 
-update = function()
-end
+### Creating a sprite
 
+```
+my_sprite = PIXI.Sprite.from("mysprite")
+stage.add(my_sprite)
+```
+
+### Updating
+
+You can easily change the position, scale or rotation of your sprite:
+
+```
+  my_sprite.x += 1
+  my_sprite.scale.y = 2
+  my_sprite.rotation = PI/4
+```
+
+### Rendering
+
+To render your scene, in your implementation of `draw()`, simply call `screen.render`, passing the stage to render as argument:
+
+```
 draw = function()
-  for i=1 to 1000
-    local s = list[list.length-i]
-    s.x += s.vx
-    s.y += s.vy
-    if s.x>=screen.width-16 and s.vx>0 then
-      s.vx *= -1
-    end
-    if s.x<=0 and s.vx<0 then
-      s.vx *= -1
-    end
-    if s.y>=screen.height-16 and s.vy>0 then
-      s.vy *= -1
-    end
-    if s.y<=0 and s.vy<0 then
-      s.vy *= -1
-    end
-    s.rotation += s.vr
-  end
   screen.render(stage)
 end
 ```
+
+## Documentation
+
+### Official documentation
+
+https://pixijs.download/dev/docs/index.html
+
+### Examples
+
+https://microstudio.dev/i/gilles/pixitest/

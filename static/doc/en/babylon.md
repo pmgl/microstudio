@@ -1,60 +1,67 @@
 # Babylon.js
 ## 3D rendering API
 
-## Full Documentation
+Babylon.js is an open-source 3D rendering engine based on WebGL.
 
-https://doc.babylonjs.com/
+Website: https://www.babylonjs.com/
 
-## Getting started
+Github: https://github.com/BabylonJS/Babylon.js
+
+## Basics
+
+### Enable Babylon.js
+
+After creating your project, open the settings tab, click "Show advanced settings" and choose Babylon.js as "Graphics library".
 
 ### Scene
 
+Creating a new scene:
+
+```
+scene = new BABYLON.Scene()
+```
+
 ### Adding objects
+
+Adding a simple box:
+
+```
+box = BABYLON.MeshBuilder.CreateBox("box", object end, scene)
+box.position.set(0,20,0)
+```
 
 ### Adding lights
 
+Adding an hemispherical light:
+
+```
+light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene)
+```
+
 ### Setting the camera
+
+Setting up the camera:
+
+```
+camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 0, -100), scene)
+```
 
 ### Rendering
 
-
-
-
-## Full Example
+In your function `draw()`, simply call `screen.render`, passing your scene as argument:
 
 ```
-init = function()
-  scene = new BABYLON.Scene()
-  camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 12.5, -170), scene)
-  light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene)
-  boxes = []
-
-  for i=-5 to 5
-    local material = new BABYLON.StandardMaterial("stdmaterial", scene)
-    material.diffuseColor.set(random.next(),random.next(),random.next())
-    for j=-5 to 5
-      local b = BABYLON.MeshBuilder.CreateBox("box", object end, scene)
-      b.position.set(i*2+random.next()-.5,random.next()*25,j*2)
-      b.rx = random.next()/100
-      b.ry = random.next()/100
-      boxes.push(b)
-      b.material = material
-    end
-  end
-
-  scene.clearColor.set(.1,.1,.1)
-end
-
-update = function()
-  camera.position.z += .2
-  camera.rotation.z += .001
-end
-
 draw = function()
   screen.render(scene)
 end
 ```
 
-## Example projects
+## Documentation
+
+### Official documentation
+
+https://doc.babylonjs.com/
+
+### Examples
 
 https://microstudio.dev/i/gilles/babylontest/
