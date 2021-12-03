@@ -17,6 +17,7 @@ this.Runner = (function() {
       src += key + " =  js.global.ctx." + key + "\n";
     }
     src += "print = function(text) js.global.ctx:print(text) end\n";
+    src += "new = js.new\n";
     return this.run(src);
   };
 
