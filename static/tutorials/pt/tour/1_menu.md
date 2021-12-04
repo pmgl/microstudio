@@ -8,11 +8,6 @@
 
 ### microStudio
 
-microStudio is an integrated game development environment.
-It is also a place to learn programming while having fun.
-
-To continue, click on the right-hand arrow below:
-
 microStudio é um ambiente integrado para desenvolvimento de jogos.
 É também um lugar para aprender programação enquanto se diverte.
 

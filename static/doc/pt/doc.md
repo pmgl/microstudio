@@ -857,6 +857,35 @@ screen.setFont("BitCell")
 
 **Dica**: a variável global `fonts` é um vetor com todas as fontes disponíveis no microStudio
 
+<!--- suggest_start screen.loadFont --->
+##### screen.loadFont(nome_da_fonte)
+Inicia o carregamento de uma fonte. Útil em conjunto com `screen.isFontReady` 
+<!--- suggest_end --->
+
+```
+screen.loadFont("DigitalDisco")
+```
+
+<!--- suggest_start screen.isFontReady --->
+##### screen.isFontReady(nome_da_fonte)
+Retorna 1 (verdadeiro) se a fonte fornecida estiver carregada e pronta para ser usada. Certifique-se de chamar `screen.loadFont` primeiro ou sua fonte pode nunca ser carregada.
+<!--- suggest_end --->
+Você pode omitir o argumento da função, neste caso ele verifica se a fonte atual está carregada e pronta para ser usada (fonte padrão ou outra fonte que você definiu com sua última chamada para `screen.setFont(nome_da_fonte)`). 
+
+```
+if screen.isFontReady() then
+  // we can use the default font
+  screen.drawText("MEU TEXTO", 0, 0, 50)
+end
+
+screen.loadFont("DigitalDisco") // make sure DigitalDisco will be loaded
+
+if screen.isFontReady("DigitalDisco")
+  screen.setFont("DigitalDisco")
+  screen.drawText("ALGUM OUTRO TEXTO", 0, 50, 20)
+end
+```
+
 <!--- suggest_start screen.textWidth --->
 ##### screen.textWidth(texto, tamanho)
 Retorna a largura do texto fornecido quando desenhado na tela com o tamanho informado.

@@ -2,13 +2,13 @@
 
 :project Tutorial: Create a Game
 
-## Wall
+## Parede
 
 :position 50,50,40,40
 
 :highlight #menuitem-sprites
 
-### Wall
+### Parede
 
 Our hero will be moving on top of a wall, or a platform, or a road... Let's call it a wall. We will
 create this wall by having a wall tile as a sprite and by filling a whole area with this tile. Create
@@ -18,11 +18,11 @@ It would be nice if this tile sprite looks good once actually tiled.
 To help you with that, we recommend activating the option "Tile" on the bottom right of the sprite editor.
 Time to draw now!
 
-## Displaying the wall
+## Exibindo a parede
 
 :highlight #menuitem-code
 
-### Displaying the wall
+### Exibindo a parede
 
 Let's go back to our code. Make sure the program is still running (press the Run button again whenever needed).
 We will add the following lines in the body of the function ```draw```:
@@ -38,9 +38,9 @@ each time with variable ```i``` holding a different value. ```i``` will start at
 x coordinate for drawing the sprite will take the values -240, then -200, -160 ... to 240. You can see the results
 in the execution window.
 
-## Displaying the wall
+## Exibindo a parede
 
-### Displaying the wall
+### Exibindo a parede
 
 The full code now looks as below. Our next mission is to animate the wall to create the illusion that the hero is running
 on it.
@@ -63,9 +63,9 @@ draw = function()
 end
 ```
 
-## Animating the wall
+## Animando a parede
 
-### Animating the wall
+### Animando a parede
 
 We will introduce a variable ```position```. We will use it to move the wall tiles to the left by some amount. Let's
 rewrite the line that draws the wall tiles like this:
@@ -86,9 +86,9 @@ end
 Doing this, we ensure that 60 times per second (call rate of the update function), the value of position will be
 raised by 2. Our wall quickly moved and disappeared completely to the left. Whoops!
 
-## Animating the wall
+## Animando a parede
 
-### Animating the wall
+### Animando a parede
 
 Our wall tiles are spaced by 40 units. Instead of moving them to the left by the value of *position*, we will move
 them to the left by ```position % 40```. ```position % 40``` is the remainder of the division of *position* by 40. When incrementing
@@ -102,9 +102,9 @@ position continuously, it will thus take the values 0,1,2,3..., 39 and then back
 
 See? Still moving to the left, without disappearing. Illusion is perfect!
 
-## Next
+## Próximo
 
-### Next
+### Próximo
 
 In the next short tutorial, we will make our hero jump. For now, here is a copy of our full code for reference:
 
