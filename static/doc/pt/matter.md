@@ -6,7 +6,7 @@ Matter.js é um mecanismo de física 2D de código aberto escrito em JavaScript:
 
 Website: https://brm.io/matter-js/
 
-Github repository: https://github.com/liabru/matter-js
+Repositório no Github: https://github.com/liabru/matter-js
 
 Você pode habilitar e usar Matter.js em seu projeto microStudio, em qualquer linguagem que tenha escolhido: microScript, JavaScript, Python, Lua.
 
@@ -67,7 +67,7 @@ end
 
 ### Documentação oficial
 
-Reference: https://brm.io/matter-js/docs/
+Referência: https://brm.io/matter-js/docs/
 
 Wiki: https://github.com/liabru/matter-js/wiki
 

@@ -4,6 +4,7 @@
 micro 2D é uma API simplificada para renderização 2D acelerada. É baseado em Pixi.js. Atualmente é bem restrita, mas crescerá no futuro. Se você estiver procurando por uma API 2D estável e com recursos completos, procure Pixi.js.
 
 ### Cena
+
 Configurando a cena:
 
 ```

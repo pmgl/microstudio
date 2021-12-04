@@ -19,12 +19,12 @@ screen:drawSprite("icon",x,y,50)
 
 ### Verificando entradas de usuário
 
-User inputs can be scanned in microStudio by checking fields in `keyboard`, `touch`, `mouse` or `gamepad` interfaces. For example, to check if the key `A` is pressed, you can check `keyboard.A`. This field can actually have 3 different statuses:
-* if you haven't pressed `A` yet in the current session, `keyboard.A` is *undefined*
-* `keyboard.A` is equal to `1` (`true` in microScript) if you are currently pressing it
-* `keyboard.A` is equal to `0` (`false` in microScript) if have pressed it before and are not currently pressing it
+As entradas do usuário podem ser verificadas em microStudio verificando os campos nas interfaces `keyboard`,` touch`, `mouse` ou` gamepad`. Por exemplo, para verificar se a tecla `A` está pressionada, você pode verificar` keyboard.A`. Na verdade, este campo pode ter três status diferentes:
+* se você não pressionou `A` ainda na sessão atual,` keyboard.A` é *undefined*
+* `keyboard.A` é igual a` 1` (`true` em microScript) se você estiver pressionando-o no momento
+* `keyboard.A` é igual a` 0` (`false` em microScript) se tiver pressionado antes e não estiver pressionando no momento
 
-To check for such fields in Lua, it is recommended to check equality with `1`:
+Para verificar esses campos em Lua, é recomendado verificar a igualdade com `1`:
 
 ```
   if keyboard.A == 1 then
@@ -34,12 +34,11 @@ To check for such fields in Lua, it is recommended to check equality with `1`:
 
 ### Instanciando classes
 
-Especially when using alternative graphics libs or optional libs, you may have to
-instantiate JavaScript objects as if you were using the `new` operator in JavaScript.
-To do this, simply call `new(class, arguments)` on the class you want to instantiate:
+Especialmente ao usar bibliotecas gráficas alternativos ou bibliotecas opcionais, você pode ter que instanciar objetos JavaScript como se estivesse usando o operador `new` em JavaScript.
+Para fazer isso, basta chamar `new (classe, argumentos)` na classe que deseja instanciar:
 
 ```
-  light = new( BABYLON.HemisphericLight, "light", BABYLON.Vector3.new(0, 1, 0), scene)
+  light = new(BABYLON.HemisphericLight, "light", BABYLON.Vector3.new(0, 1, 0), scene)
 ```
 
 ## Exemplo simples

@@ -1,53 +1,48 @@
 # Cannon
 
-## Macanismo de física 3D
+## Mecanismo de física 3D
 
-Cannon.js is an open source 3D physics engine written in JavaScript:
+Cannon.js é um mecanismo de física 3D de código aberto escrito em JavaScript:
 
 Website: https://schteppe.github.io/cannon.js/
 
-Github repository: https://github.com/schteppe/cannon.js
+Reposítório no Github: https://github.com/schteppe/cannon.js
 
-You can enable and use Cannon.js in your microStudio project, whichever language
-you picked: microScript, JavaScript, Python, Lua.
+Você pode habilitar e usar Cannon.js em seu projeto microStudio, m qualquer linguagem que tenha escolhido: microScript, JavaScript, Python, Lua.
 
 ## Básico
 
 ### Habilitando Cannon.js
 
-After creating your project, open the settings tab and click "Show advanced options".
-Check "Cannon.js" to enable the library for your project. The Cannon.js API will be exposed
-to your code as a global variable `CANNON`.
+Depois de criar seu projeto, abra a guia de configurações e clique em "Mostrar opções avançadas". Marque "Cannon.js" para habilitar a biblioteca para seu projeto. A API Cannon.js será exposta ao seu código como uma variável global `CANNON`.
 
 ### Criando o mundo
 
-First step is to create a world:
+O primeiro passo é criar o mundo:
 ```
 world = new CANNON.World()
 ```
 
-You can also set the gravity vector:
-
+Você também pode definir o vetor de gravidade:
 ```
 world.gravity.set(0, 0, -10)
 ```
 
 ### Adicionando formas
 
-The API sometimes requires you to pass JavaScript objects as arguments, for example
-`{ mass: 0 , shape: new CANNON.Plane() }`. From microScript, you will pass the equivalent microScript object: `object mass = 0 shape = new CANNON.Plane() end`.
-This is how you can add a fixed ground object to your world:
+A API às vezes requer que você passe objetos JavaScript como argumentos, por exemplo `{mass: 0, shape: new CANNON.Plane ()}`. No microScript, você passará o objeto microScript equivalente: `object mass = 0 shape = new CANNON.Plane () end`.
+É assim que você adiciona um objeto de solo fixo ao seu mundo:
 
 ```
 ground = new CANNON.Body(object
-  mass = 0  // when the mass is set to zero, the object will be static
+  mass = 0  // quando a massa é definida como zero, o objeto ficará estático
   shape = new CANNON.Plane()
 end)
 
 world.addBody(ground)
 ```
 
-You can then add a moving sphere as follows:
+Você pode adicionar uma esfera móvel da seguinte maneira:
 
 ```
 sphere = new CANNON.Body(object
@@ -60,7 +55,7 @@ world.addBody(sphere)
 
 ### Executando a simulação
 
-In the body of your function `update()`, simply call `world.step`:
+No corpo da sua função `update()`, apenas chame `world.step`:
 
 ```
 update = function()
@@ -79,7 +74,7 @@ add them to the 3D scene and update their positions.
 
 ### Documentação oficial
 
-Reference: https://schteppe.github.io/cannon.js/docs/
+Referência: https://schteppe.github.io/cannon.js/docs/
 
 Demos: https://schteppe.github.io/cannon.js/
 
