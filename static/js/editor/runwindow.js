@@ -493,7 +493,7 @@ this.RunWindow = (function() {
           })(this)
         };
         global = {};
-        this.local_vm = new MicroVM(meta, global, null);
+        this.local_vm = new MicroVM(meta, global, null, true);
       }
       if (this.multiline != null) {
         this.multiline += "\n" + command;
@@ -513,7 +513,7 @@ this.RunWindow = (function() {
         this.nesting = 0;
         this.multiline = null;
         this.local_vm.clearWarnings();
-        res = this.local_vm.run(parser.program);
+        res = this.local_vm.run(command);
         this.reportWarnings();
         if (output_callback != null) {
           return output_callback(res);

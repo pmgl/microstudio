@@ -1,5 +1,5 @@
 this.MicroVM = (function() {
-  function MicroVM(meta, global, namespace1) {
+  function MicroVM(meta, global, namespace1, preserve_ls) {
     var ctx, err;
     if (meta == null) {
       meta = {};
@@ -8,6 +8,7 @@ this.MicroVM = (function() {
       global = {};
     }
     this.namespace = namespace1 != null ? namespace1 : "/microstudio";
+    this.preserve_ls = preserve_ls != null ? preserve_ls : false;
     if (meta.print == null) {
       meta.print = function(text) {
         if (typeof text === "object") {
@@ -291,10 +292,12 @@ this.MicroVM = (function() {
   MicroVM.prototype.createStorageService = function() {
     var err, ls, namespace, s, service, storage, write_storage;
     ls = window.localStorage;
-    try {
-      delete window.localStorage;
-    } catch (error) {
-      err = error;
+    if (!this.preserve_ls) {
+      try {
+        delete window.localStorage;
+      } catch (error) {
+        err = error;
+      }
     }
     storage = {};
     write_storage = false;

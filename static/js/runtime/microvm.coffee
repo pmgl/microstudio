@@ -1,5 +1,5 @@
 class @MicroVM
-  constructor:(meta={},global = {},@namespace = "/microstudio")->
+  constructor:(meta={},global = {},@namespace = "/microstudio",@preserve_ls = false)->
     if not meta.print?
       meta.print = (text)->
         if typeof text == "object"
@@ -191,9 +191,10 @@ class @MicroVM
 
   createStorageService:()->
     ls = window.localStorage
-    try
-      delete window.localStorage
-    catch err
+    if not @preserve_ls
+      try
+        delete window.localStorage
+      catch err
 
     storage = {}
     write_storage = false

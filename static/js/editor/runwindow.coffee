@@ -374,7 +374,7 @@ class @RunWindow
             return
 
         global = {}
-        @local_vm = new MicroVM(meta,global,null)
+        @local_vm = new MicroVM(meta,global,null,true)
 
       if @multiline?
         @multiline += "\n"+command
@@ -393,7 +393,7 @@ class @RunWindow
         @nesting = 0
         @multiline = null
         @local_vm.clearWarnings()
-        res = @local_vm.run(parser.program)
+        res = @local_vm.run(command)
         @reportWarnings()
         if output_callback?
           output_callback(res)
