@@ -150,6 +150,8 @@ M3D.Light = class
         @light.specular.set(c[0]/255,c[1]/255,c[2]/255)
 
 M3D.PointLight = class extends M3D.Light
+  constructor:(@position = new M3D.Vector3(0,0,0))->
+    @light = new BABYLON.PointLight("PointLight", @position)
 
 M3D.DirectionalLight = class extends M3D.Light
   constructor:(@direction = new M3D.Vector3(0,1,0))->

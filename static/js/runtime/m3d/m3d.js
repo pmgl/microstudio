@@ -265,8 +265,9 @@ M3D.Light = (function() {
 M3D.PointLight = (function(superClass) {
   extend(_Class, superClass);
 
-  function _Class() {
-    return _Class.__super__.constructor.apply(this, arguments);
+  function _Class(position) {
+    this.position = position != null ? position : new M3D.Vector3(0, 0, 0);
+    this.light = new BABYLON.PointLight("PointLight", this.position);
   }
 
   return _Class;
