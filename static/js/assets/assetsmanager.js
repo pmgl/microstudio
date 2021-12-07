@@ -194,24 +194,25 @@ this.AssetsManager = (function() {
   };
 
   AssetsManager.prototype.deleteAsset = function() {
-    var a;
+    var a, msg;
     if (this.selected_asset != null) {
       a = this.app.project.getAsset(this.selected_asset);
       if (a != null) {
-        if (confirm("Really delete " + this.selected_asset + "?")) {
-          return this.app.client.sendRequest({
-            name: "delete_project_file",
-            project: this.app.project.id,
-            file: a.file,
-            thumbnail: true
-          }, (function(_this) {
-            return function(msg) {
+        msg = this.app.translator.get("Really delete %ITEM%?").replace("%ITEM%", this.selected_asset);
+        return ConfirmDialog.confirm(msg, this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
+          return function() {
+            return _this.app.client.sendRequest({
+              name: "delete_project_file",
+              project: _this.app.project.id,
+              file: a.file,
+              thumbnail: true
+            }, function(msg) {
               _this.app.project.updateAssetList();
               _this.viewer.clear();
               return _this.setSelectedAsset(null);
-            };
-          })(this));
-        }
+            });
+          };
+        })(this));
       }
     }
   };

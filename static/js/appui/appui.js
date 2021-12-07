@@ -878,9 +878,9 @@ AppUI = (function() {
       return function(event) {
         event.stopPropagation();
         event.stopImmediatePropagation();
-        if (confirm(_this.app.translator.get("Do you want to clone this project?"))) {
+        return ConfirmDialog.confirm(_this.app.translator.get("Do you want to clone this project?"), _this.app.translator.get("Clone"), _this.app.translator.get("Cancel"), function() {
           return _this.app.cloneProject(p);
-        }
+        });
       };
     })(this));
     delete_button = document.createElement("div");
@@ -893,11 +893,14 @@ AppUI = (function() {
     buttons.appendChild(delete_button);
     delete_button.addEventListener("click", (function(_this) {
       return function(event) {
+        var msg, ok;
         event.stopPropagation();
         event.stopImmediatePropagation();
-        if (confirm(p.owner.nick === _this.app.nick ? _this.app.translator.get("Really delete this project?") : _this.app.translator.get("Really quit this project?"))) {
+        msg = p.owner.nick === _this.app.nick ? _this.app.translator.get("Really delete this project?") : _this.app.translator.get("Really quit this project?");
+        ok = p.owner.nick === _this.app.nick ? _this.app.translator.get("Delete") : _this.app.translator.get("Quit");
+        return ConfirmDialog.confirm(msg, ok, _this.app.translator.get("Cancel"), function() {
           return _this.app.deleteProject(p);
-        }
+        });
       };
     })(this));
     title = document.createElement("div");

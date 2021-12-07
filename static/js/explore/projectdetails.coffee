@@ -585,7 +585,7 @@ class @ProjectDetails
   editComment:(id,text)->
 
   deleteComment:(c)->
-    if confirm @app.translator.get("Do you really want to delete this comment?")
+    ConfirmDialog.confirm @app.translator.get("Do you really want to delete this comment?"),@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
       @app.client.sendRequest {
         name: "delete_project_comment"
         project: @project.id

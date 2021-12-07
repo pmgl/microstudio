@@ -163,7 +163,8 @@ class @AssetsManager
     if @selected_asset?
       a = @app.project.getAsset @selected_asset
       if a?
-        if confirm "Really delete #{@selected_asset}?"
+        msg = @app.translator.get("Really delete %ITEM%?").replace("%ITEM%",@selected_asset)
+        ConfirmDialog.confirm msg,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
           @app.client.sendRequest {
             name: "delete_project_file"
             project: @app.project.id

@@ -457,26 +457,28 @@ this.MapEditor = (function() {
   };
 
   MapEditor.prototype.deleteMap = function() {
+    var msg;
     if (this.app.project.isLocked("maps/" + this.selected_map + ".json")) {
       return;
     }
     this.app.project.lockFile("maps/" + this.selected_map + ".json");
     if (this.selected_map != null) {
-      if (confirm("Really delete " + this.selected_map + "?")) {
-        return this.app.client.sendRequest({
-          name: "delete_project_file",
-          project: this.app.project.id,
-          file: "maps/" + this.selected_map + ".json"
-        }, (function(_this) {
-          return function(msg) {
+      msg = this.app.translator.get("Really delete %ITEM%?").replace("%ITEM%", this.selected_map);
+      return ConfirmDialog.confirm(msg, this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
+        return function() {
+          return _this.app.client.sendRequest({
+            name: "delete_project_file",
+            project: _this.app.project.id,
+            file: "maps/" + _this.selected_map + ".json"
+          }, function(msg) {
             _this.app.project.updateMapList();
             _this.mapview.map.clear();
             _this.mapview.update();
             _this.mapview.editable = false;
             return _this.setSelectedMap(null);
-          };
-        })(this));
-      }
+          });
+        };
+      })(this));
     }
   };
 

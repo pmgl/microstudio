@@ -454,6 +454,13 @@ html(lang=language)
           br
           button#create-project-submit #{translator.get("Create Project")}
 
+    div.overlay#confirm-message-overlay
+      div.confirm-message-box
+        div#confirm-message-text Some text
+        div.confirm-message-buttons
+          div#confirm-message-cancel Cancel
+          div#confirm-message-ok OK
+
     div#notification-container
       div#notification-bubble
         i(class="fa fa-comment")

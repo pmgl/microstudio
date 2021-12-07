@@ -167,19 +167,28 @@ class @Options
     if value != @app.project.language
       if @app.project.source_list.length == 1 and @app.project.source_list[0].content.split("\n").length<20
         if not @app.project.language.startsWith("microscript") or not value.startsWith("microscript")
-          if not confirm(@app.translator.get("Your current code will be overwritten. Do you wish to proceed?"))
-            document.getElementById("projectoption-language").value = @app.project.language
-            return
-          else
-            @app.project.setLanguage(value)
-            @app.editor.updateLanguage()
-            if DEFAULT_CODE[value]?
-              @app.editor.setCode DEFAULT_CODE[value]
-            else
-              @app.editor.setCode DEFAULT_CODE["microscript"]
-            @app.editor.editorContentsChanged()
-            @app.editor.setTitleSourceName()
+          ConfirmDialog.confirm @app.translator.get("Your current code will be overwritten. Do you wish to proceed?"),
+            @app.translator.get("OK"),
+            @app.translator.get("Cancel"),
+            (()=>
+              @app.project.setLanguage(value)
+              @app.editor.updateLanguage()
+              if DEFAULT_CODE[value]?
+                @app.editor.setCode DEFAULT_CODE[value]
+              else
+                @app.editor.setCode DEFAULT_CODE["microscript"]
+              @app.editor.editorContentsChanged()
+              @app.editor.setTitleSourceName()
+              @setLanguage(value)
+            ),
+            (()=>
+              document.getElementById("projectoption-language").value = @app.project.language
+            )
+          return
 
+      @setLanguage(value)
+
+  setLanguage:(value)->
     @app.project.setLanguage(value)
     @app.editor.updateLanguage()
     @app.client.sendRequest {

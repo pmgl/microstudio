@@ -165,7 +165,7 @@ class @Manager
       a = @app.project[@get_item] @selected_item
       if a?
         text = @app.translator.get("Do you really want to delete %ITEM%?").replace("%ITEM%",@selected_item)
-        if confirm text
+        ConfirmDialog.confirm text,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
           @app.client.sendRequest {
             name: "delete_project_file"
             project: @app.project.id

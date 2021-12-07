@@ -149,6 +149,7 @@ class @Concatenator
 
       "/js/client/client.js"
 
+      "/js/util/confirm.js"
       "/js/util/canvas2d.js"
       "/js/util/regexlib.js"
       "/js/util/inputvalidator.js"

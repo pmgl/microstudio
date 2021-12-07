@@ -711,17 +711,17 @@ this.ProjectDetails = (function() {
   ProjectDetails.prototype.editComment = function(id, text) {};
 
   ProjectDetails.prototype.deleteComment = function(c) {
-    if (confirm(this.app.translator.get("Do you really want to delete this comment?"))) {
-      return this.app.client.sendRequest({
-        name: "delete_project_comment",
-        project: this.project.id,
-        id: c.id
-      }, (function(_this) {
-        return function(msg) {
+    return ConfirmDialog.confirm(this.app.translator.get("Do you really want to delete this comment?"), this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
+      return function() {
+        return _this.app.client.sendRequest({
+          name: "delete_project_comment",
+          project: _this.project.id,
+          id: c.id
+        }, function(msg) {
           return _this.updateComments();
-        };
-      })(this));
-    }
+        });
+      };
+    })(this));
   };
 
   return ProjectDetails;

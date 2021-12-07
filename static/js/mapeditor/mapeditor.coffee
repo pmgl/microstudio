@@ -353,7 +353,8 @@ class @MapEditor
     return if @app.project.isLocked("maps/#{@selected_map}.json")
     @app.project.lockFile("maps/#{@selected_map}.json")
     if @selected_map?
-      if confirm "Really delete #{@selected_map}?"
+      msg = @app.translator.get("Really delete %ITEM%?").replace("%ITEM%",@selected_map)
+      ConfirmDialog.confirm msg,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
         @app.client.sendRequest {
           name: "delete_project_file"
           project: @app.project.id

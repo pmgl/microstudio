@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2021-12-07
+* Fixed broken console window after last update
+* Fixed undo pollution by using `editor.setReadOnly(true)` when away from code or doc tab
+* Implemented M3D.PointLight (thanks to HomineLudens)
+* Custom confirm dialogs to prevent standalone app focus problem
+
 ### Update 2021-12-02
 * microScript: Hot reloading of classes: Changing your class while the program is running will affect all already instanciated objects!
 * microScript: Fixed transpiler parent class linking at runtime

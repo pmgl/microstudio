@@ -571,7 +571,8 @@ class @SpriteEditor
     return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
     @app.project.lockFile("sprites/#{@selected_sprite}.png")
     if @selected_sprite? and @selected_sprite != "icon"
-      if confirm "Really delete #{@selected_sprite}?"
+      msg = @app.translator.get("Really delete %ITEM%?").replace("%ITEM%",@selected_sprite)
+      ConfirmDialog.confirm msg,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
         @app.client.sendRequest {
           name: "delete_project_file"
           project: @app.project.id

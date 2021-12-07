@@ -665,7 +665,7 @@ class AppUI
     clone_button.addEventListener "click",(event)=>
       event.stopPropagation()
       event.stopImmediatePropagation()
-      if confirm(@app.translator.get("Do you want to clone this project?"))
+      ConfirmDialog.confirm @app.translator.get("Do you want to clone this project?"),@app.translator.get("Clone"),@app.translator.get("Cancel"),()=>
         @app.cloneProject p
 
     delete_button = document.createElement "div"
@@ -680,7 +680,9 @@ class AppUI
     delete_button.addEventListener "click",(event)=>
       event.stopPropagation()
       event.stopImmediatePropagation()
-      if confirm(if p.owner.nick == @app.nick then @app.translator.get("Really delete this project?") else @app.translator.get("Really quit this project?"))
+      msg = if p.owner.nick == @app.nick then @app.translator.get("Really delete this project?") else @app.translator.get("Really quit this project?")
+      ok = if p.owner.nick == @app.nick then @app.translator.get("Delete") else @app.translator.get("Quit")
+      ConfirmDialog.confirm msg,ok,@app.translator.get("Cancel"),()=>
         @app.deleteProject p
 
     title = document.createElement "div"

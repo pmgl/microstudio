@@ -213,19 +213,19 @@ this.Manager = (function() {
       a = this.app.project[this.get_item](this.selected_item);
       if (a != null) {
         text = this.app.translator.get("Do you really want to delete %ITEM%?").replace("%ITEM%", this.selected_item);
-        if (confirm(text)) {
-          return this.app.client.sendRequest({
-            name: "delete_project_file",
-            project: this.app.project.id,
-            file: a.file,
-            thumbnail: this.use_thumbnails
-          }, (function(_this) {
-            return function(msg) {
+        return ConfirmDialog.confirm(text, this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
+          return function() {
+            return _this.app.client.sendRequest({
+              name: "delete_project_file",
+              project: _this.app.project.id,
+              file: a.file,
+              thumbnail: _this.use_thumbnails
+            }, function(msg) {
               _this.app.project[_this.update_list]();
               return _this.setSelectedItem(null);
-            };
-          })(this));
-        }
+            });
+          };
+        })(this));
       }
     }
   };

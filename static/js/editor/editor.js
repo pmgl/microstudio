@@ -919,7 +919,9 @@ this.Editor = (function() {
     tools.appendChild(trash);
     trash.addEventListener("click", (function(_this) {
       return function() {
-        if (confirm("Really delete " + source.name + "?")) {
+        var msg;
+        msg = _this.app.translator.get("Really delete %ITEM%?").replace("%ITEM%", source.name);
+        return ConfirmDialog.confirm(msg, _this.app.translator.get("Delete"), _this.app.translator.get("Cancel"), function() {
           return _this.app.client.sendRequest({
             name: "delete_project_file",
             project: _this.app.project.id,
@@ -927,7 +929,7 @@ this.Editor = (function() {
           }, function(msg) {
             return _this.app.project.updateSourceList();
           });
-        }
+        });
       };
     })(this));
     activeuser = document.createElement("i");

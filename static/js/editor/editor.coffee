@@ -687,7 +687,8 @@ class @Editor
     trash.title = @app.translator.get("Delete file")
     tools.appendChild trash
     trash.addEventListener "click",()=>
-      if confirm "Really delete #{source.name}?"
+      msg = @app.translator.get("Really delete %ITEM%?").replace("%ITEM%",source.name)
+      ConfirmDialog.confirm msg,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
         @app.client.sendRequest {
           name: "delete_project_file"
           project: @app.project.id

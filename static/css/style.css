@@ -854,7 +854,7 @@ padding-left: 2px ;
 }
 
 .overlay {
-  z-index: 4 ;
+  z-index: 40 ;
   background: rgba(0,0,0,.7);
   position: fixed ;
   top: 0 ;
@@ -865,6 +865,35 @@ padding-left: 2px ;
   display: none;
   overflow: auto ;
 }
+.confirm-message-box {
+  display: inline-block ;
+  text-align: center;
+  margin: 100px ;
+  width: 500px ;
+  padding: 40 px ;
+  background: #EEE ;
+  border-radius: 20px ;
+  color: rgba(0,0,0,.8) ;
+}
+#confirm-message-text {
+  margin: 40px 0 ;
+}
+.confirm-message-buttons div {
+  display: inline-block ;
+  margin : 20px ;
+  padding: 10px 20px ;
+  border-radius: 10px ;
+  cursor: pointer ;
+  color: rgba(255,255,255,.8);
+  font-size: 20px ;
+}
+#confirm-message-cancel {
+  background: hsl(0,40%,50%) ;
+}
+#confirm-message-ok {
+  background: hsl(160,40%,50%) ;
+}
+
 .window-wrapper {
   text-align: center ;
 }

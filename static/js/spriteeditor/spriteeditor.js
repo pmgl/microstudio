@@ -781,26 +781,28 @@ this.SpriteEditor = (function() {
   };
 
   SpriteEditor.prototype.deleteSprite = function() {
+    var msg;
     if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
       return;
     }
     this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
     if ((this.selected_sprite != null) && this.selected_sprite !== "icon") {
-      if (confirm("Really delete " + this.selected_sprite + "?")) {
-        return this.app.client.sendRequest({
-          name: "delete_project_file",
-          project: this.app.project.id,
-          file: "sprites/" + this.selected_sprite + ".png"
-        }, (function(_this) {
-          return function(msg) {
+      msg = this.app.translator.get("Really delete %ITEM%?").replace("%ITEM%", this.selected_sprite);
+      return ConfirmDialog.confirm(msg, this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
+        return function() {
+          return _this.app.client.sendRequest({
+            name: "delete_project_file",
+            project: _this.app.project.id,
+            file: "sprites/" + _this.selected_sprite + ".png"
+          }, function(msg) {
             _this.app.project.updateSpriteList();
             _this.spriteview.sprite = new Sprite(16, 16);
             _this.spriteview.update();
             _this.spriteview.editable = false;
             return _this.setSelectedSprite(null);
-          };
-        })(this));
-      }
+          });
+        };
+      })(this));
     }
   };
 

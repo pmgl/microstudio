@@ -249,23 +249,32 @@ this.Options = (function() {
     if (value !== this.app.project.language) {
       if (this.app.project.source_list.length === 1 && this.app.project.source_list[0].content.split("\n").length < 20) {
         if (!this.app.project.language.startsWith("microscript") || !value.startsWith("microscript")) {
-          if (!confirm(this.app.translator.get("Your current code will be overwritten. Do you wish to proceed?"))) {
-            document.getElementById("projectoption-language").value = this.app.project.language;
-            return;
-          } else {
-            this.app.project.setLanguage(value);
-            this.app.editor.updateLanguage();
-            if (DEFAULT_CODE[value] != null) {
-              this.app.editor.setCode(DEFAULT_CODE[value]);
-            } else {
-              this.app.editor.setCode(DEFAULT_CODE["microscript"]);
-            }
-            this.app.editor.editorContentsChanged();
-            this.app.editor.setTitleSourceName();
-          }
+          ConfirmDialog.confirm(this.app.translator.get("Your current code will be overwritten. Do you wish to proceed?"), this.app.translator.get("OK"), this.app.translator.get("Cancel"), ((function(_this) {
+            return function() {
+              _this.app.project.setLanguage(value);
+              _this.app.editor.updateLanguage();
+              if (DEFAULT_CODE[value] != null) {
+                _this.app.editor.setCode(DEFAULT_CODE[value]);
+              } else {
+                _this.app.editor.setCode(DEFAULT_CODE["microscript"]);
+              }
+              _this.app.editor.editorContentsChanged();
+              _this.app.editor.setTitleSourceName();
+              return _this.setLanguage(value);
+            };
+          })(this)), ((function(_this) {
+            return function() {
+              return document.getElementById("projectoption-language").value = _this.app.project.language;
+            };
+          })(this)));
+          return;
         }
       }
+      return this.setLanguage(value);
     }
+  };
+
+  Options.prototype.setLanguage = function(value) {
     this.app.project.setLanguage(value);
     this.app.editor.updateLanguage();
     return this.app.client.sendRequest({
