@@ -1,9 +1,9 @@
 var AppUI;
 
 AppUI = (function() {
-  function AppUI(app) {
+  function AppUI(app1) {
     var fn, fn1, j, k, len, len1, ref, ref1, s;
-    this.app = app;
+    this.app = app1;
     this.sections = ["code", "sprites", "maps", "assets", "sounds", "music", "doc", "options", "publish"];
     this.menuoptions = ["home", "explore", "projects", "help", "tutorials", "about", "usersettings"];
     this.allowed_sections = {
@@ -428,6 +428,8 @@ AppUI = (function() {
     if (section === "options") {
       this.app.options.update();
     }
+    app.editor.editor.setReadOnly(section !== "code");
+    app.doc_editor.editor.setReadOnly(section !== "doc");
     if (useraction && (this.app.project != null)) {
       return this.app.app_state.pushState("project." + this.app.project.slug + "." + section, "/projects/" + this.app.project.slug + "/" + section + "/");
     }

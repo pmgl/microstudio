@@ -327,6 +327,9 @@ class AppUI
     if section == "options"
       @app.options.update()
 
+    app.editor.editor.setReadOnly section != "code"
+    app.doc_editor.editor.setReadOnly section != "doc"
+
     if useraction and @app.project?
       @app.app_state.pushState "project.#{@app.project.slug}.#{section}","/projects/#{@app.project.slug}/#{section}/"
 
