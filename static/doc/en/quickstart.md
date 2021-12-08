@@ -14,8 +14,8 @@ It includes all the tools you need to create your first video game!
 
 You can start by exploring projects made by other users, in the *Explore* section.
 
-To start creating a game it is necessary to create an account. Choose a nickname (avoid using
-your real name), enter your email address (necessary in case of password forgetfulness; must be validated to be able to publish) and let's go!
+You can start creating as a guest, or you can directly set up an account. Choose a nickname (avoid using
+your real name), enter your email address (necessary in case you forget your password) and let's go!
 
 ## First project
 

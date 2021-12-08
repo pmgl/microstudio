@@ -14,8 +14,8 @@ Il inclut tous les outils nécessaires pour créer votre premier jeu vidéo !
 
 Vous pouvez commencer par explorer les projets réalisés par d'autres utilisateurs, dans la section *Explorer*.
 
-Pour commencer à créer un jeu il est nécessaire de créer un compte. Choisissez un pseudonyme (évitez d'utiliser
-votre vrai nom), insérez votre adresse e-mail (nécessaire en cas d'oubli de mot de passe ; doit être validée pour pouvoir publier) et c'est parti !
+Vous pouvez commencer à créer un jeu en tant qu'invité, ou après avoir créé un compte. Choisissez un pseudonyme (évitez d'utiliser
+votre vrai nom), insérez votre adresse e-mail (nécessaire en cas d'oubli de mot de passe) et c'est parti !
 
 ## Premier projet
 
