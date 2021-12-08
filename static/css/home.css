@@ -9,6 +9,7 @@
   text-align: center ;
   font-size: 22px ;
   color: rgba(255,255,255,.7);
+  user-select: text ;
 }
 
 #home-header-background {
@@ -169,6 +170,7 @@
   font-size: 24px ;
   cursor: pointer ;
   width: 300px ;
+  user-select: none ;
 }
 .home-section .button i {
   font-size: 40px ;
