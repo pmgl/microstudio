@@ -81,14 +81,18 @@ html
   if language == "python"
     script(type="text/python").
       from browser import window
+      import traceback
+      import sys
 
       def execute(str):
         try:
           return exec(str,globals())
         except BaseException as err:
-          print(err)
+          exp = traceback.format_exception(err)
+          sys.stderr.write(exp)
         except Error as err:
-          print("Unexpected error")
+          exp = traceback.format_exception(err)
+          sys.stderr.write(exp)
 
       window.python = execute
       window.glob = globals()

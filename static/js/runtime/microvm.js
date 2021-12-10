@@ -233,7 +233,9 @@ this.MicroVM = (function() {
       return Program.toString(res);
     } catch (error) {
       err = error;
-      if ((this.context.location != null) && (this.context.location.token != null)) {
+      if ((err.type != null) && (err.line != null) && (err.error != null)) {
+        this.error_info = err;
+      } else if ((this.context.location != null) && (this.context.location.token != null)) {
         this.error_info = {
           error: err,
           file: filename,

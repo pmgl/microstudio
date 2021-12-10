@@ -60,6 +60,11 @@ this.Runtime = (function() {
         if ((init != null) && init !== this.previous_init && reinit) {
           this.previous_init = init;
           this.vm.call("init");
+          if (this.vm.error_info != null) {
+            err = this.vm.error_info;
+            err.type = "init";
+            this.listener.reportError(err);
+          }
         }
       }
       return true;
@@ -151,7 +156,7 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.startReady = function() {
-    var file, global, init, j, len, lib, meta, namespace, ref, ref1, src;
+    var err, file, global, init, j, len, lib, meta, namespace, ref, ref1, src;
     meta = {
       print: (function(_this) {
         return function(text) {
@@ -211,9 +216,19 @@ this.Runtime = (function() {
       if (init != null) {
         this.previous_init = init;
         this.vm.call("init");
+        if (this.vm.error_info != null) {
+          err = this.vm.error_info;
+          err.type = "draw";
+          this.listener.reportError(err);
+        }
       }
     } else {
       this.vm.call("init");
+      if (this.vm.error_info != null) {
+        err = this.vm.error_info;
+        err.type = "draw";
+        this.listener.reportError(err);
+      }
     }
     this.dt = 1000 / 60;
     this.last_time = Date.now();

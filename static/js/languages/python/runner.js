@@ -21,26 +21,58 @@ this.Runner = (function() {
     window.stderr = {
       write: (function(_this) {
         return function(text) {
-          return console.error(text);
+          var i, len, line, t;
+          if (Array.isArray(text)) {
+            line = 1;
+            for (i = 0, len = text.length; i < len; i++) {
+              t = text[i];
+              t = t.split(" line ");
+              if (t[1] != null) {
+                line = t[1].split("\n")[0].split(",")[0];
+              }
+            }
+            _this.microvm.context.location = {
+              token: {
+                line: line,
+                column: 0
+              }
+            };
+            throw text[text.length - 1].replace("\n", "");
+          } else {
+            throw text;
+          }
         };
       })(this)
     };
-    src += "import sys\n\nsys.stdout = window.stdout\n\nsys.stderr = window.stderr\n";
+    src += "import sys\n\nsys.stdout = window.stdout\n\nsys.stderr = window.stderr\n\n\ndef __reportError(err):\n  window.reportError(err)";
     return this.run(src);
   };
 
-  Runner.prototype.run = function(program) {
+  Runner.prototype.run = function(program, name) {
     var err, res;
+    if (name == null) {
+      name = "";
+    }
     if (!this.initialized) {
       this.init();
     }
+    window.__reportError = (function(_this) {
+      return function(err) {
+        return console.info("plop");
+      };
+    })(this);
+    console.log = function(err, error) {
+      console.info("ploum");
+      console.info(err);
+      return console.info(error);
+    };
     try {
       res = python(program);
-      program = "if \"draw\" in globals():\n  window.draw = draw\n\nif \"update\" in globals():\n  window.update = update\n\nif \"init\" in globals():\n  window.init = init";
+      program = "import traceback\nimport sys\n\ndef __draw():\n  try:\n    draw()\n  except BaseException as err:\n    sys.stderr.write(traceback.format_exception(err))\n\n  except Error as err:\n    sys.stderr.write(traceback.format_exception(err))\n\ndef __update():\n  try:\n    update()\n  except BaseException as err:\n    sys.stderr.write(traceback.format_exception(err))\n\n  except Error as err:\n    sys.stderr.write(traceback.format_exception(err))\n\ndef __init():\n  try:\n    init()\n  except BaseException as err:\n    sys.stderr.write(traceback.format_exception(err))\n\n  except Error as err:\n    sys.stderr.write(traceback.format_exception(err))\n\nif \"draw\" in globals():\n  window.draw = __draw\n\nif \"update\" in globals():\n  window.update = __update\n\nif \"init\" in globals():\n  window.init = __init";
       python(program);
       return res;
-    } catch (error) {
-      err = error;
+    } catch (error1) {
+      err = error1;
       throw err.toString();
     }
   };
@@ -50,8 +82,8 @@ this.Runner = (function() {
     if ((name === "draw" || name === "update" || name === "init") && typeof window[name] === "function") {
       try {
         return window[name]();
-      } catch (error) {
-        err = error;
+      } catch (error1) {
+        err = error1;
         throw err.toString();
       }
     } else {

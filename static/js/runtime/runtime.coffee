@@ -49,6 +49,10 @@ class @Runtime
         if init? and init != @previous_init and reinit
           @previous_init = init
           @vm.call("init")
+          if @vm.error_info?
+            err = @vm.error_info
+            err.type = "init"
+            @listener.reportError err
 
       return true
     catch err
@@ -153,8 +157,16 @@ class @Runtime
       if init?
         @previous_init = init
         @vm.call("init")
+        if @vm.error_info?
+          err = @vm.error_info
+          err.type = "draw"
+          @listener.reportError err
     else
       @vm.call("init")
+      if @vm.error_info?
+        err = @vm.error_info
+        err.type = "draw"
+        @listener.reportError err
 
     @dt = 1000/60
     @last_time = Date.now()

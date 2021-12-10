@@ -14,34 +14,89 @@ class @Runner
 
     window.stderr =
       write:(text)=>
-        console.error text
+        if Array.isArray(text)
+          line = 1
+          for t in text
+            t = t.split(" line ")
+            if t[1]?
+              line = t[1].split("\n")[0].split(",")[0]
+
+          @microvm.context.location =
+            token:
+              #file: "main"
+              line: line
+              column: 0
+          throw text[text.length-1].replace("\n","")
+        else
+          throw text
 
     src += """
 import sys
 
 sys.stdout = window.stdout\n
 sys.stderr = window.stderr\n
+
+def __reportError(err):
+  window.reportError(err)
     """
 
     @run(src)
 
-  run:(program)->
+  run:(program,name="")->
     if not @initialized
       @init()
 
     #console.info program
+    window.__reportError = (err)=>
+      console.info("plop")
+
+     console.log = (err,error)->
+       console.info("ploum")
+       console.info(err)
+       console.info(error)
+
     try
       res = python(program)
 
       program = """
-  if "draw" in globals():
-    window.draw = draw
+import traceback
+import sys
 
-  if "update" in globals():
-    window.update = update
+def __draw():
+  try:
+    draw()
+  except BaseException as err:
+    sys.stderr.write(traceback.format_exception(err))
 
-  if "init" in globals():
-    window.init = init
+  except Error as err:
+    sys.stderr.write(traceback.format_exception(err))
+
+def __update():
+  try:
+    update()
+  except BaseException as err:
+    sys.stderr.write(traceback.format_exception(err))
+
+  except Error as err:
+    sys.stderr.write(traceback.format_exception(err))
+
+def __init():
+  try:
+    init()
+  except BaseException as err:
+    sys.stderr.write(traceback.format_exception(err))
+
+  except Error as err:
+    sys.stderr.write(traceback.format_exception(err))
+
+if "draw" in globals():
+  window.draw = __draw
+
+if "update" in globals():
+  window.update = __update
+
+if "init" in globals():
+  window.init = __init
       """
 
       python(program)

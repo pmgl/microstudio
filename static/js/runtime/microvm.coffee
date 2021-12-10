@@ -149,7 +149,9 @@ class @MicroVM
       @storage_service.check()
       return Program.toString res
     catch err
-      if @context.location? and @context.location.token?
+      if err.type? and err.line? and err.error?
+         @error_info = err
+      else if @context.location? and @context.location.token?
         @error_info =
           error: err
           file: filename
