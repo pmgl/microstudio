@@ -41,7 +41,7 @@
 
 .home-section i {
   font-size: 150px ;
-  color: hsl(200,30%,70%);
+  color: hsl(200,30%,30%);
 }
 .home-section h2 {
   font-size: 32px ;
@@ -55,7 +55,7 @@
 
 .home-section div.part {
   padding: 60px 0 ;
-  background: hsl(200,10%,90%);
+  background: hsl(20,20%,92%);
   color: #222 ;
   overflow: hidden ;
 }
