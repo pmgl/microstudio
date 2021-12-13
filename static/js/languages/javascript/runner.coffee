@@ -11,22 +11,52 @@ class @Runner
 
     @run(src)
 
-  run:(program)->
+  run:(program,name="")->
     @init() if not @initialized
 
-    console.info program
+    program += "\n//# sourceURL=#{name}.js"
 
     try
-      f = ()->
-        eval(program)
-
-      res = f.call(@microvm.context.global)
+      eval(program)
     catch err
-      throw err.toString()
+      if err.stack?
+        line = err.stack.split(".js:")
+        file = line[0]
+        line = line[1]
+        if file? and line?
+          line = line.split(":")[0]
+          if file.lastIndexOf("(")>=0
+            file = file.substring(file.lastIndexOf("(")+1)
+
+          if file.lastIndexOf("@")>=0
+            file = file.substring(file.lastIndexOf("@")+1)
+
+          @microvm.context.location =
+            token:
+              line: line
+              column: 0
+      throw err.message
 
   call:(name,args)->
     try
       if window[name]?
         window[name].apply @microvm.context.global,args
     catch err
-      throw err.toString()
+      if err.stack?
+        line = err.stack.split(".js:")
+        file = line[0]
+        line = line[1]
+        if file? and line?
+          line = line.split(":")[0]
+          if file.lastIndexOf("(")>=0
+            file = file.substring(file.lastIndexOf("(")+1)
+
+          if file.lastIndexOf("@")>=0
+            file = file.substring(file.lastIndexOf("@")+1)
+
+          @microvm.context.location =
+            token:
+              line: line
+              file: file
+              column: 0
+      throw err.message

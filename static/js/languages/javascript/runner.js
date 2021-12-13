@@ -19,32 +19,73 @@ this.Runner = (function() {
     return this.run(src);
   };
 
-  Runner.prototype.run = function(program) {
-    var err, f, res;
+  Runner.prototype.run = function(program, name) {
+    var err, file, line;
+    if (name == null) {
+      name = "";
+    }
     if (!this.initialized) {
       this.init();
     }
-    console.info(program);
+    program += "\n//# sourceURL=" + name + ".js";
     try {
-      f = function() {
-        return eval(program);
-      };
-      return res = f.call(this.microvm.context.global);
+      return eval(program);
     } catch (error) {
       err = error;
-      throw err.toString();
+      if (err.stack != null) {
+        line = err.stack.split(".js:");
+        file = line[0];
+        line = line[1];
+        if ((file != null) && (line != null)) {
+          line = line.split(":")[0];
+          if (file.lastIndexOf("(") >= 0) {
+            file = file.substring(file.lastIndexOf("(") + 1);
+          }
+          if (file.lastIndexOf("@") >= 0) {
+            file = file.substring(file.lastIndexOf("@") + 1);
+          }
+          this.microvm.context.location = {
+            token: {
+              line: line,
+              column: 0
+            }
+          };
+        }
+      }
+      throw err.message;
     }
   };
 
   Runner.prototype.call = function(name, args) {
-    var err;
+    var err, file, line;
     try {
       if (window[name] != null) {
         return window[name].apply(this.microvm.context.global, args);
       }
     } catch (error) {
       err = error;
-      throw err.toString();
+      if (err.stack != null) {
+        line = err.stack.split(".js:");
+        file = line[0];
+        line = line[1];
+        if ((file != null) && (line != null)) {
+          line = line.split(":")[0];
+          if (file.lastIndexOf("(") >= 0) {
+            file = file.substring(file.lastIndexOf("(") + 1);
+          }
+          if (file.lastIndexOf("@") >= 0) {
+            file = file.substring(file.lastIndexOf("@") + 1);
+          }
+          this.microvm.context.location = {
+            token: {
+              line: line,
+              file: file,
+              column: 0
+            }
+          };
+        }
+      }
+      throw err.message;
     }
   };
 
