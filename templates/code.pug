@@ -36,14 +36,16 @@ div.runtime-container#runtime-container
     div.runbar#runbar
       span Run
       div.buttons
-        div#run-button(title="Run project")
+        div#run-button(title=translator.get("Run project"))
           i.fas.fa-play
-        div#pause-button.selected(title="Pause execution")
+        div#pause-button.selected(title=translator.get("Pause execution"))
           i.fas.fa-pause
-        div#reload-button.selected(title="Restart project")
+        div#reload-button.selected(title=translator.get("Restart project"))
           i.fa.fa-redo
-        div#detach-button(title="Detach run window")
+        div#detach-button(title=translator.get("Detach run window"))
           i.fas.fa-window-restore
+        div#qrcode-button(title=translator.get("Project QR Code"))
+          i.fas.fa-qrcode
 
       a#run-link(target="_blank")
 

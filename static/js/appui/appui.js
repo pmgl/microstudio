@@ -432,8 +432,9 @@ AppUI = (function() {
     app.editor.editor.setReadOnly(section !== "code");
     app.doc_editor.editor.setReadOnly(section !== "doc");
     if (useraction && (this.app.project != null)) {
-      return this.app.app_state.pushState("project." + this.app.project.slug + "." + section, "/projects/" + this.app.project.slug + "/" + section + "/");
+      this.app.app_state.pushState("project." + this.app.project.slug + "." + section, "/projects/" + this.app.project.slug + "/" + section + "/");
     }
+    return this.app.runwindow.hideQRCode();
   };
 
   AppUI.prototype.accountRequired = function(callback) {
@@ -515,6 +516,7 @@ AppUI = (function() {
     if (section === "tutorials") {
       this.app.tutorials.load();
     }
+    this.app.runwindow.hideQRCode();
   };
 
   AppUI.prototype.setDisplay = function(element, value) {

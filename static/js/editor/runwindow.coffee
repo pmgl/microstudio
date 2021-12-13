@@ -7,6 +7,10 @@ class @RunWindow
     @app.appui.setAction "pause-button-win",()=> @pause()
     @app.appui.setAction "reload-button-win",()=> @reload()
     @app.appui.setAction "detach-button",()=> @detach()
+    @app.appui.setAction "qrcode-button",()=> @showQRCode()
+
+    if window.ms_standalone
+      document.getElementById("qrcode-button").style.display = "none"
 
     @app.appui.setAction "clear-button",()=> @clear()
     @app.appui.setAction "console-options-button",()=> @toggleConsoleOptions()
@@ -446,3 +450,33 @@ class @RunWindow
 
   projectClosed:()->
     @floating_window.close()
+
+  hideQRCode:()->
+    if @qrcode?
+      document.body.removeChild @qrcode
+      @qrcode = null
+
+  showQRCode:()->
+    if @app.project?
+      if @qrcode?
+        @hideQRCode()
+      else
+        url = location.origin.replace(".dev",".io")+"/"
+        url += @app.project.owner.nick+"/"
+        url += @app.project.slug+"/"
+        if not @app.project.public
+          url += @app.project.code + "/"
+
+        qrcode = QRCode.toDataURL url,{margin:2,scale:8},(err,url)=>
+          if not err? and url?
+            img = new Image
+            img.src = url
+            img.onload = ()=>
+              b = document.getElementById("qrcode-button").getBoundingClientRect()
+              img.style.position = "absolute"
+              img.style.top = "#{b.y+b.height+20}px"
+              img.style.left = "#{Math.min(b.x+b.width/2-132,window.innerWidth-img.width-10)}px"
+
+              @qrcode = img
+              @qrcode.addEventListener "click",()=>@showQRCode()
+              document.body.appendChild @qrcode

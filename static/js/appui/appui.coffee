@@ -334,6 +334,8 @@ class AppUI
     if useraction and @app.project?
       @app.app_state.pushState "project.#{@app.project.slug}.#{section}","/projects/#{@app.project.slug}/#{section}/"
 
+    @app.runwindow.hideQRCode()
+
   accountRequired:(callback)->
     @logged_callback = callback
 
@@ -393,6 +395,7 @@ class AppUI
       @app.tutorials.load()
 
     #@app.explore.closeDetails() if section != "explore"
+    @app.runwindow.hideQRCode()
     return
 
   setDisplay:(element,value)->

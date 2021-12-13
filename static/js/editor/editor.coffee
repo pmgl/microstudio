@@ -725,3 +725,10 @@ class @Editor
 
       iframe = document.querySelector("#device iframe")
       if iframe? then iframe.src = url
+
+      qrcode = QRCode.toDataURL url,{margin:0},(err,url)=>
+        if not err? and url?
+          img = new Image
+          img.src = url
+          document.getElementById("qrcode-button").innerHTML = ""
+          document.getElementById("qrcode-button").appendChild img

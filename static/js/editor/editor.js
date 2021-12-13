@@ -950,7 +950,7 @@ this.Editor = (function() {
   };
 
   Editor.prototype.updateRunLink = function() {
-    var element, iframe, url;
+    var element, iframe, qrcode, url;
     element = document.getElementById("run-link");
     if (this.app.project != null) {
       url = location.origin.replace(".dev", ".io") + "/";
@@ -964,8 +964,21 @@ this.Editor = (function() {
       element.title = url;
       iframe = document.querySelector("#device iframe");
       if (iframe != null) {
-        return iframe.src = url;
+        iframe.src = url;
       }
+      return qrcode = QRCode.toDataURL(url, {
+        margin: 0
+      }, (function(_this) {
+        return function(err, url) {
+          var img;
+          if ((err == null) && (url != null)) {
+            img = new Image;
+            img.src = url;
+            document.getElementById("qrcode-button").innerHTML = "";
+            return document.getElementById("qrcode-button").appendChild(img);
+          }
+        };
+      })(this));
     }
   };
 

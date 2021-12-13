@@ -113,6 +113,7 @@ this.Server = (function() {
     app.use("/lib/cannonjs", express["static"]("node_modules/cannon/build"));
     app.use("/lib/brython", express["static"]("node_modules/brython"));
     app.use("/lib/fengari", express["static"]("node_modules/fengari-web/dist"));
+    app.use("/lib/qrcode", express["static"]("node_modules/qrcode/build"));
     return this.db = new DB(this.app_data + "/data", (function(_this) {
       return function(db) {
         var j, len1, ref1;

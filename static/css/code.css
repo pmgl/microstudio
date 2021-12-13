@@ -84,6 +84,24 @@
 .runbar .buttons div:active,.runtime-splitbar .buttons div:active  {
   background: hsl(160,30%,30%);
 }
+.runbar .buttons img {
+  width: 24px ;
+  height: 24px ;
+  vertical-align: middle;
+}
+
+#qrcode-button {
+  margin-left: 20px ;
+  border-radius: 5px ;
+  background: hsl(200,50%,40%) ;
+  position: relative ;
+  top: -2px ;
+  padding: 5px ;
+}
+
+#qrcode-button:hover, #run-link:hover {
+  background: hsl(200,50%,50%) ;
+}
 
 .runbar .buttons .selected,.runtime-splitbar .buttons .selected,
 .runbar .buttons div.selected:hover,.runtime-splitbar .buttons div.selected:hover
@@ -97,7 +115,7 @@
   padding: 4px 12px ;
   border-radius: 14px ;
   background: hsl(200,50%,40%);
-  margin-left: 40px ;
+  margin-left: 20px ;
   white-space: nowrap ;
   overflow: hidden ;
   cursor: pointer ;
