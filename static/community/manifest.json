@@ -2,7 +2,7 @@
     "name": "microStudio Community",
     "short_name": "mS Community",
     "start_url": "/community/",
-    "display": "fullscreen",
+    "display": "minimal-ui",
     "orientation": "portrait",
     "scope": "/community/",
 
