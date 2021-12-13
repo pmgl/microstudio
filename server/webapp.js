@@ -295,7 +295,7 @@ this.WebApp = (function() {
         });
       };
     })(this));
-    this.app.get(/^\/[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*\/?$/, (function(_this) {
+    this.app.get(/^\/[A-Za-z0-9_]+\/?$/, (function(_this) {
       return function(req, res) {
         if (_this.ensureIOArea(req, res)) {
           return;

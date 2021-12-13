@@ -245,7 +245,7 @@ class @WebApp
                     graphics: project.graphics
                     libs: JSON.stringify(project.libs)
 
-    @app.get /^\/[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*\/?$/,(req,res)=>
+    @app.get /^\/[A-Za-z0-9_]+\/?$/,(req,res)=>
       return if @ensureIOArea(req,res)
       @getUserPublicPage(req,res)
 
