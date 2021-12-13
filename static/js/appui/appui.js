@@ -418,6 +418,7 @@ AppUI = (function() {
     }
     if (section === "doc") {
       this.doc_splitbar.update();
+      this.app.doc_editor.editor.resize();
     }
     if (section === "sounds") {
       this.app.sound_editor.update();

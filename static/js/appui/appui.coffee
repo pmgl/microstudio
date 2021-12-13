@@ -316,6 +316,7 @@ class AppUI
 
     if section == "doc"
       @doc_splitbar.update()
+      @app.doc_editor.editor.resize()
 
     if section == "sounds"
       @app.sound_editor.update()
