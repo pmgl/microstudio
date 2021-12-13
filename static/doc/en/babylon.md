@@ -64,4 +64,6 @@ https://doc.babylonjs.com/
 
 ### Examples
 
-https://microstudio.dev/i/gilles/babylontest/
+* https://microstudio.dev/i/JimB007/babylonstarter/
+* https://microstudio.dev/i/gilles/babylontest/
+* https://microstudio.dev/i/JimB007/babylonparticles/
