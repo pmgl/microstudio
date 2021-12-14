@@ -289,6 +289,7 @@ class @Content
       owner: owner.id
       orientation: data.orientation
       aspect: data.aspect
+      type: data.type
       language: data.language
       graphics: data.graphics
       libs: data.libs
@@ -298,16 +299,11 @@ class @Content
     if empty
       callback(project)
     else
-      content = """
-init = function()
-end
+      if project.language? and DEFAULT_CODE[project.language]?
+        content = DEFAULT_CODE[project.language]
+      else
+        content = DEFAULT_CODE.microscript
 
-update = function()
-end
-
-draw = function()
-end
-"""
       @files.write "#{owner.id}/#{project.id}/ms/main.ms",content,()=>
         @files.copyFile "../static/img/defaultappicon.png","#{owner.id}/#{project.id}/sprites/icon.png",()=>
           callback(project)
@@ -353,5 +349,49 @@ end
       user.setFlag("validated",true)
       translator = @translator.getTranslator(user.language)
       user.notify translator.get "Your e-mail address is now validated"
+
+
+DEFAULT_CODE =
+  python: """
+def init():
+  pass
+
+def update():
+  pass
+
+def draw():
+  pass
+  """
+  javascript: """
+init = function() {
+}
+
+update = function() {
+}
+
+draw = function() {
+}
+  """
+  lua: """
+init = function()
+end
+
+update = function()
+end
+
+draw = function()
+end
+  """
+  microscript: """
+init = function()
+end
+
+update = function()
+end
+
+draw = function()
+end
+  """
+
 
 module.exports = @Content

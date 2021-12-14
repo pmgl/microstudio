@@ -49,6 +49,9 @@ html(lang=language)
           -var explore = "/i/"+user+"/"+project.slug+"/"
           -var img = "/"+user+"/"+project.slug+"/sprites/icon.png"
           
+          if project.type == "tutorial"
+            -path = "/tutorial"+path
+          
           div.projectbox(id="#{project.slug}")
             a.appicon(href=path)
               div

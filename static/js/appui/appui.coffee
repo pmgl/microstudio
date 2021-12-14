@@ -82,9 +82,31 @@ class AppUI
     #@setSection("options")
     @createLoginFunctions()
 
+
+
+    advanced = document.getElementById("advanced-create-project-options-button")
     @setAction "create-project-button",()=>
       @show "create-project-overlay"
       @focus "create-project-title"
+      document.getElementById("createprojectoption-type").value = "app"
+      document.getElementById("createprojectoption-language").value = "microscript_v1_i"
+      document.getElementById("createprojectoption-graphics").value = "M1"
+      document.getElementById("create-project-option-lib-matterjs").checked = false
+      document.getElementById("create-project-option-lib-cannonjs").checked = false
+      @hideAdvanced()
+
+    @hideAdvanced = ()=>
+      advanced.classList.remove "open"
+      document.getElementById("advanced-create-project-options").style.display = "none"
+      advanced.childNodes[1].innerText = @app.translator.get "Advanced"
+
+    advanced.addEventListener "click",()=>
+      if advanced.classList.contains "open"
+        @hideAdvanced()
+      else
+        advanced.classList.add "open"
+        document.getElementById("advanced-create-project-options").style.display = "block"
+        advanced.childNodes[1].innerText = @app.translator.get "Hide advanced options"
 
     @setAction "import-project-button",()=>
       input = document.createElement "input"
@@ -98,9 +120,6 @@ class AppUI
 
       input.click()
 
-    @setAction "create-project-window",(event)=>
-      event.stopPropagation()
-
     @setAction "home-action-explore",()=>
       @setMainSection("explore")
 
@@ -108,16 +127,27 @@ class AppUI
       @setMainSection("projects")
 
     document.getElementById("create-project-overlay").addEventListener "mousedown",(event)=>
-      @hide "create-project-overlay"
-
-    document.getElementById("create-project-window").addEventListener "mousedown",(event)=>
-      event.stopPropagation()
+      b = document.getElementById("create-project-window").getBoundingClientRect()
+      if event.clientX<b.x or event.clientX>b.x+b.width or event.clientY<b.y or event.clientY>b.y+b.height
+        @hide "create-project-overlay"
+      true
 
     @setAction "create-project-submit",()=>
       title = @get("create-project-title").value
       slug = RegexLib.slugify(title)
       if title.length>0 and slug.length>0
-        @app.createProject(title,slug)
+        libs = []
+        if document.getElementById("create-project-option-lib-matterjs").checked
+          libs.push "matterjs"
+        if document.getElementById("create-project-option-lib-cannonjs").checked
+          libs.push "cannonjs"
+
+        @app.createProject title,slug,
+          type: document.getElementById("createprojectoption-type").value
+          language: document.getElementById("createprojectoption-language").value
+          graphics: document.getElementById("createprojectoption-graphics").value
+          libs: libs
+
         @hide "create-project-overlay"
         @get("create-project-title").value = ""
 
@@ -317,6 +347,7 @@ class AppUI
     if section == "doc"
       @doc_splitbar.update()
       @app.doc_editor.editor.resize()
+      @app.doc_editor.checkTutorial()
 
     if section == "sounds"
       @app.sound_editor.update()

@@ -102,17 +102,10 @@ this.DocEditor = (function() {
   };
 
   DocEditor.prototype.checkTutorial = function() {
-    var src;
-    src = this.editor.getValue();
-    if (src.startsWith("# Tutorial")) {
-      document.getElementById("doceditor-start-tutorial").style.display = "block";
-      return this.app.options.setType("tutorial");
+    if ((this.app.project != null) && this.app.project.type === "tutorial") {
+      return document.getElementById("doceditor-start-tutorial").style.display = "block";
     } else {
-      document.getElementById("doceditor-start-tutorial").style.display = "none";
-      if (src.length === 0) {
-        return;
-      }
-      return this.app.options.setType("app");
+      return document.getElementById("doceditor-start-tutorial").style.display = "none";
     }
   };
 

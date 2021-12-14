@@ -2,7 +2,7 @@ var AppUI;
 
 AppUI = (function() {
   function AppUI(app1) {
-    var fn, fn1, j, k, len, len1, ref, ref1, s;
+    var advanced, fn, fn1, j, k, len, len1, ref, ref1, s;
     this.app = app1;
     this.sections = ["code", "sprites", "maps", "assets", "sounds", "music", "doc", "options", "publish"];
     this.menuoptions = ["home", "explore", "projects", "help", "tutorials", "about", "usersettings"];
@@ -88,10 +88,35 @@ AppUI = (function() {
       document.getElementById("usersetting-block-account-type").style.display = "none";
     }
     this.createLoginFunctions();
+    advanced = document.getElementById("advanced-create-project-options-button");
     this.setAction("create-project-button", (function(_this) {
       return function() {
         _this.show("create-project-overlay");
-        return _this.focus("create-project-title");
+        _this.focus("create-project-title");
+        document.getElementById("createprojectoption-type").value = "app";
+        document.getElementById("createprojectoption-language").value = "microscript_v1_i";
+        document.getElementById("createprojectoption-graphics").value = "M1";
+        document.getElementById("create-project-option-lib-matterjs").checked = false;
+        document.getElementById("create-project-option-lib-cannonjs").checked = false;
+        return _this.hideAdvanced();
+      };
+    })(this));
+    this.hideAdvanced = (function(_this) {
+      return function() {
+        advanced.classList.remove("open");
+        document.getElementById("advanced-create-project-options").style.display = "none";
+        return advanced.childNodes[1].innerText = _this.app.translator.get("Advanced");
+      };
+    })(this);
+    advanced.addEventListener("click", (function(_this) {
+      return function() {
+        if (advanced.classList.contains("open")) {
+          return _this.hideAdvanced();
+        } else {
+          advanced.classList.add("open");
+          document.getElementById("advanced-create-project-options").style.display = "block";
+          return advanced.childNodes[1].innerText = _this.app.translator.get("Hide advanced options");
+        }
       };
     })(this));
     this.setAction("import-project-button", (function(_this) {
@@ -111,11 +136,6 @@ AppUI = (function() {
         return input.click();
       };
     })(this));
-    this.setAction("create-project-window", (function(_this) {
-      return function(event) {
-        return event.stopPropagation();
-      };
-    })(this));
     this.setAction("home-action-explore", (function(_this) {
       return function() {
         return _this.setMainSection("explore");
@@ -128,21 +148,33 @@ AppUI = (function() {
     })(this));
     document.getElementById("create-project-overlay").addEventListener("mousedown", (function(_this) {
       return function(event) {
-        return _this.hide("create-project-overlay");
-      };
-    })(this));
-    document.getElementById("create-project-window").addEventListener("mousedown", (function(_this) {
-      return function(event) {
-        return event.stopPropagation();
+        var b;
+        b = document.getElementById("create-project-window").getBoundingClientRect();
+        if (event.clientX < b.x || event.clientX > b.x + b.width || event.clientY < b.y || event.clientY > b.y + b.height) {
+          _this.hide("create-project-overlay");
+        }
+        return true;
       };
     })(this));
     this.setAction("create-project-submit", (function(_this) {
       return function() {
-        var slug, title;
+        var libs, slug, title;
         title = _this.get("create-project-title").value;
         slug = RegexLib.slugify(title);
         if (title.length > 0 && slug.length > 0) {
-          _this.app.createProject(title, slug);
+          libs = [];
+          if (document.getElementById("create-project-option-lib-matterjs").checked) {
+            libs.push("matterjs");
+          }
+          if (document.getElementById("create-project-option-lib-cannonjs").checked) {
+            libs.push("cannonjs");
+          }
+          _this.app.createProject(title, slug, {
+            type: document.getElementById("createprojectoption-type").value,
+            language: document.getElementById("createprojectoption-language").value,
+            graphics: document.getElementById("createprojectoption-graphics").value,
+            libs: libs
+          });
           _this.hide("create-project-overlay");
           return _this.get("create-project-title").value = "";
         }
@@ -419,6 +451,7 @@ AppUI = (function() {
     if (section === "doc") {
       this.doc_splitbar.update();
       this.app.doc_editor.editor.resize();
+      this.app.doc_editor.checkTutorial();
     }
     if (section === "sounds") {
       this.app.sound_editor.update();

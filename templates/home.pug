@@ -477,6 +477,41 @@ html(lang=language)
           br
           br
           button#create-project-submit #{translator.get("Create Project")}
+          
+          div#advanced-create-project-options-button
+            i.fa
+            span #{translator.get("Advanced")}
+
+          div#advanced-create-project-options
+            div.createprojectoption#create-project-option-type
+              h3 #{translator.get("Project Type")}
+              select#createprojectoption-type
+                option(value="app") #{translator.get("App (game, demo...)")}
+                option(value="library") #{translator.get("Library")}
+                option(value="tutorial") #{translator.get("Tutorial")}
+
+            div.createprojectoption#create-project-option-language
+              h3 #{translator.get("Language support")}
+              select#createprojectoption-language
+                each val,key in language_engines  
+                  option(value=key) #{translator.get(val.title)}
+
+            div.createprojectoption#create-project-option-graphics
+              h3 #{translator.get("Graphics library")}
+              select#createprojectoption-graphics
+                option(value="M1") #{translator.get("basic graphics API")}
+                option(value="M2D") #{translator.get("micro 2D - Experimental - Built on Pixi.js")}
+                option(value="M3D") #{translator.get("micro 3D - Experimental - Built on Babylon.js")}
+                option(value="PIXI") #{translator.get("Pixi.js - Experimental")}
+                option(value="BABYLON") #{translator.get("Babylon.js - Experimental")}
+
+            div.createprojectoption#create-project-option-libs
+              h3 #{translator.get("Additional tools and libraries")}
+              each val,key in optional_libs  
+                input(type="checkbox" id="create-project-option-lib-"+key)
+                label(for="create-project-option-lib-"+key) #{translator.get(val.title)}
+                div.tip #{translator.get("Note: this integration is experimental")}
+                br
 
     div.overlay#confirm-message-overlay
       div.confirm-message-box

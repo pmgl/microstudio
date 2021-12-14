@@ -1,4 +1,4 @@
-var Forum, Project, Tag, Token, Translator, User, usage;
+var DEFAULT_CODE, Forum, Project, Tag, Token, Translator, User, usage;
 
 usage = require("pidusage");
 
@@ -394,6 +394,7 @@ this.Content = (function() {
       owner: owner.id,
       orientation: data.orientation,
       aspect: data.aspect,
+      type: data.type,
       language: data.language,
       graphics: data.graphics,
       libs: data.libs
@@ -403,7 +404,11 @@ this.Content = (function() {
     if (empty) {
       return callback(project);
     } else {
-      content = "init = function()\nend\n\nupdate = function()\nend\n\ndraw = function()\nend";
+      if ((project.language != null) && (DEFAULT_CODE[project.language] != null)) {
+        content = DEFAULT_CODE[project.language];
+      } else {
+        content = DEFAULT_CODE.microscript;
+      }
       return this.files.write(owner.id + "/" + project.id + "/ms/main.ms", content, (function(_this) {
         return function() {
           return _this.files.copyFile("../static/img/defaultappicon.png", owner.id + "/" + project.id + "/sprites/icon.png", function() {
@@ -476,5 +481,12 @@ this.Content = (function() {
   return Content;
 
 })();
+
+DEFAULT_CODE = {
+  python: "def init():\n  pass\n\ndef update():\n  pass\n\ndef draw():\n  pass",
+  javascript: "init = function() {\n}\n\nupdate = function() {\n}\n\ndraw = function() {\n}",
+  lua: "init = function()\nend\n\nupdate = function()\nend\n\ndraw = function()\nend",
+  microscript: "init = function()\nend\n\nupdate = function()\nend\n\ndraw = function()\nend"
+};
 
 module.exports = this.Content;

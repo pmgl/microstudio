@@ -112,7 +112,7 @@ this.ProjectDetails = (function() {
   }
 
   ProjectDetails.prototype.set = function(project) {
-    var a, j, len, ref, section, t;
+    var a, j, len, ref, ref1, section, t;
     this.project = project;
     this.splitbar.update();
     this.sources = [];
@@ -143,7 +143,7 @@ this.ProjectDetails = (function() {
         section = "doc";
       }
     }
-    if (this.project.type === "tutorial") {
+    if ((ref1 = this.project.type) === "tutorial" || ref1 === "library") {
       section = "doc";
     }
     this.setSection(section);

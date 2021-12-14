@@ -16,6 +16,7 @@ class @Options
 
     @selectInput "projectoption-orientation",(value)=>@orientationChanged(value)
     @selectInput "projectoption-aspect",(value)=>@aspectChanged(value)
+    @selectInput "projectoption-type",(value)=>@typeChanged(value)
     @selectInput "projectoption-graphics",(value)=>@graphicsChanged(value)
     @selectInput "projectoption-language",(value)=>@languageChanged(value)
 
@@ -70,6 +71,7 @@ class @Options
     document.getElementById("projectoption-slugprefix").innerText = location.origin.replace(".dev",".io")+"/#{@app.project.owner.nick}/"
     document.getElementById("projectoption-orientation").value = @app.project.orientation
     document.getElementById("projectoption-aspect").value = @app.project.aspect
+    document.getElementById("projectoption-type").value = @app.project.type or "app"
     document.getElementById("projectoption-graphics").value = @app.project.graphics or "M1"
     document.getElementById("projectoption-language").value = @app.project.language or "microscript_v1_i"
 
@@ -150,6 +152,15 @@ class @Options
       name: "set_project_option"
       project: @app.project.id
       option: "aspect"
+      value: value
+    },(msg)=>
+
+  typeChanged:(value)->
+    @app.project.setType(value)
+    @app.client.sendRequest {
+      name: "set_project_option"
+      project: @app.project.id
+      option: "type"
       value: value
     },(msg)=>
 

@@ -129,11 +129,19 @@ class App
         document.getElementById("forgot-password-panel").innerHTML = @translator.get("Thank you. Please check your mail.")
         setTimeout (()=>@appui.hide "login-overlay"),5000
 
-  createProject:(title,slug,callback)->
+  createProject:(title,slug,options,callback)->
+    if options? and typeof options == "function" and not callback?
+      callback = options
+      options = {}
+
     @client.sendRequest {
       name: "create_project"
       title: title
       slug: slug
+      type: options.type
+      graphics: options.graphics
+      language: options.language
+      libs: options.libs
     },(msg)=>
       switch msg.name
         when "error"

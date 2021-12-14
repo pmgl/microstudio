@@ -109,7 +109,7 @@ class @ProjectDetails
       else if t.indexOf("tutorial")>=0 or t.indexOf("tutoriel")>=0
         section = "doc"
 
-    if @project.type == "tutorial"
+    if @project.type in ["tutorial","library"]
       section = "doc"
 
     @setSection(section)

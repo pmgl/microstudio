@@ -167,11 +167,19 @@ App = (function() {
     }
   };
 
-  App.prototype.createProject = function(title, slug, callback) {
+  App.prototype.createProject = function(title, slug, options, callback) {
+    if ((options != null) && typeof options === "function" && (callback == null)) {
+      callback = options;
+      options = {};
+    }
     return this.client.sendRequest({
       name: "create_project",
       title: title,
-      slug: slug
+      slug: slug,
+      type: options.type,
+      graphics: options.graphics,
+      language: options.language,
+      libs: options.libs
     }, (function(_this) {
       return function(msg) {
         switch (msg.name) {

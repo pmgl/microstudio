@@ -65,6 +65,13 @@ div.projectoptions#projectoptions
           span #{translator.get("Show advanced options")}
 
         div#advanced-project-options
+          div.projectoption#project-option-type
+            h3 #{translator.get("Project Type")}
+            select#projectoption-type
+              option(value="app") #{translator.get("App (game, demo...)")}
+              option(value="library") #{translator.get("Library")}
+              option(value="tutorial") #{translator.get("Tutorial")}
+
           div.projectoption#project-option-language
             h3 #{translator.get("Language support")}
             select#projectoption-language

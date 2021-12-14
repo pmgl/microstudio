@@ -30,6 +30,11 @@ this.Options = (function() {
         return _this.aspectChanged(value);
       };
     })(this));
+    this.selectInput("projectoption-type", (function(_this) {
+      return function(value) {
+        return _this.typeChanged(value);
+      };
+    })(this));
     this.selectInput("projectoption-graphics", (function(_this) {
       return function(value) {
         return _this.graphicsChanged(value);
@@ -122,6 +127,7 @@ this.Options = (function() {
     document.getElementById("projectoption-slugprefix").innerText = location.origin.replace(".dev", ".io") + ("/" + this.app.project.owner.nick + "/");
     document.getElementById("projectoption-orientation").value = this.app.project.orientation;
     document.getElementById("projectoption-aspect").value = this.app.project.aspect;
+    document.getElementById("projectoption-type").value = this.app.project.type || "app";
     document.getElementById("projectoption-graphics").value = this.app.project.graphics || "M1";
     document.getElementById("projectoption-language").value = this.app.project.language || "microscript_v1_i";
     list = document.querySelectorAll("#project-option-libs input");
@@ -226,6 +232,18 @@ this.Options = (function() {
       name: "set_project_option",
       project: this.app.project.id,
       option: "aspect",
+      value: value
+    }, (function(_this) {
+      return function(msg) {};
+    })(this));
+  };
+
+  Options.prototype.typeChanged = function(value) {
+    this.app.project.setType(value);
+    return this.app.client.sendRequest({
+      name: "set_project_option",
+      project: this.app.project.id,
+      option: "type",
       value: value
     }, (function(_this) {
       return function(msg) {};
