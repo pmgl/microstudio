@@ -1,5 +1,19 @@
 ## Changelog
 
+### Update 2021-12-14
+* QR code display to easily run project on mobile!
+* Improved error reporting for Python language
+* Improved error reporting for JavaScript language
+* Choose project type from app, library or tutorial
+* Set project options on project creation (type, language, graphics API, optional libs)
+* Fixed user public page access when nickname has underscores
+* Fixed doc tab not updating when switching from one project to another
+* Added JimB007 examples to Babylon.js documentation
+* Added link to Github and Patreon on homepage
+* Fixed Execute button on user public page for projects of type tutorial
+* removed fullscreen to Community PWA manifest
+
+
 ### Update 2021-12-07
 * Fixed broken console window after last update
 * Fixed undo pollution by using `editor.setReadOnly(true)` when away from code or doc tab
