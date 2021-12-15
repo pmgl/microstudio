@@ -831,7 +831,7 @@ AppUI = (function() {
       this.get("user-nick").innerHTML = nick;
       if (this.project != null) {
         this.get("project-name").innerHTML = this.project.title;
-        PixelatedImage.setURL(this.get("project-icon"), location.origin + ("/" + this.project.owner.nick + "/" + this.project.slug + "/" + this.project.code + "/icon.png"), 32);
+        this.get("project-icon").src = location.origin + ("/" + this.project.owner.nick + "/" + this.project.slug + "/" + this.project.code + "/icon.png");
       }
     }
     this.get("user-nick").style.display = "inline-block";
@@ -944,7 +944,9 @@ AppUI = (function() {
     title.innerText = p.title;
     element.appendChild(title);
     element.appendChild(document.createElement("br"));
-    icon = PixelatedImage.create(location.origin + ("/" + p.owner.nick + "/" + p.slug + "/" + p.code + "/icon.png"), 144);
+    icon = new Image;
+    icon.src = location.origin + ("/" + p.owner.nick + "/" + p.slug + "/" + p.code + "/icon.png");
+    icon.classList.add("pixelated");
     element.appendChild(icon);
     element.addEventListener("click", (function(_this) {
       return function() {
@@ -1040,7 +1042,7 @@ AppUI = (function() {
       useraction = true;
     }
     this.get("project-name").innerHTML = this.project.title;
-    PixelatedImage.setURL(this.get("project-icon"), location.origin + ("/" + this.project.owner.nick + "/" + this.project.slug + "/" + this.project.code + "/icon.png"), 32);
+    this.get("project-icon").src = location.origin + ("/" + this.project.owner.nick + "/" + this.project.slug + "/" + this.project.code + "/icon.png");
     this.setSection("code", useraction);
     this.show("projectview");
     this.hide("myprojects");
@@ -1226,7 +1228,10 @@ AppUI = (function() {
     span.innerText = nick;
     div.appendChild(span);
     if (tier) {
-      icon = PixelatedImage.create(location.origin + ("/microstudio/patreon/badges/sprites/" + tier + ".png"), 32);
+      icon = new Image;
+      icon.src = location.origin + ("/microstudio/patreon/badges/sprites/" + tier + ".png");
+      icon.classList.add("pixelated");
+      icon.style = "width: 32px; height: 32px;";
       icon.alt = icon.title = this.app.getTierName(tier);
       div.appendChild(icon);
     }

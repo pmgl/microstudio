@@ -132,8 +132,10 @@ this.Explore = (function() {
       tag.classList.add("project-tag");
       element.appendChild(tag);
     }
-    icon = PixelatedImage.create(location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png"), 200);
+    icon = new Image;
+    icon.src = location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png");
     icon.classList.add("icon");
+    icon.classList.add("pixelated");
     icon.alt = p.title;
     icon.title = p.title;
     element.appendChild(icon);
@@ -245,7 +247,7 @@ this.Explore = (function() {
     this.get("explore-tools").style.display = "none";
     this.get("explore-contents").style.display = "none";
     this.get("explore-project-details").style.display = "block";
-    PixelatedImage.setURL(this.get("project-details-image"), location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png"), 200);
+    this.get("project-details-image").src = location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png");
     this.get("project-details-title").innerText = p.title;
     desc = DOMPurify.sanitize(marked(p.description));
     ref = p.libs;

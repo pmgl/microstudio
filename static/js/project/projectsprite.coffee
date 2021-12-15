@@ -28,7 +28,7 @@ class @ProjectSprite extends Sprite
 
   updated:(url=@project.getFullURL()+"sprites/"+@file+"?v=#{Date.now()}")->
     for i in @images
-      PixelatedImage.setURL i.image,url,i.size
+      i.image.src = url
     return
 
   reload:(callback)->

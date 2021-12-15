@@ -48,7 +48,7 @@ this.ProjectSprite = (function(superClass) {
     ref = this.images;
     for (j = 0, len = ref.length; j < len; j++) {
       i = ref[j];
-      PixelatedImage.setURL(i.image, url, i.size);
+      i.image.src = url;
     }
   };
 

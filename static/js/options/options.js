@@ -121,7 +121,7 @@ this.Options = (function() {
 
   Options.prototype.projectOpened = function() {
     var e, i, input, j, len, len1, lib, list, ref;
-    PixelatedImage.setURL(document.getElementById("projectoptions-icon"), this.app.project.getFullURL() + "icon.png", 160);
+    document.getElementById("projectoptions-icon").src = this.app.project.getFullURL() + "icon.png";
     document.getElementById("projectoption-name").value = this.app.project.title;
     this.project_slug_validator.set(this.app.project.slug);
     document.getElementById("projectoption-slugprefix").innerText = location.origin.replace(".dev", ".io") + ("/" + this.app.project.owner.nick + "/");

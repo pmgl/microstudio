@@ -63,7 +63,7 @@ class @Options
     e.addEventListener "change",(event)=>action(e.options[e.selectedIndex].value)
 
   projectOpened:()->
-    PixelatedImage.setURL document.getElementById("projectoptions-icon"),@app.project.getFullURL()+"icon.png",160
+    document.getElementById("projectoptions-icon").src = @app.project.getFullURL()+"icon.png"
     #document.getElementById("projectoptions-icon").setAttribute("src","#{@app.project.getFullURL()}icon.png")
     document.getElementById("projectoption-name").value = @app.project.title
     @project_slug_validator.set @app.project.slug

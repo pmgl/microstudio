@@ -95,8 +95,10 @@ class @Explore
       tag.classList.add "project-tag"
       element.appendChild tag
 
-    icon = PixelatedImage.create location.origin+"/#{p.owner}/#{p.slug}/icon.png",200
+    icon = new Image
+    icon.src = location.origin+"/#{p.owner}/#{p.slug}/icon.png"
     icon.classList.add "icon"
+    icon.classList.add "pixelated"
     icon.alt = p.title
     icon.title = p.title
     element.appendChild icon
@@ -188,7 +190,7 @@ class @Explore
     @get("explore-contents").style.display = "none"
     @get("explore-project-details").style.display = "block"
 
-    PixelatedImage.setURL @get("project-details-image"),location.origin+"/#{p.owner}/#{p.slug}/icon.png",200
+    @get("project-details-image").src = location.origin+"/#{p.owner}/#{p.slug}/icon.png"
     @get("project-details-title").innerText = p.title
     desc = DOMPurify.sanitize marked p.description
 

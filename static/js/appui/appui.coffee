@@ -611,7 +611,7 @@ class AppUI
       @get("user-nick").innerHTML = nick
       if @project?
         @get("project-name").innerHTML = @project.title
-        PixelatedImage.setURL @get("project-icon"),location.origin+"/#{@project.owner.nick}/#{@project.slug}/#{@project.code}/icon.png",32
+        @get("project-icon").src = location.origin+"/#{@project.owner.nick}/#{@project.slug}/#{@project.code}/icon.png"
 
     @get("user-nick").style.display = "inline-block"
     #@show "user-info"
@@ -727,7 +727,9 @@ class AppUI
 
     element.appendChild document.createElement "br"
 
-    icon = PixelatedImage.create location.origin+"/#{p.owner.nick}/#{p.slug}/#{p.code}/icon.png",144
+    icon = new Image
+    icon.src = location.origin+"/#{p.owner.nick}/#{p.slug}/#{p.code}/icon.png"
+    icon.classList.add "pixelated"
     element.appendChild icon
 
     element.addEventListener "click",()=>
@@ -811,7 +813,7 @@ class AppUI
 
   setProject:(@project,useraction=true)->
     @get("project-name").innerHTML = @project.title
-    PixelatedImage.setURL @get("project-icon"),location.origin+"/#{@project.owner.nick}/#{@project.slug}/#{@project.code}/icon.png",32
+    @get("project-icon").src = location.origin+"/#{@project.owner.nick}/#{@project.slug}/#{@project.code}/icon.png"
     @setSection "code",useraction
     @show "projectview"
     @hide "myprojects"
@@ -958,7 +960,10 @@ class AppUI
     div.appendChild span
 
     if tier
-      icon = PixelatedImage.create location.origin+"/microstudio/patreon/badges/sprites/#{tier}.png",32
+      icon = new Image
+      icon.src = location.origin+"/microstudio/patreon/badges/sprites/#{tier}.png"
+      icon.classList.add "pixelated"
+      icon.style = "width: 32px; height: 32px;"
       icon.alt = icon.title = @app.getTierName tier
       div.appendChild icon
 

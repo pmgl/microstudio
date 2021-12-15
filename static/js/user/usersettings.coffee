@@ -149,8 +149,10 @@ class @UserSettings
       account_type = @app.getTierName @app.user.flags.tier
 
     if @app.user.flags.tier
-      icon = PixelatedImage.create location.origin+"/microstudio/patreon/badges/sprites/#{@app.user.flags.tier}.png",32
-      icon.style = "vertical-align: middle ; margin-right: 5px"
+      icon = new Image
+      icon.src = location.origin+"/microstudio/patreon/badges/sprites/#{@app.user.flags.tier}.png"
+      icon.classList.add "pixelated"
+      icon.style = "width: 32px; height: 32px; vertical-align: middle ; margin-right: 5px"
       div = document.getElementById("usersettings-account-type")
       div.innerHTML = ""
       div.appendChild icon
