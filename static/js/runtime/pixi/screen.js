@@ -30,9 +30,11 @@ this.Screen = (function() {
     return this["interface"] = {
       width: this.width,
       height: this.height,
-      render: function(stage) {
-        return screen.render(stage);
-      }
+      render: (function(_this) {
+        return function(stage) {
+          return screen.render(stage);
+        };
+      })(this)
     };
   };
 
@@ -114,7 +116,11 @@ this.Screen = (function() {
   };
 
   Screen.prototype.render = function(stage) {
-    return this.renderer.render(stage);
+    this.renderer.render(stage);
+    if (this.take_picture_callback != null) {
+      this.take_picture_callback(this.canvas.toDataURL());
+      return this.take_picture_callback = null;
+    }
   };
 
   Screen.prototype.startControl = function(element) {
@@ -278,6 +284,10 @@ this.Screen = (function() {
     }
     this.mouse.pressed = Math.min(1, this.mouse.left + this.mouse.right + this.mouse.middle);
     return false;
+  };
+
+  Screen.prototype.takePicture = function(take_picture_callback) {
+    this.take_picture_callback = take_picture_callback;
   };
 
   return Screen;

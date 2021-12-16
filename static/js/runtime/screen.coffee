@@ -698,3 +698,6 @@ class @Screen
     @mouse.pressed = Math.min(1,@mouse.left+@mouse.right+@mouse.middle)
 
     false
+
+  takePicture:(callback)->
+    callback @canvas.toDataURL()

@@ -65,6 +65,8 @@ h3 {
   font-size: 18px;
   text-align: center ;
   vertical-align: top ;
+  border-radius: 10px ;
+  background: rgba(255,255,255,.1);
 }
 
 .projectbox .icon {
@@ -90,16 +92,20 @@ h3 {
   display: inline-block ;
   width: 120px ;
   vertical-align: top ;
+  text-align: left ;
 }
 
 .projectbox .appicon div img {
   width: 72px ;
   height: 72px ;
+  border-radius: 5px ;
   -ms-interpolation-mode: nearest-neighbor;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: -moz-crisp-edges;
   image-rendering: -o-pixelated;
   image-rendering: pixelated;
+  box-shadow: 0 0 5px #000 ;
+  background: #000;
 }
 
 .projectbox .buttons {
@@ -115,6 +121,7 @@ h3 {
   padding: 6px 10px;
   background: hsl(200,50%,40%);
   display: block ;
+  box-shadow: 0 0 5px #000 ;
 }
 
 .projectbox .buttons a i {

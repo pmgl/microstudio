@@ -692,6 +692,7 @@ class @Session
           code: p.code
           description: p.description
           tags: p.tags
+          poster: p.files? and p.files["sprites/poster.png"]?
           platforms: p.platforms
           controls: p.controls
           type: p.type
@@ -722,6 +723,7 @@ class @Session
           code: p.code
           description: p.description
           tags: p.tags
+          poster: p.files? and p.files["sprites/poster.png"]?
           platforms: p.platforms
           controls: p.controls
           type: p.type
@@ -869,6 +871,7 @@ class @Session
           id: p.id
           title: p.title
           description: p.description
+          poster: p.files? and p.files["sprites/poster.png"]?
           type: p.type
           tags: p.tags
           slug: p.slug
@@ -901,6 +904,7 @@ class @Session
             id: p.id
             title: p.title
             description: p.description
+            poster: p.files? and p.files["sprites/poster.png"]?
             type: p.type
             tags: p.tags
             slug: p.slug

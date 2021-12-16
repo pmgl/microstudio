@@ -22,7 +22,7 @@ class @Screen
     @interface =
       width: @width
       height: @height
-      render: (scene,camera)->scene.render(camera)
+      render: (scene,camera)=> @render(scene,camera)
 
   updateInterface:()->
     @interface.width = @width
@@ -96,7 +96,10 @@ class @Screen
     @engine.resize true
 
   render:(scene,camera)->
-    @renderer.render scene,camera
+    scene.render(camera)
+    if @take_picture_callback?
+      @take_picture_callback @canvas.toDataURL()
+      @take_picture_callback = null
 
   startControl:(@element)->
     @canvas.addEventListener "touchstart", (event) => @touchStart(event)
@@ -211,3 +214,5 @@ class @Screen
     @mouse.pressed = Math.min(1,@mouse.left+@mouse.right+@mouse.middle)
 
     false
+
+  takePicture:(@take_picture_callback)->

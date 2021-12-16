@@ -467,7 +467,7 @@ AppUI = (function() {
     if (useraction && (this.app.project != null)) {
       this.app.app_state.pushState("project." + this.app.project.slug + "." + section, "/projects/" + this.app.project.slug + "/" + section + "/");
     }
-    return this.app.runwindow.hideQRCode();
+    return this.app.runwindow.hideAll();
   };
 
   AppUI.prototype.accountRequired = function(callback) {
@@ -549,7 +549,7 @@ AppUI = (function() {
     if (section === "tutorials") {
       this.app.tutorials.load();
     }
-    this.app.runwindow.hideQRCode();
+    this.app.runwindow.hideAll();
   };
 
   AppUI.prototype.setDisplay = function(element, value) {
@@ -948,6 +948,15 @@ AppUI = (function() {
     icon.src = location.origin + ("/" + p.owner.nick + "/" + p.slug + "/" + p.code + "/icon.png");
     icon.classList.add("pixelated");
     element.appendChild(icon);
+    if (p.poster) {
+      element.style.background = "linear-gradient(to bottom, hsla(200,20%,20%,0.6), hsla(200,20%,20%,0.9)),url(/" + p.owner.nick + "/" + p.slug + "/" + p.code + "/poster.png)";
+      element.style["background-size"] = "cover";
+      element.style["background-opacity"] = .5;
+      icon.style.width = "104px";
+      icon.style.height = "104px";
+      icon.style["margin-top"] = "40px";
+      icon.style["box-shadow"] = "0 0 10px 1px #000";
+    }
     element.addEventListener("click", (function(_this) {
       return function() {
         return _this.app.openProject(p);

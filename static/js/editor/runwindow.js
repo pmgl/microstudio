@@ -41,6 +41,11 @@ this.RunWindow = (function() {
         return _this.showQRCode();
       };
     })(this));
+    this.app.appui.setAction("take-picture-button", (function(_this) {
+      return function() {
+        return _this.takePicture();
+      };
+    })(this));
     if (window.ms_standalone) {
       document.getElementById("qrcode-button").style.display = "none";
     }
@@ -163,7 +168,8 @@ this.RunWindow = (function() {
     return this.app.project.savePendingChanges((function(_this) {
       return function() {
         device.innerHTML = "<iframe id='runiframe' allow='autoplay;gamepad' src='" + url + "?debug'></iframe>";
-        return _this.windowResized();
+        _this.windowResized();
+        return document.getElementById("take-picture-button").style.display = "inline-block";
       };
     })(this));
   };
@@ -466,6 +472,9 @@ this.RunWindow = (function() {
           if (e != null) {
             return e.contentWindow.focus();
           }
+          break;
+        case "picture_taken":
+          return this.showPicture(msg.data);
       }
     } catch (error1) {
       err = error1;
@@ -601,7 +610,14 @@ this.RunWindow = (function() {
   };
 
   RunWindow.prototype.projectClosed = function() {
-    return this.floating_window.close();
+    var iframe;
+    this.floating_window.close();
+    iframe = document.getElementById("runiframe");
+    if (iframe != null) {
+      iframe.parentElement.removeChild(iframe);
+    }
+    document.getElementById("take-picture-button").style.display = "none";
+    return this.hideAll();
   };
 
   RunWindow.prototype.hideQRCode = function() {
@@ -649,6 +665,130 @@ this.RunWindow = (function() {
         })(this));
       }
     }
+  };
+
+  RunWindow.prototype.takePicture = function() {
+    var iframe;
+    iframe = document.getElementById("runiframe");
+    if (iframe != null) {
+      return iframe.contentWindow.postMessage(JSON.stringify({
+        name: "take_picture"
+      }), "*");
+    }
+  };
+
+  RunWindow.prototype.hidePicture = function() {
+    if (this.picture != null) {
+      document.body.removeChild(this.picture);
+      return this.picture = null;
+    }
+  };
+
+  RunWindow.prototype.showPicture = function(data) {
+    var b, button, div, img, save_button, set_button;
+    this.hidePicture();
+    this.picture = div = document.createElement("div");
+    div.classList.add("show-picture");
+    div.style.position = "absolute";
+    b = document.getElementById("take-picture-button").getBoundingClientRect();
+    div.style.top = (b.y + b.height + 20) + "px";
+    div.style.left = (Math.min(b.x + b.width / 2 - 180, window.innerWidth - 360 - 10)) + "px";
+    document.body.appendChild(div);
+    img = new Image;
+    img.src = data;
+    img.style.width = "320px";
+    div.appendChild(img);
+    div.appendChild(document.createElement("br"));
+    save_button = document.createElement("div");
+    save_button.innerText = this.app.translator.get("Save");
+    save_button.classList.add("save");
+    save_button.addEventListener("click", (function(_this) {
+      return function() {
+        return _this.savePicture(data, save_button);
+      };
+    })(this));
+    div.appendChild(save_button);
+    div.appendChild(document.createElement("br"));
+    set_button = document.createElement("div");
+    set_button.innerText = this.app.translator.get("Set as project poster image");
+    set_button.addEventListener("click", (function(_this) {
+      return function() {
+        return _this.setAsPoster(data, set_button);
+      };
+    })(this));
+    div.appendChild(set_button);
+    div.appendChild(document.createElement("br"));
+    button = document.createElement("div");
+    button.innerText = this.app.translator.get("Close");
+    button.classList.add("close");
+    button.addEventListener("click", (function(_this) {
+      return function() {
+        return _this.hidePicture();
+      };
+    })(this));
+    return div.appendChild(button);
+  };
+
+  RunWindow.prototype.savePicture = function(data, button) {
+    var link;
+    link = document.createElement("a");
+    link.setAttribute("href", data);
+    link.setAttribute("download", this.app.project.slug + ".png");
+    link.click();
+    return button.style.display = "none";
+  };
+
+  RunWindow.prototype.setAsPoster = function(data, button) {
+    var img;
+    button.style.display = "none";
+    img = new Image;
+    img.src = data;
+    return img.onload = (function(_this) {
+      return function() {
+        var canvas, h, ih, iw, poster, r, w;
+        canvas = document.createElement("canvas");
+        iw = img.width;
+        ih = img.height;
+        if (iw < ih) {
+          h = Math.min(360, ih);
+          r = h / ih * 1.2;
+          canvas.width = w = h / 9 * 16;
+          canvas.height = h;
+          canvas.getContext("2d").fillStyle = "#000";
+          canvas.getContext("2d").fillRect(0, 0, canvas.width, canvas.height);
+          canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
+        } else {
+          w = Math.min(640, iw, ih / 9 * 16);
+          h = w / 16 * 9;
+          r = Math.max(w / img.width, h / img.height);
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
+        }
+        data = canvas.toDataURL().split(",")[1];
+        poster = _this.app.project.getSprite("poster");
+        return _this.app.client.sendRequest({
+          name: "write_project_file",
+          project: _this.app.project.id,
+          file: "sprites/poster.png",
+          properties: {
+            frames: 1,
+            fps: 5
+          },
+          content: data
+        }, function(msg) {
+          _this.app.project.updateSpriteList();
+          if (poster != null) {
+            return poster.reload();
+          }
+        });
+      };
+    })(this);
+  };
+
+  RunWindow.prototype.hideAll = function() {
+    this.hideQRCode();
+    return this.hidePicture();
   };
 
   return RunWindow;

@@ -22,7 +22,7 @@ class @Screen
     @interface =
       width: @width
       height: @height
-      render: (scene)->scene.render()
+      render: (scene,camera) => @render(scene,camera)
 
   updateInterface:()->
     @interface.width = @width
@@ -104,7 +104,11 @@ class @Screen
     #@renderer.shadowMap.enabled = true
     #@renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
-    @renderer.render scene.scene,camera.camera
+    scene.render()
+    if @take_picture_callback?
+      @take_picture_callback @canvas.toDataURL()
+      @take_picture_callback = null
+
 
   startControl:(@element)->
     @canvas.addEventListener "touchstart", (event) => @touchStart(event)
@@ -219,3 +223,5 @@ class @Screen
     @mouse.pressed = Math.min(1,@mouse.left+@mouse.right+@mouse.middle)
 
     false
+
+  takePicture:(@take_picture_callback)->

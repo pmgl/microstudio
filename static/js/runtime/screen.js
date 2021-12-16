@@ -954,6 +954,10 @@ this.Screen = (function() {
     return false;
   };
 
+  Screen.prototype.takePicture = function(callback) {
+    return callback(this.canvas.toDataURL());
+  };
+
   return Screen;
 
 })();

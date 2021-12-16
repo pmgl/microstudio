@@ -126,6 +126,15 @@ class @Player
           file = data.file
           @runtime.updateMap(file,0,data.data)
 
+        when "take_picture"
+          @runtime.screen.takePicture (pic)=>
+            @postMessage
+              name: "picture_taken"
+              data: pic
+              
+          if @runtime.stopped
+            @runtime.drawCall()
+
     catch err
       console.error err
 

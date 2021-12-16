@@ -17,24 +17,29 @@
 
 #explore-box-list {
   text-align: center ;
+  padding-top: 20px ;
 }
 .explore-project-box {
   position: relative ;
-  margin: 20px ;
-  padding: 10px ;
+  margin: 10px ;
+  padding: 0px ;
   display: inline-block ;
   cursor: pointer ;
   border-radius: 10px ;
-  width: 200px ;
+  width: 320px ;
+  overflow: hidden ;
+  text-align: center ;
+  background: rgba(255,255,255,.05);
+  box-shadow: 0 0 10px rgba(0,0,0,.5) ;
 }
 .explore-project-box:hover {
-  box-shadow: 0 0 10px rgba(0,0,0,.5) ;
-  background: rgba(255,255,255,.1);
+  box-shadow: 0 0 10px rgba(0,0,0,1) ;
+  background: rgba(255,255,255,.15);
 }
 .explore-project-box .project-tag {
   position: absolute;
   right: 5px;
-  top: 200px;
+  top: 180px;
   color: #FFF;
   background: hsl(200,50%,40%);
   padding: 2px 8px;
@@ -45,9 +50,28 @@
 }
 
 .explore-project-box .icon {
+  display: inline-block ;
+  width:170px ;
+  height: 170px ;
+  margin-top: 10px ;
+  background: #000 ;
+}
+
+.explore-project-box .smallicon {
+  position: absolute ;
+  left: 10px ;
+  top: 130px ;
+  box-shadow: 0 0 10px 1px #000 ;
+  border-radius: 5px ;
+  width: 64px ;
+  height: 64px ;
+  background: #000 ;
+}
+
+.explore-project-box .poster {
   display: block ;
-  width:200px ;
-  height: 200px ;
+  width:320px ;
+  height: 180px ;
 }
 
 .explore-project-box i {
@@ -60,7 +84,7 @@
 .explore-project-box .run-button {
   background: hsl(160,50%,40%);
   padding: 8px 16px ;
-  border-radius: 5px ;
+  margin-top: 16px ;
 }
 .explore-project-box .run-button i {
   margin-right: 10px ;
@@ -73,12 +97,17 @@
 }
 
 .explore-project-title {
-  color: #FFF ;
-  font-size: 24px ;
-  margin: 5px 0 15px 0 ;
+  color: rgba(255,255,255,.8) ;
+  font-size: 20px ;
+  font-family: Ubuntu ;
+  margin: 20px 0 15px 0 ;
   white-space: nowrap ;
   text-align: center ;
   overflow: hidden ;
+}
+
+.explore-project-box .usertag {
+  left: 20px ;
 }
 
 .explore-project-button {
@@ -102,7 +131,7 @@
   margin: 20px 0 ;
   cursor: pointer ;
   position: absolute ;
-  top: 250px ;
+  top: 220px ;
   right: 10px ;
 }
 
@@ -224,10 +253,12 @@
 #project-details-info {
   position: absolute ;
   left: 0 ;
-  top: 40px ;
+  top: 0px ;
   bottom: 0 ;
   width: 45% ;
   overflow: auto ;
+  background-size: 100% ;
+  background-repeat: no-repeat ;
 }
 #project-details-contents {
   position: absolute ;
@@ -238,7 +269,7 @@
 }
 
 #project-details-info .inside {
-  padding: 0px 40px 40px 40px ;
+  padding: 40px 40px 40px 40px ;
   position: relative ;
 }
 #project-details-contents .inside {

@@ -52,11 +52,11 @@ html(lang=language)
           if project.type == "tutorial"
             -path = "/tutorial"+path
           
-          div.projectbox(id="#{project.slug}")
+          div.projectbox(id="#{project.slug}" style=project.files["sprites/poster.png"] != null ? "background: linear-gradient(to bottom, hsla(200,20%,20%,0.6), hsla(200,20%,20%,0.9)),url(/"+user+"/"+project.slug+"/poster.png) ; background-size: cover ;" : "")
             a.appicon(href=path)
               div
                 img(src=img)
-                div.title #{project.title}
+                
             div.buttons
               a.runbutton(href=path title=translator.get("Run"))
                 i.fa.fa-play
@@ -64,6 +64,8 @@ html(lang=language)
               a.explorebutton(href=explore title=translator.get("Explore"))
                 i.fa.fa-search
                 span #{translator.get("Explore")}
+                
+            div.title #{project.title}
                 
       div.section-content#progress
         div#user-progress-level

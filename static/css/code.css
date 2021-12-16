@@ -103,6 +103,22 @@
   background: hsl(200,50%,50%) ;
 }
 
+#take-picture-button {
+  display: none ;
+  margin-left: 20px;
+  border-radius: 50px;
+  background: rgba(0,0,0,.2);
+  padding: 6px;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+}
+
+#take-picture-button:hover {
+  background:rgba(255,255,255,.2);
+}
+
+
 .runbar .buttons .selected,.runtime-splitbar .buttons .selected,
 .runbar .buttons div.selected:hover,.runtime-splitbar .buttons div.selected:hover
 {
@@ -563,4 +579,28 @@ a#run-link {
 }
 .ace-tomorrow-night-bright .ace_marker-layer .ace_selection {
     background: #584848;
+}
+
+.show-picture {
+  background: white ;
+  border-radius: 5px ;
+  padding: 10px ;
+  text-align: center ;
+}
+
+.show-picture div {
+  display: inline-block ;
+  margin: 10px 0 0 0 ;
+  background: hsl(200,50%,40%);
+  color: white ;
+  border-radius: 5px ;
+  padding: 5px 10px ;
+  cursor: pointer ;
+}
+.show-picture div.save {
+  background: hsl(160,50%,40%);
+}
+
+.show-picture div.close {
+  background: hsl(0,50%,40%);
 }

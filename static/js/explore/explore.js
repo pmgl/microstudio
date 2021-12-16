@@ -120,7 +120,7 @@ this.Explore = (function() {
   };
 
   Explore.prototype.createProjectBox = function(p) {
-    var author, element, icon, infobox, likes, runbutton, tag, title;
+    var author, element, icon, infobox, likes, runbutton, smallicon, tag, title;
     if (this.boxes[p.owner + "/" + p.slug]) {
       return this.boxes[p.owner + "/" + p.slug];
     }
@@ -132,13 +132,30 @@ this.Explore = (function() {
       tag.classList.add("project-tag");
       element.appendChild(tag);
     }
-    icon = new Image;
-    icon.src = location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png");
-    icon.classList.add("icon");
-    icon.classList.add("pixelated");
-    icon.alt = p.title;
-    icon.title = p.title;
-    element.appendChild(icon);
+    if (p.poster) {
+      icon = new Image;
+      icon.src = location.origin + ("/" + p.owner + "/" + p.slug + "/poster.png");
+      icon.classList.add("poster");
+      icon.classList.add("pixelated");
+      icon.alt = p.title;
+      icon.title = p.title;
+      element.appendChild(icon);
+      smallicon = new Image;
+      smallicon.src = location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png");
+      smallicon.classList.add("smallicon");
+      smallicon.classList.add("pixelated");
+      smallicon.alt = p.title;
+      smallicon.title = p.title;
+      element.appendChild(smallicon);
+    } else {
+      icon = new Image;
+      icon.src = location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png");
+      icon.classList.add("icon");
+      icon.classList.add("pixelated");
+      icon.alt = p.title;
+      icon.title = p.title;
+      element.appendChild(icon);
+    }
     element.style.opacity = 0;
     element.style["transition-duration"] = "1s";
     element.style["transition-property"] = "opacity";
@@ -250,6 +267,13 @@ this.Explore = (function() {
     this.get("project-details-image").src = location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png");
     this.get("project-details-title").innerText = p.title;
     desc = DOMPurify.sanitize(marked(p.description));
+    if (p.poster) {
+      this.get("project-details-info").style.background = "linear-gradient(to bottom, hsla(200,10%,10%,0.8), hsla(200,10%,10%,0.9)),url(/" + p.owner + "/" + p.slug + "/poster.png)";
+      this.get("project-details-info").style["background-size"] = "100%";
+      this.get("project-details-info").style["background-repeat"] = "no-repeat";
+    } else {
+      this.get("project-details-info").style.background = "none";
+    }
     ref = p.libs;
     for (i = 0, len = ref.length; i < len; i++) {
       lib = ref[i];

@@ -154,6 +154,18 @@ this.Player = (function() {
         case "map_updated":
           file = data.file;
           return this.runtime.updateMap(file, 0, data.data);
+        case "take_picture":
+          this.runtime.screen.takePicture((function(_this) {
+            return function(pic) {
+              return _this.postMessage({
+                name: "picture_taken",
+                data: pic
+              });
+            };
+          })(this));
+          if (this.runtime.stopped) {
+            return this.runtime.drawCall();
+          }
       }
     } catch (error1) {
       err = error1;

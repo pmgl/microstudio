@@ -365,7 +365,7 @@ class AppUI
     if useraction and @app.project?
       @app.app_state.pushState "project.#{@app.project.slug}.#{section}","/projects/#{@app.project.slug}/#{section}/"
 
-    @app.runwindow.hideQRCode()
+    @app.runwindow.hideAll()
 
   accountRequired:(callback)->
     @logged_callback = callback
@@ -426,7 +426,7 @@ class AppUI
       @app.tutorials.load()
 
     #@app.explore.closeDetails() if section != "explore"
-    @app.runwindow.hideQRCode()
+    @app.runwindow.hideAll()
     return
 
   setDisplay:(element,value)->
@@ -731,6 +731,16 @@ class AppUI
     icon.src = location.origin+"/#{p.owner.nick}/#{p.slug}/#{p.code}/icon.png"
     icon.classList.add "pixelated"
     element.appendChild icon
+
+    if p.poster
+      element.style.background = "linear-gradient(to bottom, hsla(200,20%,20%,0.6), hsla(200,20%,20%,0.9)),url(/#{p.owner.nick}/#{p.slug}/#{p.code}/poster.png)"
+      element.style["background-size"] = "cover"
+      element.style["background-opacity"] = .5
+
+      icon.style.width = "104px"
+      icon.style.height = "104px"
+      icon.style["margin-top"] = "40px"
+      icon.style["box-shadow"] = "0 0 10px 1px #000"
 
     element.addEventListener "click",()=>
       @app.openProject p
