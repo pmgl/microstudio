@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2021-12-16
+* Improved the presentation of projects, allowing to use a screenshot as poster image
+* Easily take screenshots of your running program with the camera button
+* Set your screenshot as project poster image in one click
+* Removed and replace PixelatedImage
+
 ### Update 2021-12-14
 * QR code display to easily run project on mobile!
 * Improved error reporting for Python language
@@ -12,7 +18,6 @@
 * Added link to Github and Patreon on homepage
 * Fixed Execute button on user public page for projects of type tutorial
 * removed fullscreen to Community PWA manifest
-
 
 ### Update 2021-12-07
 * Fixed broken console window after last update
