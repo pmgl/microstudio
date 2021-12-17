@@ -5,6 +5,20 @@ class @SpriteView
     @canvas.height = 400
     @sprite = new Sprite(32,32)
 
+
+    @canvas.addEventListener "touchstart", (event) =>
+      if event.touches? and event.touches[0]?
+        event.preventDefault() # prevents a mousedown event from being triggered
+        event.touches[0].stopPropagation = ()->event.stopPropagation()
+        @mouseDown(event.touches[0])
+
+    document.addEventListener "touchmove", (event) =>
+      #event.preventDefault() # prevents a mousemove event from being triggered
+      @mouseMove(event.touches[0]) if event.touches? and event.touches[0]?
+
+    document.addEventListener "touchend" , (event) => @mouseUp()
+    @canvas.addEventListener "touchcancel" , (event) => @mouseOut()
+
     @canvas.addEventListener "mousedown", (event) => @mouseDown(event)
     document.addEventListener "mousemove", (event) => @mouseMove(event)
     @canvas.addEventListener "mouseout", (event) => @mouseOut(event)

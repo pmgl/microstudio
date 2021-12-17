@@ -6,53 +6,43 @@ this.SplitBar = (function() {
     this.splitbar = this.element.childNodes[1];
     this.side2 = this.element.childNodes[2];
     this.position = 50;
+    this.splitbar.addEventListener("touchstart", (function(_this) {
+      return function(event) {
+        if ((event.touches != null) && (event.touches[0] != null)) {
+          return _this.startDrag(event.touches[0]);
+        }
+      };
+    })(this));
+    document.addEventListener("touchmove", (function(_this) {
+      return function(event) {
+        if ((event.touches != null) && (event.touches[0] != null)) {
+          return _this.drag(event.touches[0]);
+        }
+      };
+    })(this));
+    document.addEventListener("touchend", (function(_this) {
+      return function(event) {
+        return _this.stopDrag();
+      };
+    })(this));
+    document.addEventListener("touchcancel", (function(_this) {
+      return function(event) {
+        return _this.stopDrag();
+      };
+    })(this));
     this.splitbar.addEventListener("mousedown", (function(_this) {
       return function(event) {
-        var e, i, len, list;
-        _this.dragging = true;
-        _this.drag_start_x = event.clientX;
-        _this.drag_start_y = event.clientY;
-        _this.drag_position = _this.position;
-        list = document.getElementsByTagName("iframe");
-        for (i = 0, len = list.length; i < len; i++) {
-          e = list[i];
-          e.classList.add("ignoreMouseEvents");
-        }
+        return _this.startDrag(event);
       };
     })(this));
     document.addEventListener("mousemove", (function(_this) {
       return function(event) {
-        var dx, dy, ns;
-        if (_this.dragging) {
-          switch (_this.type) {
-            case "horizontal":
-              dx = (event.clientX - _this.drag_start_x) / (_this.element.clientWidth - _this.splitbar.clientWidth) * 100;
-              ns = Math.round(Math.max(0, Math.min(100, _this.drag_position + dx)));
-              if (ns !== _this.position) {
-                _this.position = ns;
-                return window.dispatchEvent(new Event('resize'));
-              }
-              break;
-            default:
-              dy = (event.clientY - _this.drag_start_y) / (_this.element.clientHeight - _this.splitbar.clientHeight) * 100;
-              ns = Math.round(Math.max(0, Math.min(100, _this.drag_position + dy)));
-              if (ns !== _this.position) {
-                _this.position = ns;
-                return window.dispatchEvent(new Event('resize'));
-              }
-          }
-        }
+        return _this.drag(event);
       };
     })(this));
     document.addEventListener("mouseup", (function(_this) {
       return function(event) {
-        var e, i, len, list;
-        _this.dragging = false;
-        list = document.getElementsByTagName("iframe");
-        for (i = 0, len = list.length; i < len; i++) {
-          e = list[i];
-          e.classList.remove("ignoreMouseEvents");
-        }
+        return _this.stopDrag(event);
       };
     })(this));
     window.addEventListener("resize", (function(_this) {
@@ -62,6 +52,52 @@ this.SplitBar = (function() {
     })(this));
     this.update();
   }
+
+  SplitBar.prototype.startDrag = function(event) {
+    var e, i, len, list;
+    this.dragging = true;
+    this.drag_start_x = event.clientX;
+    this.drag_start_y = event.clientY;
+    this.drag_position = this.position;
+    list = document.getElementsByTagName("iframe");
+    for (i = 0, len = list.length; i < len; i++) {
+      e = list[i];
+      e.classList.add("ignoreMouseEvents");
+    }
+  };
+
+  SplitBar.prototype.drag = function(event) {
+    var dx, dy, ns;
+    if (this.dragging) {
+      switch (this.type) {
+        case "horizontal":
+          dx = (event.clientX - this.drag_start_x) / (this.element.clientWidth - this.splitbar.clientWidth) * 100;
+          ns = Math.round(Math.max(0, Math.min(100, this.drag_position + dx)));
+          if (ns !== this.position) {
+            this.position = ns;
+            return window.dispatchEvent(new Event('resize'));
+          }
+          break;
+        default:
+          dy = (event.clientY - this.drag_start_y) / (this.element.clientHeight - this.splitbar.clientHeight) * 100;
+          ns = Math.round(Math.max(0, Math.min(100, this.drag_position + dy)));
+          if (ns !== this.position) {
+            this.position = ns;
+            return window.dispatchEvent(new Event('resize'));
+          }
+      }
+    }
+  };
+
+  SplitBar.prototype.stopDrag = function() {
+    var e, i, len, list;
+    this.dragging = false;
+    list = document.getElementsByTagName("iframe");
+    for (i = 0, len = list.length; i < len; i++) {
+      e = list[i];
+      e.classList.remove("ignoreMouseEvents");
+    }
+  };
 
   SplitBar.prototype.setPosition = function(position) {
     this.position = position;

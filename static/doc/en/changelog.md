@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2021-12-17
+* Split bars now react to touch events
+* You can draw sprites on touch screens
+* You can paint maps on touch screens
+
 ### Update 2021-12-16
 * Improved the presentation of projects, allowing to use a screenshot as poster image
 * Easily take screenshots of your running program with the camera button

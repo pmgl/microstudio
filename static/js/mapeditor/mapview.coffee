@@ -5,6 +5,18 @@ class @MapView
     @canvas.height = 400
     @map = new MicroMap(24,16,16,16,{})
 
+    @canvas.addEventListener "touchstart", (event) =>
+      if event.touches? and event.touches[0]?
+        event.preventDefault() # prevents a mousedown event from being triggered
+        event.touches[0].stopPropagation = ()->event.stopPropagation()
+        @mouseDown(event.touches[0])
+
+    document.addEventListener "touchmove", (event) =>
+      @mouseMove(event.touches[0]) if event.touches? and event.touches[0]?
+
+    document.addEventListener "touchend" , (event) => @mouseUp()
+    @canvas.addEventListener "touchcancel" , (event) => @mouseOut()
+
     @canvas.addEventListener "mousedown", (event) => @mouseDown(event)
     @canvas.addEventListener "mousemove", (event) => @mouseMove(event)
     @canvas.addEventListener "mouseout", (event) => @mouseOut(event)

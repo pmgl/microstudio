@@ -5,6 +5,34 @@ this.SpriteView = (function() {
     this.canvas.width = 400;
     this.canvas.height = 400;
     this.sprite = new Sprite(32, 32);
+    this.canvas.addEventListener("touchstart", (function(_this) {
+      return function(event) {
+        if ((event.touches != null) && (event.touches[0] != null)) {
+          event.preventDefault();
+          event.touches[0].stopPropagation = function() {
+            return event.stopPropagation();
+          };
+          return _this.mouseDown(event.touches[0]);
+        }
+      };
+    })(this));
+    document.addEventListener("touchmove", (function(_this) {
+      return function(event) {
+        if ((event.touches != null) && (event.touches[0] != null)) {
+          return _this.mouseMove(event.touches[0]);
+        }
+      };
+    })(this));
+    document.addEventListener("touchend", (function(_this) {
+      return function(event) {
+        return _this.mouseUp();
+      };
+    })(this));
+    this.canvas.addEventListener("touchcancel", (function(_this) {
+      return function(event) {
+        return _this.mouseOut();
+      };
+    })(this));
     this.canvas.addEventListener("mousedown", (function(_this) {
       return function(event) {
         return _this.mouseDown(event);

@@ -6,43 +6,53 @@ class @SplitBar
     @side2 = @element.childNodes[2]
     @position = 50
 
-    @splitbar.addEventListener "mousedown", (event)=>
-      @dragging = true
-      @drag_start_x = event.clientX
-      @drag_start_y = event.clientY
-      @drag_position = @position
-      list = document.getElementsByTagName("iframe")
-      for e in list
-        e.classList.add "ignoreMouseEvents"
-      return
 
-    document.addEventListener "mousemove", (event)=>
-      if @dragging
-        switch @type
-          when "horizontal"
-            dx = (event.clientX-@drag_start_x)/(@element.clientWidth-@splitbar.clientWidth)*100
-            ns = Math.round(Math.max(0,Math.min(100,@drag_position+dx)))
-            if ns != @position
-              @position = ns
-              window.dispatchEvent(new Event('resize'))
-          else
-            dy = (event.clientY-@drag_start_y)/(@element.clientHeight-@splitbar.clientHeight)*100
-            ns = Math.round(Math.max(0,Math.min(100,@drag_position+dy)))
-            if ns != @position
-              @position = ns
-              window.dispatchEvent(new Event('resize'))
+    @splitbar.addEventListener "touchstart", (event) => @startDrag(event.touches[0]) if event.touches? and event.touches[0]?
+    document.addEventListener "touchmove", (event) => @drag(event.touches[0]) if event.touches? and event.touches[0]?
+    document.addEventListener "touchend" , (event) => @stopDrag()
+    document.addEventListener "touchcancel" , (event) => @stopDrag()
 
-    document.addEventListener "mouseup", (event)=>
-      @dragging = false
-      list = document.getElementsByTagName("iframe")
-      for e in list
-        e.classList.remove "ignoreMouseEvents"
-      return
+    @splitbar.addEventListener "mousedown", (event)=> @startDrag(event)
+    document.addEventListener "mousemove", (event)=> @drag(event)
+    document.addEventListener "mouseup", (event)=> @stopDrag(event)
 
     window.addEventListener "resize",(event)=>
       @update()
 
     @update()
+
+  startDrag:(event)->
+    @dragging = true
+    @drag_start_x = event.clientX
+    @drag_start_y = event.clientY
+    @drag_position = @position
+    list = document.getElementsByTagName("iframe")
+    for e in list
+      e.classList.add "ignoreMouseEvents"
+    return
+
+  drag:(event)->
+    if @dragging
+      switch @type
+        when "horizontal"
+          dx = (event.clientX-@drag_start_x)/(@element.clientWidth-@splitbar.clientWidth)*100
+          ns = Math.round(Math.max(0,Math.min(100,@drag_position+dx)))
+          if ns != @position
+            @position = ns
+            window.dispatchEvent(new Event('resize'))
+        else
+          dy = (event.clientY-@drag_start_y)/(@element.clientHeight-@splitbar.clientHeight)*100
+          ns = Math.round(Math.max(0,Math.min(100,@drag_position+dy)))
+          if ns != @position
+            @position = ns
+            window.dispatchEvent(new Event('resize'))
+
+  stopDrag:()->
+    @dragging = false
+    list = document.getElementsByTagName("iframe")
+    for e in list
+      e.classList.remove "ignoreMouseEvents"
+    return
 
   setPosition:(@position)->
     @update()
