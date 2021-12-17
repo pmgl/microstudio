@@ -429,8 +429,8 @@ class App
     @app_state.pushState "user.progress","/user/progress/"
 
 
-if navigator.serviceWorker?
-  navigator.serviceWorker.register("/app_sw.js", { scope: location.pathname }).then((reg)->
-    console.log('Registration succeeded. Scope is' + reg.scope)
-  ).catch (error)->
-    console.log('Registration failed with' + error)
+# if navigator.serviceWorker?
+#   navigator.serviceWorker.register("/app_sw.js", { scope: location.pathname }).then((reg)->
+#     console.log('Registration succeeded. Scope is' + reg.scope)
+#   ).catch (error)->
+#     console.log('Registration failed with' + error)

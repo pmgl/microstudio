@@ -595,13 +595,3 @@ App = (function() {
   return App;
 
 })();
-
-if (navigator.serviceWorker != null) {
-  navigator.serviceWorker.register("/app_sw.js", {
-    scope: location.pathname
-  }).then(function(reg) {
-    return console.log('Registration succeeded. Scope is' + reg.scope);
-  })["catch"](function(error) {
-    return console.log('Registration failed with' + error);
-  });
-}
