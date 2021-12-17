@@ -2,6 +2,7 @@
     "name": "microStudio",
     "short_name": "microStudio",
     "start_url": "/",
+    "display": "minimal-ui",
     "icons": [
         {
             "src": "/img/favicon192.png",
@@ -15,6 +16,5 @@
         }
     ],
     "theme_color": "hsl(200,50%,20%)",
-    "background_color": "hsl(200,40%,10%)",
-    "display": "standalone"
+    "background_color": "hsl(200,40%,10%)"
 }

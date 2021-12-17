@@ -13,7 +13,6 @@ class @SpriteView
         @mouseDown(event.touches[0])
 
     document.addEventListener "touchmove", (event) =>
-      #event.preventDefault() # prevents a mousemove event from being triggered
       @mouseMove(event.touches[0]) if event.touches? and event.touches[0]?
 
     document.addEventListener "touchend" , (event) => @mouseUp()
