@@ -3,6 +3,7 @@
     "short_name": "microStudio",
     "start_url": "/",
     "display": "minimal-ui",
+    "scope": "/",
     "icons": [
         {
             "src": "/img/favicon192.png",
