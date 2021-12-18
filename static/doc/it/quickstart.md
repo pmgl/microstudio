@@ -12,9 +12,9 @@ Include tutti gli strumenti necessari per creare il tuo primo videogioco!
 
 # Inizio rapido
 
-Puoi iniziare esplorando i progetti fatti da altri utenti, nella sezione *Explore*.
+Puoi iniziare esplorando i progetti fatti da altri utenti, nella sezione *Esplora*.
 
-Per iniziare a creare un gioco è necessario creare un account. Scegli un soprannome (evita di usare
+Puoi iniziare a creare come ospite o creare direttamente un account. Scegli un soprannome (evita di usare
 il tuo vero nome), inserisci il tuo indirizzo e-mail (necessario in caso di smarrimento della password; inoltre deve essere convalidato per poter pubblicare) e partiamo!
 
 ## Primo progetto
