@@ -24,8 +24,9 @@ Adding a simple box:
 
 ```
 box = new M3D.Box()
-box.position.set(0,20,0)
+box.position.set(0,0,5)
 box.setColor("rgb(255,192,0)")
+scene.add(box)
 ```
 
 ### Adding lights
@@ -43,6 +44,18 @@ Setting up the camera:
 
 ```
 camera = new M3D.Camera()
+camera.position.set(0,0,1)
+```
+
+### Update
+
+You can access objects properties in the `update()` function to make them spin around in space
+
+```
+update = function()
+  box.rotation.x+=0.01
+  box.rotation.y+=0.02
+end
 ```
 
 ### Rendering
