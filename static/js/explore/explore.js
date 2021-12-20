@@ -452,7 +452,7 @@ this.Explore = (function() {
   };
 
   Explore.prototype.loadProjects = function() {
-    var contents, found, h, i, j, k, len, len1, len2, maxAge, maxLikes, note, now, p, ref, ref1, ref2, scrollzone, search, t;
+    var contents, fade, found, h, i, j, k, len, len1, len2, maxAge, maxLikes, note, now, p, ref, ref1, ref2, scrollzone, search, t;
     if (this.projects == null) {
       return;
     }
@@ -468,11 +468,14 @@ this.Explore = (function() {
       maxAge = now - this.projects[this.projects.length - 1].date_published;
       h = 1 / 24 / 7;
       h = Math.max(0, now - this.projects[4].date_published) / 1000 / 3600;
+      fade = function(x) {
+        return 1 - Math.max(0, Math.min(1, x));
+      };
       note = function(p) {
-        var bump;
-        bump = Math.min(1, (now - p.date_published) / 1000 / 3600 / 24 / 10);
-        bump = .5 + .5 * Math.cos(bump * Math.PI);
-        return p.likes + maxLikes * (bump * .5 + 1.5 * Math.exp(Math.log(.5) * (now - p.date_published) / 1000 / 3600 / 24 / 180));
+        var rating, recent;
+        recent = fade((now - p.date_published) / 1000 / 3600 / 24 / 7);
+        rating = p.likes / maxLikes * (.15 + 2 * fade((now - p.date_published) / 1000 / 3600 / 24 / 180));
+        return recent + rating;
       };
       this.sort_functions.hot = function(a, b) {
         return note(b) - note(a);

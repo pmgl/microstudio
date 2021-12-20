@@ -387,10 +387,13 @@ class @Explore
       #   bump = .5+.5*Math.cos(bump*Math.PI)
       #   p.likes + maxLikes*(bump*1+.4*Math.exp(Math.log(.5)*(now-p.date_published)/1000/3600/24/4))
 
+      fade = (x)->
+        1-Math.max(0,Math.min(1,x))
+
       note = (p)->
-        bump = Math.min(1,(now-p.date_published)/1000/3600/24/10)
-        bump = .5+.5*Math.cos(bump*Math.PI)
-        p.likes + maxLikes*(bump*.5+1.5*Math.exp(Math.log(.5)*(now-p.date_published)/1000/3600/24/180))
+        recent = fade (now-p.date_published)/1000/3600/24/7
+        rating = p.likes/maxLikes*(.15+2*fade((now-p.date_published)/1000/3600/24/180))
+        recent+rating
 
       @sort_functions.hot = (a,b)->
         note(b)-note(a)
