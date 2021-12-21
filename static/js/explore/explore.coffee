@@ -99,7 +99,7 @@ class @Explore
       icon = new Image
       icon.src = location.origin+"/#{p.owner}/#{p.slug}/poster.png"
       icon.classList.add "poster"
-      icon.classList.add "pixelated"
+      #icon.classList.add "pixelated"
       icon.alt = p.title
       icon.title = p.title
       element.appendChild icon
@@ -391,7 +391,7 @@ class @Explore
         1-Math.max(0,Math.min(1,x))
 
       note = (p)->
-        recent = fade (now-p.date_published)/1000/3600/24/7
+        recent = fade (now-p.date_published)/1000/3600/24/4
         rating = p.likes/maxLikes*(.15+2*fade((now-p.date_published)/1000/3600/24/180))
         recent+rating
 
