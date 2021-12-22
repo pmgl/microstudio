@@ -1,5 +1,8 @@
 ## Changelog
 
+### Update 2021-12-22
+* Fixed parser bug: `//` enclosed in a string was parsed as a line comment
+
 ### Update 2021-12-17
 * Split bars now react to touch events
 * You can draw sprites on touch screens

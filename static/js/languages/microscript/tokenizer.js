@@ -36,14 +36,17 @@ this.Tokenizer = (function() {
     return this.index >= this.input.length;
   };
 
-  Tokenizer.prototype.nextChar = function() {
+  Tokenizer.prototype.nextChar = function(ignore_comments) {
     var c;
+    if (ignore_comments == null) {
+      ignore_comments = false;
+    }
     c = this.input.charAt(this.index++);
     if (c === "\n") {
       this.line += 1;
       this.last_column = this.column;
       this.column = 0;
-    } else if (c === "/") {
+    } else if (c === "/" && !ignore_comments) {
       if (this.input.charAt(this.index) === "/") {
         while (true) {
           c = this.input.charAt(this.index++);
@@ -224,10 +227,10 @@ this.Tokenizer = (function() {
       if (this.index >= this.input.length) {
         return this.error("Unclosed string value");
       }
-      c = this.nextChar();
+      c = this.nextChar(true);
       code = c.charCodeAt(0);
       if (c === close) {
-        n = this.nextChar();
+        n = this.nextChar(true);
         if (n === close) {
           s += c;
         } else {

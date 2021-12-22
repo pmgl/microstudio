@@ -34,13 +34,13 @@ class @Tokenizer
   finished:()->
     @index>=@input.length
 
-  nextChar:()->
+  nextChar:(ignore_comments=false)->
     c = @input.charAt(@index++)
     if c == "\n"
       @line += 1
       @last_column = @column
       @column = 0
-    else if c == "/"
+    else if c == "/" and not ignore_comments
       if @input.charAt(@index) == "/"
         loop
           c = @input.charAt(@index++)
@@ -169,10 +169,10 @@ class @Tokenizer
   parseString:(s,close='"')->
     loop
       return @error("Unclosed string value") if @index>=@input.length
-      c = @nextChar()
+      c = @nextChar(true)
       code = c.charCodeAt(0)
       if c == close
-        n = @nextChar()
+        n = @nextChar(true)
         if n == close
           s += c
         else
