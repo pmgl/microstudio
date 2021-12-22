@@ -1626,6 +1626,7 @@ padding-left: 2px ;
 
 .createprojectoption select option {
   background-color: hsl(200,50%,10%);
+  color: #FFF;
   padding: 2px ;
 }
 
