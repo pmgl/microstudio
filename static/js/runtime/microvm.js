@@ -167,8 +167,8 @@ this.MicroVM = (function() {
     try {
       global.system.inputs.keyboard = window.matchMedia("(pointer:fine)").matches ? 1 : 0;
       global.system.inputs.mouse = window.matchMedia("(any-hover:none)").matches ? 0 : 1;
-    } catch (error) {
-      err = error;
+    } catch (error1) {
+      err = error1;
     }
     this.storage_service = this.createStorageService();
     global.storage = this.storage_service.api;
@@ -231,8 +231,8 @@ this.MicroVM = (function() {
       res = this.runner.run(this.program, filename);
       this.storage_service.check();
       return Program.toString(res);
-    } catch (error) {
-      err = error;
+    } catch (error1) {
+      err = error1;
       if ((err.type != null) && (err.line != null) && (err.error != null)) {
         this.error_info = err;
       } else if ((this.context.location != null) && (this.context.location.token != null)) {
@@ -269,8 +269,8 @@ this.MicroVM = (function() {
       res = this.runner.call(name, args);
       this.storage_service.check();
       return res;
-    } catch (error) {
-      err = error;
+    } catch (error1) {
+      err = error1;
       console.error(err);
       if ((this.context.location != null) && (this.context.location.token != null)) {
         this.error_info = {
@@ -292,13 +292,27 @@ this.MicroVM = (function() {
   };
 
   MicroVM.prototype.createStorageService = function() {
-    var err, ls, namespace, s, service, storage, write_storage;
-    ls = window.localStorage;
+    var err, error, ls, namespace, s, service, storage, write_storage;
+    try {
+      ls = window.localStorage;
+    } catch (error1) {
+      error = error1;
+      console.info("localStorage not available");
+      return service = {
+        api: {
+          set: function() {},
+          get: function() {
+            return 0;
+          }
+        },
+        check: function() {}
+      };
+    }
     if (!this.preserve_ls) {
       try {
         delete window.localStorage;
-      } catch (error) {
-        err = error;
+      } catch (error1) {
+        err = error1;
       }
     }
     storage = {};
@@ -309,8 +323,8 @@ this.MicroVM = (function() {
       if (s) {
         storage = JSON.parse(s);
       }
-    } catch (error) {
-      err = error;
+    } catch (error1) {
+      err = error1;
     }
     return service = {
       api: {
@@ -340,8 +354,8 @@ this.MicroVM = (function() {
             write_storage = false;
             try {
               return ls.setItem("ms" + namespace, JSON.stringify(storage));
-            } catch (error) {
-              err = error;
+            } catch (error1) {
+              err = error1;
             }
           }
         };

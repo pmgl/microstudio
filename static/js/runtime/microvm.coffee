@@ -192,7 +192,16 @@ class @MicroVM
       @storage_service.check()
 
   createStorageService:()->
-    ls = window.localStorage
+    try
+      ls = window.localStorage
+    catch error # in incognito mode, embedded by an iframe, localStorage isn't available
+      console.info "localStorage not available"
+      return service =
+        api:
+          set: ()->
+          get: ()-> 0
+        check:()->
+
     if not @preserve_ls
       try
         delete window.localStorage
