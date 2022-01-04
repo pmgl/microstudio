@@ -147,7 +147,7 @@ Click **Publish** to open the publishing options panel.
 
 :navigate projects.publish
 
-### Publier
+### Publish
 
 When your project is complete, you can make it publicly available to all microStudio
 users. You can also keep it private and export it to HTML5, which allows you to publish
