@@ -3,6 +3,7 @@ html(lang=language)
   head
     meta(name="description" content=translator.get("Learn programming, create video games - microStudio is a free game engine online."))
     meta(name="viewport" content="width=device-width, user-scalable=no, initial-scale=.6")
+    link(rel="alternate" hreflang="pt" href="https://microstudio.dev/ru/")
     link(rel="alternate" hreflang="pt" href="https://microstudio.dev/pt/")
     link(rel="alternate" hreflang="it" href="https://microstudio.dev/it/")
     link(rel="alternate" hreflang="de" href="https://microstudio.dev/de/")
@@ -117,6 +118,11 @@ html(lang=language)
         div.language-choice#language-choice-pt(title="Português")
           i.fas.fa-comment
           div.notranslate(translate="no") PT
+
+        div.language-choice#language-choice-ru(title="русский")
+          i.fas.fa-comment
+          div.notranslate(translate="no") RU
+
 
       img.logo#logo(src="/img/microstudiologo.svg" alt="microStudio" title="microStudio")
 
@@ -278,6 +284,8 @@ html(lang=language)
             a.notranslate(id="switch-to-it" href="/it/" translate="no") microStudio in Italiano
             i.fa.fa-circle
             a.notranslate(id="switch-to-pt" href="/pt/" translate="no") microStudio em Português
+            i.fa.fa-circle
+            a.notranslate(id="switch-to-ru" href="/ru/" translate="no") microStudio на русском языке
 
       div.exploreview#explore-section
         div#explore-bar

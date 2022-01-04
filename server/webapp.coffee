@@ -34,7 +34,7 @@ class @WebApp
 
     @home_page = {}
 
-    @languages = ["en","fr","pl","de","it", "pt"]
+    @languages = ["en","fr","pl","de","it","pt","ru"]
     home_exp = "^(\\/"
     for i in [1..@languages.length-1] by 1
       home_exp += "|\\/#{@languages[i]}\\/?"

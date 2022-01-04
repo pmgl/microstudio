@@ -42,7 +42,7 @@ this.WebApp = (function() {
     this.export_features = new ExportFeatures(this);
     this.server.build_manager.createLinks(this.app);
     this.home_page = {};
-    this.languages = ["en", "fr", "pl", "de", "it", "pt"];
+    this.languages = ["en", "fr", "pl", "de", "it", "pt", "ru"];
     home_exp = "^(\\/";
     for (i = j = 1, ref = this.languages.length - 1; j <= ref; i = j += 1) {
       home_exp += "|\\/" + this.languages[i] + "\\/?";
