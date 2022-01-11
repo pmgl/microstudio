@@ -537,7 +537,8 @@ class JSTranspiler
 
     @code.push """var #{timeout_count} = 0 ;"""
 
-    @prepend "while (#{@transpile(whiloop.condition,context,true)}) {\n"
+    @prepend "while (true) {\n"
+    @prepend "  if (! (#{@transpile(whiloop.condition,context,true)})) { break ; }\n"
 
     save_breakable = context.breakable
     save_continuable = context.continuable

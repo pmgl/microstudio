@@ -446,7 +446,8 @@ JSTranspiler = (function() {
     var res, save_breakable, save_continuable, timeout_count;
     timeout_count = this.createTempVariable(context);
     this.code.push("var " + timeout_count + " = 0 ;");
-    this.prepend("while (" + (this.transpile(whiloop.condition, context, true)) + ") {\n");
+    this.prepend("while (true) {\n");
+    this.prepend("  if (! (" + (this.transpile(whiloop.condition, context, true)) + ")) { break ; }\n");
     save_breakable = context.breakable;
     save_continuable = context.continuable;
     context.breakable = true;
