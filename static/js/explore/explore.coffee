@@ -73,6 +73,10 @@ class @Explore
     @closeProject()
       #@app.setHomeState()
 
+  closed:()->
+    if !document.title.startsWith("microStudio")
+      document.title = "microStudio"
+
   findBestTag:(p)->
     tag = p.tags[0]
     score = 0
@@ -203,6 +207,8 @@ class @Explore
     else
       @get("project-details-clonebutton").style.display = "inline-block"
 
+    document.title = @app.translator.get("%PROJECT% - by %USER%").replace("%PROJECT%",p.title).replace("%USER%",p.owner)
+
     @get("explore-back-button").style.display = "inline-block"
     @get("explore-tools").style.display = "none"
     @get("explore-contents").style.display = "none"
@@ -311,6 +317,7 @@ class @Explore
     @get("explore-contents").style.display = "block"
     @get("explore-project-details").style.display = "none"
     @project = null
+    @closed()
 
   createTags:()->
     @active_tags = []

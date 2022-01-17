@@ -231,6 +231,9 @@ AppUI = (function() {
           results = [];
           for (l = 0, len2 = list.length; l < len2; l++) {
             p = list[l];
+            if (p.dataset.title == null) {
+              continue;
+            }
             ok = p.dataset.title.toLowerCase().indexOf(search) >= 0;
             ok |= p.dataset.description.toLowerCase().indexOf(search) >= 0;
             ok |= p.dataset.tags.toLowerCase().indexOf(search) >= 0;
@@ -539,6 +542,8 @@ AppUI = (function() {
     }
     if (section === "explore") {
       this.app.explore.update();
+    } else {
+      this.app.explore.closed();
     }
     if (section === "help") {
       this.app.documentation.updateViewPos();

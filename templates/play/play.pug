@@ -7,14 +7,20 @@ html
     meta(charset='UTF-8')
     meta(name='mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-capable', content='yes')
-    meta(name='description', content='')
+    meta(name='description', content=game.description)
 
     meta(property="og:title" content=game.title)
     meta(property="og:site_name" content="microStudio")
     meta(property="og:url" content="https://microstudio.io/"+game.author+"/"+game.name+"/")
-    meta(property="og:image" content="https://microstudio.io/"+game.author+"/"+game.name+"/icon512.png")
+    meta(property="og:image" content=game.poster)
     meta(property="og:image:type" content="image/png")
-    meta(property="og:description" content=game.title+" by "+game.author)
+    meta(property="og:description" content=game.description)
+
+    meta(name="twitter:card" content="summary_large_image")
+    meta(name="twitter:site" content="@microStudio")
+    meta(name="twitter:title" content=game.title)
+    meta(name="twitter:description" content=game.description)
+    meta(name="twitter:image" content=game.poster)
 
     if !debug
       link(rel="manifest" href="manifest.json")
@@ -55,12 +61,12 @@ html
 
   body.noselect.custom-cursor(oncontextmenu='return false;')
     #canvaswrapper
-      
+
     if debug
       script(type="text/javascript").
         window.skip_service_worker = true ;
         if (navigator.serviceWorker != null) {
-          navigator.serviceWorker.getRegistrations().then( function(registrations) { for(let registration of registrations) { registration.unregister(); } });          
+          navigator.serviceWorker.getRegistrations().then( function(registrations) { for(let registration of registrations) { registration.unregister(); } });
         }
 
     script(type="text/javascript").
@@ -77,7 +83,7 @@ html
 
   script(id="code" type="text/x-project-code").
     !{game.code}
-    
+
   if language == "python"
     script(type="text/python").
       from browser import window
@@ -96,6 +102,6 @@ html
 
       window.python = execute
       window.glob = globals()
-      
+
     script.
       brython()

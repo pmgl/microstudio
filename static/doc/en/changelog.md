@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2022-01-18
+* Fixed project search filter broken when there are pending invitations
+* Set correct page title / description / twitter+facebook card image on public project links
+* Translation Fixes
+* Fixed incorrect transpiler output for while loops
+
 ### Update 2021-12-22
 * Fixed parser bug: `//` enclosed in a string was parsed as a line comment
 

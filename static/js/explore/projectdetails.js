@@ -660,7 +660,7 @@ this.ProjectDetails = (function() {
     if ((this.app.user != null) && (this.app.user.nick === c.user || this.app.user.flags.admin)) {
       buttons = document.createElement("div");
       buttons.classList.add("buttons");
-      buttons.appendChild(this.createButton("trash", "Delete", "red", (function(_this) {
+      buttons.appendChild(this.createButton("trash", this.app.translator.get("Delete"), "red", (function(_this) {
         return function() {
           return _this.deleteComment(c);
         };

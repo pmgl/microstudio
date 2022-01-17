@@ -189,6 +189,7 @@ class AppUI
       list = document.getElementById("project-list").childNodes
       if search.trim().length>0
         for p in list
+          continue if not p.dataset.title?
           ok = p.dataset.title.toLowerCase().indexOf(search)>=0
           ok |= p.dataset.description.toLowerCase().indexOf(search)>=0
           ok |= p.dataset.tags.toLowerCase().indexOf(search)>=0
@@ -415,6 +416,8 @@ class AppUI
 
     if section == "explore"
       @app.explore.update()
+    else
+      @app.explore.closed()
 
     if section == "help"
       @app.documentation.updateViewPos()

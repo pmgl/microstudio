@@ -67,7 +67,7 @@ this.WebApp = (function() {
     console.info("home_exp = " + home_exp);
     this.app.get(new RegExp(home_exp), (function(_this) {
       return function(req, res) {
-        var l, lang, len2, n, ref3;
+        var l, lang, len2, n, page, project, ref3, s, translator, user;
         if (_this.ensureDevArea(req, res)) {
           return;
         }
@@ -86,18 +86,55 @@ this.WebApp = (function() {
           _this.server.content.translator.languages[lang].updated = false;
           delete _this.home_page[lang];
         }
-        if ((_this.home_page[lang] == null) || !_this.server.use_cache) {
-          _this.home_page[lang] = _this.home_funk({
-            name: "microStudio",
+        s = req.path.split("/");
+        if (s[1] === "i") {
+          user = s[2];
+          project = s[3];
+          user = _this.server.content.findUserByNick(user);
+          if (user == null) {
+            _this.return404(req, res);
+            return null;
+          }
+          project = user.findProjectBySlug(project);
+          if ((project == null) || !project["public"]) {
+            _this.return404(req, res);
+            return null;
+          }
+          translator = _this.server.content.translator.getTranslator(lang);
+          page = _this.home_funk({
+            name: project.title,
             javascript_files: _this.concatenator.getHomeJSFiles(),
             css_files: _this.concatenator.getHomeCSSFiles(),
-            translator: _this.server.content.translator.getTranslator(lang),
+            translator: translator,
             language: lang,
             standalone: _this.server.config.standalone === true,
             languages: _this.languages,
             optional_libs: _this.concatenator.optional_libs,
             language_engines: _this.concatenator.language_engines,
-            translation: _this.server.content.translator.languages[lang] != null ? _this.server.content.translator.languages[lang]["export"]() : "{}"
+            translation: _this.server.content.translator.languages[lang] != null ? _this.server.content.translator.languages[lang]["export"]() : "{}",
+            title: translator.get("%PROJECT% - by %USER%").replace("%PROJECT%", project.title).replace("%USER%", user.nick),
+            description: project.description,
+            long_description: project.description,
+            poster: (project.files != null) && (project.files["sprites/poster.png"] != null) ? "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/poster.png" : "https://microstudio.dev/img/microstudio.jpg"
+          });
+          return res.send(page);
+        } else if ((_this.home_page[lang] == null) || !_this.server.use_cache) {
+          translator = _this.server.content.translator.getTranslator(lang);
+          _this.home_page[lang] = _this.home_funk({
+            name: "microStudio",
+            javascript_files: _this.concatenator.getHomeJSFiles(),
+            css_files: _this.concatenator.getHomeCSSFiles(),
+            translator: translator,
+            language: lang,
+            standalone: _this.server.config.standalone === true,
+            languages: _this.languages,
+            optional_libs: _this.concatenator.optional_libs,
+            language_engines: _this.concatenator.language_engines,
+            translation: _this.server.content.translator.languages[lang] != null ? _this.server.content.translator.languages[lang]["export"]() : "{}",
+            title: "microStudio - " + translator.get("Learn programming, create games"),
+            description: translator.get("Learn programming, create video games - microStudio is a free game engine online."),
+            long_description: translator.get("microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything."),
+            poster: "https://microstudio.dev/img/microstudio.jpg"
           });
         }
         return res.send(_this.home_page[lang]);
@@ -223,7 +260,7 @@ this.WebApp = (function() {
     })(this));
     this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+\/?)?)?$/, (function(_this) {
       return function(req, res) {
-        var access, encoding, file, jsfiles, len3, lib, manager, o, prog_lang, project, redir, ref4, user;
+        var access, encoding, file, jsfiles, len3, lib, manager, o, pathcode, poster, prog_lang, project, redir, ref4, user;
         if (_this.ensureIOArea(req, res)) {
           return;
         }
@@ -254,6 +291,8 @@ this.WebApp = (function() {
           jsfiles = jsfiles.concat(_this.concatenator.language_engines[prog_lang].scripts);
           jsfiles = jsfiles.concat(_this.concatenator.language_engines[prog_lang].lib);
         }
+        pathcode = project["public"] ? project.slug : project.slug + "/" + project.code;
+        poster = (project.files != null) && (project.files["sprites/poster.png"] != null) ? "https://microstudio.io/" + user.nick + "/" + pathcode + "/sprites/poster.png" : "https://microstudio.io/" + user.nick + "/" + pathcode + "/icon512.png";
         return manager.listFiles("ms", function(sources) {
           return manager.listFiles("sprites", function(sprites) {
             return manager.listFiles("maps", function(maps) {
@@ -285,7 +324,9 @@ this.WebApp = (function() {
                       orientation: project.orientation,
                       aspect: project.aspect,
                       graphics: project.graphics,
-                      libs: JSON.stringify(project.libs)
+                      libs: JSON.stringify(project.libs),
+                      description: project.description,
+                      poster: poster
                     }
                   }));
                 });

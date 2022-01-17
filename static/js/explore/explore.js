@@ -104,6 +104,12 @@ this.Explore = (function() {
     return this.closeProject();
   };
 
+  Explore.prototype.closed = function() {
+    if (!document.title.startsWith("microStudio")) {
+      return document.title = "microStudio";
+    }
+  };
+
   Explore.prototype.findBestTag = function(p) {
     var i, len, ref, score, t, tag;
     tag = p.tags[0];
@@ -259,6 +265,7 @@ this.Explore = (function() {
     } else {
       this.get("project-details-clonebutton").style.display = "inline-block";
     }
+    document.title = this.app.translator.get("%PROJECT% - by %USER%").replace("%PROJECT%", p.title).replace("%USER%", p.owner);
     this.get("explore-back-button").style.display = "inline-block";
     this.get("explore-tools").style.display = "none";
     this.get("explore-contents").style.display = "none";
@@ -387,7 +394,8 @@ this.Explore = (function() {
     this.get("explore-tools").style.display = "inline-block";
     this.get("explore-contents").style.display = "block";
     this.get("explore-project-details").style.display = "none";
-    return this.project = null;
+    this.project = null;
+    return this.closed();
   };
 
   Explore.prototype.createTags = function() {

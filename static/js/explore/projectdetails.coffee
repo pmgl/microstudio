@@ -546,7 +546,7 @@ class @ProjectDetails
       #buttons.appendChild @createButton "edit","Edit","green",()=>
       #  @editComment c
       #buttons.appendChild document.createElement "br"
-      buttons.appendChild @createButton "trash","Delete","red",()=>
+      buttons.appendChild @createButton "trash",@app.translator.get("Delete"),"red",()=>
         @deleteComment c
       div.appendChild buttons
 

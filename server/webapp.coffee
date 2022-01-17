@@ -74,19 +74,56 @@ class @WebApp
         @server.content.translator.languages[lang].updated = false
         delete @home_page[lang]
 
-      if not @home_page[lang]? or not @server.use_cache
-        #console.info "generating home page #{lang}"
-        @home_page[lang] = @home_funk
-          name: "microStudio"
+      s = req.path.split("/")
+      if s[1] == "i"
+        user = s[2]
+        project = s[3]
+        user = @server.content.findUserByNick(user)
+        if not user?
+          @return404(req,res)
+          return null
+
+        project = user.findProjectBySlug project
+        if not project? or not project.public
+          @return404(req,res)
+          return null
+
+        translator = @server.content.translator.getTranslator(lang)
+        page = @home_funk
+          name: project.title
           javascript_files: @concatenator.getHomeJSFiles()
           css_files: @concatenator.getHomeCSSFiles()
-          translator: @server.content.translator.getTranslator(lang)
+          translator: translator
           language: lang
           standalone: @server.config.standalone == true
           languages: @languages
           optional_libs: @concatenator.optional_libs
           language_engines: @concatenator.language_engines
           translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
+          title: translator.get("%PROJECT% - by %USER%").replace("%PROJECT%",project.title).replace("%USER%",user.nick)
+          description: project.description
+          long_description: project.description
+          poster: if project.files? and project.files["sprites/poster.png"]? then "https://microstudio.io/#{user.nick}/#{project.slug}/sprites/poster.png" else "https://microstudio.dev/img/microstudio.jpg"
+
+        return res.send page
+      else if not @home_page[lang]? or not @server.use_cache
+        #console.info "generating home page #{lang}"
+        translator = @server.content.translator.getTranslator(lang)
+        @home_page[lang] = @home_funk
+          name: "microStudio"
+          javascript_files: @concatenator.getHomeJSFiles()
+          css_files: @concatenator.getHomeCSSFiles()
+          translator: translator
+          language: lang
+          standalone: @server.config.standalone == true
+          languages: @languages
+          optional_libs: @concatenator.optional_libs
+          language_engines: @concatenator.language_engines
+          translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
+          title: "microStudio - "+translator.get("Learn programming, create games")
+          description: translator.get("Learn programming, create video games - microStudio is a free game engine online.")
+          long_description: translator.get("microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything.")
+          poster: "https://microstudio.dev/img/microstudio.jpg"
 
       res.send @home_page[lang]
 
@@ -212,6 +249,11 @@ class @WebApp
         jsfiles = jsfiles.concat @concatenator.language_engines[prog_lang].scripts
         jsfiles = jsfiles.concat @concatenator.language_engines[prog_lang].lib
 
+      pathcode = if project.public then project.slug else "#{project.slug}/#{project.code}"
+      poster = if project.files? and project.files["sprites/poster.png"]?
+        "https://microstudio.io/#{user.nick}/#{pathcode}/sprites/poster.png"
+      else
+        "https://microstudio.io/#{user.nick}/#{pathcode}/icon512.png"
 
       manager.listFiles "ms",(sources)=>
         manager.listFiles "sprites",(sprites)=>
@@ -244,6 +286,8 @@ class @WebApp
                     aspect: project.aspect
                     graphics: project.graphics
                     libs: JSON.stringify(project.libs)
+                    description: project.description
+                    poster: poster
 
     @app.get /^\/[A-Za-z0-9_]+\/?$/,(req,res)=>
       return if @ensureIOArea(req,res)

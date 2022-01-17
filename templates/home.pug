@@ -1,7 +1,7 @@
 doctype html
 html(lang=language)
   head
-    meta(name="description" content=translator.get("Learn programming, create video games - microStudio is a free game engine online."))
+    meta(name="description" content=description)
     meta(name="viewport" content="width=device-width, user-scalable=no, initial-scale=.6")
     link(rel="alternate" hreflang="pt" href="https://microstudio.dev/ru/")
     link(rel="alternate" hreflang="pt" href="https://microstudio.dev/pt/")
@@ -10,7 +10,7 @@ html(lang=language)
     link(rel="alternate" hreflang="pl" href="https://microstudio.dev/pl/")
     link(rel="alternate" hreflang="fr" href="https://microstudio.dev/fr/")
     link(rel="alternate" hreflang="en" href="https://microstudio.dev")
-    title microStudio - #{translator.get("Learn programming, create games")}
+    title #{title}
 
     each css in css_files
       link(rel="stylesheet" type="text/css" href=css)
@@ -41,17 +41,17 @@ html(lang=language)
         "operatingSystem": "Any"
       }
 
-    meta(property="og:title" content="microStudio")
+    meta(property="og:title" content=title)
     meta(property="og:type" content="website")
     meta(property="og:url" content="https://microstudio.dev")
-    meta(property="og:image" content="https://microstudio.dev/img/microstudio.jpg")
-    meta(property="og:description" content="microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything.")
+    meta(property="og:image" content=poster)
+    meta(property="og:description" content=long_description)
 
     meta(name="twitter:card" content="summary_large_image")
     meta(name="twitter:site" content="@microStudio")
-    meta(name="twitter:title" content="microStudio")
-    meta(name="twitter:description" content="microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything.")
-    meta(name="twitter:image" content="https://microstudio.dev/img/microstudio.jpg")
+    meta(name="twitter:title" content=title)
+    meta(name="twitter:description" content=long_description)
+    meta(name="twitter:image" content=poster)
 
     script(src="/lib/jquery/jquery.js")
     script(src="/lib/jquery-ui/jquery-ui.min.js")
@@ -485,7 +485,7 @@ html(lang=language)
           br
           br
           button#create-project-submit #{translator.get("Create Project")}
-          
+
           div#advanced-create-project-options-button
             i.fa
             span #{translator.get("Advanced")}
@@ -501,7 +501,7 @@ html(lang=language)
             div.createprojectoption#create-project-option-language
               h3 #{translator.get("Language support")}
               select#createprojectoption-language
-                each val,key in language_engines  
+                each val,key in language_engines
                   option(value=key) #{translator.get(val.title)}
 
             div.createprojectoption#create-project-option-graphics
@@ -515,7 +515,7 @@ html(lang=language)
 
             div.createprojectoption#create-project-option-libs
               h3 #{translator.get("Additional tools and libraries")}
-              each val,key in optional_libs  
+              each val,key in optional_libs
                 input(type="checkbox" id="create-project-option-lib-"+key)
                 label(for="create-project-option-lib-"+key) #{translator.get(val.title)}
                 div.tip #{translator.get("Note: this integration is experimental")}
