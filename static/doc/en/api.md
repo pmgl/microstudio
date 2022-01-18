@@ -348,9 +348,10 @@ screen.setDrawAnchor(-1,-1) // your drawing coordinates are now interpreted as t
 screen.setDrawAnchor(0,0) // default value, all shapes will be drawn centered on your coordinates
 ```
 
-<!--- suggest_start screen.setDrawAnchor --->
+<!--- suggest_start screen.setBlending --->
 ##### screen.setBlending( blending )
 Defines how subsequent drawing operations will be composed with the underlying, already drawn image. Can be set to `normal` or `additive`.
+<!--- suggest_end --->
 
 You can also use any of the compositing modes defined in the HTML5 Canvas specification with `setBlending`, for reference see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
 
