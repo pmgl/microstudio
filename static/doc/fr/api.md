@@ -336,6 +336,13 @@ screen.setDrawAnchor(-1,-1) // vos coordonnées de dessin seront désormais cons
 screen.setDrawAnchor(0,0) // valeur par défaut, toutes les formes seront dessinées centrées sur vos coordonnées.
 ```
 
+<!--- suggest_start screen.setBlending --->
+##### screen.setBlending( blending )
+Définit comment les opérations de dessin à venir doivent être appliquées sur le contenu déjà à l'image (blending). Peut être réglé sur `normal` ou `additive`.
+<!--- suggest_end --->
+
+Vous pouvez aussi utiliser tous les modes de composition définis pour le Canvas HTML5, voir ce lien pour référence : https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+
 
 <!--- suggest_start screen.width --->
 ##### screen.width
