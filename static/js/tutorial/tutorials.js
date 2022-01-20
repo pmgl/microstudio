@@ -122,7 +122,7 @@ this.Tutorials = (function() {
   };
 
   Tutorials.prototype.build = function() {
-    var j, len, ref, t;
+    var e, j, len, ref, t;
     document.getElementById("tutorials-content").innerHTML = "";
     ref = this.tutorials;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -130,6 +130,8 @@ this.Tutorials = (function() {
       this.buildCourse(t);
     }
     this.checkCompletion();
+    e = document.getElementById("tutorials-content");
+    e.innerHTML += "<br/>\n<h1 style=\"margin-top:80px\">" + (this.app.translator.get("More Tutorials")) + "</h1>\n<h3 style=\"margin-bottom: 0px;\">" + (this.app.translator.get("Check this great series of microStudio tutorials by mrLman:")) + "</h3>\n<br/><a target=\"_blank\" href=\"https://sites.google.com/ed.act.edu.au/games-programming/game-elements/\"><img src=\"/img/mrlman_tutorials.png\" /></a>";
   };
 
   Tutorials.prototype.buildCourse = function(course) {
