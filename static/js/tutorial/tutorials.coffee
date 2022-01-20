@@ -84,13 +84,14 @@ class @Tutorials
 
     @checkCompletion()
 
-    e = document.getElementById("tutorials-content")
-    e.innerHTML += """
+    div = document.createElement("div")
+    div.innerHTML = """
     <br/>
     <h1 style="margin-top:80px">#{@app.translator.get("More Tutorials")}</h1>
     <h3 style="margin-bottom: 0px;">#{@app.translator.get("Check this great series of microStudio tutorials by mrLman:")}</h3>
     <br/><a target="_blank" href="https://sites.google.com/ed.act.edu.au/games-programming/game-elements/"><img src="/img/mrlman_tutorials.png" /></a>
     """
+    document.getElementById("tutorials-content").appendChild(div)
     return
 
   buildCourse:(course)->
