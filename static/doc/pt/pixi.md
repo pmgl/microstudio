@@ -25,7 +25,7 @@ stage = new PIXI.Container()
 
 ```
 my_sprite = PIXI.Sprite.from("mysprite")
-stage.add(my_sprite)
+stage.addChild(my_sprite)
 ```
 
 ### Atualizando
