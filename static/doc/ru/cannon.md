@@ -31,8 +31,7 @@ world.gravity.set(0, 0, -10)
 
 ### Добавление фигур
 
-API иногда требует передавать объекты JavaScript в качестве аргументов, например
-`{ mass: 0 , shape: new CANNON.Plane() }`. Из языка microScript вы передадите аналогичный объект microScript: `object mass = 0 shape = new CANNON.Plane() end`.
+API иногда требует передавать объекты JavaScript в качестве аргументов, например `{ mass: 0 , shape: new CANNON.Plane() }`. Из языка microScript вы передадите аналогичный объект microScript: `object mass = 0 shape = new CANNON.Plane() end`.
 Вот так вы можете добавить объект неподвижной земли в ваш мир:
 
 ```

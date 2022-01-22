@@ -23,6 +23,6 @@ update = function() {
 
 draw = function() {
   screen.clear()
-  screen.drawSprite("icon",x,y,50)
+  screen.drawSprite("icon", x, y, 50)
 }
 ```

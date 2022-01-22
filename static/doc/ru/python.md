@@ -26,13 +26,13 @@
 Вот вспомогательная функция, которая может оказаться полезной:
 
 ```
-def checkInput(obj,val):
-  if hasattr(obj,val):
+def checkInput(obj, val):
+  if hasattr(obj, val):
     return obj[val] != 0
   return 0
 ```
 
-### Инициализация классов
+### Создание экземпляров классов
 
 Особенно при использовании альтернативных графических библиотек или дополнительных библиотек, вам может потребоваться
 инициализировать объекты JavaScript, как если бы вы использовали оператор `new` в JavaScript.
@@ -51,26 +51,26 @@ def init():
   x = 0
   y = 0
 
-def checkInput(obj,val):
-  if hasattr(obj,val):
+def checkInput(obj, val):
+  if hasattr(obj, val):
     return obj[val] != 0
   return 0
 
 def update():
   global x,y
-  if checkInput(keyboard,"LEFT"):
+  if checkInput(keyboard, "LEFT"):
     x = x-1
-  if checkInput(keyboard,"RIGHT"):
+  if checkInput(keyboard, "RIGHT"):
     x = x+1
-  if checkInput(keyboard,"UP"):
+  if checkInput(keyboard, "UP"):
     y = y+1
-  if checkInput(keyboard,"DOWN"):
+  if checkInput(keyboard, "DOWN"):
     y = y-1
   pass
 
 def draw():
   global x,y
   screen.clear()
-  screen.drawSprite("icon",x,y,30)
+  screen.drawSprite("icon", x, y, 30)
   pass
 ```

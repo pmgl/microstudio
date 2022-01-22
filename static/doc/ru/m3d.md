@@ -1,21 +1,21 @@
 # micro 3D
 ## API 3D-рендеринга
 
-micro 3D - это упрощенный 3D API, созданный поверх Babylon.js. В настоящее время он очень минимален, но в будущем будет развиваться. Если вы ищете стабильный, функционально полный 3D API, обратите внимание на Babylon.js.
+micro 3D - это упрощенный 3D API, созданный поверх Babylon.js. В настоящее время он очень минимален, но в будущем будет развиваться. Если вы ищете стабильный, полнофункциональный  3D API, обратите внимание на Babylon.js.
 
 ## Основы
 
-### Включение микро 3D
+### Подключение micro 3D
 
-После создания проекта откройте вкладку настроек, нажмите "Показать дополнительные настройки" и выберите **micro 3D** в качестве "Графической библиотеки".
+После создания проекта откройте вкладку настроек, нажмите "Показать дополнительные настройки" и выберите **micro 3D** в качестве графической библиотеки.
 
 ### Сцена
 
-Создайте новую сцену:
+Создание новой сцены:
 
 ```
 scene = new M3D.Scene()
-scene.setBackground("rgb(9,0,28)")
+scene.setBackground("rgb(9, 0, 28)")
 ```
 
 ### Добавление объектов
@@ -24,8 +24,8 @@ scene.setBackground("rgb(9,0,28)")
 
 ```
 box = new M3D.Box()
-box.position.set(0,0,5)
-box.setColor("rgb(255,192,0)")
+box.position.set(0, 0, 5)
+box.setColor("rgb(255, 192,0)")
 scene.add(box)
 ```
 
@@ -34,7 +34,7 @@ scene.add(box)
 Добавление направленного света:
 
 ```
-light = new M3D.DirectionalLight(new M3D.Vector3(-1,-.5,1))
+light = new M3D.DirectionalLight(new M3D.Vector3(-1, -.5, 1))
 light.setColor("rgb(255,217,198)")
 ```
 
@@ -44,7 +44,7 @@ light.setColor("rgb(255,217,198)")
 
 ```
 camera = new M3D.Camera()
-camera.position.set(0,0,1)
+camera.position.set(0, 0, 1)
 ```
 
 ### Обновление
@@ -58,13 +58,13 @@ update = function()
 end
 ```
 
-### Рендеринг
+### Визуализация
 
 В вашей функции `draw()` вызовите `screen.render`, передав вашу сцену и камеру в качестве аргументов:
 
 ```
 draw = function()
-  screen.render(scene,camera)
+  screen.render(scene, camera)
 end
 ```
 
