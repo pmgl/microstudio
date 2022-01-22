@@ -28,4 +28,3 @@ You can clone this repository and start your own microStudio server, for a team 
 
 For active development use:
 * `npm run dev` instead of `npm start`
-* 
