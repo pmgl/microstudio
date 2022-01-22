@@ -347,7 +347,7 @@ screen.setDrawAnchor(-1, -1) // ваши координаты рисования
 screen.setDrawAnchor(0, 0) // значение по умолчанию, все фигуры будут рисоваться по центру относительно ваших координат.
 ```
 
-<!--- suggest_start screen.setDrawAnchor --->
+<!--- suggest_start screen.setBlending --->
 ##### screen.setBlending(blending)
 Определяет, как последующие операции рисования будут сочетаться с основным, уже нарисованным изображением. Может быть установлено значение `normal` или `additive`.
 
