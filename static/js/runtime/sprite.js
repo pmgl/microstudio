@@ -144,6 +144,38 @@ this.Sprite = (function() {
     return this.frames.push(new SpriteFrame(this, this.width, this.height));
   };
 
+  Sprite.prototype.flipH = function() {
+    var cc, data, f, j, k, l, len, oc, ref, ref1, ref2, xx, yy;
+    ref = this.frames;
+    for (j = 0, len = ref.length; j < len; j++) {
+      f = ref[j];
+      cc = f.clone().getContext();
+      oc = f.getContext();
+      for (xx = k = 0, ref1 = f.width; 0 <= ref1 ? k <= ref1 : k >= ref1; xx = 0 <= ref1 ? ++k : --k) {
+        for (yy = l = 0, ref2 = f.height; 0 <= ref2 ? l <= ref2 : l >= ref2; yy = 0 <= ref2 ? ++l : --l) {
+          data = cc.getImageData(xx, yy, 1, 1);
+          oc.putImageData(data, f.width - xx, yy);
+        }
+      }
+    }
+  };
+
+  Sprite.prototype.flipV = function() {
+    var cc, data, f, j, k, l, len, oc, ref, ref1, ref2, xx, yy;
+    ref = this.frames;
+    for (j = 0, len = ref.length; j < len; j++) {
+      f = ref[j];
+      cc = f.clone().getContext();
+      oc = f.getContext();
+      for (xx = k = 0, ref1 = f.width; 0 <= ref1 ? k <= ref1 : k >= ref1; xx = 0 <= ref1 ? ++k : --k) {
+        for (yy = l = 0, ref2 = f.height; 0 <= ref2 ? l <= ref2 : l >= ref2; yy = 0 <= ref2 ? ++l : --l) {
+          data = cc.getImageData(xx, yy, 1, 1);
+          oc.putImageData(data, xx, f.height - yy);
+        }
+      }
+    }
+  };
+
   return Sprite;
 
 })();

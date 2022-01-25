@@ -59,6 +59,8 @@ class @SpriteEditor
     @app.appui.setAction "copy-sprite",()=>@copy()
     @app.appui.setAction "cut-sprite",()=>@cut()
     @app.appui.setAction "paste-sprite",()=>@paste()
+    @app.appui.setAction "flip-H-sprite",()=>@flipHSprite()
+    @app.appui.setAction "flip-V-sprite",()=>@flipVSprite()
     @app.appui.setAction "delete-sprite",()=>@deleteSprite()
 
     @app.appui.setAction "sprite-helper-tile",()=>@toggleTile()
@@ -676,6 +678,30 @@ class @SpriteEditor
       @spriteview.sprite.undo.pushState @spriteview.sprite.clone()
       @currentSpriteUpdated()
       @spriteChanged()
+  
+  flipHSprite:()->
+    return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
+    @app.project.lockFile("sprites/#{@selected_sprite}.png")
+    @spriteview.sprite.undo = new Undo() if not @spriteview.sprite.undo?
+    @spriteview.sprite.undo.pushState @spriteview.sprite.clone() if @spriteview.sprite.undo.empty()
+
+    @spriteview.sprite.flipH()
+
+    @spriteview.sprite.undo.pushState @spriteview.sprite.clone()
+    @currentSpriteUpdated()
+    @spriteChanged()
+
+  flipVSprite:()->
+    return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
+    @app.project.lockFile("sprites/#{@selected_sprite}.png")
+    @spriteview.sprite.undo = new Undo() if not @spriteview.sprite.undo?
+    @spriteview.sprite.undo.pushState @spriteview.sprite.clone() if @spriteview.sprite.undo.empty()
+
+    @spriteview.sprite.flipV()
+
+    @spriteview.sprite.undo.pushState @spriteview.sprite.clone()
+    @currentSpriteUpdated()
+    @spriteChanged()
 
   currentSpriteUpdated:()->
     @spriteview.update()

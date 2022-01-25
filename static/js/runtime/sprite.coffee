@@ -100,3 +100,23 @@ class @Sprite
 
   addFrame:()->
     @frames.push new SpriteFrame @,@width,@height
+
+  flipH:()->
+    for f in @frames
+      cc = f.clone().getContext()
+      oc = f.getContext()
+      for xx in [0..f.width]
+        for yy in [0..f.height] 
+          data = cc.getImageData(xx,yy,1,1)
+          oc.putImageData(data,f.width-xx,yy)   
+    return
+
+  flipV:()->
+    for f in @frames
+      cc = f.clone().getContext()
+      oc = f.getContext()
+      for xx in [0..f.width]
+        for yy in [0..f.height]        
+          data = cc.getImageData(xx,yy,1,1)
+          oc.putImageData(data,xx,f.height-yy)   
+    return
