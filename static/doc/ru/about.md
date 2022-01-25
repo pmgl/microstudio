@@ -1,8 +1,8 @@
 ![microStudio](/img/microstudiologo.svg "microStudio")
 
-**microStudio** это бесплатная среда разработки игр. Она призвана стать платформой для обучения и обмена опытом.
+**microStudio** это бесплатная среда разработки игр. Она также призвана стать платформой для обучения и обмена опытом.
 
-**microStudio** - проект с открытым исходным кодом, распространяемый по MIT лицензии: https://github.com/pmgl/microstudio/
+**microStudio** - проект с открытым исходным кодом, распространяемый под лицензией MIT: https://github.com/pmgl/microstudio/
 
 Информацию об обновлениях смотрите в журнале изменений.
 
@@ -16,15 +16,15 @@
 
 Большое спасибо нашим замечательным переводчикам:
 * FeniXb3 (перевод на Польский язык)
-* TinkerSmith (перевод на Германский язык)
+* TinkerSmith (перевод на Немецкий язык)
 * HomineLudens (перевод на Итальянский язык)
 * Ondinha (перевод на бразильский Потругальский язык)
 
-<i class="fab fa-discord"></i> Присоединяйся в наш Discord: [https://discord.gg/BDMqjxd](https://discord.gg/BDMqjxd)
+<i class="fab fa-discord"></i> Присоединяйся к нам в Discord: [https://discord.gg/BDMqjxd](https://discord.gg/BDMqjxd)
 
 <i class="fa fa-envelope"></i> Контактный e-mail: [contact@microstudio.dev](mailto:contact@microstudio.dev)
 
-Создано Жилем Поммеруи в Страсбурге, Франция
+Создано Жилем Помереем в Страсбурге, Франция
 
 Опубликовано:
 

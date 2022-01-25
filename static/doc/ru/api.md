@@ -301,7 +301,6 @@ screen.setTranslation(0,0)
 ```
 
 <!--- suggest_start screen.setDrawRotation --->
-<!--- suggest_start screen.setDrawRotation --->
 ##### screen.setDrawRotation(angle)
 Определяет угол поворота для следующих операций рисования. Угол выражается в градусах.
 <!--- suggest_end --->
@@ -348,11 +347,12 @@ screen.setDrawAnchor(-1, -1) // ваши координаты рисования
 screen.setDrawAnchor(0, 0) // значение по умолчанию, все фигуры будут рисоваться по центру относительно ваших координат.
 ```
 
-<!--- suggest_start screen.setDrawAnchor --->
+<!--- suggest_start screen.setBlending --->
 ##### screen.setBlending(blending)
 Определяет, как последующие операции рисования будут сочетаться с основным, уже нарисованным изображением. Может быть установлено значение `normal` или `additive`.
 
 Вы также можете использовать любой из режимов композинга, определенных в спецификации HTML5 Canvas с помощью `setBlending`, для справки см. https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+<!--- suggest_end --->
 
 <!--- suggest_start screen.width --->
 ##### screen.width

@@ -8,11 +8,11 @@ Matter.js - это 2D физический движок с открытым ис
 
 Репозиторий Github: https://github.com/liabru/matter-js
 
-Вы можете включить и использовать Matter.js в своем проекте microStudio, независимо от того, какой язык вы выбрали: microScript, JavaScript, Python, Lua.
+Вы можете подключить и использовать Matter.js в своем проекте microStudio, независимо от того, какой язык вы выбрали: microScript, JavaScript, Python, Lua.
 
 ## Основы
 
-### Включение Matter.js
+### Подключение Matter.js
 
 После создания проекта откройте вкладку настроек и нажмите "Показать дополнительные параметры".
 Выберите "Matter.js", чтобы подключить библиотеку для вашего проекта. API Matter.js будет отображаться в вашем коде как глобальная переменная `Matter`.
@@ -35,8 +35,8 @@ API иногда требует передачи объектов JavaScript в 
 Вот так вы можете добавить объект неподвижной земли в ваш мир Matter:
 
 ```
-ground = Matter.Bodies.rectangle(0,-50,200,10,object isStatic=true end)
-Matter.Composite.add(engine.world,ground)
+ground = Matter.Bodies.rectangle(0, -50, 200, 10, object isStatic=true end)
+Matter.Composite.add(engine.world, ground)
 ```
 
 Затем вы можете добавить движущуюся коробку следующим образом:
@@ -52,7 +52,7 @@ Matter.Composite.add(engine.world,box)
 
 ```
 update = function()
-  Matter.Engine.update(engine,1000/60)
+  Matter.Engine.update(engine, 1000/60)
 end
 ```
 
@@ -64,9 +64,9 @@ end
 ```
 draw = function()
   screen.clear()
-  screen.drawRect(ground.position.x,ground.position.y,200,10, "rgb(255,0,0)")
+  screen.drawRect(ground.position.x, ground.position.y, 200, 10, "rgb(255, 0, 0)")
   screen.setDrawRotation(box.angle/PI*180)
-  screen.drawRect(box.position.x,box.position.y,20,20, "#FF0")
+  screen.drawRect(box.position.x, box.position.y, 20, 20, "#FF0")
   screen.setDrawRotation(0)
 end
 ```
@@ -77,7 +77,7 @@ end
 
 Ссылка: https://brm.io/matter-js/docs/
 
-Вики: https://github.com/liabru/matter-js/wiki
+Wiki: https://github.com/liabru/matter-js/wiki
 
 ### Примеры проектов
 
