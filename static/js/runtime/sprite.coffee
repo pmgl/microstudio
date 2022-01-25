@@ -105,18 +105,18 @@ class @Sprite
     for f in @frames
       cc = f.clone().getContext()
       oc = f.getContext()
-      for xx in [0..f.width]
-        for yy in [0..f.height] 
+      for xx in [0..f.width-1]
+        for yy in [0..f.height-1] 
           data = cc.getImageData(xx,yy,1,1)
-          oc.putImageData(data,f.width-xx,yy)   
+          oc.putImageData(data,f.width-xx-1,yy)   
     return
 
   flipV:()->
     for f in @frames
       cc = f.clone().getContext()
       oc = f.getContext()
-      for xx in [0..f.width]
-        for yy in [0..f.height]        
+      for xx in [0..f.width-1]
+        for yy in [0..f.height-1]        
           data = cc.getImageData(xx,yy,1,1)
-          oc.putImageData(data,xx,f.height-yy)   
+          oc.putImageData(data,xx,f.height-yy-1)   
     return
