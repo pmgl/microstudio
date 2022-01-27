@@ -13,8 +13,6 @@ this.MusicEditor = (function(superClass) {
     this.use_thumbnails = true;
     this.extensions = ["mp3"];
     this.update_list = "updateMusicList";
-    this.box_width = 192;
-    this.box_height = 84;
     this.init();
   }
 
@@ -27,7 +25,27 @@ this.MusicEditor = (function(superClass) {
     }
   };
 
-  MusicEditor.prototype.fileDropped = function(file) {
+  MusicEditor.prototype.createAsset = function(folder) {
+    var input;
+    input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".mp3";
+    input.addEventListener("change", (function(_this) {
+      return function(event) {
+        var f, files, i, len;
+        files = event.target.files;
+        if (files.length >= 1) {
+          for (i = 0, len = files.length; i < len; i++) {
+            f = files[i];
+            _this.fileDropped(f, folder);
+          }
+        }
+      };
+    })(this));
+    return input.click();
+  };
+
+  MusicEditor.prototype.fileDropped = function(file, folder) {
     var reader;
     console.info("processing " + file.name);
     reader = new FileReader();
@@ -44,7 +62,13 @@ this.MusicEditor = (function(superClass) {
           console.info(decoded);
           thumbnailer = new SoundThumbnailer(decoded, 192, 64, "hsl(200,80%,60%)");
           name = file.name.split(".")[0];
-          name = _this.findNewFilename(name, "getMusic");
+          name = _this.findNewFilename(name, "getMusic", folder);
+          if (folder != null) {
+            name = folder.getFullDashPath() + "-" + name;
+          }
+          if (folder != null) {
+            folder.setOpen(true);
+          }
           music = _this.app.project.createMusic(name, thumbnailer.canvas.toDataURL(), reader.result.length);
           music.uploading = true;
           _this.setSelectedItem(name);

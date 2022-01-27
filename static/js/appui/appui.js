@@ -190,6 +190,7 @@ AppUI = (function() {
     this.maps_splitbar.setPosition(20);
     this.mapeditor_splitbar = new SplitBar("mapeditor-container", "horizontal");
     this.mapeditor_splitbar.setPosition(80);
+    this.createSideMenuAutoScroll();
     this.setAction("backtoprojects", (function(_this) {
       return function() {
         if (_this.app.project != null) {
@@ -1275,6 +1276,24 @@ AppUI = (function() {
   AppUI.prototype.resetImportButton = function() {
     document.getElementById("import-project-button").innerHTML = "<i class=\"fa fa-upload\"></i> " + (this.app.translator.get("Import Project"));
     return document.getElementById("import-project-button").style.removeProperty("background");
+  };
+
+  AppUI.prototype.createSideMenuAutoScroll = function() {
+    var inner, sidemenu;
+    sidemenu = document.getElementById("sidemenu");
+    inner = sidemenu.querySelector("ul");
+    return sidemenu.addEventListener("mousemove", function(event) {
+      var h1, h2, ratio;
+      h1 = sidemenu.getBoundingClientRect().height;
+      h2 = inner.getBoundingClientRect().height;
+      ratio = (event.clientY - sidemenu.getBoundingClientRect().y) / h1;
+      ratio = Math.max(0, Math.min(1, ratio * 1.5 - .25));
+      if (h2 > h1) {
+        return inner.style.top = (Math.round((h1 - h2) * ratio)) + "px";
+      } else {
+        return inner.style.top = "0px";
+      }
+    });
   };
 
   return AppUI;

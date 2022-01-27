@@ -5,7 +5,6 @@ this.Project = (function() {
     var f, k, len, ref;
     this.app = app;
     this.setAssetList = bind(this.setAssetList, this);
-    this.setMapList = bind(this.setMapList, this);
     this.setMusicList = bind(this.setMusicList, this);
     this.setSoundList = bind(this.setSoundList, this);
     this.setMapList = bind(this.setMapList, this);
@@ -36,6 +35,7 @@ this.Project = (function() {
       f = ref[k];
       this[f + "_list"] = [];
       this[f + "_table"] = {};
+      this[f + "_folder"] = new ProjectFolder(null, f);
     }
     this.locks = {};
     this.lock_time = {};
@@ -262,6 +262,16 @@ this.Project = (function() {
       } else {
         return this.updateMapList();
       }
+    } else if (msg.file.indexOf("sounds/") === 0) {
+      name = msg.file.substring("sounds/".length, msg.file.length).split(".")[0];
+      if (this.sound_table[name] == null) {
+        return this.updateSoundList();
+      }
+    } else if (msg.file.indexOf("music/") === 0) {
+      name = msg.file.substring("music/".length, msg.file.length).split(".")[0];
+      if (this.music_table[name] == null) {
+        return this.updateMusicList();
+      }
     }
   };
 
@@ -272,6 +282,10 @@ this.Project = (function() {
       return this.updateSpriteList();
     } else if (msg.file.indexOf("maps/") === 0) {
       return this.updateMapList();
+    } else if (msg.file.indexOf("sounds/") === 0) {
+      return this.updateSoundList();
+    } else if (msg.file.indexOf("music/") === 0) {
+      return this.updateMusicList();
     }
   };
 
@@ -360,13 +374,16 @@ this.Project = (function() {
     return res;
   };
 
-  Project.prototype.setFileList = function(list, target_list, target_table, get, add, notification) {
-    var f, i, k, l, len, len1, li, n, ref, s;
+  Project.prototype.setFileList = function(list, target_list, target_table, get, add, item_id) {
+    var f, folder, i, k, l, len, len1, li, n, notification, ref, s;
+    notification = item_id + "list";
     li = [];
     for (k = 0, len = list.length; k < len; k++) {
       f = list[k];
       li.push(f.file);
     }
+    folder = this[item_id + "_folder"];
+    folder.removeNoMatch(li);
     for (i = l = ref = target_list.length - 1; l >= 0; i = l += -1) {
       s = target_list[i];
       if (li.indexOf(s.filename) < 0) {
@@ -380,35 +397,33 @@ this.Project = (function() {
         this[add](s);
       }
     }
+    folder.removeEmptyFolders();
+    folder.sort();
     return this.notifyListeners(notification);
   };
 
   Project.prototype.setSourceList = function(list) {
-    return this.setFileList(list, this.source_list, this.source_table, "getSource", "addSource", "sourcelist");
+    return this.setFileList(list, this.source_list, this.source_table, "getSource", "addSource", "source");
   };
 
   Project.prototype.setSpriteList = function(list) {
-    return this.setFileList(list, this.sprite_list, this.sprite_table, "getSprite", "addSprite", "spritelist");
+    return this.setFileList(list, this.sprite_list, this.sprite_table, "getSprite", "addSprite", "sprite");
   };
 
   Project.prototype.setMapList = function(list) {
-    return this.setFileList(list, this.map_list, this.map_table, "getMap", "addMap", "maplist");
+    return this.setFileList(list, this.map_list, this.map_table, "getMap", "addMap", "map");
   };
 
   Project.prototype.setSoundList = function(list) {
-    return this.setFileList(list, this.sound_list, this.sound_table, "getSound", "addSound", "soundlist");
+    return this.setFileList(list, this.sound_list, this.sound_table, "getSound", "addSound", "sound");
   };
 
   Project.prototype.setMusicList = function(list) {
-    return this.setFileList(list, this.music_list, this.music_table, "getMusic", "addMusic", "musiclist");
-  };
-
-  Project.prototype.setMapList = function(list) {
-    return this.setFileList(list, this.map_list, this.map_table, "getMap", "addMap", "maplist");
+    return this.setFileList(list, this.music_list, this.music_table, "getMusic", "addMusic", "music");
   };
 
   Project.prototype.setAssetList = function(list) {
-    return this.setFileList(list, this.asset_list, this.asset_table, "getAsset", "addAsset", "assetlist");
+    return this.setFileList(list, this.asset_list, this.asset_table, "getAsset", "addAsset", "asset");
   };
 
   Project.prototype.addMap = function(file) {
@@ -474,6 +489,7 @@ this.Project = (function() {
     }
     this.sound_table[sound.name] = sound;
     this.sound_list.push(sound);
+    this.sound_folder.push(sound);
     this.notifyListeners("soundlist");
     return sound;
   };
@@ -483,6 +499,7 @@ this.Project = (function() {
     m = new ProjectSound(this, file.file, file.size);
     this.sound_table[m.name] = m;
     this.sound_list.push(m);
+    this.sound_folder.push(m);
     return m;
   };
 
@@ -512,6 +529,7 @@ this.Project = (function() {
     }
     this.music_table[music.name] = music;
     this.music_list.push(music);
+    this.music_folder.push(music);
     this.notifyListeners("musiclist");
     return music;
   };
@@ -521,6 +539,7 @@ this.Project = (function() {
     m = new ProjectMusic(this, file.file, file.size);
     this.music_table[m.name] = m;
     this.music_list.push(m);
+    this.music_folder.push(m);
     return m;
   };
 

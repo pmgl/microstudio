@@ -64,7 +64,7 @@ this.ExportFeatures = (function() {
               return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/" + folder + "/" + f.file, fileType, function(content) {
                 var name;
                 if (content != null) {
-                  name = f.file;
+                  name = f.file.replace(/-/g, "/");
                   if (name.endsWith(".ms")) {
                     switch (project.language) {
                       case "javascript":

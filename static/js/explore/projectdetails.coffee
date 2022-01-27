@@ -387,75 +387,34 @@ class @ProjectDetails
           div.style.width = "0px"
           setTimeout (()=>div.style.display = "none"),1000
 
-  createSoundBox:(file,prefs)->
-    div = document.createElement "div"
-    div.classList.add "sound"
-
-    img = new Image
-    img.src = location.origin+"/#{@project.owner}/#{@project.slug}/sounds_th/#{file.replace(".wav",".png")}"
-    div.appendChild img
-
-    div.appendChild document.createElement "br"
-    span = document.createElement "span"
-    span.innerText = file.split(".")[0]
-    div.appendChild span
-
-    div.addEventListener "click",()=>
-      url = location.origin+"/#{@project.owner}/#{@project.slug}/sounds/#{file}"
-      audio = new Audio(url)
-      audio.play()
-
-      funk = ()->
-        audio.pause()
-        document.body.removeEventListener "mousedown",funk
-
-      document.body.addEventListener "mousedown",funk
-
-
-#    if @app.project?
-#      createImportButton div
-
-    document.querySelector("#project-contents-view .sound-list").appendChild div
-
   setSoundList:(files)->
     if files.length>0
       document.getElementById("project-contents-menu-sounds").style.display = "block"
     else
       document.getElementById("project-contents-menu-sounds").style.display = "none"
 
+    table = {}
+    manager =
+      folder: "sounds"
+      item: "sound"
+      openItem:(item)->
+        table[item].play()
+
+    project = JSON.parse(JSON.stringify(@project)) # create a clone
+
+    project.getFullURL = ()->
+      url = location.origin+"/#{project.owner}/#{project.slug}/"
+
+    folder = new ProjectFolder null,"sounds"
     for f in files
-      @createSoundBox(f.file)
+      s = new ProjectSound project,f.file
+      folder.push s
+      table[s.name] = s
+
+    view = new FolderView manager,document.querySelector("#project-contents-view .sound-list")
+    view.editable = false
+    view.rebuildList folder
     return
-
-  createMusicBox:(file,prefs)->
-    div = document.createElement "div"
-    div.classList.add "music"
-
-    img = new Image
-    img.src = location.origin+"/#{@project.owner}/#{@project.slug}/music_th/#{file.replace(".mp3",".png")}"
-    div.appendChild img
-
-    div.appendChild document.createElement "br"
-    span = document.createElement "span"
-    span.innerText = file.split(".")[0]
-    div.appendChild span
-
-    div.addEventListener "click",()=>
-      url = location.origin+"/#{@project.owner}/#{@project.slug}/music/#{file}"
-      audio = new Audio(url)
-      audio.play()
-
-      funk = ()->
-        audio.pause()
-        document.body.removeEventListener "mousedown",funk
-
-      document.body.addEventListener "mousedown",funk
-
-
-#    if @app.project?
-#      createImportButton div
-
-    document.querySelector("#project-contents-view .music-list").appendChild div
 
   setMusicList:(files)->
     if files.length>0
@@ -463,8 +422,27 @@ class @ProjectDetails
     else
       document.getElementById("project-contents-menu-music").style.display = "none"
 
+    table = {}
+    manager =
+      folder: "music"
+      item: "music"
+      openItem:(item)->
+        table[item].play()
+
+    project = JSON.parse(JSON.stringify(@project)) # create a clone
+
+    project.getFullURL = ()=>
+      url = location.origin+"/#{project.owner}/#{project.slug}/"
+
+    folder = new ProjectFolder null,"sounds"
     for f in files
-      @createMusicBox(f.file,f.properties)
+      s = new ProjectMusic project,f.file
+      folder.push s
+      table[s.name] = s
+
+    view = new FolderView manager,document.querySelector("#project-contents-view .music-list")
+    view.editable = false
+    view.rebuildList folder
     return
 
   setMapList:(files)->

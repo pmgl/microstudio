@@ -460,7 +460,7 @@ this.ProjectManager = (function() {
     if (data.content.length > 10000000) {
       return;
     }
-    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.file)) {
+    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.file)) {
       console.info("wrong file name: " + data.file);
       return;
     }
@@ -515,17 +515,20 @@ this.ProjectManager = (function() {
     if (!this.canWrite(session.user)) {
       return;
     }
-    if (data.source == null) {
+    if (typeof data.source !== "string") {
       return;
     }
-    if (data.dest == null) {
+    if (typeof data.dest !== "string") {
       return;
     }
-    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.source)) {
+    if (data.dest.length > 250) {
+      return;
+    }
+    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.source)) {
       console.info("wrong source name: " + data.source);
       return;
     }
-    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.dest)) {
+    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.dest)) {
       console.info("wrong dest name: " + data.dest);
       return;
     }
@@ -551,12 +554,14 @@ this.ProjectManager = (function() {
                 return _this.project.content.files.read(source, "binary", function(thumbnail) {
                   if (thumbnail != null) {
                     return _this.project.content.files.write(dest, thumbnail, function() {
-                      session.send({
-                        name: "rename_project_file",
-                        request_id: data.request_id
+                      return _this.project.content.files["delete"](source, function() {
+                        session.send({
+                          name: "rename_project_file",
+                          request_id: data.request_id
+                        });
+                        _this.propagateFileDeleted(session, data.source);
+                        return _this.propagateFileChange(session, data.dest, 0, null, {});
                       });
-                      _this.propagateFileDeleted(session, data.source);
-                      return _this.propagateFileChange(session, data.dest, 0, null, {});
                     });
                   }
                 });
@@ -616,12 +621,18 @@ this.ProjectManager = (function() {
     }
     funk = (function(_this) {
       return function() {
-        var dest, err, ref, type, value;
+        var d, dest, end, err, ref, type, value;
         if (files.length > 0) {
           filename = files.splice(0, 1)[0];
           value = contents.files[filename];
-          if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|py|js|lua|png|json|wav|mp3|md|glb|jpg)$/.test(filename)) {
+          if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|jpg)$/.test(filename)) {
             dest = filename;
+            d = dest.split("/");
+            while (d.length > 2) {
+              end = d.splice(d.length - 1, 1)[0];
+              d[d.length - 1] += "-" + end;
+              dest = d.join("/");
+            }
             if (dest.endsWith(".js")) {
               dest = dest.replace(".js", ".ms");
             }

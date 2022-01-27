@@ -46,7 +46,7 @@ class @ExportFeatures
                 #console.info "reading: "+JSON.stringify f
                 @webapp.server.content.files.read "#{user.id}/#{project.id}/#{folder}/#{f.file}",fileType,(content)=>
                   if content?
-                    name = f.file
+                    name = f.file.replace(/-/g,"/")
                     if name.endsWith(".ms")
                       switch project.language
                         when "javascript" then name = name.replace ".ms",".js"

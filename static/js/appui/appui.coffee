@@ -162,6 +162,8 @@ class AppUI
     @mapeditor_splitbar = new SplitBar("mapeditor-container","horizontal")
     @mapeditor_splitbar.setPosition(80)
 
+    @createSideMenuAutoScroll()
+
     @setAction "backtoprojects",()=>
       if @app.project?
         @app.project.savePendingChanges ()=>
@@ -1004,3 +1006,16 @@ class AppUI
   resetImportButton:()->
     document.getElementById("import-project-button").innerHTML = """<i class="fa fa-upload"></i> #{@app.translator.get("Import Project")}"""
     document.getElementById("import-project-button").style.removeProperty "background"
+
+  createSideMenuAutoScroll:()->
+    sidemenu = document.getElementById "sidemenu"
+    inner = sidemenu.querySelector "ul"
+    sidemenu.addEventListener "mousemove",(event)->
+      h1 = sidemenu.getBoundingClientRect().height
+      h2 = inner.getBoundingClientRect().height
+      ratio = (event.clientY-sidemenu.getBoundingClientRect().y)/h1
+      ratio = Math.max(0,Math.min(1,ratio*1.5-.25))
+      if h2>h1
+        inner.style.top = "#{Math.round((h1-h2)*ratio)}px"
+      else
+        inner.style.top = "0px"

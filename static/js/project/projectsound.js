@@ -1,5 +1,6 @@
 this.ProjectSound = (function() {
   function ProjectSound(project, file, size) {
+    var s;
     this.project = project;
     this.file = file;
     this.size = size != null ? size : 0;
@@ -7,6 +8,9 @@ this.ProjectSound = (function() {
     this.ext = this.file.split(".")[1];
     this.filename = this.file;
     this.file = "sounds/" + this.file;
+    s = this.name.split("-");
+    this.shortname = s[s.length - 1];
+    this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
   }
 
   ProjectSound.prototype.getURL = function() {
@@ -42,9 +46,15 @@ this.ProjectSound = (function() {
   };
 
   ProjectSound.prototype.rename = function(name) {
+    var s;
+    delete this.project.sound_table[this.name];
     this.name = name;
+    this.project.sound_table[this.name] = this;
     this.filename = this.name + "." + this.ext;
-    return this.file = "sounds/" + this.filename;
+    this.file = "sounds/" + this.filename;
+    s = this.name.split("-");
+    this.shortname = s[s.length - 1];
+    return this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
   };
 
   return ProjectSound;

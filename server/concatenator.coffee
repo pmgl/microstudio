@@ -156,6 +156,7 @@ class @Concatenator
       "/js/util/translator.js"
 
       "/js/manager.js"
+      "/js/folderview.js"
 
       "/js/about/about.js"
       "/js/doc/documentation.js"
@@ -214,6 +215,7 @@ class @Concatenator
       "/js/terminal/terminal.js"
 
       "/js/project/project.js"
+      "/js/project/projectfolder.js"
       "/js/project/projectsource.js"
       "/js/project/projectsprite.js"
       "/js/project/projectmap.js"

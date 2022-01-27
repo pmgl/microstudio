@@ -464,7 +464,7 @@ this.WebApp = (function() {
         });
       };
     })(this));
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/(assets_th|sounds_th|music_th)\/[A-Za-z0-9_]+.png$/, (function(_this) {
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/(assets_th|sounds_th|music_th)\/[A-Za-z0-9_-]+.png$/, (function(_this) {
       return function(req, res) {
         var access, asset, folder, project, s, user;
         s = req.path.split("/");
@@ -553,7 +553,7 @@ this.WebApp = (function() {
         });
       };
     })(this));
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sounds\/[A-Za-z0-9_]+.wav$/, (function(_this) {
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sounds\/[A-Za-z0-9_-]+.wav$/, (function(_this) {
       return function(req, res) {
         var access, project, s, sound, user;
         s = req.path.split("/");
@@ -575,7 +575,7 @@ this.WebApp = (function() {
         });
       };
     })(this));
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/music\/[A-Za-z0-9_]+.mp3$/, (function(_this) {
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/music\/[A-Za-z0-9_-]+.mp3$/, (function(_this) {
       return function(req, res) {
         var access, music, project, s, user;
         s = req.path.split("/");

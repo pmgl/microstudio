@@ -508,6 +508,13 @@
   font-size: 12px ;
   cursor: pointer ;
 }
+#project-contents-view .sound-list {
+  top: 0px ;
+}
+#project-contents-view .music-list {
+  top: 0px ;
+}
+
 
 #project-contents-view .music {
   display: inline-block ;

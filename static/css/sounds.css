@@ -1,13 +1,3 @@
-.sounds-left {
-  position: absolute ;
-  left: 0 ;
-  width: 400px ;
-  top: 0 ;
-  bottom: 0 ;
-  border-top: solid 40px hsl(200,30%,30%);
-  overflow: hidden ;
-}
-
 .sounds-right {
   position: absolute ;
   right: 0px ;

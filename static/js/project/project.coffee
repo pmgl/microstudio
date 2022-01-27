@@ -24,6 +24,7 @@ class @Project
     for f in @file_types
       @["#{f}_list"] = []
       @["#{f}_table"] = {}
+      @["#{f}_folder"] = new ProjectFolder null,f
 
     @locks = {}
     @lock_time = {}
@@ -176,6 +177,14 @@ class @Project
         @map_table[name].loadFile()
       else
         @updateMapList()
+    else if msg.file.indexOf("sounds/") == 0
+      name = msg.file.substring("sounds/".length,msg.file.length).split(".")[0]
+      if not @sound_table[name]?
+        @updateSoundList()
+    else if msg.file.indexOf("music/") == 0
+      name = msg.file.substring("music/".length,msg.file.length).split(".")[0]
+      if not @music_table[name]?
+        @updateMusicList()
 
   fileDeleted:(msg)->
     if msg.file.indexOf("ms/") == 0
@@ -184,6 +193,10 @@ class @Project
       @updateSpriteList()
     else if msg.file.indexOf("maps/") == 0
       @updateMapList()
+    else if msg.file.indexOf("sounds/") == 0
+      @updateSoundList()
+    else if msg.file.indexOf("music/") == 0
+      @updateMusicList()
 
   optionsUpdated:(data)->
     @slug = data.slug
@@ -246,11 +259,16 @@ class @Project
       res += s+"\n"
     res
 
-  setFileList:(list,target_list,target_table,get,add,notification)->
+  setFileList:(list,target_list,target_table,get,add,item_id)->
+    notification = item_id+"list"
     li = []
 
     for f in list
       li.push f.file
+
+    folder = @[item_id+"_folder"]
+    folder.removeNoMatch(li)
+    #@[item_id+"_folder"] = new ProjectFolder(null,item_id)
 
     for i in [target_list.length-1..0] by -1
       s = target_list[i]
@@ -262,15 +280,17 @@ class @Project
       if not @[get] s.file.split(".")[0]
         @[add] s
 
+    folder.removeEmptyFolders()
+    folder.sort()
+
     @notifyListeners notification
 
-  setSourceList: (list) => @setFileList list,@source_list,@source_table,"getSource","addSource","sourcelist"
-  setSpriteList: (list) => @setFileList list,@sprite_list,@sprite_table,"getSprite","addSprite","spritelist"
-  setMapList: (list) => @setFileList list,@map_list,@map_table,"getMap","addMap","maplist"
-  setSoundList: (list) => @setFileList list,@sound_list,@sound_table,"getSound","addSound","soundlist"
-  setMusicList: (list) => @setFileList list,@music_list,@music_table,"getMusic","addMusic","musiclist"
-  setMapList: (list) => @setFileList list,@map_list,@map_table,"getMap","addMap","maplist"
-  setAssetList: (list) => @setFileList list,@asset_list,@asset_table,"getAsset","addAsset","assetlist"
+  setSourceList: (list) => @setFileList list,@source_list,@source_table,"getSource","addSource","source"
+  setSpriteList: (list) => @setFileList list,@sprite_list,@sprite_table,"getSprite","addSprite","sprite"
+  setMapList: (list) => @setFileList list,@map_list,@map_table,"getMap","addMap","map"
+  setSoundList: (list) => @setFileList list,@sound_list,@sound_table,"getSound","addSound","sound"
+  setMusicList: (list) => @setFileList list,@music_list,@music_table,"getMusic","addMusic","music"
+  setAssetList: (list) => @setFileList list,@asset_list,@asset_table,"getAsset","addAsset","asset"
 
   addMap:(file)->
     m = new ProjectMap @,file.file,file.size
@@ -316,6 +336,7 @@ class @Project
     if thumbnail then sound.thumbnail_url = thumbnail
     @sound_table[sound.name] = sound
     @sound_list.push sound
+    @sound_folder.push sound
     @notifyListeners "soundlist"
     sound
 
@@ -323,6 +344,7 @@ class @Project
     m = new ProjectSound @,file.file,file.size
     @sound_table[m.name] = m
     @sound_list.push m
+    @sound_folder.push m
     m
 
   getSound:(name)->
@@ -341,6 +363,7 @@ class @Project
     if thumbnail then music.thumbnail_url = thumbnail
     @music_table[music.name] = music
     @music_list.push music
+    @music_folder.push music
     @notifyListeners "musiclist"
     music
 
@@ -348,6 +371,7 @@ class @Project
     m = new ProjectMusic @,file.file,file.size
     @music_table[m.name] = m
     @music_list.push m
+    @music_folder.push m
     m
 
   getMusic:(name)->

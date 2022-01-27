@@ -49,7 +49,7 @@ this.AudioCore = (function() {
       loopit = 0;
     }
     if (typeof sound === "string") {
-      s = this.runtime.sounds[sound];
+      s = this.runtime.sounds[sound.replace(/\//g, "-")];
       if (s != null) {
         return s.play(volume, pitch, pan, loopit);
       }
@@ -66,7 +66,7 @@ this.AudioCore = (function() {
       loopit = 0;
     }
     if (typeof music === "string") {
-      m = this.runtime.music[music];
+      m = this.runtime.music[music.replace(/\//g, "-")];
       if (m != null) {
         return m.play(volume, loopit);
       }

@@ -633,9 +633,11 @@ padding-left: 2px ;
   left: 0px;
   width: 60px;
   z-index: 2 ;
+  overflow: hidden ;
 }
 
 .sidemenu ul {
+  position: relative ;
   display: inline-block ;
   margin: 0px 0 0 0 ;
   padding: 0 ;

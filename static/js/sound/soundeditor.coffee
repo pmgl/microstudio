@@ -9,8 +9,6 @@ class @SoundEditor extends Manager
     @use_thumbnails = true
     @extensions = ["wav"]
     @update_list = "updateSoundList"
-    @box_width = 96
-    @box_height = 84
 
     @init()
     synth = document.getElementById "open-synth"
@@ -41,8 +39,22 @@ class @SoundEditor extends Manager
     if sound?
       sound.play()
 
-  fileDropped:(file)->
+  createAsset:(folder)->
+    input = document.createElement "input"
+    input.type = "file"
+    input.accept = ".wav"
+    input.addEventListener "change",(event)=>
+      files = event.target.files
+      if files.length>=1
+        for f in files
+          @fileDropped(f,folder)
+      return
+
+    input.click()
+
+  fileDropped:(file,folder)->
     console.info "processing #{file.name}"
+    console.info "folder: "+folder
     reader = new FileReader()
     reader.addEventListener "load",()=>
       console.info "file read, size = "+ reader.result.length
@@ -52,7 +64,9 @@ class @SoundEditor extends Manager
         console.info decoded
         thumbnailer = new SoundThumbnailer(decoded,96,64)
         name = file.name.split(".")[0]
-        name = @findNewFilename name,"getSound"
+        name = @findNewFilename name,"getSound",folder
+        if folder? then name = folder.getFullDashPath()+"-"+name
+        if folder? then folder.setOpen true
 
         sound = @app.project.createSound(name,thumbnailer.canvas.toDataURL(),reader.result.length)
         sound.uploading = true

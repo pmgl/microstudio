@@ -4,6 +4,9 @@ class @ProjectMusic
     @ext = @file.split(".")[1]
     @filename = @file
     @file = "music/#{@file}"
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""
 
   getURL:()->
     return @local_url if @local_url?
@@ -33,5 +36,12 @@ class @ProjectMusic
     @audio.play()
 
   rename:(@name)->
+    delete @project.music_table[@name]
+    @name = name
+    @project.music_table[@name] = @
+
     @filename = @name + "." + @ext
     @file = "music/"+@filename
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""

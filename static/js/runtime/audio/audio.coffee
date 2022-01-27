@@ -21,7 +21,7 @@ class @AudioCore
 
   playSound:(sound,volume=1,pitch=1,pan=0,loopit=0)->
     if typeof sound == "string"
-      s = @runtime.sounds[sound]
+      s = @runtime.sounds[sound.replace(/\//g,"-")]
       if s?
         return s.play(volume,pitch,pan,loopit)
 
@@ -29,7 +29,7 @@ class @AudioCore
 
   playMusic:(music,volume=1,loopit=0)->
     if typeof music == "string"
-      m = @runtime.music[music]
+      m = @runtime.music[music.replace(/\//g,"-")]
       if m?
         return m.play(volume,loopit)
 

@@ -8,8 +8,6 @@ class @MusicEditor extends Manager
 
     @extensions = ["mp3"]
     @update_list = "updateMusicList"
-    @box_width = 192
-    @box_height = 84
 
     @init()
 
@@ -19,7 +17,20 @@ class @MusicEditor extends Manager
     if music?
       music.play()
 
-  fileDropped:(file)->
+  createAsset:(folder)->
+    input = document.createElement "input"
+    input.type = "file"
+    input.accept = ".mp3"
+    input.addEventListener "change",(event)=>
+      files = event.target.files
+      if files.length>=1
+        for f in files
+          @fileDropped(f,folder)
+      return
+
+    input.click()
+
+  fileDropped:(file,folder)->
     console.info "processing #{file.name}"
     reader = new FileReader()
     reader.addEventListener "load",()=>
@@ -30,7 +41,9 @@ class @MusicEditor extends Manager
         console.info decoded
         thumbnailer = new SoundThumbnailer(decoded,192,64,"hsl(200,80%,60%)")
         name = file.name.split(".")[0]
-        name = @findNewFilename name,"getMusic"
+        name = @findNewFilename name,"getMusic",folder
+        if folder? then name = folder.getFullDashPath()+"-"+name
+        if folder? then folder.setOpen true
 
         music = @app.project.createMusic(name,thumbnailer.canvas.toDataURL(),reader.result.length)
         music.uploading = true

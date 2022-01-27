@@ -1,3 +1,13 @@
+.assets-left {
+  position: absolute ;
+  left: 0 ;
+  width: 400px ;
+  top: 0 ;
+  bottom: 0 ;
+  overflow: hidden ;
+}
+
+
 .assets-drop {
   position: absolute ;
   bottom: 200px ;
@@ -16,22 +26,171 @@
   font-size: 20px ;
 }
 
+.assets-bar {
+  position: absolute ;
+  top: 0 ;
+  height: 26px ;
+  left: 0 ;
+  right: 0 ;
+  background: hsl(200,30%,30%) ;
+  padding: 7px 10px 7px 2px ;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.create-asset-button {
+  display: inline-block ;
+  padding: 4px 8px ;
+  background: hsl(160,50%,40%);
+  border-radius: 3px ;
+  font-size: 14px ;
+  cursor: pointer ;
+  color: #FFF ;
+  text-align: center ;
+}
+.create-asset-button i {
+  margin-right: 5px ;
+}
+.create-folder-button {
+  margin-left: 10px ;
+  padding: 5px ;
+  font-size: 16px ;
+  background: hsl(0,30%,50%) ;
+  border-radius: 3px ;
+  cursor: pointer ;
+}
+
 .assetlist {
   position: absolute;
   background: rgba(0,0,0,.25) ;
   left: 2px ;
-  top: 2px ;
-  bottom: 40px ;
+  top: 40px ;
+  bottom: 0px ;
   right: 2px ;
   overflow: auto ;
   text-align: center ;
   line-height: 0 ;
-  padding-top: 10px ;
+  padding-top: 0px ;
   padding-bottom: 10px ;
 }
 
 .assetlist.dragover {
-  background: rgba(255,255,255,.1) ;
+  background: hsla(0,50%,50%,.2) ;
+}
+
+.assetlist .folder {
+  margin-top: 2px ;
+}
+
+.assetlist .folder-title {
+  line-height: normal ;
+  background: hsl(200,30%,40%) ;
+  text-align: left ;
+  cursor: pointer ;
+  padding: 6px 10px ;
+  font-family: Ubuntu,sans-serif;
+  font-size: 14px ;
+  color: rgba(255,255,255,.8);
+  white-space: nowrap ;
+  border-radius: 3px ;
+}
+
+.assetlist .folder.selected > .folder-title {
+  background: hsl(0,30%,50%) ;
+}
+
+.assetlist .folder-title i {
+  color: rgba(255,255,255,.5) ;
+  margin-right: 5px ;
+  font-size: 16px ;
+  margin-top: 1px ;
+}
+
+.assetlist .folder-title .trash {
+  float: right;
+  display: none ;
+}
+
+.assetlist .folder.selected > .folder-title .trash {
+  display: inline-block ;
+}
+
+.assetlist .folder-title .pencil {
+  display: none ;
+  margin-left: 5px ;
+}
+
+.assetlist .folder.selected > .folder-title .pencil {
+  display: inline-block ;
+}
+
+.assetlist .folder-title input {
+  border: none ;
+  border-radius: 3px ;
+  font-size: 14px ;
+  width: 100px ;
+  padding: 2px 5px ;
+  background: rgba(0,0,0,.5);
+  color: rgba(255,255,255,.8);
+  margin: -2px ;
+  font-family: Ubuntu,sans-serif ;
+}
+
+.assetlist .folder-title input:focus {
+  outline: none ;
+}
+
+
+.assetlist .folder-content {
+  border-left: solid 4px rgba(255,255,255,.1) ;
+  background: rgba(255,255,255,.05) ;
+  padding: 2px 0px 5px 3px;
+  margin-bottom: 10px ;
+  margin-top: 2px ;
+  margin-left: 3px ;
+  display: none ;
+}
+
+.assetlist .folder.selected > .folder-content {
+/*  border-left: solid 4px hsla(0,50%,50%,.4) ;
+  border-bottom: solid 4px hsla(0,50%,50%,.4) ;*/
+  background: hsla(0,50%,50%,.2) ;
+}
+
+.assetlist .folder.open > .folder-content {
+  display: block ;
+}
+
+.assetlist .folder > .folder-title i.caret {
+  margin-right: 9px ;
+}
+.assetlist .folder.open > .folder-title i.caret {
+  margin-right: 5px ;
+  position: relative;
+  right: 3px ;
+}
+
+.assetlist .folder > .folder-title i.folder {
+  margin-right: 5px ;
+}
+.assetlist .folder.open > .folder-title i.folder {
+  margin-right: 3px ;
+}
+
+.assetlist .folder > .folder-title i.caret:before {
+  content: "\f0da";
+}
+
+.assetlist .folder.open > .folder-title i.caret:before {
+  content: "\f0d7";
+}
+
+.assetlist .folder > .folder-title i.folder:before {
+  content: "\f07b" ;
+}
+
+.assetlist .folder.open > .folder-title i.folder:before {
+  content: "\f07c" ;
 }
 
 .asseteditor {
@@ -46,7 +205,7 @@
   position: relative ;
   cursor: pointer ;
   display: inline-block ;
-  margin: 1px ;
+  margin: 3px 1px 1px 1px;
   width: 64px ;
   height: 84px ;
   font-size: 12px ;
@@ -85,6 +244,15 @@
   background: hsl(0,50%,50%);
   padding: 4px ;
   border-radius: 8px ;
+}
+
+.asset-box-sound {
+  width: 96px ;
+  height: 84px ;
+}
+.asset-box-music {
+  width: 192px ;
+  height: 84px ;
 }
 
 .assetbar {
@@ -169,23 +337,4 @@
   color: #FFF ;
   cursor: pointer ;
   white-space: nowrap;
-}
-.create-asset-button {
-  position: absolute ;
-  bottom: 0px ;
-  height: 40px;
-  left: 0 ;
-  right: 0 ;
-  padding: 0px 30px ;
-  background: hsl(160,50%,40%);
-  font-size: 18px ;
-  cursor: pointer ;
-  color: #FFF ;
-  z-index: 1 ;
-  box-shadow: 0 -10px 20px #000;
-  line-height: 40px ;
-  text-align: center ;
-}
-.create-asset-button i {
-  margin-right: 10px ;
 }

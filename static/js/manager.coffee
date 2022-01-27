@@ -4,41 +4,25 @@ class @Manager
     @box_height = 84
 
   init:()->
-    # @folder
-    # @item
-    # @list_change_event
-    # @get_item = "getSound"
-    # @use_thumbnails
-    # @update_list
+    @folder_view = new FolderView @,document.getElementById("#{@item}list")
+    @folder_view.init()
 
     @splitbar = new SplitBar("#{@folder}-section","horizontal")
     @splitbar.setPosition(20)
 
-    if @fileDropped?
-      document.getElementById("#{@item}list").addEventListener "dragover",(event)=>
-        event.preventDefault()
+    create_asset = document.querySelector "##{@item}-asset-bar .create-asset-button"
+    create_folder = document.querySelector "##{@item}-asset-bar .create-folder-button"
 
-      document.getElementById("#{@item}list").addEventListener "drop",(event)=>
-        event.preventDefault()
-        document.getElementById("#{@item}list").classList.remove("dragover")
-        try
-          list = []
-          for i in event.dataTransfer.items
-            list.push i.getAsFile()
+    create_asset.addEventListener "click",()=>
+      @createAsset @folder_view.selected_folder
 
-          while list.length>0
-            file = list.splice(0,1)[0]
-            ext = file.name.split(".")[1].toLowerCase()
-            if ext in @extensions
-              @fileDropped(file)
-        catch err
-          console.error err
-
-      document.getElementById("#{@item}list").addEventListener "dragenter",(event)=>
-        document.getElementById("#{@item}list").classList.add("dragover")
-
-      document.getElementById("#{@item}list").addEventListener "dragleave",(event)=>
-        document.getElementById("#{@item}list").classList.remove("dragover")
+    create_folder.addEventListener "click",()=>
+      parent = @folder_view.selected_folder or @folder_view.folder
+      f = parent.createEmptyFolder()
+      f.protected = true
+      @rebuildList()
+      @folder_view.setSelectedFolder f
+      @folder_view.editFolderName f
 
     @name_validator = new InputValidator document.getElementById("#{@item}-name"),
       document.getElementById("#{@item}-name-button"),
@@ -53,15 +37,15 @@ class @Manager
         name = RegexLib.fixFilename(name)
         document.getElementById("#{@item}-name").value = name
         @name_validator.update()
-        if name != @selected_item and RegexLib.filename.test(name) and not @app.project[@get_item](name)?
+        if name != item.shortname and RegexLib.filename.test(name) and not @app.project[@get_item](item.path_prefix+name)?
           old = @selected_item
-          @selected_item = name
+          @selected_item = item.path_prefix+name
 
           @app.client.sendRequest {
             name: "rename_project_file"
             project: @app.project.id
             source: "#{@folder}/#{old}.#{item.ext}"
-            dest: "#{@folder}/#{name}.#{item.ext}"
+            dest: "#{@folder}/#{item.path_prefix+name}.#{item.ext}"
             thumbnail: @use_thumbnails
           },(msg)=>
             @app.project[@update_list]()
@@ -71,6 +55,15 @@ class @Manager
     document.getElementById("delete-#{@item}").addEventListener "click",()=>
       @deleteItem()
 
+  renameItem:(item,name)->
+    @app.client.sendRequest {
+      name: "rename_project_file"
+      project: @app.project.id
+      source: "#{@folder}/#{item.filename}"
+      dest: "#{@folder}/#{name}.#{item.ext}"
+      thumbnail: @use_thumbnails
+    },(msg)=>
+      @app.project[@update_list]()
 
   update:()->
     @splitbar.update()
@@ -82,48 +75,33 @@ class @Manager
   projectUpdate:(change)->
     if change == @list_change_event
       @rebuildList()
-
-  createItemBox:(item)->
-    element = document.createElement "div"
-    element.classList.add "asset-box"
-    element.setAttribute "style","width:#{@box_width}px ; height:#{@box_height}px"
-    element.setAttribute "id","project-#{@item}-#{item.name}"
-    element.setAttribute "title",item.name
-    if item.name == @selected_item
-      element.classList.add "selected"
-
-    icon = new Image
-    icon.src = item.getThumbnailURL()
-    icon.setAttribute "id","asset-image-#{item.name}"
-    element.appendChild icon
-
-    text = document.createElement "div"
-    text.classList.add "asset-box-name"
-    text.innerHTML = item.name
-
-    element.appendChild text
-
-    element.addEventListener "click",()=>
-      @openItem item.name
-
-    activeuser = document.createElement "i"
-    activeuser.classList.add "active-user"
-    activeuser.classList.add "fa"
-    activeuser.classList.add "fa-user"
-    element.appendChild activeuser
-    element
+    else if change == "locks"
+      @updateActiveUsers()
 
   rebuildList:()->
-    list = document.getElementById "#{@item}-list"
-    list.innerHTML = ""
+    @folder_view.rebuildList @app.project["#{@item}_folder"]
 
-    for s in @app.project["#{@item}_list"]
-      element = @createItemBox s
-      list.appendChild element
+    # for s in @app.project["#{@item}_list"]
+    #   element = @createItemBox s
+    #   list.appendChild element
 
-    #@updateActiveUsers()
+    @updateActiveUsers()
     if @selected_item? and not @app.project[@get_item](@selected_item)?
       @setSelectedItem null
+    return
+
+  updateActiveUsers:(folder = @app.project["#{@item}_folder"])->
+    for f in folder.subfolders
+      @updateActiveUsers f
+
+    for f in folder.files
+      lock = @app.project.isLocked("#{@folder}/#{f.filename}")
+      e = f.element
+      if e?
+        if lock? and Date.now()<lock.time
+          e.querySelector(".active-user").style = "display: block; background: #{@app.appui.createFriendColor(lock.user)};"
+        else
+          e.querySelector(".active-user").style = "display: none;"
     return
 
   openItem:(name)->
@@ -133,24 +111,16 @@ class @Manager
 
   setSelectedItem:(item)->
     @selected_item = item
-    list = document.getElementById("#{@item}-list").childNodes
-
+    @folder_view.setSelectedItem item
     if @selected_item?
-      for e in list
-        if e.getAttribute("id") == "project-#{@item}-#{item}"
-          e.classList.add("selected")
-        else
-          e.classList.remove("selected")
-
-      document.getElementById("#{@item}-name").value = item
       @name_validator.update()
       document.getElementById("#{@item}-name").disabled = false
       item = @app.project[@get_item](@selected_item)
+
+      document.getElementById("#{@item}-name").value = if item? then item.shortname else ""
       if item? and item.uploading
         document.getElementById("#{@item}-name").disabled = true
     else
-      for e in list
-        e.classList.remove("selected")
       document.getElementById("#{@item}-name").value = ""
       document.getElementById("#{@item}-name").disabled = true
 
@@ -175,13 +145,21 @@ class @Manager
             @app.project[@update_list]()
             @setSelectedItem null
 
-  findNewFilename:(name,getter)->
+  findNewFilename:(name,getter,folder)->
     name = RegexLib.fixFilename name
     if name.length>30 then name = name.substring(0,30)
-    if @app.project[getter](name)
+    path = if folder? then folder.getFullDashPath()+"-"+name else name
+    if @app.project[getter](path)
       count = 2
-      while @app.project[getter](name+count)
+      while @app.project[getter](path+count)
         count += 1
       name = name+count
 
     name
+
+  deleteFolder:(folder)->
+    if not folder.containsFiles()
+      folder.delete()
+    else
+      ConfirmDialog.confirm @app.translator.get("Do you really want to delete this folder and all its contents?"),@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
+        console.info("Deleting #{folder.name}")

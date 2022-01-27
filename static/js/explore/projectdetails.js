@@ -111,9 +111,9 @@ this.ProjectDetails = (function() {
     })(this));
   }
 
-  ProjectDetails.prototype.set = function(project) {
+  ProjectDetails.prototype.set = function(project1) {
     var a, j, len, ref, ref1, section, t;
-    this.project = project;
+    this.project = project1;
     this.splitbar.update();
     this.sources = [];
     this.sprites = [];
@@ -487,84 +487,70 @@ this.ProjectDetails = (function() {
     })(this));
   };
 
-  ProjectDetails.prototype.createSoundBox = function(file, prefs) {
-    var div, img, span;
-    div = document.createElement("div");
-    div.classList.add("sound");
-    img = new Image;
-    img.src = location.origin + ("/" + this.project.owner + "/" + this.project.slug + "/sounds_th/" + (file.replace(".wav", ".png")));
-    div.appendChild(img);
-    div.appendChild(document.createElement("br"));
-    span = document.createElement("span");
-    span.innerText = file.split(".")[0];
-    div.appendChild(span);
-    div.addEventListener("click", (function(_this) {
-      return function() {
-        var audio, funk, url;
-        url = location.origin + ("/" + _this.project.owner + "/" + _this.project.slug + "/sounds/" + file);
-        audio = new Audio(url);
-        audio.play();
-        funk = function() {
-          audio.pause();
-          return document.body.removeEventListener("mousedown", funk);
-        };
-        return document.body.addEventListener("mousedown", funk);
-      };
-    })(this));
-    return document.querySelector("#project-contents-view .sound-list").appendChild(div);
-  };
-
   ProjectDetails.prototype.setSoundList = function(files) {
-    var f, j, len;
+    var f, folder, j, len, manager, project, s, table, view;
     if (files.length > 0) {
       document.getElementById("project-contents-menu-sounds").style.display = "block";
     } else {
       document.getElementById("project-contents-menu-sounds").style.display = "none";
     }
+    table = {};
+    manager = {
+      folder: "sounds",
+      item: "sound",
+      openItem: function(item) {
+        return table[item].play();
+      }
+    };
+    project = JSON.parse(JSON.stringify(this.project));
+    project.getFullURL = function() {
+      var url;
+      return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
+    };
+    folder = new ProjectFolder(null, "sounds");
     for (j = 0, len = files.length; j < len; j++) {
       f = files[j];
-      this.createSoundBox(f.file);
+      s = new ProjectSound(project, f.file);
+      folder.push(s);
+      table[s.name] = s;
     }
-  };
-
-  ProjectDetails.prototype.createMusicBox = function(file, prefs) {
-    var div, img, span;
-    div = document.createElement("div");
-    div.classList.add("music");
-    img = new Image;
-    img.src = location.origin + ("/" + this.project.owner + "/" + this.project.slug + "/music_th/" + (file.replace(".mp3", ".png")));
-    div.appendChild(img);
-    div.appendChild(document.createElement("br"));
-    span = document.createElement("span");
-    span.innerText = file.split(".")[0];
-    div.appendChild(span);
-    div.addEventListener("click", (function(_this) {
-      return function() {
-        var audio, funk, url;
-        url = location.origin + ("/" + _this.project.owner + "/" + _this.project.slug + "/music/" + file);
-        audio = new Audio(url);
-        audio.play();
-        funk = function() {
-          audio.pause();
-          return document.body.removeEventListener("mousedown", funk);
-        };
-        return document.body.addEventListener("mousedown", funk);
-      };
-    })(this));
-    return document.querySelector("#project-contents-view .music-list").appendChild(div);
+    view = new FolderView(manager, document.querySelector("#project-contents-view .sound-list"));
+    view.editable = false;
+    view.rebuildList(folder);
   };
 
   ProjectDetails.prototype.setMusicList = function(files) {
-    var f, j, len;
+    var f, folder, j, len, manager, project, s, table, view;
     if (files.length > 0) {
       document.getElementById("project-contents-menu-music").style.display = "block";
     } else {
       document.getElementById("project-contents-menu-music").style.display = "none";
     }
+    table = {};
+    manager = {
+      folder: "music",
+      item: "music",
+      openItem: function(item) {
+        return table[item].play();
+      }
+    };
+    project = JSON.parse(JSON.stringify(this.project));
+    project.getFullURL = (function(_this) {
+      return function() {
+        var url;
+        return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
+      };
+    })(this);
+    folder = new ProjectFolder(null, "sounds");
     for (j = 0, len = files.length; j < len; j++) {
       f = files[j];
-      this.createMusicBox(f.file, f.properties);
+      s = new ProjectMusic(project, f.file);
+      folder.push(s);
+      table[s.name] = s;
     }
+    view = new FolderView(manager, document.querySelector("#project-contents-view .music-list"));
+    view.editable = false;
+    view.rebuildList(folder);
   };
 
   ProjectDetails.prototype.setMapList = function(files) {

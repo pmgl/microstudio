@@ -1,5 +1,6 @@
 this.ProjectMusic = (function() {
   function ProjectMusic(project, file, size) {
+    var s;
     this.project = project;
     this.file = file;
     this.size = size != null ? size : 0;
@@ -7,6 +8,9 @@ this.ProjectMusic = (function() {
     this.ext = this.file.split(".")[1];
     this.filename = this.file;
     this.file = "music/" + this.file;
+    s = this.name.split("-");
+    this.shortname = s[s.length - 1];
+    this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
   }
 
   ProjectMusic.prototype.getURL = function() {
@@ -46,10 +50,17 @@ this.ProjectMusic = (function() {
     return this.audio.play();
   };
 
-  ProjectMusic.prototype.rename = function(name) {
+  ProjectMusic.prototype.rename = function(name1) {
+    var s;
+    this.name = name1;
+    delete this.project.music_table[this.name];
     this.name = name;
+    this.project.music_table[this.name] = this;
     this.filename = this.name + "." + this.ext;
-    return this.file = "music/" + this.filename;
+    this.file = "music/" + this.filename;
+    s = this.name.split("-");
+    this.shortname = s[s.length - 1];
+    return this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
   };
 
   return ProjectMusic;

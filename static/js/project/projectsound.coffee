@@ -4,6 +4,9 @@ class @ProjectSound
     @ext = @file.split(".")[1]
     @filename = @file
     @file = "sounds/#{@file}"
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""
 
   getURL:()->
     return @local_url if @local_url?
@@ -30,6 +33,13 @@ class @ProjectSound
 
     document.body.addEventListener "mousedown",funk
 
-  rename:(@name)->
+  rename:(name)->
+    delete @project.sound_table[@name]
+    @name = name
+    @project.sound_table[@name] = @
+    
     @filename = @name + "." + @ext
     @file = "sounds/"+@filename
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""

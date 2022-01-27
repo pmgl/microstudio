@@ -298,7 +298,7 @@ class @ProjectManager
     return if @project.deleted
     return if not data.file? or not data.content?
     return if data.content.length>10000000 # max file size 10 megabytes
-    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.file)
+    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.file)
       console.info "wrong file name: #{data.file}"
       return
 
@@ -342,14 +342,15 @@ class @ProjectManager
 
   renameProjectFile:(session,data)->
     return if not @canWrite session.user
-    return if not data.source?
-    return if not data.dest?
+    return if typeof data.source != "string"
+    return if typeof data.dest != "string"
+    return if data.dest.length>250
 
-    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.source)
+    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.source)
       console.info "wrong source name: #{data.source}"
       return
 
-    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.dest)
+    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.dest)
       console.info "wrong dest name: #{data.dest}"
       return
 
@@ -377,11 +378,12 @@ class @ProjectManager
               @project.content.files.read source,"binary",(thumbnail)=>
                 if thumbnail?
                   @project.content.files.write dest,thumbnail,()=>
-                    session.send
-                      name: "rename_project_file"
-                      request_id: data.request_id
-                    @propagateFileDeleted(session,data.source)
-                    @propagateFileChange(session,data.dest,0,null,{})
+                    @project.content.files.delete source,()=>
+                      session.send
+                        name: "rename_project_file"
+                        request_id: data.request_id
+                      @propagateFileDeleted(session,data.source)
+                      @propagateFileChange(session,data.dest,0,null,{})
 
             else
               session.send
@@ -424,8 +426,14 @@ class @ProjectManager
         filename = files.splice(0,1)[0]
         value = contents.files[filename]
 
-        if /^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,4}.(ms|py|js|lua|png|json|wav|mp3|md|glb|jpg)$/.test(filename)
+        if /^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|jpg)$/.test(filename)
           dest = filename
+          d = dest.split("/")
+          while d.length>2
+            end = d.splice(d.length-1,1)[0]
+            d[d.length-1] += "-#{end}"
+            dest = d.join("/")
+
           if dest.endsWith ".js" then dest = dest.replace(".js",".ms")
           if dest.endsWith ".py" then dest = dest.replace(".py",".ms")
           if dest.endsWith ".lua" then dest = dest.replace(".lua",".ms")
