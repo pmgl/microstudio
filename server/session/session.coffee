@@ -978,13 +978,15 @@ class @Session
     project = @content.projects[data.project] if data.project?
     return @sendError("project not found",data.request_id) if not project?
 
-    user = @content.findUserByNick(data.user) if data.user?
-    return @sendError("user not found",data.request_id) if not user?
+    nick = data.user
+    return if not nick?
+
+    user = @content.findUserByNick(nick)
 
     return if @user != project.owner and @user != user
 
     for link in project.users
-      if link.user == user
+      if link? and link.user? and link.user.nick == nick
         link.remove()
         if @user == project.owner
           @setCurrentProject project
@@ -996,8 +998,9 @@ class @Session
         if project.manager?
           project.manager.propagateUserListChange()
 
-        for li in user.listeners
-          li.getProjectList()
+        if user?
+          for li in user.listeners
+            li.getProjectList()
 
     return
 

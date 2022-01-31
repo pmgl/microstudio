@@ -1520,7 +1520,7 @@ this.Session = (function() {
   };
 
   Session.prototype.removeProjectUser = function(data) {
-    var j, k, len1, len2, li, link, project, ref, ref1, user;
+    var j, k, len1, len2, li, link, nick, project, ref, ref1, user;
     if (this.user == null) {
       return this.sendError("not connected");
     }
@@ -1530,19 +1530,18 @@ this.Session = (function() {
     if (project == null) {
       return this.sendError("project not found", data.request_id);
     }
-    if (data.user != null) {
-      user = this.content.findUserByNick(data.user);
+    nick = data.user;
+    if (nick == null) {
+      return;
     }
-    if (user == null) {
-      return this.sendError("user not found", data.request_id);
-    }
+    user = this.content.findUserByNick(nick);
     if (this.user !== project.owner && this.user !== user) {
       return;
     }
     ref = project.users;
     for (j = 0, len1 = ref.length; j < len1; j++) {
       link = ref[j];
-      if (link.user === user) {
+      if ((link != null) && (link.user != null) && link.user.nick === nick) {
         link.remove();
         if (this.user === project.owner) {
           this.setCurrentProject(project);
@@ -1555,10 +1554,12 @@ this.Session = (function() {
         if (project.manager != null) {
           project.manager.propagateUserListChange();
         }
-        ref1 = user.listeners;
-        for (k = 0, len2 = ref1.length; k < len2; k++) {
-          li = ref1[k];
-          li.getProjectList();
+        if (user != null) {
+          ref1 = user.listeners;
+          for (k = 0, len2 = ref1.length; k < len2; k++) {
+            li = ref1[k];
+            li.getProjectList();
+          }
         }
       }
     }
