@@ -73,6 +73,8 @@ class @Terminal
         return if @history_index == @history.length
         if @history_index?
           @history_index = Math.min(@history.length,@history_index+1)
+        else
+          return
 
         if @history_index>=0 and @history_index<@history.length
           document.getElementById("terminal-input").value = @history[@history_index]

@@ -101,6 +101,8 @@ this.Terminal = (function() {
           }
           if (_this.history_index != null) {
             _this.history_index = Math.min(_this.history.length, _this.history_index + 1);
+          } else {
+            return;
           }
           if (_this.history_index >= 0 && _this.history_index < _this.history.length) {
             document.getElementById("terminal-input").value = _this.history[_this.history_index];

@@ -84,7 +84,7 @@
 
 .assetlist .folder-title {
   line-height: normal ;
-  background: hsl(200,30%,40%) ;
+  background: hsl(200,30%,30%) ;
   text-align: left ;
   cursor: pointer ;
   padding: 6px 10px ;
@@ -93,6 +93,10 @@
   color: rgba(255,255,255,.8);
   white-space: nowrap ;
   border-radius: 3px ;
+}
+
+.assetlist .folder-title:hover {
+  background: hsl(200,30%,40%) ;
 }
 
 .assetlist .folder.selected > .folder-title {
