@@ -68,6 +68,7 @@ class @DocEditor
     @ignore_changes = true
     @editor.setValue(doc,-1)
     @ignore_changes = false
+    @editor.getSession().setUndoManager(new ace.UndoManager())
     @checkTutorial()
 
   checkTutorial:()->

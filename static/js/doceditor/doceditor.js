@@ -98,6 +98,7 @@ this.DocEditor = (function() {
     this.ignore_changes = true;
     this.editor.setValue(doc, -1);
     this.ignore_changes = false;
+    this.editor.getSession().setUndoManager(new ace.UndoManager());
     return this.checkTutorial();
   };
 
