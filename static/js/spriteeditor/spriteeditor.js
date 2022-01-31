@@ -100,6 +100,16 @@ this.SpriteEditor = (function() {
         return _this.paste();
       };
     })(this));
+    this.app.appui.setAction("flip-H-sprite", (function(_this) {
+      return function() {
+        return _this.flipHSprite();
+      };
+    })(this));
+    this.app.appui.setAction("flip-V-sprite", (function(_this) {
+      return function() {
+        return _this.flipVSprite();
+      };
+    })(this));
     this.app.appui.setAction("delete-sprite", (function(_this) {
       return function() {
         return _this.deleteSprite();
@@ -940,6 +950,40 @@ this.SpriteEditor = (function() {
       this.currentSpriteUpdated();
       return this.spriteChanged();
     }
+  };
+
+  SpriteEditor.prototype.flipHSprite = function() {
+    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+      return;
+    }
+    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    if (this.spriteview.sprite.undo == null) {
+      this.spriteview.sprite.undo = new Undo();
+    }
+    if (this.spriteview.sprite.undo.empty()) {
+      this.spriteview.sprite.undo.pushState(this.spriteview.sprite.clone());
+    }
+    this.spriteview.sprite.flipH();
+    this.spriteview.sprite.undo.pushState(this.spriteview.sprite.clone());
+    this.currentSpriteUpdated();
+    return this.spriteChanged();
+  };
+
+  SpriteEditor.prototype.flipVSprite = function() {
+    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+      return;
+    }
+    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    if (this.spriteview.sprite.undo == null) {
+      this.spriteview.sprite.undo = new Undo();
+    }
+    if (this.spriteview.sprite.undo.empty()) {
+      this.spriteview.sprite.undo.pushState(this.spriteview.sprite.clone());
+    }
+    this.spriteview.sprite.flipV();
+    this.spriteview.sprite.undo.pushState(this.spriteview.sprite.clone());
+    this.currentSpriteUpdated();
+    return this.spriteChanged();
   };
 
   SpriteEditor.prototype.currentSpriteUpdated = function() {
