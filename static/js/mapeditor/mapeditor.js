@@ -47,6 +47,30 @@ this.MapEditor = (function() {
         return _this.deleteMap();
       };
     })(this));
+    document.addEventListener("keydown", (function(_this) {
+      return function(event) {
+        if (document.getElementById("mapeditor").offsetParent == null) {
+          return;
+        }
+        if ((document.activeElement != null) && document.activeElement.tagName.toLowerCase() === "input") {
+          return;
+        }
+        if (event.metaKey || event.ctrlKey) {
+          switch (event.key) {
+            case "z":
+              _this.undo();
+              break;
+            case "Z":
+              _this.redo();
+              break;
+            default:
+              return;
+          }
+          event.preventDefault();
+          return event.stopPropagation();
+        }
+      };
+    })(this));
     this.background_color_picker = new BackgroundColorPicker(this, (function(_this) {
       return function(color) {
         _this.mapview.update();

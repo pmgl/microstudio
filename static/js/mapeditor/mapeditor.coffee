@@ -18,6 +18,20 @@ class @MapEditor
     @app.appui.setAction "paste-map",()=>@paste()
     @app.appui.setAction "delete-map",()=>@deleteMap()
 
+    document.addEventListener "keydown",(event)=>
+      return if not document.getElementById("mapeditor").offsetParent?
+      #console.info event
+      return if document.activeElement? and document.activeElement.tagName.toLowerCase() == "input"
+
+      if event.metaKey or event.ctrlKey
+        switch event.key
+          when "z" then @undo()
+          when "Z" then @redo()
+          else return
+
+        event.preventDefault()
+        event.stopPropagation()
+
     @background_color_picker = new BackgroundColorPicker this,(color)=>
       @mapview.update()
       document.getElementById("map-background-color").style.background = color

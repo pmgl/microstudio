@@ -130,6 +130,9 @@ this.SpriteEditor = (function() {
         if (document.getElementById("spriteeditor").offsetParent == null) {
           return;
         }
+        if ((document.activeElement != null) && document.activeElement.tagName.toLowerCase() === "input") {
+          return;
+        }
         if (event.key === "Alt" && !_this.tool.selectiontool) {
           _this.setColorPicker(true);
           _this.alt_pressed = true;
@@ -137,16 +140,25 @@ this.SpriteEditor = (function() {
         if (event.metaKey || event.ctrlKey) {
           switch (event.key) {
             case "z":
-              return _this.undo();
+              _this.undo();
+              break;
             case "Z":
-              return _this.redo();
+              _this.redo();
+              break;
             case "c":
-              return _this.copy();
+              _this.copy();
+              break;
             case "x":
-              return _this.cut();
+              _this.cut();
+              break;
             case "v":
-              return _this.paste();
+              _this.paste();
+              break;
+            default:
+              return;
           }
+          event.preventDefault();
+          return event.stopPropagation();
         }
       };
     })(this));

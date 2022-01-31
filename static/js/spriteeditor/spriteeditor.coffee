@@ -70,6 +70,8 @@ class @SpriteEditor
     document.addEventListener "keydown",(event)=>
       return if not document.getElementById("spriteeditor").offsetParent?
       #console.info event
+      return if document.activeElement? and document.activeElement.tagName.toLowerCase() == "input"
+
       if event.key == "Alt" and not @tool.selectiontool
         @setColorPicker(true)
         @alt_pressed = true
@@ -81,6 +83,10 @@ class @SpriteEditor
           when "c" then @copy()
           when "x" then @cut()
           when "v" then @paste()
+          else return
+
+        event.preventDefault()
+        event.stopPropagation()
 
       #console.info event
 
