@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2022-01-31
+* Folders in sounds and music tabs
+* Project tabs will now scroll if your window / screen height is limited
+* Fixed bugs #76 #59 #73 #75 and #78, see https://github.com/pmgl/microstudio/issues?q=is%3Aissue+is%3Aclosed
+
 ### Update 2022-01-18
 * Fixed project search filter broken when there are pending invitations
 * Set correct page title / description / twitter+facebook card image on public project links
