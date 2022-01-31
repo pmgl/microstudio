@@ -245,6 +245,12 @@ this.Project = (function() {
     } else if (msg.file.indexOf("sprites/") === 0) {
       name = msg.file.substring("sprites/".length, msg.file.indexOf(".png"));
       if (this.sprite_table[name] != null) {
+        if (msg.properties != null) {
+          this.sprite_table[name].properties = msg.properties;
+          if (msg.properties.fps != null) {
+            this.sprite_table[name].fps = msg.properties.fps;
+          }
+        }
         return this.sprite_table[name].reload((function(_this) {
           return function() {
             if (name === _this.app.sprite_editor.selected_sprite) {

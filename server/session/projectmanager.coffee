@@ -33,11 +33,16 @@ class @ProjectManager
     if @listeners.indexOf(listener)<0
       @listeners.push listener
 
-  removeUser:(user)->
-    index = @users.indexOf user
+  removeSession:(session)->
+    index = @users.indexOf session
     if index>=0
       @users.splice index,1
-    @propagateUserListChange()
+
+    for file,lock of @locks
+      if lock.user == session
+        lock.time = 0
+
+    return
 
   removeListener:(listener)->
     index = @listeners.indexOf listener

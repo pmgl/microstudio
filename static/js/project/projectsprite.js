@@ -7,6 +7,7 @@ this.ProjectSprite = (function(superClass) {
   function ProjectSprite(project, name, width, height, properties, size1) {
     this.project = project;
     this.size = size1 != null ? size1 : 0;
+    this.properties = properties;
     if ((width != null) && (height != null)) {
       ProjectSprite.__super__.constructor.call(this, width, height, properties);
       this.file = name;
@@ -60,7 +61,7 @@ this.ProjectSprite = (function(superClass) {
     img.src = url;
     return img.onload = (function(_this) {
       return function() {
-        _this.load(img);
+        _this.load(img, _this.properties);
         _this.updated(url);
         if (callback != null) {
           return callback();

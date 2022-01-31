@@ -166,6 +166,10 @@ class @Project
     else if msg.file.indexOf("sprites/") == 0
       name = msg.file.substring("sprites/".length,msg.file.indexOf(".png"))
       if @sprite_table[name]?
+        if msg.properties?
+          @sprite_table[name].properties = msg.properties
+          if msg.properties.fps?
+            @sprite_table[name].fps = msg.properties.fps
         @sprite_table[name].reload ()=>
           if name == @app.sprite_editor.selected_sprite
             @app.sprite_editor.currentSpriteUpdated()

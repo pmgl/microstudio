@@ -13,7 +13,6 @@ class @Sprite
       img.onload = ()=>
         @ready = true
         @load(img,properties)
-        @loaded()
 
       img.onerror = ()=>
         @ready = true
@@ -82,6 +81,7 @@ class @Sprite
         frame.getContext().drawImage img,0,-i*@height
         @frames.push frame
       @ready = true
+    @loaded()
 
   copyFrom:(sprite)->
     @width = sprite.width

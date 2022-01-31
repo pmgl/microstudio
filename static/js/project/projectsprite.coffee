@@ -1,5 +1,6 @@
 class @ProjectSprite extends Sprite
   constructor:(@project,name,width,height,properties,@size=0)->
+    @properties = properties
     if width? and height?
       super width,height,properties
       @file = name
@@ -37,7 +38,7 @@ class @ProjectSprite extends Sprite
     img.crossOrigin = "Anonymous"
     img.src = url
     img.onload = ()=>
-      @load img
+      @load img,@properties
       @updated(url)
       callback() if callback?
 

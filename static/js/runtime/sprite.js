@@ -17,8 +17,7 @@ this.Sprite = (function() {
       img.onload = (function(_this) {
         return function() {
           _this.ready = true;
-          _this.load(img, properties);
-          return _this.loaded();
+          return _this.load(img, properties);
         };
       })(this);
       img.onerror = (function(_this) {
@@ -114,8 +113,9 @@ this.Sprite = (function() {
         frame.getContext().drawImage(img, 0, -i * this.height);
         this.frames.push(frame);
       }
-      return this.ready = true;
+      this.ready = true;
     }
+    return this.loaded();
   };
 
   Sprite.prototype.copyFrom = function(sprite) {

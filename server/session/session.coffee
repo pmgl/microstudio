@@ -158,16 +158,19 @@ class @Session
     @commands[name] = callback
 
   disconnected:()->
-    if @project? and @project.manager?
-      @project.manager.removeUser @
-      @project.manager.removeListener @
-    if @user?
-      @user.removeListener @
+    try
+      if @project? and @project.manager?
+        @project.manager.removeSession @
+        @project.manager.removeListener @
+      if @user?
+        @user.removeListener @
+    catch err
+      console.error err
 
   setCurrentProject:(project)->
     if project != @project or not @project.manager?
       if @project? and @project.manager?
-        @project.manager.removeUser @
+        @project.manager.removeSession @
       @project = project
       if not @project.manager?
         new ProjectManager @project

@@ -61,13 +61,19 @@ this.ProjectManager = (function() {
     }
   };
 
-  ProjectManager.prototype.removeUser = function(user) {
-    var index;
-    index = this.users.indexOf(user);
+  ProjectManager.prototype.removeSession = function(session) {
+    var file, index, lock, ref;
+    index = this.users.indexOf(session);
     if (index >= 0) {
       this.users.splice(index, 1);
     }
-    return this.propagateUserListChange();
+    ref = this.locks;
+    for (file in ref) {
+      lock = ref[file];
+      if (lock.user === session) {
+        lock.time = 0;
+      }
+    }
   };
 
   ProjectManager.prototype.removeListener = function(listener) {

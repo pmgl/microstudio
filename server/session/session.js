@@ -398,19 +398,25 @@ this.Session = (function() {
   };
 
   Session.prototype.disconnected = function() {
-    if ((this.project != null) && (this.project.manager != null)) {
-      this.project.manager.removeUser(this);
-      this.project.manager.removeListener(this);
-    }
-    if (this.user != null) {
-      return this.user.removeListener(this);
+    var err;
+    try {
+      if ((this.project != null) && (this.project.manager != null)) {
+        this.project.manager.removeSession(this);
+        this.project.manager.removeListener(this);
+      }
+      if (this.user != null) {
+        return this.user.removeListener(this);
+      }
+    } catch (error1) {
+      err = error1;
+      return console.error(err);
     }
   };
 
   Session.prototype.setCurrentProject = function(project) {
     if (project !== this.project || (this.project.manager == null)) {
       if ((this.project != null) && (this.project.manager != null)) {
-        this.project.manager.removeUser(this);
+        this.project.manager.removeSession(this);
       }
       this.project = project;
       if (this.project.manager == null) {
