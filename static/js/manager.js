@@ -216,7 +216,25 @@ this.Manager = (function() {
     } else {
       return ConfirmDialog.confirm(this.app.translator.get("Do you really want to delete this folder and all its contents?"), this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
         return function() {
-          return console.info("Deleting " + folder.name);
+          var f, files, i, len;
+          console.info("Deleting " + folder.name);
+          folder["protected"] = false;
+          files = folder.getAllFiles();
+          for (i = 0, len = files.length; i < len; i++) {
+            f = files[i];
+            _this.app.client.sendRequest({
+              name: "delete_project_file",
+              project: _this.app.project.id,
+              file: f.file,
+              thumbnail: _this.use_thumbnails
+            }, function(msg) {
+              _this.app.project[_this.update_list]();
+              return _this.setSelectedItem(null);
+            });
+          }
+          if (folder.parent != null) {
+            folder.parent.removeFolder(folder);
+          }
         };
       })(this));
     }

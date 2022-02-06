@@ -163,3 +163,17 @@ class @Manager
     else
       ConfirmDialog.confirm @app.translator.get("Do you really want to delete this folder and all its contents?"),@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
         console.info("Deleting #{folder.name}")
+        folder.protected = false
+        files = folder.getAllFiles()
+        for f in files
+          @app.client.sendRequest {
+            name: "delete_project_file"
+            project: @app.project.id
+            file: f.file
+            thumbnail: @use_thumbnails
+          },(msg)=>
+            @app.project[@update_list]()
+            @setSelectedItem null
+        if folder.parent?
+          folder.parent.removeFolder folder
+        return
