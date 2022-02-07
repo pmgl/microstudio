@@ -1,5 +1,12 @@
 ## Changelog
 
+### Update 2022-02-07
+* Flip and rotate sprite selection! Thanks to @HomineLudens for providing an initial implementation
+* Fixed wrong mouse inputs after system.prompt()
+* microScript v2 pre-alpha! It is very early though, don't check this one unless you are very curious. Most of the new features promised for v2 aren't there yet as I first focused on making all microScript v1 work on the new engine. Still, most of the hard work is done, what remains to be done is about 20% of it all.
+* Fixed deletion of non-empty folders
+* Fixed #79
+
 ### Update 2022-01-31
 * Folders in sounds and music tabs
 * Project tabs will now scroll if your window / screen height is limited
