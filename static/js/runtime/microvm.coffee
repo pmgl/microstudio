@@ -86,6 +86,9 @@ class @MicroVM
         gamepad: 0
       prompt: (text,callback)=>
         setTimeout (()=>
+            global.mouse.pressed = 0
+            global.touch.touching = 0
+
             result = window.prompt(text)
             if callback? and callback instanceof Program.Function
               args = [(if result? then 1 else 0),result]

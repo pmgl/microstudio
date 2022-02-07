@@ -148,6 +148,8 @@ this.MicroVM = (function() {
         return function(text, callback) {
           return setTimeout((function() {
             var args, result;
+            global.mouse.pressed = 0;
+            global.touch.touching = 0;
             result = window.prompt(text);
             if ((callback != null) && callback instanceof Program.Function) {
               args = [(result != null ? 1 : 0), result];
