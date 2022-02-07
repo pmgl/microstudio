@@ -723,6 +723,113 @@ this.SpriteView = (function() {
     return this.update();
   };
 
+  SpriteView.prototype.flipSprite = function(direction) {
+    var bg, context, fg;
+    if (this.editor.tool.selectiontool) {
+      if (this.selection != null) {
+        if (this.sprite.undo == null) {
+          this.sprite.undo = new Undo();
+        }
+        if (this.sprite.undo.empty()) {
+          this.sprite.undo.pushState(this.sprite.clone());
+        }
+        fg = document.createElement("canvas");
+        fg.width = this.selection.w;
+        fg.height = this.selection.h;
+        context = fg.getContext("2d");
+        if (direction === "horizontal") {
+          context.translate(this.selection.w, 0);
+          context.scale(-1, 1);
+        } else {
+          context.translate(0, this.selection.h);
+          context.scale(1, -1);
+        }
+        if (this.floating_selection == null) {
+          context.drawImage(this.getFrame().canvas, -this.selection.x, -this.selection.y);
+          context = this.getFrame().canvas.getContext("2d");
+          context.clearRect(this.selection.x, this.selection.y, this.selection.w, this.selection.h);
+          bg = document.createElement("canvas");
+          bg.width = this.getFrame().canvas.width;
+          bg.height = this.getFrame().canvas.height;
+          bg.getContext("2d").drawImage(this.getFrame().canvas, 0, 0);
+          context.drawImage(fg, this.selection.x, this.selection.y);
+          this.floating_selection = {
+            bg: bg,
+            fg: fg
+          };
+        } else {
+          context.drawImage(this.floating_selection.fg, 0, 0);
+          this.floating_selection.fg = fg;
+          context = this.getFrame().getContext();
+          context.clearRect(0, 0, this.getFrame().canvas.width, this.getFrame().canvas.height);
+          context.drawImage(this.floating_selection.bg, 0, 0);
+          context.drawImage(this.floating_selection.fg, this.selection.x, this.selection.y);
+        }
+        this.sprite.undo.pushState(this.sprite.clone());
+        this.update();
+        return this.editor.spriteChanged();
+      }
+    }
+  };
+
+  SpriteView.prototype.rotateSprite = function(direction) {
+    var bg, context, cx, cy, fg, nh, nw, nx, ny;
+    if (this.editor.tool.selectiontool) {
+      if (this.selection != null) {
+        if (this.sprite.undo == null) {
+          this.sprite.undo = new Undo();
+        }
+        if (this.sprite.undo.empty()) {
+          this.sprite.undo.pushState(this.sprite.clone());
+        }
+        fg = document.createElement("canvas");
+        fg.width = this.selection.h;
+        fg.height = this.selection.w;
+        context = fg.getContext("2d");
+        context.translate(fg.width / 2, fg.height / 2);
+        context.rotate(direction * Math.PI / 2);
+        cx = this.selection.x + this.selection.w / 2;
+        cy = this.selection.y + this.selection.h / 2;
+        nw = this.selection.h;
+        nh = this.selection.w;
+        nx = Math.round(cx - nw / 2 + .01 * direction);
+        ny = Math.round(cy - nh / 2 + .01 * direction);
+        if (this.floating_selection == null) {
+          context.drawImage(this.getFrame().canvas, -this.selection.x - this.selection.w / 2, -this.selection.y - this.selection.h / 2);
+          context = this.getFrame().canvas.getContext("2d");
+          context.clearRect(this.selection.x, this.selection.y, this.selection.w, this.selection.h);
+          bg = document.createElement("canvas");
+          bg.width = this.getFrame().canvas.width;
+          bg.height = this.getFrame().canvas.height;
+          bg.getContext("2d").drawImage(this.getFrame().canvas, 0, 0);
+          context.drawImage(fg, nx, ny);
+          this.selection.x = nx;
+          this.selection.y = ny;
+          this.selection.w = nw;
+          this.selection.h = nh;
+          this.floating_selection = {
+            bg: bg,
+            fg: fg
+          };
+        } else {
+          context.drawImage(this.floating_selection.fg, -this.floating_selection.fg.width / 2, -this.floating_selection.fg.height / 2);
+          this.floating_selection.fg = fg;
+          this.selection.x = nx;
+          this.selection.y = ny;
+          this.selection.w = nw;
+          this.selection.h = nh;
+          context = this.getFrame().getContext();
+          context.clearRect(0, 0, this.getFrame().canvas.width, this.getFrame().canvas.height);
+          context.drawImage(this.floating_selection.bg, 0, 0);
+          context.drawImage(this.floating_selection.fg, this.selection.x, this.selection.y);
+        }
+        this.sprite.undo.pushState(this.sprite.clone());
+        this.update();
+        return this.editor.spriteChanged();
+      }
+    }
+  };
+
   return SpriteView;
 
 })();

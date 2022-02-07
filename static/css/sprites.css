@@ -175,7 +175,7 @@
   font-size: 18px ;
 }
 
-.spritetoolbutton.selected {
+.spritetoolbutton.selected , .spritetoolbutton:active {
   background: rgba(255,255,255,.8);
   color: rgba(0,0,0,.8);
 }
@@ -183,6 +183,11 @@
 .spritetooloptions .toolbox .spritetoolbutton.selected {
   background: hsl(200,50%,50%);
   color: #FFF;
+}
+
+.spritetoolbutton.transform {
+  display: block ;
+  width: auto ;
 }
 
 
@@ -627,6 +632,9 @@
   background: #FFF ;
   border-radius: 3px ;
   padding: 5px 10px ;
+}
+.selection-actions {
+  text-align: center ;
 }
 
 .auto-palette {

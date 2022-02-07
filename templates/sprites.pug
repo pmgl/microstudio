@@ -31,10 +31,6 @@ div.sprites-right
         i.fa.fa-cut
       div#paste-sprite(title=translator.get("Paste"))
         i.fa.fa-paste
-      div#flip-H-sprite(title=translator.get("Flip Horizontal"))
-        i.fa.fa-arrows-alt-h
-      div#flip-V-sprite(title=translator.get("Flip Vertical"))
-        i.fa.fa-arrows-alt-v        
 
       div#delete-sprite(title=translator.get("Delete Sprite"))
         i.fa.fa-trash
@@ -91,6 +87,25 @@ div.sprites-right
         div.selection-hint#selection-hint-move <span>⇧</span> +<i class="fa fa-mouse-pointer"></i> #{translator.get("Move")}
         div.selection-hint#selection-hint-clone <span>Alt</span> +<i class="fa fa-mouse-pointer"></i> #{translator.get("Clone")}
         div.selection-operation#selection-operation-film <i class="fa fa-th"></i> <i class="fa fa-arrow-right"></i> <i class="fa fa-play"></i> <br /> #{translator.get("Strip to animation")}
+        div.selection-actions
+          div.spritetoolbutton.transform#selection-action-horizontal-flip
+            i.fa.fa-arrows-alt-h
+            br
+            span #{translator.get("Horizontal Flip")}
+          div.spritetoolbutton.transform#selection-action-vertical-flip
+            i.fa.fa-arrows-alt-v
+            br
+            span #{translator.get("Vertical Flip")}
+
+          div.spritetoolbutton.transform#selection-action-rotate-left
+            i.fas.fa-undo
+            br
+            span #{translator.get("Rotate Left")}
+
+          div.spritetoolbutton.transform#selection-action-rotate-right
+            i.fas.fa-redo
+            br
+            span #{translator.get("Rotate Right")}
 
     div.spritehelpers
       div.spritehelper#sprite-helper-tile

@@ -59,8 +59,6 @@ class @SpriteEditor
     @app.appui.setAction "copy-sprite",()=>@copy()
     @app.appui.setAction "cut-sprite",()=>@cut()
     @app.appui.setAction "paste-sprite",()=>@paste()
-    @app.appui.setAction "flip-H-sprite",()=>@flipHSprite()
-    @app.appui.setAction "flip-V-sprite",()=>@flipVSprite()
     @app.appui.setAction "delete-sprite",()=>@deleteSprite()
 
     @app.appui.setAction "sprite-helper-tile",()=>@toggleTile()
@@ -68,6 +66,10 @@ class @SpriteEditor
     @app.appui.setAction "sprite-helper-hsymmetry",()=>@toggleHSymmetry()
 
     @app.appui.setAction "selection-operation-film",()=>@stripToAnimation()
+    @app.appui.setAction "selection-action-horizontal-flip",()=>@flipHSprite()
+    @app.appui.setAction "selection-action-vertical-flip",()=>@flipVSprite()
+    @app.appui.setAction "selection-action-rotate-left",()=>@rotateSprite(-1)
+    @app.appui.setAction "selection-action-rotate-right",()=>@rotateSprite(1)
 
     document.addEventListener "keydown",(event)=>
       return if not document.getElementById("spriteeditor").offsetParent?
@@ -684,30 +686,6 @@ class @SpriteEditor
       @spriteview.sprite.undo.pushState @spriteview.sprite.clone()
       @currentSpriteUpdated()
       @spriteChanged()
-  
-  flipHSprite:()->
-    return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
-    @app.project.lockFile("sprites/#{@selected_sprite}.png")
-    @spriteview.sprite.undo = new Undo() if not @spriteview.sprite.undo?
-    @spriteview.sprite.undo.pushState @spriteview.sprite.clone() if @spriteview.sprite.undo.empty()
-
-    @spriteview.sprite.flipH()
-
-    @spriteview.sprite.undo.pushState @spriteview.sprite.clone()
-    @currentSpriteUpdated()
-    @spriteChanged()
-
-  flipVSprite:()->
-    return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
-    @app.project.lockFile("sprites/#{@selected_sprite}.png")
-    @spriteview.sprite.undo = new Undo() if not @spriteview.sprite.undo?
-    @spriteview.sprite.undo.pushState @spriteview.sprite.clone() if @spriteview.sprite.undo.empty()
-
-    @spriteview.sprite.flipV()
-
-    @spriteview.sprite.undo.pushState @spriteview.sprite.clone()
-    @currentSpriteUpdated()
-    @spriteChanged()
 
   currentSpriteUpdated:()->
     @spriteview.update()
@@ -762,3 +740,18 @@ class @SpriteEditor
       @currentSpriteUpdated()
       @spriteChanged()
       @animation_panel.spriteChanged()
+
+  flipHSprite:()->
+    return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
+    @app.project.lockFile("sprites/#{@selected_sprite}.png")
+    @spriteview.flipSprite("horizontal")
+
+  flipVSprite:()->
+    return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
+    @app.project.lockFile("sprites/#{@selected_sprite}.png")
+    @spriteview.flipSprite("vertical")
+
+  rotateSprite:(direction)->
+    return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
+    @app.project.lockFile("sprites/#{@selected_sprite}.png")
+    @spriteview.rotateSprite(direction)

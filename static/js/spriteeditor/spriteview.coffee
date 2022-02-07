@@ -599,3 +599,100 @@ class @SpriteView
   mouseOut:(event)->
     @mouse_over = false
     @update()
+
+  flipSprite:(direction)->
+    if @editor.tool.selectiontool
+      if @selection?
+        @sprite.undo = new Undo() if not @sprite.undo?
+        @sprite.undo.pushState @sprite.clone() if @sprite.undo.empty()
+        fg = document.createElement "canvas"
+        fg.width = @selection.w
+        fg.height = @selection.h
+        context = fg.getContext "2d"
+        if direction == "horizontal"
+          context.translate @selection.w,0
+          context.scale -1,1
+        else
+          context.translate 0,@selection.h
+          context.scale 1,-1
+
+        if not @floating_selection?
+          context.drawImage @getFrame().canvas,-@selection.x,-@selection.y
+          context = @getFrame().canvas.getContext("2d")
+          context.clearRect @selection.x,@selection.y,@selection.w,@selection.h
+          bg = document.createElement "canvas"
+          bg.width = @getFrame().canvas.width
+          bg.height = @getFrame().canvas.height
+          bg.getContext("2d").drawImage @getFrame().canvas,0,0
+          context.drawImage fg,@selection.x,@selection.y
+          @floating_selection =
+            bg: bg
+            fg: fg
+        else
+          context.drawImage @floating_selection.fg,0,0
+          @floating_selection.fg = fg
+
+          context = @getFrame().getContext()
+          context.clearRect 0,0,@getFrame().canvas.width,@getFrame().canvas.height
+          context.drawImage @floating_selection.bg,0,0
+          context.drawImage @floating_selection.fg,@selection.x,@selection.y
+
+        @sprite.undo.pushState @sprite.clone()
+        @update()
+        @editor.spriteChanged()
+
+  rotateSprite:(direction)->
+    if @editor.tool.selectiontool
+      if @selection?
+        @sprite.undo = new Undo() if not @sprite.undo?
+        @sprite.undo.pushState @sprite.clone() if @sprite.undo.empty()
+        fg = document.createElement "canvas"
+        fg.width = @selection.h
+        fg.height = @selection.w
+        context = fg.getContext "2d"
+        context.translate fg.width/2,fg.height/2
+        context.rotate direction*Math.PI/2
+
+        cx = @selection.x+@selection.w/2
+        cy = @selection.y+@selection.h/2
+        nw = @selection.h
+        nh = @selection.w
+        nx = Math.round(cx-nw/2+.01*direction)
+        ny = Math.round(cy-nh/2+.01*direction)
+
+        if not @floating_selection?
+          context.drawImage @getFrame().canvas,-@selection.x-@selection.w/2,-@selection.y-@selection.h/2
+          context = @getFrame().canvas.getContext("2d")
+          context.clearRect @selection.x,@selection.y,@selection.w,@selection.h
+
+          bg = document.createElement "canvas"
+          bg.width = @getFrame().canvas.width
+          bg.height = @getFrame().canvas.height
+          bg.getContext("2d").drawImage @getFrame().canvas,0,0
+
+          context.drawImage fg,nx,ny
+          @selection.x = nx
+          @selection.y = ny
+          @selection.w = nw
+          @selection.h = nh
+
+          @floating_selection =
+            bg: bg
+            fg: fg
+        else
+          context.drawImage @floating_selection.fg,-@floating_selection.fg.width/2,-@floating_selection.fg.height/2
+          @floating_selection.fg = fg
+
+          @selection.x = nx
+          @selection.y = ny
+          @selection.w = nw
+          @selection.h = nh
+
+          context = @getFrame().getContext()
+          context.clearRect 0,0,@getFrame().canvas.width,@getFrame().canvas.height
+          context.drawImage @floating_selection.bg,0,0
+          context.drawImage @floating_selection.fg,@selection.x,@selection.y
+
+        @sprite.undo.pushState @sprite.clone()
+        @update()
+        @editor.spriteChanged()
