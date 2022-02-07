@@ -69,7 +69,7 @@
 }
 .doc-render hr {
   margin: 40px 0 ;
-  border: none ;
+  border: solid 2px rgba(128,128,128,.5);
 }
 .doc-render p {
   margin: 0 0 10px 0 ;
