@@ -25,38 +25,8 @@ define("ace/mode/microscript_highlight_rules", ["require", "exports", "module", 
                 h = "(?:" + c + ")";
             this.$rules = {
                 start: [{
-                    stateName: "bracketedComment",
-                    onMatch: function(e, t, n) {
-                        return n.unshift(this.next, e.length - 2, t), "comment"
-                    },
-                    regex: /\-\-\[=*\[/,
-                    next: [{
-                        onMatch: function(e, t, n) {
-                            return e.length == n[1] ? (n.shift(), n.shift(), this.next = n.shift()) : this.next = "", "comment"
-                        },
-                        regex: /\]=*\]/,
-                        next: "start"
-                    }, {
-                        defaultToken: "comment"
-                    }]
-                }, {
                     token: "comment",
                     regex: "\\/\\/.*$"
-                }, {
-                    stateName: "bracketedString",
-                    onMatch: function(e, t, n) {
-                        return n.unshift(this.next, e.length, t), "string.start"
-                    },
-                    regex: /\[=*\[/,
-                    next: [{
-                        onMatch: function(e, t, n) {
-                            return e.length == n[1] ? (n.shift(), n.shift(), this.next = n.shift()) : this.next = "", "string.end"
-                        },
-                        regex: /\]=*\]/,
-                        next: "start"
-                    }, {
-                        defaultToken: "string"
-                    }]
                 }, {
                     token: "string",
                     regex: '"(?:[^\\\\]|\\\\.)*?"'
