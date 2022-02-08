@@ -222,22 +222,47 @@ a#run-link {
 }
 .help-window {
   position: absolute;
-  right: 5px ;
+  right: 20px ;
   bottom: 5px ;
-  background: hsl(30,100%,90%);
-  border-radius: 20px ;
-  padding: 10px ;
   color: hsl(20,20%,20%);
   z-index: 4 ;
   margin-left: 5px ;
+  cursor: pointer ;
+  width: 40px ;
+  height: 40px ;
+}
+#help-window-content {
+  position: absolute ;
+  bottom: 0px ;
+  background: hsl(30,100%,90%);
+  border-radius: 20px ;
+  padding: 10px ;
   overflow: hidden ;
   min-height: 20px ;
   min-width: 20px ;
-  cursor: pointer ;
+  width: 20px ;
 }
 
-.help-window.disabled {
+#help-window-content.displaycontent {
+  width: 400px ;
+  left: 75px ;
+  bottom:40px ;
+}
+
+.help-window.disabled #help-window-content {
   background: hsl(20,0%,60%);
+  bottom: 0px ;
+  left: 0px ;
+  width: 20px ;
+}
+#help-window-content .content {
+  display: none ;
+}
+#help-window-content.displaycontent .content {
+  display: block ;
+}
+.help-window.disabled #help-window-content .content {
+  display: none ;
 }
 
 .help-window i {

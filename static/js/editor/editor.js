@@ -38,13 +38,18 @@ this.Editor = (function() {
     })(this));
     this.editor.on("blur", (function(_this) {
       return function() {
-        return _this.app.runwindow.rulercanvas.hide();
+        _this.app.runwindow.rulercanvas.hide();
+        return document.getElementById("help-window").classList.add("disabled");
       };
     })(this));
     this.editor.on("focus", (function(_this) {
       return function() {
         _this.checkValueToolButtons();
-        return _this.cancelValueTool();
+        _this.cancelValueTool();
+        if (_this.show_help) {
+          document.getElementById("help-window").classList.remove("disabled");
+          return _this.liveHelp();
+        }
       };
     })(this));
     this.RULER_FUNCTIONS = ["fillRect", "fillRound", "fillRoundRect", "drawRect", "drawRound", "drawRoundRect", "drawSprite", "drawMap", "drawText", "drawLine", "drawPolygon", "fillPolygon"];
@@ -80,15 +85,16 @@ this.Editor = (function() {
       };
     })(this));
     this.show_help = true;
-    document.querySelector("#help-window").addEventListener("click", (function(_this) {
-      return function() {
+    document.querySelector("#help-window-content").addEventListener("mousedown", (function(_this) {
+      return function(event) {
+        event.stopPropagation();
         _this.show_help = !_this.show_help;
         if (!_this.show_help) {
-          document.querySelector("#help-window").classList.add("disabled");
-          return document.querySelector("#help-window .content").style.display = "none";
+          return document.querySelector("#help-window").classList.add("disabled");
         } else {
           document.querySelector("#help-window").classList.remove("disabled");
-          return _this.liveHelp();
+          _this.liveHelp();
+          return _this.editor.focus();
         }
       };
     })(this));
@@ -361,7 +367,7 @@ this.Editor = (function() {
   };
 
   Editor.prototype.liveHelp = function() {
-    var column, content, help, j, len, line, md, res, suggest;
+    var c, column, content, help, j, len, line, md, res, suggest;
     if (!this.show_help) {
       return;
     }
@@ -373,18 +379,18 @@ this.Editor = (function() {
       help = this.app.documentation.findHelpMatch(line);
       if (help.length > 0) {
         content.innerHTML = DOMPurify.sanitize(marked(help[0].value));
-        content.style.display = "block";
         document.querySelector("#help-window").classList.add("showing");
-        return this.addDocButton(help[0].pointer, help[0].section);
+        this.addDocButton(help[0].pointer, help[0].section);
       } else {
         content.innerHTML = "";
-        return content.style.display = "none";
+        c = document.querySelector("#help-window-content");
+        c.classList.remove("displaycontent");
+        return;
       }
     } else if (suggest.length === 1) {
       content.innerHTML = DOMPurify.sanitize(marked(suggest[0].value));
-      content.style.display = "block";
       document.querySelector("#help-window").classList.add("showing");
-      return this.addDocButton(suggest[0].pointer, suggest[0].section);
+      this.addDocButton(suggest[0].pointer, suggest[0].section);
     } else {
       md = "";
       for (j = 0, len = suggest.length; j < len; j++) {
@@ -392,10 +398,11 @@ this.Editor = (function() {
         md += res.ref + "\n\n";
       }
       content.innerHTML = DOMPurify.sanitize(marked(md));
-      content.style.display = "block";
       document.querySelector("#help-window").classList.add("showing");
-      return this.addDocButton(suggest[0].pointer, suggest[0].section);
+      this.addDocButton(suggest[0].pointer, suggest[0].section);
     }
+    c = document.querySelector("#help-window-content");
+    return c.classList.add("displaycontent");
   };
 
   Editor.prototype.tokenizeLine = function(line) {
@@ -512,7 +519,6 @@ this.Editor = (function() {
           this.editor.blur();
           this.value_tool = new ValueTool(this, pos.left, pos.top, value, (function(_this) {
             return function(value) {
-              console.info(value);
               _this.editor.session.replace({
                 start: {
                   row: row,

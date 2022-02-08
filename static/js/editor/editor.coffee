@@ -31,10 +31,14 @@ class @Editor
 
     @editor.on "blur",()=>
       @app.runwindow.rulercanvas.hide()
+      document.getElementById("help-window").classList.add("disabled")
 
     @editor.on "focus",()=>
       @checkValueToolButtons()
       @cancelValueTool()
+      if @show_help
+        document.getElementById("help-window").classList.remove("disabled")
+        @liveHelp()
 
     @RULER_FUNCTIONS = ["fillRect","fillRound","fillRoundRect","drawRect","drawRound","drawRoundRect","drawSprite","drawMap","drawText","drawLine","drawPolygon","fillPolygon"]
 
@@ -61,14 +65,15 @@ class @Editor
       @checkValueToolButtons()
 
     @show_help = true
-    document.querySelector("#help-window").addEventListener "click",()=>
+    document.querySelector("#help-window-content").addEventListener "mousedown",(event)=>
+      event.stopPropagation()
       @show_help = not @show_help
       if not @show_help
         document.querySelector("#help-window").classList.add "disabled"
-        document.querySelector("#help-window .content").style.display = "none"
       else
         document.querySelector("#help-window").classList.remove "disabled"
         @liveHelp()
+        @editor.focus()
 
     document.addEventListener "keydown",(event)=>
       try
@@ -263,15 +268,15 @@ class @Editor
       help = @app.documentation.findHelpMatch(line)
       if help.length>0
         content.innerHTML = DOMPurify.sanitize marked help[0].value
-        content.style.display = "block"
         document.querySelector("#help-window").classList.add("showing")
         @addDocButton(help[0].pointer,help[0].section)
       else
         content.innerHTML = ""
-        content.style.display = "none"
+        c = document.querySelector "#help-window-content"
+        c.classList.remove "displaycontent"
+        return
     else if suggest.length == 1
       content.innerHTML = DOMPurify.sanitize marked suggest[0].value
-      content.style.display = "block"
       document.querySelector("#help-window").classList.add("showing")
       @addDocButton(suggest[0].pointer,suggest[0].section)
     else
@@ -279,9 +284,11 @@ class @Editor
       for res in suggest
         md += res.ref + "\n\n"
       content.innerHTML = DOMPurify.sanitize marked md
-      content.style.display = "block"
       document.querySelector("#help-window").classList.add("showing")
       @addDocButton(suggest[0].pointer,suggest[0].section)
+
+    c = document.querySelector "#help-window-content"
+    c.classList.add "displaycontent"
 
   tokenizeLine:(line)->
     tokenizer = new Tokenizer(line.replace(":","."))
@@ -373,7 +380,6 @@ class @Editor
           #@editor.selection.setRange(new ace.Range(row,start_token.start,row,token.end),true)
           @editor.blur()
           @value_tool = new ValueTool @,pos.left,pos.top,value,(value)=>
-            console.info value
             @editor.session.replace({ start: {row: row, column: 0},end: {row: row, column: Number.MAX_VALUE}}, start+value+end)
             @editor.selection.setRange(new ace.Range(row,start_token.start,row,start_token.start+(""+value).length),true)
             @drawHelper(row,column)
@@ -672,14 +678,6 @@ class @Editor
         false
       else
         true
-
-    #edit = document.createElement "i"
-    #edit.classList.add("fa")
-    #edit.classList.add("fa-edit")
-    #edit.title = @app.translator.get("Rename file")
-    #tools.appendChild edit
-    #edit.addEventListener "click",()=>
-    #  console.info "edit #{source.name}"
 
     trash = document.createElement "i"
     trash.classList.add("fa")
