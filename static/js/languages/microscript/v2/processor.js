@@ -27,7 +27,7 @@ this.Processor = (function() {
   Processor.prototype.applyFunction = function(args) {};
 
   Processor.prototype.run = function(context) {
-    var a, arg1, args, argv, b, c, call_stack_arg1, call_stack_index, call_stack_object, call_stack_op_index, call_stack_opcodes, call_stack_routine, call_stack_super, call_stack_supername, call_super, call_supername, con, f, field, global, i, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, src, stack, stack_index, sup, v, v1, v2, value;
+    var a, arg1, args, argv, b, c, call_stack_arg1, call_stack_index, call_stack_object, call_stack_op_index, call_stack_opcodes, call_stack_routine, call_stack_super, call_stack_supername, call_super, call_supername, con, f, field, global, i, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, src, stack, stack_index, sup, token, v, v1, v2, value;
     local_index = this.local_index;
     stack_index = this.stack_index;
     op_index = this.op_index;
@@ -110,6 +110,18 @@ this.Processor = (function() {
           if (v == null) {
             v = global[name];
           }
+          if (v == null) {
+            token = routine.ref[op_index].token;
+            id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+            if (!context.warnings.using_undefined_variable[id]) {
+              context.warnings.using_undefined_variable[id] = {
+                file: token.tokenizer.filename,
+                line: token.line,
+                column: token.column,
+                expression: name
+              };
+            }
+          }
           stack[++stack_index] = v != null ? v : 0;
           op_index++;
           break;
@@ -117,6 +129,16 @@ this.Processor = (function() {
           o = locals[locals_offset + arg1[op_index]];
           if (typeof o !== "object") {
             o = locals[locals_offset + arg1[op_index]] = {};
+            token = routine.ref[op_index].token;
+            id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+            if (!context.warnings.assigning_field_to_undefined[id]) {
+              context.warnings.assigning_field_to_undefined[id] = {
+                file: token.tokenizer.filename,
+                line: token.line,
+                column: token.column,
+                expression: token.value
+              };
+            }
           }
           stack[++stack_index] = o;
           op_index++;
@@ -125,6 +147,16 @@ this.Processor = (function() {
           v = object[arg1[op_index]];
           if (typeof v !== "object") {
             v = object[arg1[op_index]] = {};
+            token = routine.ref[op_index].token;
+            id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+            if (!context.warnings.assigning_field_to_undefined[id]) {
+              context.warnings.assigning_field_to_undefined[id] = {
+                file: token.tokenizer.filename,
+                line: token.line,
+                column: token.column,
+                expression: arg1[op_index]
+              };
+            }
           }
           stack[++stack_index] = v;
           op_index++;
@@ -148,6 +180,16 @@ this.Processor = (function() {
           v = stack[stack_index - 1][stack[stack_index]];
           if (typeof v !== "object") {
             v = stack[stack_index - 1][stack[stack_index]] = {};
+            token = routine.ref[op_index].token;
+            id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+            if (!context.warnings.assigning_field_to_undefined[id]) {
+              context.warnings.assigning_field_to_undefined[id] = {
+                file: token.tokenizer.filename,
+                line: token.line,
+                column: token.column,
+                expression: stack[stack_index]
+              };
+            }
           }
           stack[--stack_index] = v;
           op_index++;
@@ -544,6 +586,16 @@ this.Processor = (function() {
           } else {
             stack_index -= args;
             stack[stack_index] = f != null ? f : 0;
+            token = routine.ref[op_index].token;
+            id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+            if (!context.warnings.invoking_non_function[id]) {
+              context.warnings.invoking_non_function[id] = {
+                file: token.tokenizer.filename,
+                line: token.line,
+                column: token.column,
+                expression: ""
+              };
+            }
             op_index++;
           }
           break;
@@ -609,6 +661,16 @@ this.Processor = (function() {
           } else {
             stack_index -= args;
             stack[stack_index] = f != null ? f : 0;
+            token = routine.ref[op_index].token;
+            id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+            if (!context.warnings.invoking_non_function[id]) {
+              context.warnings.invoking_non_function[id] = {
+                file: token.tokenizer.filename,
+                line: token.line,
+                column: token.column,
+                expression: ""
+              };
+            }
             op_index++;
           }
           break;
@@ -669,6 +731,16 @@ this.Processor = (function() {
           } else {
             stack_index -= args + 1;
             stack[stack_index] = f != null ? f : 0;
+            token = routine.ref[op_index].token;
+            id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+            if (!context.warnings.invoking_non_function[id]) {
+              context.warnings.invoking_non_function[id] = {
+                file: token.tokenizer.filename,
+                line: token.line,
+                column: token.column,
+                expression: ""
+              };
+            }
             op_index++;
           }
           break;

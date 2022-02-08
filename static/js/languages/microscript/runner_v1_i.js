@@ -3,9 +3,9 @@ this.Runner = (function() {
     this.microvm = microvm;
   }
 
-  Runner.prototype.run = function(src) {
+  Runner.prototype.run = function(src, filename) {
     var context, err, i, j, len, parser, program, ref, res, s;
-    parser = new Parser(src);
+    parser = new Parser(src, filename);
     parser.parse();
     if (parser.error_info != null) {
       err = parser.error_info;

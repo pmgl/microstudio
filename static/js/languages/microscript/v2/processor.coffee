@@ -110,6 +110,16 @@ class @Processor
 
             if not v? then v = global[name]
 
+            if not v?
+              token = routine.ref[op_index].token
+              id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+              if not context.warnings.using_undefined_variable[id]
+                context.warnings.using_undefined_variable[id] =
+                  file: token.tokenizer.filename
+                  line: token.line
+                  column: token.column
+                  expression: name
+
             stack[++stack_index] = if v? then v else 0
             op_index++
 
@@ -117,6 +127,16 @@ class @Processor
             o = locals[locals_offset+arg1[op_index]]
             if typeof o != "object"
               o = locals[locals_offset+arg1[op_index]] = {}
+
+              token = routine.ref[op_index].token
+              id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+              if not context.warnings.assigning_field_to_undefined[id]
+                context.warnings.assigning_field_to_undefined[id] =
+                  file: token.tokenizer.filename
+                  line: token.line
+                  column: token.column
+                  expression: token.value
+
             stack[++stack_index] = o
             op_index++
 
@@ -124,6 +144,16 @@ class @Processor
             v = object[arg1[op_index]]
             if typeof v != "object"
               v = object[arg1[op_index]] = {}
+
+              token = routine.ref[op_index].token
+              id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+              if not context.warnings.assigning_field_to_undefined[id]
+                context.warnings.assigning_field_to_undefined[id] =
+                  file: token.tokenizer.filename
+                  line: token.line
+                  column: token.column
+                  expression: arg1[op_index]
+
             stack[++stack_index] = v
             op_index++
 
@@ -147,6 +177,16 @@ class @Processor
             v = stack[stack_index-1][stack[stack_index]]
             if typeof v != "object"
               v = stack[stack_index-1][stack[stack_index]] = {}
+
+              token = routine.ref[op_index].token
+              id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+              if not context.warnings.assigning_field_to_undefined[id]
+                context.warnings.assigning_field_to_undefined[id] =
+                  file: token.tokenizer.filename
+                  line: token.line
+                  column: token.column
+                  expression: stack[stack_index]
+
             stack[--stack_index] = v
             op_index++
 
@@ -529,7 +569,19 @@ class @Processor
             else
               stack_index -= args
               stack[stack_index] = if f? then f else 0
+
+              token = routine.ref[op_index].token
+              id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+              if not context.warnings.invoking_non_function[id]
+                context.warnings.invoking_non_function[id] =
+                  file: token.tokenizer.filename
+                  line: token.line
+                  column: token.column
+                  expression: ""
+
               op_index++
+
+
 
           when 91 # OPCODE_FUNCTION_APPLY_VARIABLE
             name = stack[stack_index]
@@ -591,6 +643,16 @@ class @Processor
             else
               stack_index -= args
               stack[stack_index] = if f? then f else 0
+
+              token = routine.ref[op_index].token
+              id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+              if not context.warnings.invoking_non_function[id]
+                context.warnings.invoking_non_function[id] =
+                  file: token.tokenizer.filename
+                  line: token.line
+                  column: token.column
+                  expression: ""
+
               op_index++
 
           when 92 # OPCODE_FUNCTION_APPLY_PROPERTY
@@ -648,6 +710,16 @@ class @Processor
             else
               stack_index -= args+1
               stack[stack_index] = if f? then f else 0
+
+              token = routine.ref[op_index].token
+              id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+              if not context.warnings.invoking_non_function[id]
+                context.warnings.invoking_non_function[id] =
+                  file: token.tokenizer.filename
+                  line: token.line
+                  column: token.column
+                  expression: ""
+
               op_index++
 
 
@@ -661,7 +733,7 @@ class @Processor
 
               if f? and f instanceof Routine
                 args = arg1[op_index]
-                
+
                 call_stack_object[call_stack_index] = object
                 call_stack_super[call_stack_index] = call_super
                 call_stack_supername[call_stack_index] = call_supername

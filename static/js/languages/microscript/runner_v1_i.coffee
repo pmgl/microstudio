@@ -1,8 +1,8 @@
 class @Runner
   constructor:(@microvm)->
 
-  run:(src)->
-    parser = new Parser(src)
+  run:(src,filename)->
+    parser = new Parser(src,filename)
     parser.parse()
     if parser.error_info?
       err = parser.error_info

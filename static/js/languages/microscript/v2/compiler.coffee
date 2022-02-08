@@ -104,7 +104,7 @@ class Compiler
             @routine.LOAD_THIS f
           else if @locals.get(f.expression.identifier)?
             index = @locals.get(f.expression.identifier)
-            @routine.LOAD_LOCAL_OBJECT index,statement
+            @routine.LOAD_LOCAL_OBJECT index,f.expression
           else if f.expression.identifier == "global"
             @routine.LOAD_GLOBAL f
           else
@@ -271,7 +271,7 @@ class Compiler
 
       @compileFieldParent(call.expression)
       @compile call.expression.chain[call.expression.chain.length-1]
-      @routine.FUNCTION_APPLY_PROPERTY call.args.length
+      @routine.FUNCTION_APPLY_PROPERTY call.args.length,call
     else if call.expression instanceof Program.Variable
       if Compiler.predefined_unary_functions[call.expression.identifier]?
         funk = Compiler.predefined_unary_functions[call.expression.identifier]

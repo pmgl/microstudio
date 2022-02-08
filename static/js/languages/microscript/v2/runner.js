@@ -12,12 +12,12 @@ this.Runner = (function() {
     return this.microvm.context.global.print = this.microvm.context.meta.print;
   };
 
-  Runner.prototype.run = function(src) {
+  Runner.prototype.run = function(src, filename) {
     var compiler, err, parser, program, res, time;
     if (!this.initialized) {
       this.init();
     }
-    parser = new Parser(src);
+    parser = new Parser(src, filename);
     parser.parse();
     if (parser.error_info != null) {
       err = parser.error_info;

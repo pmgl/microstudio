@@ -110,7 +110,7 @@ Compiler = (function() {
             this.routine.LOAD_THIS(f);
           } else if (this.locals.get(f.expression.identifier) != null) {
             index = this.locals.get(f.expression.identifier);
-            this.routine.LOAD_LOCAL_OBJECT(index, statement);
+            this.routine.LOAD_LOCAL_OBJECT(index, f.expression);
           } else if (f.expression.identifier === "global") {
             this.routine.LOAD_GLOBAL(f);
           } else {
@@ -337,7 +337,7 @@ Compiler = (function() {
       }
       this.compileFieldParent(call.expression);
       this.compile(call.expression.chain[call.expression.chain.length - 1]);
-      return this.routine.FUNCTION_APPLY_PROPERTY(call.args.length);
+      return this.routine.FUNCTION_APPLY_PROPERTY(call.args.length, call);
     } else if (call.expression instanceof Program.Variable) {
       if (Compiler.predefined_unary_functions[call.expression.identifier] != null) {
         funk = Compiler.predefined_unary_functions[call.expression.identifier];

@@ -10,10 +10,10 @@ class @Runner
 
     @microvm.context.global.print = @microvm.context.meta.print
 
-  run:(src)->
+  run:(src,filename)->
     @init() if not @initialized
 
-    parser = new Parser(src)
+    parser = new Parser(src,filename)
     parser.parse()
     if parser.error_info?
       err = parser.error_info
