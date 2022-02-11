@@ -97,6 +97,7 @@ this.Options = (function() {
       input = list[i];
       fn(input);
     }
+    this.initProjectTabSelection();
   }
 
   Options.prototype.textInput = function(element, action) {
@@ -146,7 +147,9 @@ this.Options = (function() {
     this.updateSecretCodeLine();
     this.updateUserList();
     this.app.project.addListener(this);
-    return document.querySelector("#projectoptions-users").style.display = this.app.user.flags.guest ? "none" : "block";
+    document.querySelector("#projectoptions-users").style.display = this.app.user.flags.guest ? "none" : "block";
+    this.updateProjectTabSelection();
+    return this.updateProjectTabs();
   };
 
   Options.prototype.updateSecretCodeLine = function() {
@@ -369,6 +372,85 @@ this.Options = (function() {
       user = ref[i];
       fn(user);
     }
+  };
+
+  Options.prototype.isTabActive = function(t) {
+    var p, tabs;
+    p = this.app.project;
+    if (!p) {
+      return false;
+    }
+    tabs = p.tabs || {};
+    if (tabs[t] != null) {
+      return tabs[t];
+    } else {
+      return Options.DEFAULT_TABS[t];
+    }
+  };
+
+  Options.prototype.setTabActive = function(t, active) {
+    var p;
+    p = this.app.project;
+    if (p.tabs == null) {
+      p.tabs = {};
+    }
+    p.tabs[t] = active;
+    this.updateProjectTabs();
+    return this.app.client.sendRequest({
+      name: "set_project_option",
+      project: this.app.project.id,
+      option: "tabs",
+      value: p.tabs
+    }, (function(_this) {
+      return function(msg) {};
+    })(this));
+  };
+
+  Options.prototype.updateProjectTabSelection = function() {
+    var element, tab;
+    for (tab in Options.DEFAULT_TABS) {
+      element = document.getElementById("project-option-active-tab-" + tab);
+      if (element != null) {
+        element.checked = this.isTabActive(tab);
+      }
+    }
+  };
+
+  Options.prototype.updateProjectTabs = function() {
+    var element, tab;
+    for (tab in Options.DEFAULT_TABS) {
+      element = document.getElementById("menuitem-" + tab);
+      if (element != null) {
+        element.style.display = this.isTabActive(tab) ? "block" : "none";
+      }
+    }
+  };
+
+  Options.prototype.initProjectTabSelection = function() {
+    var fn, tab;
+    fn = (function(_this) {
+      return function(tab) {
+        var element;
+        element = document.getElementById("project-option-active-tab-" + tab);
+        return element.addEventListener("change", function() {
+          return _this.setTabActive(tab, !_this.isTabActive(tab));
+        });
+      };
+    })(this);
+    for (tab in Options.DEFAULT_TABS) {
+      fn(tab);
+    }
+  };
+
+  Options.DEFAULT_TABS = {
+    code: true,
+    sprites: true,
+    maps: true,
+    sounds: true,
+    music: true,
+    assets: false,
+    doc: true,
+    publish: true
   };
 
   return Options;

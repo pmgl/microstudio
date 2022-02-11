@@ -1,0 +1,2 @@
+class @TextViewer
+  constructor:(@manager)->

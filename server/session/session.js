@@ -1060,6 +1060,11 @@ this.Session = (function() {
             project.set("libs", data.value);
           }
           break;
+        case "tabs":
+          if (typeof data.value === "object") {
+            project.set("tabs", data.value);
+          }
+          break;
         case "type":
           if (typeof data.value === "string") {
             project.setType(data.value);
@@ -1139,6 +1144,7 @@ this.Session = (function() {
           graphics: p.graphics,
           language: p.language,
           libs: p.libs,
+          tabs: p.tabs,
           date_created: p.date_created,
           last_modified: p.last_modified,
           "public": p["public"],
@@ -1174,6 +1180,7 @@ this.Session = (function() {
           graphics: p.graphics,
           language: p.language,
           libs: p.libs,
+          tabs: p.tabs,
           date_created: p.date_created,
           last_modified: p.last_modified,
           "public": p["public"],
@@ -1405,7 +1412,8 @@ this.Session = (function() {
           date_published: p.first_published,
           graphics: p.graphics,
           language: p.language,
-          libs: p.libs
+          libs: p.libs,
+          tabs: p.tabs
         });
       }
     }
@@ -1444,7 +1452,8 @@ this.Session = (function() {
             date_published: p.first_published,
             graphics: p.graphics,
             language: p.language,
-            libs: p.libs
+            libs: p.libs,
+            tabs: p.tabs
           };
           return this.send({
             name: "get_public_project",

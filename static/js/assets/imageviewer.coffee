@@ -1,0 +1,2 @@
+class @ImageViewer
+  constructor:(@manager)->

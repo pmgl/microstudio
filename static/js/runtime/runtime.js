@@ -8,6 +8,7 @@ this.Runtime = (function() {
     this.audio = new AudioCore(this);
     this.keyboard = new Keyboard();
     this.gamepad = new Gamepad();
+    this.asset_manager = new AssetManager(this);
     this.sprites = {};
     this.maps = {};
     this.sounds = {};
@@ -175,6 +176,7 @@ this.Runtime = (function() {
       sprites: this.sprites,
       sounds: this.sounds,
       music: this.music,
+      AssetManager: this.asset_manager,
       maps: this.maps,
       touch: this.touch,
       mouse: this.mouse,

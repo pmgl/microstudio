@@ -29,6 +29,7 @@ this.Project = (function() {
     this.libs = data.libs || [];
     this.aspect = data.aspect;
     this.users = data.users;
+    this.tabs = data.tabs;
     this.file_types = ["source", "sprite", "map", "asset", "sound", "music"];
     ref = this.file_types;
     for (k = 0, len = ref.length; k < len; k++) {
@@ -78,9 +79,7 @@ this.Project = (function() {
     this.updateMapList();
     this.updateSoundList();
     this.updateMusicList();
-    if (this.graphics === "M3D") {
-      this.updateAssetList();
-    }
+    this.updateAssetList();
     return this.loadDoc();
   };
 
@@ -449,6 +448,7 @@ this.Project = (function() {
     m = new ProjectAsset(this, file.file, file.size);
     this.asset_table[m.name] = m;
     this.asset_list.push(m);
+    this.asset_folder.push(m);
     return m;
   };
 
@@ -551,6 +551,33 @@ this.Project = (function() {
 
   Project.prototype.getMusic = function(name) {
     return this.music_table[name];
+  };
+
+  Project.prototype.createAsset = function(name, thumbnail, size, ext) {
+    var asset, count, filename;
+    if (name == null) {
+      name = "asset";
+    }
+    if (this.getAsset(name)) {
+      count = 2;
+      while (true) {
+        filename = "" + name + (count++);
+        if (this.getAsset(filename) == null) {
+          break;
+        }
+      }
+    } else {
+      filename = name;
+    }
+    asset = new ProjectAsset(this, filename + ("." + ext), size);
+    if (thumbnail) {
+      asset.thumbnail_url = thumbnail;
+    }
+    this.asset_table[asset.name] = asset;
+    this.asset_list.push(asset);
+    this.asset_folder.push(asset);
+    this.notifyListeners("assetlist");
+    return asset;
   };
 
   Project.prototype.setTitle = function(title) {

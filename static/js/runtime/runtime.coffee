@@ -5,6 +5,8 @@ class @Runtime
     @audio = new AudioCore @
     @keyboard = new Keyboard()
     @gamepad = new Gamepad()
+    @asset_manager = new AssetManager @
+
     @sprites = {}
     @maps = {}
     @sounds = {}
@@ -124,6 +126,7 @@ class @Runtime
       sprites: @sprites
       sounds: @sounds
       music: @music
+      AssetManager: @asset_manager
       maps: @maps
       touch: @touch
       mouse: @mouse

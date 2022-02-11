@@ -54,6 +54,8 @@ class @Options
               @app.project.libs.splice index,1
               @optionChanged "libs",@app.project.libs
 
+    @initProjectTabSelection()
+
   textInput:(element,action)->
     e = document.getElementById(element)
     e.addEventListener "input",(event)=>action(e.value)
@@ -89,6 +91,8 @@ class @Options
     @app.project.addListener @
 
     document.querySelector("#projectoptions-users").style.display = if @app.user.flags.guest then "none" else "block"
+    @updateProjectTabSelection()
+    @updateProjectTabs()
 
   updateSecretCodeLine:()->
     @project_code_validator.set @app.project.code
@@ -256,6 +260,57 @@ class @Options
 
         div.appendChild e
     return
+
+  isTabActive:(t)->
+    p = @app.project
+    return false if not p
+    tabs = p.tabs or {}
+    if tabs[t]? then return tabs[t] else return Options.DEFAULT_TABS[t]
+
+  setTabActive:(t,active)->
+    p = @app.project
+    if not p.tabs?
+      p.tabs = {}
+    p.tabs[t] = active
+    @updateProjectTabs()
+    @app.client.sendRequest {
+      name: "set_project_option"
+      project: @app.project.id
+      option: "tabs"
+      value: p.tabs
+    },(msg)=>
+
+  updateProjectTabSelection:()->
+    for tab of Options.DEFAULT_TABS
+      element = document.getElementById("project-option-active-tab-#{tab}")
+      if element?
+        element.checked = @isTabActive tab
+    return
+
+  updateProjectTabs:()->
+    for tab of Options.DEFAULT_TABS
+      element = document.getElementById("menuitem-#{tab}")
+      if element?
+        element.style.display = if @isTabActive(tab) then "block" else "none"
+    return
+
+  initProjectTabSelection:()->
+    for tab of Options.DEFAULT_TABS
+      do (tab)=>
+        element = document.getElementById("project-option-active-tab-#{tab}")
+        element.addEventListener "change",()=>
+          @setTabActive(tab,not @isTabActive(tab))
+    return
+
+  @DEFAULT_TABS =
+    code: true
+    sprites: true
+    maps: true
+    sounds: true
+    music: true
+    assets: false
+    doc: true
+    publish: true
 
 
 DEFAULT_CODE =

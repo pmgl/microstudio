@@ -75,7 +75,7 @@ div.projectoptions#projectoptions
           div.projectoption#project-option-language
             h3 #{translator.get("Language support")}
             select#projectoption-language
-              each val,key in language_engines  
+              each val,key in language_engines
                 option(value=key) #{translator.get(val.title)}
 
           div.projectoption#project-option-graphics
@@ -89,7 +89,7 @@ div.projectoptions#projectoptions
 
           div.projectoption#project-option-libs
             h3 #{translator.get("Additional tools and libraries")}
-            each val,key in optional_libs  
+            each val,key in optional_libs
               input(type="checkbox" id="project-option-lib-"+key)
               label(for="project-option-lib-"+key) #{translator.get(val.title)}
               div.tip #{translator.get("Note: this integration is experimental")}
@@ -97,10 +97,18 @@ div.projectoptions#projectoptions
 
     div#projectoptions-users
       div#projectoptions-users-content
-        h3 #{translator.get("Users")}
-        p #{translator.get("Here is where your grant other users access to edit your project. Users added here are granted full control on your project, except for adding or deleting other users.")}
-        div.userlist#project-user-list
+        div.projectoption
+          h3 #{translator.get("Users")}
+          p #{translator.get("Here is where your grant other users access to edit your project. Users added here are granted full control on your project, except for adding or deleting other users.")}
+          div.userlist#project-user-list
 
-        div.adduser
-          input.username#add-project-user-nick(placeholder=translator.get("nickname"))
-          div.addbutton#add-project-user <i class="fa fa-user-plus"></i> #{translator.get("Add User")}
+          div.adduser
+            input.username#add-project-user-nick(placeholder=translator.get("nickname"))
+            div.addbutton#add-project-user <i class="fa fa-user-plus"></i> #{translator.get("Add User")}
+
+        div.projectoption(style="padding-top:40px;")
+          h3 #{translator.get("Active Tabs")}
+          each tab in ["Code","Sprites","Maps","Sounds","Music","Assets","Doc","Publish"]
+            input(type="checkbox" id="project-option-active-tab-"+tab.toLowerCase())
+            label(for="project-option-active-tab-"+tab.toLowerCase()) #{translator.get(tab)}
+            br

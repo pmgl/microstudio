@@ -41,6 +41,7 @@ class @Project
     @platforms = data.platforms or ["computer","phone","tablet"]
     @controls = data.controls or ["touch","mouse"]
     @libs = data.libs or []
+    @tabs = data.tabs
     @type = data.type or "app"
     @deleted = data.deleted
     @users = []

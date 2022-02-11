@@ -463,6 +463,9 @@ AppUI = (function() {
     if (section === "music") {
       this.app.music_editor.update();
     }
+    if (section === "assets") {
+      this.app.assets_manager.update();
+    }
     if (section === "options") {
       this.app.options.update();
     }

@@ -32,6 +32,7 @@ class @Concatenator
       "/js/languages/microscript/program.js"
       "/js/languages/microscript/jstranspiler.js"
       '/js/runtime/runtime.js'
+      '/js/runtime/assetmanager.js'
       '/js/runtime/keyboard.js'
       '/js/runtime/gamepad.js'
       '/js/runtime/sprite.js'
@@ -202,7 +203,10 @@ class @Concatenator
       "/js/mapeditor/tilepicker.js"
 
       "/js/assets/assetsmanager.js"
-      "/js/assets/assetviewer.js"
+      "/js/assets/modelviewer.js"
+      "/js/assets/imageviewer.js"
+      "/js/assets/textviewer.js"
+      "/js/assets/fontviewer.js"
 
       "/js/sound/audiocontroller.js"
       "/js/sound/knob.js"
@@ -260,6 +264,7 @@ class @Concatenator
 
       '/js/runtime/runtime.js'
       '/js/runtime/screen.js'
+      '/js/runtime/assetmanager.js'
       '/js/runtime/keyboard.js'
       '/js/runtime/gamepad.js'
       '/js/runtime/sprite.js'

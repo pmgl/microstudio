@@ -301,9 +301,9 @@ class @ProjectManager
   writeProjectFile:(session,data)->
     return if not @canWrite session.user
     return if @project.deleted
-    return if not data.file? or not data.content?
-    return if data.content.length>10000000 # max file size 10 megabytes
-    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.file)
+    return if not data.file?
+    return if data.content? and data.content.length>10000000 # max file size 10 megabytes
+    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.file)
       console.info "wrong file name: #{data.file}"
       return
 
@@ -314,27 +314,28 @@ class @ProjectManager
 
     file = "#{@project.owner.id}/#{@project.id}/#{data.file}"
 
-    if data.file.endsWith(".ms") or data.file.endsWith(".json") or data.file.endsWith(".md")
-      content = data.content
-    else
-      content = new Buffer(data.content,"base64")
+    if data.content?
+      if data.file.split(".")[1] in ["ms","json","md","txt","csv"]
+        content = data.content
+      else
+        content = new Buffer(data.content,"base64")
 
-    @project.content.files.write file,content,()=>
-      version += 1
-      @setFileVersion data.file,version
-      @setFileSize data.file,content.length
-      if data.properties?
-        @setFileProperties data.file,data.properties
+      @project.content.files.write file,content,()=>
+        version += 1
+        @setFileVersion data.file,version
+        @setFileSize data.file,content.length
+        if data.properties?
+          @setFileProperties data.file,data.properties
 
-      if data.request_id?
-        session.send
-          name: "write_project_file"
-          version: version
-          size: content.length
-          request_id: data.request_id
+        if data.request_id?
+          session.send
+            name: "write_project_file"
+            version: version
+            size: content.length
+            request_id: data.request_id
 
-      @propagateFileChange(session,data.file,version,data.content,data.properties)
-      @project.touch()
+        @propagateFileChange(session,data.file,version,data.content,data.properties)
+        @project.touch()
 
     if data.thumbnail?
       th = new Buffer(data.thumbnail,"base64")
@@ -351,11 +352,11 @@ class @ProjectManager
     return if typeof data.dest != "string"
     return if data.dest.length>250
 
-    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.source)
+    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.source)
       console.info "wrong source name: #{data.source}"
       return
 
-    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.dest)
+    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.dest)
       console.info "wrong dest name: #{data.dest}"
       return
 
@@ -431,7 +432,7 @@ class @ProjectManager
         filename = files.splice(0,1)[0]
         value = contents.files[filename]
 
-        if /^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|jpg)$/.test(filename)
+        if /^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(filename)
           dest = filename
           d = dest.split("/")
           while d.length>2
@@ -442,7 +443,7 @@ class @ProjectManager
           if dest.endsWith ".js" then dest = dest.replace(".js",".ms")
           if dest.endsWith ".py" then dest = dest.replace(".py",".ms")
           if dest.endsWith ".lua" then dest = dest.replace(".lua",".ms")
-          type = if dest.split(".")[1] in ["ms","json","md"] then "string" else "nodebuffer"
+          type = if dest.split(".")[1] in ["ms","json","md","txt","csv"] then "string" else "nodebuffer"
           try
             contents.file(filename).async(type).then ((fileContent)=>
               if fileContent?

@@ -43,6 +43,7 @@
 
 #projectoptions-general-content {
   padding: 40px ;
+  overflow: hidden ;
 }
 
 #projectoptions-users {
@@ -54,7 +55,7 @@
 }
 
 #projectoptions-users-content {
-  padding: 40px 40px 40px 0px ;
+  padding: 40px ;
 }
 
 .projectoption {

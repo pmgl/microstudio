@@ -7,6 +7,14 @@
   overflow: hidden ;
 }
 
+.assets-right {
+  position: absolute ;
+  right: 0px ;
+  width: 400px ;
+  top: 0 ;
+  bottom: 0 ;
+  overflow: hidden ;
+}
 
 .assets-drop {
   position: absolute ;
@@ -341,4 +349,105 @@
   color: #FFF ;
   cursor: pointer ;
   white-space: nowrap;
+}
+
+#asset-viewer {
+  position: absolute ;
+  top: 40px ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 40px ;
+}
+
+#font-asset-viewer {
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  padding: 40px ;
+  font-size: 2em ;
+  color: #CCC ;
+  overflow: hidden ;
+}
+#font-asset-viewer h1 {
+  font-family: inherit ;
+  color: #FFF ;
+  font-size: 2em ;
+}
+
+#model-asset-viewer {
+  position: absolute ;
+  top: 2px ;
+  left: 2px ;
+  right: 0px ;
+  bottom: 0px ;
+  overflow: hidden ;
+}
+#model-asset-viewer canvas {
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+}
+
+#asset-load-code {
+  position: absolute ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0px ;
+  height: 20px ;
+  padding: 10px ;
+}
+#asset-load-code div {
+  display: inline-block ;
+  position: relative ;
+}
+#asset-load-code i {
+  position: absolute ;
+  left: 10px ;
+  top: 4px ;
+  color: rgba(0,0,0,.5);
+  cursor: pointer ;
+}
+
+#asset-load-code select {
+  font-size: 14px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  border: none;
+  padding: 2px;
+  border-radius: 5px ;
+  margin: 0 10px 0 0;
+  font-family: "Source Sans Pro",Verdana ;
+}
+
+#asset-load-code select option {
+  background-color: hsl(200,50%,10%);
+  padding: 2px ;
+}
+
+#asset-load-code select:focus {
+  outline: none ;
+  background: rgba(255,255,255,.4);
+}
+
+#asset-load-code input {
+  text-align: left;
+  background: hsla(200,40%,80%,.8);
+  box-sizing: border-box;
+  width: 500px ;
+  border-radius: 5px;
+  border: none ;
+  padding: 5px 5px 5px 30px ;
+  font-family: 'Ubuntu Mono';
+}
+#asset-load-code input:focus {
+  border: none ;
+  outline: none ;
+  background: hsla(200,40%,80%,1);
+}
+#asset-load-code input::selection {
+  background: rgba(0,0,0,.3);
 }

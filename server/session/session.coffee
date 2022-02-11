@@ -644,6 +644,10 @@ class @Session
 
             project.set "libs",data.value
 
+        when "tabs"
+          if typeof data.value == "object"
+            project.set "tabs",data.value
+
         when "type"
           project.setType data.value if typeof data.value == "string"
 
@@ -704,6 +708,7 @@ class @Session
           graphics: p.graphics
           language: p.language
           libs: p.libs
+          tabs: p.tabs
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
@@ -735,6 +740,7 @@ class @Session
           graphics: p.graphics
           language: p.language
           libs: p.libs
+          tabs: p.tabs
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
@@ -889,6 +895,7 @@ class @Session
           graphics: p.graphics
           language: p.language
           libs: p.libs
+          tabs: p.tabs
 
     @send
       name: "public_projects"
@@ -922,6 +929,7 @@ class @Session
             graphics: p.graphics
             language: p.language
             libs: p.libs
+            tabs: p.tabs
 
           @send
             name: "get_public_project"

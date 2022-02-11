@@ -1,15 +1,43 @@
-div.create-asset-button#create-asset-button <i class="fa fa-plus-square"></i> #{translator.get("Add Asset")}
+div.assets-left
+  div.assets-bar#asset-asset-bar
+    div.create-asset-button <i class="fa fa-plus-square"></i> #{translator.get("Assets")}
+    i.fa.fa-folder-plus.create-folder-button(title=translator.get("New Folder"))
 
-div.assetlist#assetlist
-  div.asset-list#asset-list
+  div.assets-drop
+    div <i class="fas fa-arrow-circle-down"></i>
+    div #{translator.get("You can drop assets here")}
 
-div.assetinfo#assetinfo
-  input(type="text" value="")#asset-name
-  div.validate-button-container#asset-name-button
-    div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+  div#create-asset-button(style="display:none") <i class="fa fa-plus-square"></i> #{translator.get("Add Asset")}
 
-  div.buttons
-    div#delete-asset.delete(title=translator.get("Delete Asset"))
-      i.fa.fa-trash
+  div.assetlist#assetlist
+    div#asset-list
 
-div.asseteditor#asset-viewer
+div.horizontal-splitbar#assets-splitbar
+
+div.assets-right
+  div.assetinfo#assetinfo
+    input(type="text" value="")#asset-name
+    div.validate-button-container#asset-name-button
+      div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+
+    div.buttons
+      div#capture-asset(title=translator.get("Capture icon"))
+        i.fa.fa-camera
+
+      div#delete-asset.delete(title=translator.get("Delete Sound"))
+        i.fa.fa-trash
+
+  div#asset-editor-locked
+  div#asset-viewer
+    div#model-asset-viewer
+    div#font-asset-viewer
+    div#json-asset-viewer
+    div#image-asset-viewer
+
+  div#asset-load-code
+    select#asset-load-code-select
+      option(value="1") Load Font at init
+      option(value="2") Use Font
+    div
+      input(type="text" spellcheck="false" readonly=true)
+      i.fa.fa-copy#asset-load-code-copy(title=translator.get("Copy Code"))

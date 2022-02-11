@@ -260,34 +260,36 @@ class @WebApp
           manager.listFiles "maps",(maps)=>
             manager.listFiles "sounds",(sounds)=>
               manager.listFiles "music",(music)=>
-                resources = JSON.stringify
-                  sources: sources
-                  images: sprites
-                  maps: maps
-                  sounds: sounds
-                  music: music
+                manager.listFiles "assets",(assets)=>
+                  resources = JSON.stringify
+                    sources: sources
+                    images: sprites
+                    maps: maps
+                    sounds: sounds
+                    music: music
+                    assets: assets
 
-                resources = "var resources = #{resources};\n"
-                if not @play_funk? or not @server.use_cache
-                  @play_funk = pug.compileFile "../templates/play/play.pug"
+                  resources = "var resources = #{resources};\n"
+                  if not @play_funk? or not @server.use_cache
+                    @play_funk = pug.compileFile "../templates/play/play.pug"
 
-                res.send @play_funk
-                  user: user
-                  javascript_files: jsfiles
-                  fonts: @fonts.fonts
-                  debug: req.query? and req.query.debug?
-                  language: project.language
-                  game:
-                    name: project.slug
-                    title: project.title
-                    author: user.nick
-                    resources: resources
-                    orientation: project.orientation
-                    aspect: project.aspect
-                    graphics: project.graphics
-                    libs: JSON.stringify(project.libs)
-                    description: project.description
-                    poster: poster
+                  res.send @play_funk
+                    user: user
+                    javascript_files: jsfiles
+                    fonts: @fonts.fonts
+                    debug: req.query? and req.query.debug?
+                    language: project.language
+                    game:
+                      name: project.slug
+                      title: project.title
+                      author: user.nick
+                      resources: resources
+                      orientation: project.orientation
+                      aspect: project.aspect
+                      graphics: project.graphics
+                      libs: JSON.stringify(project.libs)
+                      description: project.description
+                      poster: poster
 
     @app.get /^\/[A-Za-z0-9_]+\/?$/,(req,res)=>
       return if @ensureIOArea(req,res)
@@ -509,7 +511,7 @@ class @WebApp
 
 
     # asset files
-    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_]+.(glb|jpg|png)$/,(req,res)=>
+    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_-]+.(glb|obj|jpg|png|ttf|txt|csv|json)$/,(req,res)=>
       s = req.path.split("/")
       access = @getProjectAccess req,res
       return if not access?
@@ -521,9 +523,14 @@ class @WebApp
       @server.content.files.read "#{user.id}/#{project.id}/assets/#{asset}","binary",(content)=>
         if content?
           switch asset.split(".")[1]
-            when "png" then res.setHeader("Content-Type", "image/png")
-            when "jpg" then res.setHeader("Content-Type", "image/jpg")
             when "glb" then res.setHeader("Content-Type", "model/gltf-binary")
+            when "obj" then res.setHeader("Content-Type", "model/gltf-binary")
+            when "jpg" then res.setHeader("Content-Type", "image/jpg")
+            when "png" then res.setHeader("Content-Type", "image/png")
+            when "ttf" then res.setHeader("Content-Type", "application/font-sfnt")
+            when "txt" then res.setHeader("Content-Type", "text/plain")
+            when "csv" then res.setHeader("Content-Type", "text/csv")
+            when "json" then res.setHeader("Content-Type", "application/json")
 
           res.send content
         else

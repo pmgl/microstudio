@@ -453,20 +453,20 @@ this.ProjectManager = (function() {
   };
 
   ProjectManager.prototype.writeProjectFile = function(session, data) {
-    var content, f, file, th, version;
+    var content, f, file, ref, th, version;
     if (!this.canWrite(session.user)) {
       return;
     }
     if (this.project.deleted) {
       return;
     }
-    if ((data.file == null) || (data.content == null)) {
+    if (data.file == null) {
       return;
     }
-    if (data.content.length > 10000000) {
+    if ((data.content != null) && data.content.length > 10000000) {
       return;
     }
-    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.file)) {
+    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.file)) {
       console.info("wrong file name: " + data.file);
       return;
     }
@@ -477,31 +477,33 @@ this.ProjectManager = (function() {
       }
     }
     file = this.project.owner.id + "/" + this.project.id + "/" + data.file;
-    if (data.file.endsWith(".ms") || data.file.endsWith(".json") || data.file.endsWith(".md")) {
-      content = data.content;
-    } else {
-      content = new Buffer(data.content, "base64");
+    if (data.content != null) {
+      if ((ref = data.file.split(".")[1]) === "ms" || ref === "json" || ref === "md" || ref === "txt" || ref === "csv") {
+        content = data.content;
+      } else {
+        content = new Buffer(data.content, "base64");
+      }
+      this.project.content.files.write(file, content, (function(_this) {
+        return function() {
+          version += 1;
+          _this.setFileVersion(data.file, version);
+          _this.setFileSize(data.file, content.length);
+          if (data.properties != null) {
+            _this.setFileProperties(data.file, data.properties);
+          }
+          if (data.request_id != null) {
+            session.send({
+              name: "write_project_file",
+              version: version,
+              size: content.length,
+              request_id: data.request_id
+            });
+          }
+          _this.propagateFileChange(session, data.file, version, data.content, data.properties);
+          return _this.project.touch();
+        };
+      })(this));
     }
-    this.project.content.files.write(file, content, (function(_this) {
-      return function() {
-        version += 1;
-        _this.setFileVersion(data.file, version);
-        _this.setFileSize(data.file, content.length);
-        if (data.properties != null) {
-          _this.setFileProperties(data.file, data.properties);
-        }
-        if (data.request_id != null) {
-          session.send({
-            name: "write_project_file",
-            version: version,
-            size: content.length,
-            request_id: data.request_id
-          });
-        }
-        _this.propagateFileChange(session, data.file, version, data.content, data.properties);
-        return _this.project.touch();
-      };
-    })(this));
     if (data.thumbnail != null) {
       th = new Buffer(data.thumbnail, "base64");
       f = file.split("/");
@@ -530,11 +532,11 @@ this.ProjectManager = (function() {
     if (data.dest.length > 250) {
       return;
     }
-    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.source)) {
+    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.source)) {
       console.info("wrong source name: " + data.source);
       return;
     }
-    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|jpg)$/.test(data.dest)) {
+    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.dest)) {
       console.info("wrong dest name: " + data.dest);
       return;
     }
@@ -631,7 +633,7 @@ this.ProjectManager = (function() {
         if (files.length > 0) {
           filename = files.splice(0, 1)[0];
           value = contents.files[filename];
-          if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|jpg)$/.test(filename)) {
+          if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(filename)) {
             dest = filename;
             d = dest.split("/");
             while (d.length > 2) {
@@ -648,7 +650,7 @@ this.ProjectManager = (function() {
             if (dest.endsWith(".lua")) {
               dest = dest.replace(".lua", ".ms");
             }
-            type = (ref = dest.split(".")[1]) === "ms" || ref === "json" || ref === "md" ? "string" : "nodebuffer";
+            type = (ref = dest.split(".")[1]) === "ms" || ref === "json" || ref === "md" || ref === "txt" || ref === "csv" ? "string" : "nodebuffer";
             try {
               return contents.file(filename).async(type).then((function(fileContent) {
                 if (fileContent != null) {

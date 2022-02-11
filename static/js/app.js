@@ -300,9 +300,7 @@ App = (function() {
     this.map_editor.projectOpened();
     this.sound_editor.projectOpened();
     this.music_editor.projectOpened();
-    if (project.graphics === "M3D") {
-      this.assets_manager.projectOpened();
-    }
+    this.assets_manager.projectOpened();
     this.runwindow.projectOpened();
     this.options.projectOpened();
     this.publish.loadProject(this.project);

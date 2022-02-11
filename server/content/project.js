@@ -55,6 +55,7 @@ this.Project = (function() {
     this.platforms = data.platforms || ["computer", "phone", "tablet"];
     this.controls = data.controls || ["touch", "mouse"];
     this.libs = data.libs || [];
+    this.tabs = data.tabs;
     this.type = data.type || "app";
     this.deleted = data.deleted;
     this.users = [];

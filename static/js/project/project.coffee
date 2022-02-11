@@ -19,6 +19,7 @@ class @Project
     @libs = data.libs or []
     @aspect = data.aspect
     @users = data.users
+    @tabs = data.tabs
 
     @file_types = ["source","sprite","map","asset","sound","music"]
     for f in @file_types
@@ -57,8 +58,7 @@ class @Project
     @updateMapList()
     @updateSoundList()
     @updateMusicList()
-    if @graphics == "M3D"
-      @updateAssetList()
+    @updateAssetList()
     @loadDoc()
 
   loadDoc:()->
@@ -309,6 +309,7 @@ class @Project
     m = new ProjectAsset @,file.file,file.size
     @asset_table[m.name] = m
     @asset_list.push m
+    @asset_folder.push m
     m
 
   getAsset:(name)->
@@ -380,6 +381,24 @@ class @Project
 
   getMusic:(name)->
     @music_table[name]
+
+
+  createAsset:(name="asset",thumbnail,size,ext)->
+    if @getAsset(name)
+      count = 2
+      loop
+        filename = "#{name}#{count++}"
+        break if not @getAsset(filename)?
+    else
+      filename = name
+
+    asset = new ProjectAsset @,filename+".#{ext}",size
+    if thumbnail then asset.thumbnail_url = thumbnail
+    @asset_table[asset.name] = asset
+    @asset_list.push asset
+    @asset_folder.push asset
+    @notifyListeners "assetlist"
+    asset
 
   setTitle:(@title)->
     @notifyListeners "title"

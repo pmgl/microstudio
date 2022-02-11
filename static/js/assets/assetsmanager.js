@@ -1,222 +1,188 @@
-this.AssetsManager = (function() {
+var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+this.AssetsManager = (function(superClass) {
+  extend(AssetsManager, superClass);
+
   function AssetsManager(app) {
     this.app = app;
-    this.viewer = new AssetViewer(this);
+    AssetsManager.__super__.constructor.call(this, this.app);
+    this.folder = "assets";
+    this.item = "asset";
+    this.list_change_event = "assetlist";
+    this.get_item = "getAsset";
+    this.use_thumbnails = true;
+    this.extensions = ["glb", "obj", "json", "ttf", "png", "jpg", "txt", "csv"];
+    this.update_list = "updateAssetList";
+    this.model_viewer = new ModelViewer(this);
+    this.font_viewer = new FontViewer(this);
+    this.image_viewer = new ImageViewer(this);
+    this.text_viewer = new TextViewer(this);
+    this.init();
+    document.querySelector("#capture-asset").addEventListener("click", (function(_this) {
+      return function() {
+        if (_this.asset != null) {
+          switch (_this.asset.ext) {
+            case "glb":
+              return _this.model_viewer.updateThumbnail();
+          }
+        }
+      };
+    })(this));
+    document.querySelector("#asset-load-code i").addEventListener("click", (function(_this) {
+      return function() {
+        var code, copy, input;
+        input = document.querySelector("#asset-load-code input");
+        copy = document.querySelector("#asset-load-code i");
+        code = input.value;
+        navigator.clipboard.writeText(code);
+        input.value = _this.app.translator.get("Copied!");
+        copy.classList.remove("fa-copy");
+        copy.classList.add("fa-check");
+        return setTimeout((function() {
+          copy.classList.remove("fa-check");
+          copy.classList.add("fa-copy");
+          return input.value = code;
+        }), 1000);
+      };
+    })(this));
   }
 
-  AssetsManager.prototype.projectOpened = function() {
-    return this.app.project.addListener(this);
+  AssetsManager.prototype.update = function() {
+    return AssetsManager.__super__.update.call(this);
   };
 
-  AssetsManager.prototype.projectUpdate = function(change) {
-    if (change === "assetlist") {
-      return this.rebuildAssetList();
-    }
-  };
-
-  AssetsManager.prototype.init = function() {
-    var s;
-    if (this.initialized) {
-      return;
-    }
-    this.initialized = true;
-    s = document.createElement("script");
-    s.src = "/lib/three.min.js";
-    document.body.appendChild(s);
-    s.onload = (function(_this) {
+  AssetsManager.prototype.checkThumbnail = function(asset, callback) {
+    var img, url;
+    url = asset.getThumbnailURL();
+    img = new Image;
+    img.src = url;
+    return img.onload = (function(_this) {
       return function() {
-        s = document.createElement("script");
-        s.src = "/lib/GLTFLoader.js";
-        return document.body.appendChild(s);
+        var canvas, ctx, data;
+        if (img.width > 0 && img.height > 0) {
+          canvas = document.createElement("canvas");
+          canvas.width = 1;
+          canvas.height = 1;
+          ctx = canvas.getContext("2d");
+          ctx.drawImage(img, -31, -31);
+          data = ctx.getImageData(0, 0, 1, 1);
+          if (data.data[3] > 128) {
+            return;
+          }
+        }
+        return callback();
       };
     })(this);
-    document.getElementById("assets-section").addEventListener("dragover", (function(_this) {
-      return function(event) {
-        return event.preventDefault();
-      };
-    })(this));
-    document.getElementById("assets-section").addEventListener("drop", (function(_this) {
-      return function(event) {
-        var err, file, i, j, len, list, ref;
-        event.preventDefault();
-        try {
-          list = [];
-          ref = event.dataTransfer.items;
-          for (j = 0, len = ref.length; j < len; j++) {
-            i = ref[j];
-            list.push(i.getAsFile());
-          }
-          if (list.length > 0) {
-            file = list[0];
-            return _this.fileDropped(file);
-          }
-        } catch (error) {
-          err = error;
-          return console.error(err);
-        }
-      };
-    })(this));
-    this.name_validator = new InputValidator(document.getElementById("asset-name"), document.getElementById("asset-name-button"), null, (function(_this) {
-      return function(value) {
-        var name;
-        if (_this.dropped_model != null) {
-          name = value[0].toLowerCase();
-          if (RegexLib.filename.test(name) && (_this.app.project.getAsset(name) == null)) {
-            _this.app.project.addPendingChange(_this);
-            _this.app.client.sendRequest({
-              name: "write_project_file",
-              project: _this.app.project.id,
-              file: "assets/" + name + ".glb",
-              properties: {},
-              content: _this.dropped_model,
-              thumbnail: _this.viewer.getThumbnail()
-            }, function(msg) {
-              console.info(msg);
-              _this.app.project.removePendingChange(_this);
-              return _this.app.project.updateAssetList();
-            });
-            delete _this.dropped_model;
-            document.getElementById("asset-name").disabled = true;
-            return _this.name_validator.validate();
-          }
-        }
-      };
-    })(this));
-    this.name_validator.accept_initial = true;
-    this.name_validator.auto_reset = false;
-    return document.getElementById("delete-asset").addEventListener("click", (function(_this) {
-      return function() {
-        return _this.deleteAsset();
-      };
-    })(this));
   };
 
-  AssetsManager.prototype.fileDropped = function(file) {
+  AssetsManager.prototype.openItem = function(name) {
+    var e, i, len, parent, ref;
+    AssetsManager.__super__.openItem.call(this, name);
+    this.asset = this.app.project.getAsset(name);
+    console.info(this.asset);
+    parent = document.getElementById("asset-viewer");
+    ref = parent.childNodes;
+    for (i = 0, len = ref.length; i < len; i++) {
+      e = ref[i];
+      e.style.display = "none";
+    }
+    if (this.asset != null) {
+      switch (this.asset.ext) {
+        case "ttf":
+          return this.font_viewer.view(this.asset);
+        case "glb":
+          return this.model_viewer.view(this.asset);
+      }
+    }
+  };
+
+  AssetsManager.prototype.createAsset = function(folder) {
+    var input;
+    input = document.createElement("input");
+    input.type = "file";
+    input.addEventListener("change", (function(_this) {
+      return function(event) {
+        var f, files, i, len;
+        files = event.target.files;
+        if (files.length >= 1) {
+          for (i = 0, len = files.length; i < len; i++) {
+            f = files[i];
+            _this.fileDropped(f, folder);
+          }
+        }
+      };
+    })(this));
+    return input.click();
+  };
+
+  AssetsManager.prototype.fileDropped = function(file, folder) {
     var reader;
     console.info("processing " + file.name);
+    console.info("folder: " + folder);
     reader = new FileReader();
     reader.addEventListener("load", (function(_this) {
       return function() {
+        var asset, canvas, data, ext, name, ref, split;
         console.info("file read, size = " + reader.result.length);
-        _this.viewer.view(reader.result);
-        _this.dropped_model = reader.result.split(",")[1];
-        console.info("file size = " + _this.dropped_model.length);
-        _this.name_validator.set(file.name.split(".")[0]);
-        _this.name_validator.change();
-        return document.getElementById("asset-name").disabled = false;
+        if (reader.result.length > 6000000) {
+          return;
+        }
+        split = file.name.split(".");
+        name = split[0];
+        ext = split[1];
+        if (ref = !ext, indexOf.call(_this.extensions, ref) >= 0) {
+          return;
+        }
+        name = _this.findNewFilename(name, "getAsset", folder);
+        if (folder != null) {
+          name = folder.getFullDashPath() + "-" + name;
+        }
+        if (folder != null) {
+          folder.setOpen(true);
+        }
+        canvas = document.createElement("canvas");
+        canvas.width = canvas.height = 64;
+        asset = _this.app.project.createAsset(name, canvas.toDataURL(), reader.result.length, ext);
+        asset.uploading = true;
+        asset.local_url = reader.result;
+        _this.setSelectedItem(name);
+        _this.openItem(name);
+        data = reader.result.split(",")[1];
+        _this.app.project.addPendingChange(_this);
+        return _this.app.client.sendRequest({
+          name: "write_project_file",
+          project: _this.app.project.id,
+          file: "assets/" + name + "." + ext,
+          properties: {},
+          content: data,
+          thumbnail: canvas.toDataURL().split(",")[1]
+        }, function(msg) {
+          console.info(msg);
+          _this.app.project.removePendingChange(_this);
+          asset.uploading = false;
+          _this.app.project.updateAssetList();
+          return _this.checkNameFieldActivation();
+        });
       };
     })(this));
     return reader.readAsDataURL(file);
   };
 
-  AssetsManager.prototype.createAssetBox = function(asset) {
-    var activeuser, element, icon, iconbox, text;
-    element = document.createElement("div");
-    element.classList.add("asset-box");
-    element.classList.add("large");
-    element.setAttribute("id", "project-asset-" + asset.name);
-    element.setAttribute("title", asset.name);
-    if (asset.name === this.selected_asset) {
-      element.classList.add("selected");
-    }
-    iconbox = document.createElement("div");
-    iconbox.classList.add("icon-box");
-    icon = new Image;
-    icon.src = asset.getThumbnailURL();
-    icon.setAttribute("id", "asset-image-" + asset.name);
-    iconbox.appendChild(icon);
-    element.appendChild(iconbox);
-    element.appendChild(document.createElement("br"));
-    text = document.createElement("span");
-    text.innerHTML = asset.name;
-    element.appendChild(text);
-    element.addEventListener("click", (function(_this) {
-      return function() {
-        return _this.openAsset(asset.name);
+  AssetsManager.prototype.updateAssetIcon = function(asset, canvas) {
+    return this.app.client.sendRequest({
+      name: "write_project_file",
+      project: this.app.project.id,
+      file: "assets/" + asset.name + "." + asset.ext,
+      thumbnail: canvas.toDataURL().split(",")[1]
+    }, (function(_this) {
+      return function(msg) {
+        return console.info(msg);
       };
     })(this));
-    activeuser = document.createElement("i");
-    activeuser.classList.add("active-user");
-    activeuser.classList.add("fa");
-    activeuser.classList.add("fa-user");
-    element.appendChild(activeuser);
-    return element;
-  };
-
-  AssetsManager.prototype.rebuildAssetList = function() {
-    var element, j, len, list, ref, s;
-    list = document.getElementById("asset-list");
-    list.innerHTML = "";
-    ref = this.app.project.asset_list;
-    for (j = 0, len = ref.length; j < len; j++) {
-      s = ref[j];
-      element = this.createAssetBox(s);
-      list.appendChild(element);
-    }
-    if ((this.selected_asset != null) && (this.app.project.getAsset(this.selected_asset) == null)) {
-      this.setSelectedAsset(null);
-    }
-  };
-
-  AssetsManager.prototype.openAsset = function(name) {
-    var asset;
-    asset = this.app.project.getAsset(name);
-    if (asset != null) {
-      this.setSelectedAsset(name);
-      return this.viewer.view(asset.getURL());
-    }
-  };
-
-  AssetsManager.prototype.setSelectedAsset = function(asset) {
-    var e, j, k, len, len1, list;
-    this.selected_asset = asset;
-    list = document.getElementById("asset-list").childNodes;
-    if (this.selected_asset != null) {
-      for (j = 0, len = list.length; j < len; j++) {
-        e = list[j];
-        if (e.getAttribute("id") === ("project-asset-" + asset)) {
-          e.classList.add("selected");
-        } else {
-          e.classList.remove("selected");
-        }
-      }
-      document.getElementById("asset-name").value = asset;
-      this.name_validator.update();
-      document.getElementById("asset-name").disabled = true;
-      return this.viewer.resize();
-    } else {
-      for (k = 0, len1 = list.length; k < len1; k++) {
-        e = list[k];
-        e.classList.remove("selected");
-      }
-      return document.getElementById("asset-name").value = "";
-    }
-  };
-
-  AssetsManager.prototype.deleteAsset = function() {
-    var a, msg;
-    if (this.selected_asset != null) {
-      a = this.app.project.getAsset(this.selected_asset);
-      if (a != null) {
-        msg = this.app.translator.get("Really delete %ITEM%?").replace("%ITEM%", this.selected_asset);
-        return ConfirmDialog.confirm(msg, this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
-          return function() {
-            return _this.app.client.sendRequest({
-              name: "delete_project_file",
-              project: _this.app.project.id,
-              file: a.file,
-              thumbnail: true
-            }, function(msg) {
-              _this.app.project.updateAssetList();
-              _this.viewer.clear();
-              return _this.setSelectedAsset(null);
-            });
-          };
-        })(this));
-      }
-    }
   };
 
   return AssetsManager;
 
-})();
+})(Manager);

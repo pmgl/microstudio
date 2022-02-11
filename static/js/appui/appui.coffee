@@ -359,6 +359,9 @@ class AppUI
     if section == "music"
       @app.music_editor.update()
 
+    if section == "assets"
+      @app.assets_manager.update()
+
     if section == "options"
       @app.options.update()
 

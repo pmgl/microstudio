@@ -1,176 +1,142 @@
-class @AssetsManager
+class @AssetsManager extends Manager
   constructor:(@app)->
-    @viewer = new AssetViewer @
+    super(@app)
 
-  projectOpened:()->
-    @app.project.addListener @
-    #@setSelectedAsset null
+    @folder = "assets"
+    @item = "asset"
+    @list_change_event = "assetlist"
+    @get_item = "getAsset"
+    @use_thumbnails = true
+    @extensions = ["glb","obj","json","ttf","png","jpg","txt","csv"]
+    @update_list = "updateAssetList"
 
-  projectUpdate:(change)->
-    if change == "assetlist"
-      @rebuildAssetList()
+    @model_viewer = new ModelViewer @
+    @font_viewer = new FontViewer @
+    @image_viewer = new ImageViewer @
+    @text_viewer = new TextViewer @
 
-  init:()->
-    return if @initialized
+    @init()
 
-    @initialized = true
-    s = document.createElement "script"
-    s.src = "/lib/three.min.js"
-    document.body.appendChild s
+    document.querySelector("#capture-asset").addEventListener "click",()=>
+      if @asset?
+        switch @asset.ext
+          when "glb" then @model_viewer.updateThumbnail()
 
-    s.onload = ()=>
-      s = document.createElement "script"
-      s.src = "/lib/GLTFLoader.js"
-      document.body.appendChild s
+    document.querySelector("#asset-load-code i").addEventListener "click",()=>
+      input = document.querySelector("#asset-load-code input")
+      copy = document.querySelector("#asset-load-code i")
+      code = input.value
+      navigator.clipboard.writeText code
+      input.value = @app.translator.get "Copied!"
 
-    document.getElementById("assets-section").addEventListener "dragover",(event)=>
-      event.preventDefault()
-      #console.info event
+      copy.classList.remove "fa-copy"
+      copy.classList.add "fa-check"
 
-    document.getElementById("assets-section").addEventListener "drop",(event)=>
-      event.preventDefault()
-      try
-        list = []
-        for i in event.dataTransfer.items
-          list.push i.getAsFile()
+      setTimeout (()=>
+        copy.classList.remove "fa-check"
+        copy.classList.add "fa-copy"
+        input.value = code),1000
 
-        if list.length>0
-          file = list[0]
-          @fileDropped(file)
-      catch err
-        console.error err
+  update:()->
+    super()
 
-    @name_validator = new InputValidator document.getElementById("asset-name"),
-      document.getElementById("asset-name-button"),
-      null,
-      (value)=>
-        if @dropped_model?
-          name = value[0].toLowerCase()
-          if RegexLib.filename.test(name) and not @app.project.getAsset(name)?
-            @app.project.addPendingChange @
-            @app.client.sendRequest {
-              name: "write_project_file"
-              project: @app.project.id
-              file: "assets/#{name}.glb"
-              properties: {}
-              content: @dropped_model
-              thumbnail: @viewer.getThumbnail()
-            },(msg)=>
-              console.info msg
-              @app.project.removePendingChange(@)
-              @app.project.updateAssetList()
+  checkThumbnail:(asset,callback)->
+    url = asset.getThumbnailURL()
+    img = new Image
+    img.src = url
+    img.onload = ()=>
+      if img.width>0 and img.height>0
+        canvas = document.createElement "canvas"
+        canvas.width = 1
+        canvas.height = 1
+        ctx = canvas.getContext "2d"
+        ctx.drawImage img,-31,-31
+        data = ctx.getImageData 0,0,1,1
+        if data.data[3]>128
+          return
 
-            delete @dropped_model
-            document.getElementById("asset-name").disabled = true
-            @name_validator.validate()
+      callback()
 
-    @name_validator.accept_initial = true
-    @name_validator.auto_reset = false
+  openItem:(name)->
+    super(name)
+    @asset = @app.project.getAsset(name)
+    console.info @asset
+    parent = document.getElementById "asset-viewer"
+    for e in parent.childNodes
+      e.style.display = "none"
 
-    document.getElementById("delete-asset").addEventListener "click",()=>
-      @deleteAsset()
+    if @asset?
+      switch @asset.ext
+        when "ttf"
+          @font_viewer.view @asset
 
-  fileDropped:(file)->
+        when "glb"
+          @model_viewer.view @asset
+
+  createAsset:(folder)->
+    input = document.createElement "input"
+    input.type = "file"
+    #input.accept = ".glb"
+    input.addEventListener "change",(event)=>
+      files = event.target.files
+      if files.length>=1
+        for f in files
+          @fileDropped(f,folder)
+      return
+
+    input.click()
+
+  fileDropped:(file,folder)->
     console.info "processing #{file.name}"
+    console.info "folder: "+folder
     reader = new FileReader()
     reader.addEventListener "load",()=>
       console.info "file read, size = "+ reader.result.length
-      @viewer.view(reader.result)
-      @dropped_model = reader.result.split(",")[1]
-      console.info "file size = " +@dropped_model.length
-      @name_validator.set file.name.split(".")[0]
-      @name_validator.change()
-      document.getElementById("asset-name").disabled = false
+      return if reader.result.length>6000000
+
+      split = file.name.split(".")
+      name = split[0]
+      ext = split[1]
+      return if not ext in @extensions
+
+      name = @findNewFilename name,"getAsset",folder
+      if folder? then name = folder.getFullDashPath()+"-"+name
+      if folder? then folder.setOpen true
+
+      canvas = document.createElement "canvas"
+      canvas.width = canvas.height = 64
+
+      asset = @app.project.createAsset(name,canvas.toDataURL(),reader.result.length,ext)
+      asset.uploading = true
+      asset.local_url = reader.result
+      
+      @setSelectedItem name
+      @openItem name
+
+      data = reader.result.split(",")[1]
+      @app.project.addPendingChange @
+
+      @app.client.sendRequest {
+        name: "write_project_file"
+        project: @app.project.id
+        file: "assets/#{name}.#{ext}"
+        properties: {}
+        content: data
+        thumbnail: canvas.toDataURL().split(",")[1]
+      },(msg)=>
+        console.info msg
+        @app.project.removePendingChange(@)
+        asset.uploading = false
+        @app.project.updateAssetList()
+        @checkNameFieldActivation()
 
     reader.readAsDataURL(file)
-      #url = "data:application/javascript;base64,"+btoa(Audio.processor)
 
-  createAssetBox:(asset)->
-    element = document.createElement "div"
-    element.classList.add "asset-box"
-    element.classList.add "large"
-    element.setAttribute "id","project-asset-#{asset.name}"
-    element.setAttribute "title",asset.name
-    if asset.name == @selected_asset
-      element.classList.add "selected"
-
-    iconbox = document.createElement "div"
-    iconbox.classList.add("icon-box")
-
-    icon = new Image
-    icon.src = asset.getThumbnailURL()
-    icon.setAttribute "id","asset-image-#{asset.name}"
-    iconbox.appendChild icon
-    element.appendChild iconbox
-
-    element.appendChild document.createElement "br"
-
-    text = document.createElement "span"
-    text.innerHTML = asset.name
-
-    element.appendChild text
-
-    element.addEventListener "click",()=>
-      @openAsset asset.name
-
-    activeuser = document.createElement "i"
-    activeuser.classList.add "active-user"
-    activeuser.classList.add "fa"
-    activeuser.classList.add "fa-user"
-    element.appendChild activeuser
-    element
-
-  rebuildAssetList:()->
-    list = document.getElementById "asset-list"
-    list.innerHTML = ""
-
-    for s in @app.project.asset_list
-      element = @createAssetBox s
-      list.appendChild element
-
-    #@updateActiveUsers()
-    if @selected_asset? and not @app.project.getAsset(@selected_asset)?
-      @setSelectedAsset null
-    return
-
-  openAsset:(name)->
-    asset = @app.project.getAsset name
-    if asset?
-      @setSelectedAsset name
-      @viewer.view asset.getURL()
-
-  setSelectedAsset:(asset)->
-    @selected_asset = asset
-    list = document.getElementById("asset-list").childNodes
-
-    if @selected_asset?
-      for e in list
-        if e.getAttribute("id") == "project-asset-#{asset}"
-          e.classList.add("selected")
-        else
-          e.classList.remove("selected")
-
-      document.getElementById("asset-name").value = asset
-      @name_validator.update()
-      document.getElementById("asset-name").disabled = true
-      @viewer.resize()
-    else
-      for e in list
-        e.classList.remove("selected")
-      document.getElementById("asset-name").value = ""
-
-  deleteAsset:()->
-    if @selected_asset?
-      a = @app.project.getAsset @selected_asset
-      if a?
-        msg = @app.translator.get("Really delete %ITEM%?").replace("%ITEM%",@selected_asset)
-        ConfirmDialog.confirm msg,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
-          @app.client.sendRequest {
-            name: "delete_project_file"
-            project: @app.project.id
-            file: a.file
-            thumbnail: true
-          },(msg)=>
-            @app.project.updateAssetList()
-            @viewer.clear()
-            @setSelectedAsset null
+  updateAssetIcon:(asset,canvas)->
+    @app.client.sendRequest {
+      name: "write_project_file"
+      project: @app.project.id
+      file: "assets/#{asset.name}.#{asset.ext}"
+      thumbnail: canvas.toDataURL().split(",")[1]
+    },(msg)=>
+      console.info msg

@@ -298,37 +298,40 @@ this.WebApp = (function() {
             return manager.listFiles("maps", function(maps) {
               return manager.listFiles("sounds", function(sounds) {
                 return manager.listFiles("music", function(music) {
-                  var resources;
-                  resources = JSON.stringify({
-                    sources: sources,
-                    images: sprites,
-                    maps: maps,
-                    sounds: sounds,
-                    music: music
-                  });
-                  resources = "var resources = " + resources + ";\n";
-                  if ((_this.play_funk == null) || !_this.server.use_cache) {
-                    _this.play_funk = pug.compileFile("../templates/play/play.pug");
-                  }
-                  return res.send(_this.play_funk({
-                    user: user,
-                    javascript_files: jsfiles,
-                    fonts: _this.fonts.fonts,
-                    debug: (req.query != null) && (req.query.debug != null),
-                    language: project.language,
-                    game: {
-                      name: project.slug,
-                      title: project.title,
-                      author: user.nick,
-                      resources: resources,
-                      orientation: project.orientation,
-                      aspect: project.aspect,
-                      graphics: project.graphics,
-                      libs: JSON.stringify(project.libs),
-                      description: project.description,
-                      poster: poster
+                  return manager.listFiles("assets", function(assets) {
+                    var resources;
+                    resources = JSON.stringify({
+                      sources: sources,
+                      images: sprites,
+                      maps: maps,
+                      sounds: sounds,
+                      music: music,
+                      assets: assets
+                    });
+                    resources = "var resources = " + resources + ";\n";
+                    if ((_this.play_funk == null) || !_this.server.use_cache) {
+                      _this.play_funk = pug.compileFile("../templates/play/play.pug");
                     }
-                  }));
+                    return res.send(_this.play_funk({
+                      user: user,
+                      javascript_files: jsfiles,
+                      fonts: _this.fonts.fonts,
+                      debug: (req.query != null) && (req.query.debug != null),
+                      language: project.language,
+                      game: {
+                        name: project.slug,
+                        title: project.title,
+                        author: user.nick,
+                        resources: resources,
+                        orientation: project.orientation,
+                        aspect: project.aspect,
+                        graphics: project.graphics,
+                        libs: JSON.stringify(project.libs),
+                        description: project.description,
+                        poster: poster
+                      }
+                    }));
+                  });
                 });
               });
             });
@@ -597,7 +600,7 @@ this.WebApp = (function() {
         });
       };
     })(this));
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_]+.(glb|jpg|png)$/, (function(_this) {
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_-]+.(glb|obj|jpg|png|ttf|txt|csv|json)$/, (function(_this) {
       return function(req, res) {
         var access, asset, project, s, user;
         s = req.path.split("/");
@@ -611,14 +614,29 @@ this.WebApp = (function() {
         return _this.server.content.files.read(user.id + "/" + project.id + "/assets/" + asset, "binary", function(content) {
           if (content != null) {
             switch (asset.split(".")[1]) {
-              case "png":
-                res.setHeader("Content-Type", "image/png");
+              case "glb":
+                res.setHeader("Content-Type", "model/gltf-binary");
+                break;
+              case "obj":
+                res.setHeader("Content-Type", "model/gltf-binary");
                 break;
               case "jpg":
                 res.setHeader("Content-Type", "image/jpg");
                 break;
-              case "glb":
-                res.setHeader("Content-Type", "model/gltf-binary");
+              case "png":
+                res.setHeader("Content-Type", "image/png");
+                break;
+              case "ttf":
+                res.setHeader("Content-Type", "application/font-sfnt");
+                break;
+              case "txt":
+                res.setHeader("Content-Type", "text/plain");
+                break;
+              case "csv":
+                res.setHeader("Content-Type", "text/csv");
+                break;
+              case "json":
+                res.setHeader("Content-Type", "application/json");
             }
             return res.send(content);
           } else {

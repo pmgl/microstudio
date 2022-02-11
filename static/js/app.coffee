@@ -214,8 +214,7 @@ class App
     @map_editor.projectOpened()
     @sound_editor.projectOpened()
     @music_editor.projectOpened()
-    if project.graphics == "M3D"
-      @assets_manager.projectOpened()
+    @assets_manager.projectOpened()
     @runwindow.projectOpened()
     @options.projectOpened()
     @publish.loadProject(@project)
