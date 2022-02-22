@@ -727,15 +727,21 @@ class @Program.FunctionCall
     f = @expression.evaluate(context,true)
     if f?
       if typeof f == "function"
+        convertArg = (arg)=>
+          if arg? and arg instanceof Program.Function
+            funk = ()=> arg.call(context,arguments,true)
+          else
+            arg
+
         switch @args.length
           when 0
             res = f.call(@expression.parentObject)
           when 1
-            res = f.call(@expression.parentObject,@args[0].evaluate(context,true))
+            res = f.call(@expression.parentObject,convertArg(@args[0].evaluate(context,true)))
           else
             argv = []
             for a in @args
-              argv.push a.evaluate(context,true)
+              argv.push convertArg(a.evaluate(context,true))
             res = f.apply(@expression.parentObject,argv)
 
         return if res != null then res else 0

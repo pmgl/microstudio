@@ -1080,24 +1080,36 @@ this.Program.FunctionCall = (function() {
   }
 
   FunctionCall.prototype.evaluate = function(context, hold) {
-    var a, argv, child, f, id, j, k, len1, len2, object, ref, ref1, res, superClass;
+    var a, argv, child, convertArg, f, id, j, k, len1, len2, object, ref, ref1, res, superClass;
     context.location = this;
     f = this.expression.evaluate(context, true);
     if (f != null) {
       if (typeof f === "function") {
+        convertArg = (function(_this) {
+          return function(arg) {
+            var funk;
+            if ((arg != null) && arg instanceof Program.Function) {
+              return funk = function() {
+                return arg.call(context, arguments, true);
+              };
+            } else {
+              return arg;
+            }
+          };
+        })(this);
         switch (this.args.length) {
           case 0:
             res = f.call(this.expression.parentObject);
             break;
           case 1:
-            res = f.call(this.expression.parentObject, this.args[0].evaluate(context, true));
+            res = f.call(this.expression.parentObject, convertArg(this.args[0].evaluate(context, true)));
             break;
           default:
             argv = [];
             ref = this.args;
             for (j = 0, len1 = ref.length; j < len1; j++) {
               a = ref[j];
-              argv.push(a.evaluate(context, true));
+              argv.push(convertArg(a.evaluate(context, true)));
             }
             res = f.apply(this.expression.parentObject, argv);
         }
