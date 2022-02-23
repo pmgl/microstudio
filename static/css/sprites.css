@@ -136,9 +136,12 @@
   position: absolute ;
   left: 58px ;
   top: 0 ;
-  bottom: 0 ;
+  /* Space for spritehelpers */
+  bottom: 60px ;
   right: 0 ;
   padding: 8px ;
+  overflow-x: hidden ;
+  overflow-y: auto ;
 }
 
 .spritetooloptions input {
@@ -355,7 +358,7 @@
 /*  margin-top: 20px;*/
 }
 .colorpicker canvas {
-  /*width: 100% ;*/
+  width: 100% ;
   cursor: pointer ;
 }
 .spriteeditor canvas {
@@ -416,7 +419,6 @@
   text-align: center;
   background: hsla(200,40%,80%,.8);
   box-sizing: border-box;
-  width: 146px ;
   border-radius: 5px;
   border: none ;
   padding: 5px 5px 5px 10px ;
@@ -439,7 +441,8 @@
 }
 
 #colorpicker-group .spritetoolbutton {
-  width: 140px ;
+  width: 100% ;
+  box-sizing: border-box ;
   margin: 2px 0 ;
 }
 #sprite-animation-panel {
