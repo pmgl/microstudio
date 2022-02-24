@@ -166,7 +166,9 @@ define("ace/mode/microscript_highlight_rules", ["require", "exports", "module", 
                     "elsif": 1,
                     "while": 1,
                     "end": -1,
-                    "for": 1
+                    "for": 1,
+                    "object": 1,
+                    "class": 1
                 },
                 t = ["else", "elsif", "end"];
             this.getNextLineIndent = function(e, t, r) {
