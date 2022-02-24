@@ -111,8 +111,8 @@ class @ColorPicker
     if @mousepressed
       b = @canvas.getBoundingClientRect()
       min = Math.min @canvas.clientWidth,@canvas.clientHeight
-      x = (event.clientX-b.left)
-      y = (event.clientY-b.top)
+      x = (event.clientX-b.left)/b.width*@canvas.width
+      y = (event.clientY-b.top)/b.height*@canvas.height
 
       y = Math.floor(y/@block)
       if y == 3

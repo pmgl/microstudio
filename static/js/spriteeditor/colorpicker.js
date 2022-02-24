@@ -130,8 +130,8 @@ this.ColorPicker = (function() {
     if (this.mousepressed) {
       b = this.canvas.getBoundingClientRect();
       min = Math.min(this.canvas.clientWidth, this.canvas.clientHeight);
-      x = event.clientX - b.left;
-      y = event.clientY - b.top;
+      x = (event.clientX - b.left) / b.width * this.canvas.width;
+      y = (event.clientY - b.top) / b.height * this.canvas.height;
       y = Math.floor(y / this.block);
       if (y === 3) {
         lightness = Math.floor(x / this.canvas.width * this.num_blocks * 2) / 2;
