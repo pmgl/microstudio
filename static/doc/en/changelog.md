@@ -1,5 +1,13 @@
 ## Changelog
 
+### Update 2022-02-25
+* Asset Manager! Activate the tab for your project, then import your text files (TXT and CSV), JSON data, fonts (TTF), 3D models (GLB and OBJ)
+* Sprite editor toolbar fixes by @Karlmolina (thanks!)
+* microScript editor indentation fix by @Karlmolina (thanks!)
+* microScript v1 interpreted now also supports native callbacks (useful when passing callbacks along to Babylon.js or other libs)
+* Improved help window layout (preventing it from hiding code) #84
+* Fixed #74 and #81
+
 ### Update 2022-02-07
 * Flip and rotate sprite selection! Thanks to @HomineLudens for providing an initial implementation
 * Fixed wrong mouse inputs after system.prompt()
