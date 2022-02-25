@@ -2,7 +2,7 @@ this.ProjectDetails = (function() {
   function ProjectDetails(app) {
     var fn, j, len, ref, s;
     this.app = app;
-    this.menu = ["code", "sprites", "sounds", "music", "doc"];
+    this.menu = ["code", "sprites", "sounds", "music", "assets", "doc"];
     ref = this.menu;
     fn = (function(_this) {
       return function(s) {
@@ -132,6 +132,7 @@ this.ProjectDetails = (function() {
     document.querySelector("#project-contents-view .sprite-list").innerHTML = "";
     document.querySelector("#project-contents-view .sound-list").innerHTML = "";
     document.querySelector("#project-contents-view .music-list").innerHTML = "";
+    document.querySelector("#project-contents-view .asset-list").innerHTML = "";
     document.querySelector("#project-contents-view .doc-render").innerHTML = "";
     section = "code";
     ref = this.project.tags;
@@ -183,6 +184,15 @@ this.ProjectDetails = (function() {
     }, (function(_this) {
       return function(msg) {
         return _this.setMusicList(msg.files);
+      };
+    })(this));
+    this.app.client.sendRequest({
+      name: "list_public_project_files",
+      project: this.project.id,
+      folder: "assets"
+    }, (function(_this) {
+      return function(msg) {
+        return _this.setAssetList(msg.files);
       };
     })(this));
     this.app.client.sendRequest({
@@ -549,6 +559,36 @@ this.ProjectDetails = (function() {
       table[s.name] = s;
     }
     view = new FolderView(manager, document.querySelector("#project-contents-view .music-list"));
+    view.editable = false;
+    view.rebuildList(folder);
+  };
+
+  ProjectDetails.prototype.setAssetList = function(files) {
+    var f, folder, j, len, manager, project, s, table, view;
+    if (files.length > 0) {
+      document.getElementById("project-contents-menu-assets").style.display = "block";
+    } else {
+      document.getElementById("project-contents-menu-assets").style.display = "none";
+    }
+    table = {};
+    manager = {
+      folder: "assets",
+      item: "asset",
+      openItem: function(item) {}
+    };
+    project = JSON.parse(JSON.stringify(this.project));
+    project.getFullURL = function() {
+      var url;
+      return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
+    };
+    folder = new ProjectFolder(null, "assets");
+    for (j = 0, len = files.length; j < len; j++) {
+      f = files[j];
+      s = new ProjectAsset(project, f.file);
+      folder.push(s);
+      table[s.name] = s;
+    }
+    view = new FolderView(manager, document.querySelector("#project-contents-view .asset-list"));
     view.editable = false;
     view.rebuildList(folder);
   };

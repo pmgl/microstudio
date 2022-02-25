@@ -13,6 +13,7 @@ this.Runtime = (function() {
     this.maps = {};
     this.sounds = {};
     this.music = {};
+    this.assets = {};
     this.touch = {};
     this.mouse = this.screen.mouse;
     this.previous_init = null;
@@ -81,7 +82,7 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.start = function() {
-    var i, j, k, key, l, len, len1, len2, len3, m, n, name, ref, ref1, ref2, ref3, ref4, s, value;
+    var a, i, j, k, key, l, len, len1, len2, len3, len4, m, n, name, o, ref, ref1, ref2, ref3, ref4, ref5, s, value;
     ref = this.resources.images;
     for (j = 0, len = ref.length; j < len; j++) {
       i = ref[j];
@@ -132,6 +133,14 @@ this.Runtime = (function() {
       m.name = name;
       this.music[name] = m;
     }
+    ref5 = this.resources.assets;
+    for (o = 0, len4 = ref5.length; o < len4; o++) {
+      a = ref5[o];
+      name = a.file.split(".")[0];
+      name = name.replace(/-/g, "/");
+      a.name = name;
+      this.assets[name] = a;
+    }
   };
 
   Runtime.prototype.checkStartReady = function() {
@@ -176,7 +185,8 @@ this.Runtime = (function() {
       sprites: this.sprites,
       sounds: this.sounds,
       music: this.music,
-      AssetManager: this.asset_manager,
+      assets: this.assets,
+      asset_manager: this.asset_manager,
       maps: this.maps,
       touch: this.touch,
       mouse: this.mouse,
@@ -411,7 +421,7 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.timer = function() {
-    var ds, dt, i, j, ref, time;
+    var ds, dt, fps, i, j, ref, time;
     if (this.stopped) {
       return;
     }
@@ -425,10 +435,15 @@ this.Runtime = (function() {
       this.last_time = time - 16;
     }
     dt = time - this.last_time;
-    this.dt = this.dt * .99 + dt * .01;
+    this.dt = this.dt * .9 + dt * .1;
     this.last_time = time;
+    this.vm.context.global.system.fps = Math.round(fps = 1000 / this.dt);
     this.floating_frame += this.dt * 60 / 1000;
     ds = Math.min(30, Math.round(this.floating_frame - this.current_frame));
+    if (ds === 0 && fps > 58) {
+      ds = 1;
+      this.floating_frame = this.current_frame + .5;
+    }
     for (i = j = 1, ref = ds; j <= ref; i = j += 1) {
       this.updateCall();
     }

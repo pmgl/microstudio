@@ -141,6 +141,7 @@ this.ExportFeatures = (function() {
       language: project.language,
       graphics: project.graphics,
       libs: project.libs,
+      tabs: project.tabs,
       date_created: project.date_created,
       last_modified: project.last_modified,
       first_published: project.first_published,

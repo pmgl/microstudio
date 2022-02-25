@@ -48,7 +48,10 @@ class @Manager
             dest: "#{@folder}/#{item.path_prefix+name}.#{item.ext}"
             thumbnail: @use_thumbnails
           },(msg)=>
+            item.rename(item.path_prefix+name)
             @app.project[@update_list]()
+            if @selectedItemRenamed?
+              @selectedItemRenamed()
 
     @name_validator.regex = RegexLib.filename
 
@@ -144,6 +147,8 @@ class @Manager
           },(msg)=>
             @app.project[@update_list]()
             @setSelectedItem null
+            if @selectedItemDeleted?
+              @selectedItemDeleted()
 
   findNewFilename:(name,getter,folder)->
     name = RegexLib.fixFilename name

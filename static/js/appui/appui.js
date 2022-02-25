@@ -6,14 +6,6 @@ AppUI = (function() {
     this.app = app1;
     this.sections = ["code", "sprites", "maps", "assets", "sounds", "music", "doc", "options", "publish"];
     this.menuoptions = ["home", "explore", "projects", "help", "tutorials", "about", "usersettings"];
-    this.allowed_sections = {
-      "code": true,
-      "sprites": true,
-      "maps": true,
-      "doc": true,
-      "options": true,
-      "publish": true
-    };
     ref = this.sections;
     fn = (function(_this) {
       return function(s) {
@@ -29,7 +21,6 @@ AppUI = (function() {
       fn(s);
     }
     this.warning_messages = [];
-    this.updateAllowedSections();
     document.addEventListener("keydown", (function(_this) {
       return function(e) {
         if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.keyCode === 83) {
@@ -846,33 +837,12 @@ AppUI = (function() {
     this.get("user-nick").style.display = "inline-block";
     this.show("login-info");
     this.hide("login-overlay");
-    this.updateAllowedSections();
     this.setMainSection("projects", location.pathname.length < 4);
     if (this.app.user.info.size > this.app.user.info.max_storage) {
       text = this.app.translator.get("Your account is out of space!");
       text += " " + this.app.translator.get("You are using %USED% of the %ALLOWED% you are allowed.").replace("%USED%", this.displayByteSize(this.app.user.info.size)).replace("%ALLOWED%", this.displayByteSize(this.app.user.info.max_storage));
       text += " <a href='https://microstudio.dev/community/tips/your-account-is-out-of-space/109/' target='_blank'>" + (this.app.translator.get("More info...")) + "</a>";
       return this.addWarningMessage(text, void 0, "out_of_storage", false);
-    }
-  };
-
-  AppUI.prototype.updateAllowedSections = function() {
-    var e, j, len, ref, s;
-    if (this.app.user != null) {
-      this.allowed_sections.sounds = true;
-      this.allowed_sections.music = true;
-    }
-    ref = this.sections;
-    for (j = 0, len = ref.length; j < len; j++) {
-      s = ref[j];
-      e = document.getElementById("menuitem-" + s);
-      if (e != null) {
-        if (this.allowed_sections[s]) {
-          e.style.display = "block";
-        } else {
-          e.style.display = "none";
-        }
-      }
     }
   };
 
@@ -1068,8 +1038,7 @@ AppUI = (function() {
     this.code_splitbar.setPosition(50);
     this.runtime_splitbar.setPosition(50);
     this.app.runwindow.terminal.start();
-    this.updateActiveUsers();
-    return this.updateAllowedSections();
+    return this.updateActiveUsers();
   };
 
   AppUI.prototype.projectUpdate = function(change) {

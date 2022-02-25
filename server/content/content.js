@@ -397,7 +397,8 @@ this.Content = (function() {
       type: data.type,
       language: data.language,
       graphics: data.graphics,
-      libs: data.libs
+      libs: data.libs,
+      tabs: data.tabs
     };
     record = this.db.create("projects", d);
     project = this.loadProject(record);

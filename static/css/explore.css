@@ -411,6 +411,7 @@
 #project-contents-menu li .fa-map { color: hsla(90,100%,80%,.85);}
 #project-contents-menu li .fa-volume-up { color: hsla(135,100%,80%,.85);}
 #project-contents-menu li .fa-music { color: hsla(180,100%,80%,.85);}
+#project-contents-menu li .fa-cube { color: hsla(180,100%,80%,.85);}
 #project-contents-menu li .fa-book { color: hsla(225,100%,80%,.85);}
 #project-contents-menu li .fa-server { color: hsla(270,100%,80%,.85);}
 
@@ -419,6 +420,7 @@
 #project-contents-menu li.selected .fa-map { color: hsla(90,100%,70%,1);}
 #project-contents-menu li.selected .fa-volume-up { color: hsla(135,100%,70%,1);}
 #project-contents-menu li.selected .fa-music { color: hsla(180,100%,70%,1);}
+#project-contents-menu li.selected .fa-cube { color: hsla(180,100%,70%,1);}
 #project-contents-menu li.selected .fa-book { color: hsla(225,100%,70%,1);}
 #project-contents-menu li.selected .fa-server { color: hsla(270,100%,70%,1);}
 
@@ -512,6 +514,9 @@
   top: 0px ;
 }
 #project-contents-view .music-list {
+  top: 0px ;
+}
+#project-contents-view .asset-list {
   top: 0px ;
 }
 

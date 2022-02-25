@@ -52,16 +52,16 @@ class @Concatenator
         lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"]
         scripts: ['/js/runtime/m2d/screen.js','/js/runtime/m2d/m2d.js']
       m3d:
-        lib: ["/lib/babylonjs/babylon.js"]
-        lib_path: ["node_modules/babylonjs/babylon.js"]
+        lib: ["/lib/babylonjs/babylon.js","/lib/babylonjs/babylonjs.loaders.min.js"]
+        lib_path: ["node_modules/babylonjs/babylon.js","node_modules/babylonjs-loaders/babylonjs.loaders.min.js"]
         scripts: ['/js/runtime/m3d/screen.js','/js/runtime/m3d/m3d.js']
       pixi:
         lib: ["/lib/pixijs/pixi.min.js"]
         lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"]
         scripts: ['/js/runtime/pixi/screen.js','/js/runtime/pixi/pixi.js']
       babylon:
-        lib: ["/lib/babylonjs/babylon.js"]
-        lib_path: ["node_modules/babylonjs/babylon.js"]
+        lib: ["/lib/babylonjs/babylon.js","/lib/babylonjs/babylonjs.loaders.min.js"]
+        lib_path: ["node_modules/babylonjs/babylon.js","node_modules/babylonjs-loaders/babylonjs.loaders.min.js"]
         scripts: ['/js/runtime/babylon/screen.js','/js/runtime/babylon/babylon.js']
 
     @optional_libs =

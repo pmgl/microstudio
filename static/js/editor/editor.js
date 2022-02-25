@@ -351,7 +351,7 @@ this.Editor = (function() {
     button = document.createElement("div");
     button.classList.add("see-doc-button");
     button.innerHTML = "<i class='fa fa-book-open'></i> " + this.app.translator.get("View doc");
-    button.addEventListener("click", (function(_this) {
+    button.addEventListener("mousedown", (function(_this) {
       return function(event) {
         var element;
         event.stopPropagation();

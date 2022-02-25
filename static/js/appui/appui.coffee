@@ -23,14 +23,6 @@ class AppUI
       "usersettings"
     ]
 
-    @allowed_sections =
-      "code": true
-      "sprites": true
-      "maps": true
-      "doc": true
-      "options": true
-      "publish": true
-
     for s in @sections
       do (s)=>
         if document.getElementById("menuitem-#{s}")?
@@ -38,8 +30,6 @@ class AppUI
             @setSection(s,true)
 
     @warning_messages = []
-
-    @updateAllowedSections()
 
     document.addEventListener "keydown",(e)=>
       if (if window.navigator.platform.match("Mac") then e.metaKey else e.ctrlKey) && e.keyCode == 83
@@ -626,7 +616,6 @@ class AppUI
     @show("login-info")
     @hide "login-overlay"
 
-    @updateAllowedSections()
     @setMainSection "projects",location.pathname.length<4 # home page with language variation => record jump to /projects/
 
     # @addWarningMessage """Join <a target="_blank" href="https://itch.io/jam/microstudio-mini-jam-2">microStudio mini-jam #2</a>! From October 24/25. More info in the <a target="_blank" href="https://microstudio.dev/community/news/mini-jam-2/235/">Community Forum</a> and <a target="_blank" href="https://discord.gg/BDMqjxd">Discord</a>""","fa-info-circle","mini_jam_2_#{Math.floor(Date.now()/1000/3600/12)}",true
@@ -641,23 +630,6 @@ class AppUI
     #  @hide "projectview"
       #@get("menu-projects").style.display = "inline-block"
     #@setMainSection "projects"
-
-
-  updateAllowedSections:()->
-    if @app.user?
-      #if @app.user.flags.admin
-      @allowed_sections.sounds = true
-      @allowed_sections.music = true
-
-    for s in @sections
-      e = document.getElementById("menuitem-#{s}")
-      if e?
-        if @allowed_sections[s]
-          e.style.display = "block"
-        else
-          e.style.display = "none"
-
-    return
 
   userDisconnected:()->
     @get("login-button").style.display = "block"
@@ -840,7 +812,6 @@ class AppUI
     @runtime_splitbar.setPosition(50)
     @app.runwindow.terminal.start()
     @updateActiveUsers()
-    @updateAllowedSections()
 
   projectUpdate:(change)->
     if change == "spritelist"

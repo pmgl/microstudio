@@ -293,6 +293,7 @@ class @Content
       language: data.language
       graphics: data.graphics
       libs: data.libs
+      tabs: data.tabs
 
     record = @db.create "projects",d
     project = @loadProject record

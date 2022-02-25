@@ -176,7 +176,6 @@ class @Options
       option: "graphics"
       value: value
     },(msg)=>
-    @app.appui.updateAllowedSections()
 
   languageChanged:(value)->
     if value != @app.project.language

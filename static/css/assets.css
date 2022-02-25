@@ -244,6 +244,7 @@
   right: 0 ;
   height: 18px ;
   line-height: normal ;
+  padding: 0 4px ;
 }
 
 .asset-box .active-user {
@@ -265,6 +266,10 @@
 .asset-box-music {
   width: 192px ;
   height: 84px ;
+}
+.asset-box-asset {
+  width: 128px ;
+  height: 116px ;
 }
 
 .assetbar {
@@ -392,6 +397,16 @@
   bottom: 0 ;
 }
 
+#text-asset-viewer {
+  position: absolute ;
+  top: 2px ;
+  left: 2px ;
+  right: 0px ;
+  bottom: 0px ;
+  overflow: hidden ;
+}
+
+
 #asset-load-code {
   position: absolute ;
   left: 0 ;
@@ -399,6 +414,8 @@
   bottom: 0px ;
   height: 20px ;
   padding: 10px ;
+  white-space: nowrap ;
+  display: none ;
 }
 #asset-load-code div {
   display: inline-block ;

@@ -1,6 +1,6 @@
 class @ProjectDetails
   constructor:(@app)->
-    @menu = ["code","sprites","sounds","music","doc"]
+    @menu = ["code","sprites","sounds","music","assets","doc"]
     for s in @menu
       do (s)=>
         document.getElementById("project-contents-menu-#{s}").addEventListener "click",()=>
@@ -99,6 +99,7 @@ class @ProjectDetails
     document.querySelector("#project-contents-view .sprite-list").innerHTML = ""
     document.querySelector("#project-contents-view .sound-list").innerHTML = ""
     document.querySelector("#project-contents-view .music-list").innerHTML = ""
+    document.querySelector("#project-contents-view .asset-list").innerHTML = ""
     #document.querySelector("#project-contents-view .maps").innerHTML = ""
     document.querySelector("#project-contents-view .doc-render").innerHTML = ""
 
@@ -145,6 +146,12 @@ class @ProjectDetails
     },(msg)=>
       @setMusicList msg.files
 
+    @app.client.sendRequest {
+      name: "list_public_project_files"
+      project: @project.id
+      folder: "assets"
+    },(msg)=>
+      @setAssetList msg.files
     #@app.client.sendRequest {
     #  name: "list_public_project_files"
     #  project: @project.id
@@ -444,6 +451,35 @@ class @ProjectDetails
     view.editable = false
     view.rebuildList folder
     return
+
+  setAssetList:(files)->
+    if files.length>0
+      document.getElementById("project-contents-menu-assets").style.display = "block"
+    else
+      document.getElementById("project-contents-menu-assets").style.display = "none"
+
+    table = {}
+    manager =
+      folder: "assets"
+      item: "asset"
+      openItem:(item)->
+
+    project = JSON.parse(JSON.stringify(@project)) # create a clone
+
+    project.getFullURL = ()->
+      url = location.origin+"/#{project.owner}/#{project.slug}/"
+
+    folder = new ProjectFolder null,"assets"
+    for f in files
+      s = new ProjectAsset project,f.file
+      folder.push s
+      table[s.name] = s
+
+    view = new FolderView manager,document.querySelector("#project-contents-view .asset-list")
+    view.editable = false
+    view.rebuildList folder
+    return
+
 
   setMapList:(files)->
     console.info files

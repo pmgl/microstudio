@@ -215,7 +215,7 @@ screen.loadFont("DigitalDisco")
 ##### screen.isFontReady( font_name )
 Returns 1 (true) if the given font is loaded and ready to be used. Make sure to call `screen.loadFont` first or your font may never be loaded.
 <!--- suggest_end --->
-You can omit the function argument, in which case it checks whether the current font is loaded and ready to be used (default font, or other font you have set with your latest call to `screen.setFont( font_name )``).
+You can omit the function argument, in which case it checks whether the current font is loaded and ready to be used (default font, or other font you have set with your latest call to `screen.setFont( font_name )`).
 
 ```
 if screen.isFontReady() then
@@ -636,6 +636,141 @@ You can then access different fields and methods of your map:
 |```mymap.clone()```|Returns a new map which is a full copy of mymap.|
 
 *Note: other fields and native methods may currently seem available when you inspect a map object in the console. Such undocumented fields and methods may break in the future, thus do not rely too much on them!*
+
+## Assets
+The asset manager in microStudio allows you to import different kinds of files into your project, and load them from your code.
+It currently accepts the following types of files:
+* **.TTF**: font files that can be used to draw text on screen
+* **.JSON**: JSON structured data is loaded as a microScript object
+* **.GLB**, .OBJ: 3D models (can only be loaded and used with Babylon.js or micro3D)
+* **.TXT**: plain text files that can be loaded as a string value
+* **.CSV**: comma separated values files, can also be loaded as a string value
+
+### Assets tab
+The Assets tab needs to be activated for your project, which can be done in the project options tab.
+
+### Loading assets
+Unlike sprites, maps and other built-in assets, the custom assets you import are not preloaded when you run your microStudio project. You
+need to load them from your code. Loading is asynchronous and you have two ways to check if your asset is loaded and ready to be used:
+* You can set an optional callback function ; the function will be called when the asset is loaded, with the data passed as argument.
+* The loading function also returns a `loader` object, which has a property `.ready`. Once you can check that the property is set to 1 (true), the data is ready and attached as a property of the loader object.
+
+<!--- suggest_start asset_manager.loadFont --->
+##### asset_manager.loadFont( "myfolder/myfont" )
+Initiates the loading of a font asset.
+<!--- suggest_end --->
+
+You can then check if the font is ready and use the font just like built-in fonts:
+
+```
+if screen.isFontReady("myfont") then ... end
+screen.setFont("myfont")
+```
+
+<!--- suggest_start asset_manager.loadJSON --->
+##### loader = asset_manager.loadJSON( "myfolder/myjsonfile", callback )
+Initiates the loading of a JSON file asset. The result will be a microScript object holding all the data.
+<!--- suggest_end --->
+
+Loading is asynchronous, you have two ways to check when loading is complete:
+
+###### Example using a callback function
+```
+asset_manager.loadJSON("somefolder/myjsonfile", function(data)
+    myobject = data
+  end)
+```
+
+###### Example using the loader object
+```
+loader = asset_manager.loadJSON("somefolder/myjsonfile")
+
+(...)
+
+if loader.ready then
+  myobject = loader.data
+end
+```
+
+<!--- suggest_start asset_manager.loadText --->
+##### loader = asset_manager.loadText( "myfolder/myjsonfile", callback )
+Initiates the loading of a text file asset. The result will be a microScript string holding all the text.
+<!--- suggest_end --->
+
+Loading is asynchronous, you have two ways to check when loading is complete:
+
+###### Example using a callback function
+```
+asset_manager.loadText("somefolder/mytextfile", function(text)
+    mytext = text
+  end)
+```
+
+###### Example using the loader object
+```
+loader = asset_manager.loadText("somefolder/mytextfile")
+
+(...)
+
+if loader.ready then
+  mytext = loader.text
+end
+```
+
+<!--- suggest_start asset_manager.loadCSV --->
+##### loader = asset_manager.loadCSV( "myfolder/mycsvfile", callback )
+Initiates the loading of a CSV file asset. The result will be a microScript string holding all the text of the file.
+<!--- suggest_end --->
+
+Note: CSV file contents are returned as if it was a plain text file. You have to handle all the parsing from your code.
+Loading is asynchronous, you have two ways to check when loading is complete:
+
+###### Example using a callback function
+```
+asset_manager.loadCSV("somefolder/mycsvfile", function(text)
+    mytext = text
+  end)
+```
+
+###### Example using the loader object
+```
+loader = asset_manager.loadCSV("somefolder/mycsvfile")
+
+(...)
+
+if loader.ready then
+  mytext = loader.text
+end
+```
+
+<!--- suggest_start asset_manager.loadModel --->
+##### loader = asset_manager.loadModel( "myfolder/mymodelfile", callback )
+Initiates the loading of a 3D model. This only works if you have picked Babylon.js or micro3D as graphics engines for your project.
+The result is a `container` object holding all the model data.
+<!--- suggest_end --->
+
+Loading is asynchronous, you have two ways to check when loading is complete:
+
+###### Example using a callback function
+```
+asset_manager.loadModel("somefolder/mymodelfile", function(container)
+    container.addAllToScene()
+    // or check Babylon.js documentation for other ways to handle the result
+    // asset_manager.loadModel is mapped on BABYLON.SceneLoader.LoadAssetContainer
+  end)
+```
+
+###### Example using the loader object
+```
+loader = asset_manager.loadModel("somefolder/mymodelfile")
+
+(...)
+
+if loader.ready then
+  loader.container.addAllToScene()
+end
+```
+
 
 ## System
 The object ```system``` allows to access the function ```time```, which returns the elapsed time in milliseconds (since January 1st, 1970). But above all, invoked at various times, it makes it possible to measure time differences.

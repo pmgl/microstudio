@@ -57,7 +57,11 @@ this.Manager = (function() {
             dest: _this.folder + "/" + (item.path_prefix + name) + "." + item.ext,
             thumbnail: _this.use_thumbnails
           }, function(msg) {
-            return _this.app.project[_this.update_list]();
+            item.rename(item.path_prefix + name);
+            _this.app.project[_this.update_list]();
+            if (_this.selectedItemRenamed != null) {
+              return _this.selectedItemRenamed();
+            }
           });
         }
       };
@@ -185,7 +189,10 @@ this.Manager = (function() {
               thumbnail: _this.use_thumbnails
             }, function(msg) {
               _this.app.project[_this.update_list]();
-              return _this.setSelectedItem(null);
+              _this.setSelectedItem(null);
+              if (_this.selectedItemDeleted != null) {
+                return _this.selectedItemDeleted();
+              }
             });
           };
         })(this));

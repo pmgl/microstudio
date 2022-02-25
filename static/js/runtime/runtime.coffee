@@ -11,6 +11,7 @@ class @Runtime
     @maps = {}
     @sounds = {}
     @music = {}
+    @assets = {}
     @touch = {}
     @mouse = @screen.mouse
     @previous_init = null
@@ -98,6 +99,12 @@ class @Runtime
       m.name = name
       @music[name] = m
 
+    for a in @resources.assets
+      name = a.file.split(".")[0]
+      name = name.replace /-/g,"/"
+      a.name = name
+      @assets[name] = a
+
     return
 
   checkStartReady:()->
@@ -126,7 +133,8 @@ class @Runtime
       sprites: @sprites
       sounds: @sounds
       music: @music
-      AssetManager: @asset_manager
+      assets: @assets
+      asset_manager: @asset_manager
       maps: @maps
       touch: @touch
       mouse: @mouse
@@ -303,11 +311,17 @@ class @Runtime
       @last_time = time-16
 
     dt = time-@last_time
-    @dt = @dt*.99+dt*.01
+    @dt = @dt*.9+dt*.1
     @last_time = time
+
+    @vm.context.global.system.fps = Math.round(fps = 1000/@dt)
 
     @floating_frame += @dt*60/1000
     ds = Math.min(30,Math.round(@floating_frame-@current_frame))
+    if ds == 0 and fps>58
+      ds = 1
+      @floating_frame = @current_frame+.5
+
     for i in [1..ds] by 1
       @updateCall()
 

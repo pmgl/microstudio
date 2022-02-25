@@ -480,10 +480,11 @@ class @Session
         clone.set "language",project.language
         clone.setGraphics project.graphics
         clone.set "libs",project.libs
+        clone.set "tabs",project.tabs
         clone.set "files",JSON.parse JSON.stringify project.files
         man = @getProjectManager(project)
 
-        folders = ["ms","sprites","maps","sounds","sounds_th","music","music_th","doc"]
+        folders = ["ms","sprites","maps","sounds","sounds_th","music","music_th","assets","assets_th","doc"]
         files = []
         funk = ()=>
           if folders.length>0
@@ -529,10 +530,11 @@ class @Session
           clone.set "language",project.language
           clone.setGraphics project.graphics
           clone.set "libs",project.libs
+          clone.set "tabs",project.tabs
           clone.set "files",JSON.parse JSON.stringify project.files
           man = @getProjectManager(project)
 
-          folders = ["ms","sprites","maps","sounds","sounds_th","music","music_th","doc"]
+          folders = ["ms","sprites","maps","sounds","sounds_th","music","music_th","assets","assets_th","doc"]
           files = []
           funk = ()=>
             if folders.length>0

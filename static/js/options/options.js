@@ -255,7 +255,7 @@ this.Options = (function() {
 
   Options.prototype.graphicsChanged = function(value) {
     this.app.project.setGraphics(value);
-    this.app.client.sendRequest({
+    return this.app.client.sendRequest({
       name: "set_project_option",
       project: this.app.project.id,
       option: "graphics",
@@ -263,7 +263,6 @@ this.Options = (function() {
     }, (function(_this) {
       return function(msg) {};
     })(this));
-    return this.app.appui.updateAllowedSections();
   };
 
   Options.prototype.languageChanged = function(value) {

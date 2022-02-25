@@ -246,7 +246,7 @@ class @Editor
     button = document.createElement "div"
     button.classList.add "see-doc-button"
     button.innerHTML = "<i class='fa fa-book-open'></i> "+@app.translator.get("View doc")
-    button.addEventListener "click",(event)=>
+    button.addEventListener "mousedown",(event)=>
       event.stopPropagation()
       @app.appui.setMainSection "help",true
       @app.documentation.setSection section or "api"
