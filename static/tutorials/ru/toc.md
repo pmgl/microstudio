@@ -59,6 +59,6 @@
 
 [Прыжки и гравитация](/tutorials/ru/game/3_jump.md)
 
-[Препятствия](/tutorials/ru/game/4_blades.md)
+[Лезвия](/tutorials/ru/game/4_blades.md)
 
 [Завершение игры и улучшения](/tutorials/ru/game/5_gameloop.md)
