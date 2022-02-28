@@ -18,7 +18,7 @@
 * FeniXb3 (перевод на Польский язык)
 * TinkerSmith (перевод на Немецкий язык)
 * HomineLudens (перевод на Итальянский язык)
-* Ondinha (перевод на бразильский Потругальский язык)
+* Ondinha (перевод на бразильский Португальский язык)
 
 <i class="fab fa-discord"></i> Присоединяйся к нам в Discord: [https://discord.gg/BDMqjxd](https://discord.gg/BDMqjxd)
 

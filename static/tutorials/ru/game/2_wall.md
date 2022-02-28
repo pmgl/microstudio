@@ -72,7 +72,7 @@ end
 
 ```
 update = function()
-  position = position+2
+  position += 2
 end
 ```
 
@@ -103,7 +103,7 @@ init = function()
 end
 
 update = function()
-  position = position+2
+  position += 2
 end
 
 draw = function()
