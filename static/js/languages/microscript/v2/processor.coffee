@@ -335,6 +335,10 @@ class @Processor
             stack[stack_index-1] /= stack[stack_index--]
             op_index++
 
+          when 34 # OPCODE_MODULO
+            stack[stack_index-1] %= stack[stack_index--]
+            op_index++
+
           when 39 # OPCODE_NEGATE
             stack[stack_index] = -stack[stack_index]
             op_index++
@@ -523,6 +527,18 @@ class @Processor
 
           when 82 # OPCODE_JUMPN
             if not stack[stack_index--]
+              op_index = arg1[op_index]
+            else
+              op_index++
+
+          when 83 # OPCODE_JUMPY_NOPOP
+            if stack[stack_index]
+              op_index = arg1[op_index]
+            else
+              op_index++
+
+          when 84 # OPCODE_JUMPN_NOPOP
+            if not stack[stack_index]
               op_index = arg1[op_index]
             else
               op_index++
@@ -770,10 +786,45 @@ class @Processor
             locals_offset -= routine.locals_size
             length = opcodes.length
 
-          when 100 # OPCODE_SQRT
-            v = Math.sqrt(stack[stack_index])
+          when 100 # OPCODE_UNARY_FUNC
+            v = arg1[op_index](stack[stack_index])
             stack[stack_index] = if isFinite(v) then v else 0
             op_index++
+
+          when 101 # OPCODE_BINARY_FUNC
+            v = arg1[op_index](stack[stack_index-1],stack[stack_index])
+            stack[--stack_index] = if isFinite(v) then v else 0
+            op_index++
+
+          when 110 # OPCODE_AFTER
+            t = new Thread()
+            t.routine = stack[stack_index-1]
+            t.start_time = Date.now()+stack[stack_index]
+            stack[--stack_index] = t
+            op_index += 1
+            # add thread to the runner thread list
+
+          when 111 # OPCODE_EVERY
+            t = new Thread()
+            t.routine = stack[stack_index-1]
+            t.start_time = Date.now()+stack[stack_index]
+            t.repeat = stack[stack_index]
+            stack[--stack_index] = t
+            op_index += 1
+            # add thread to the runner thread list
+
+          when 112 # OPCODE_DO
+            t = new Thread()
+            t.routine = stack[stack_index]
+            stack[stack_index] = t
+            op_index += 1
+            # add thread to the runner thread list
+
+          when 113 # OPCODE_SLEEP
+            continue_time = Date.now()+if isFinite(stack[stack_index]) then stack[stack_index] else 0
+            op_index += 1
+            restore_op_index = op_index
+            op_index = length # stop the thread
 
           when 200 # COMPILED
             stack_index = arg1[op_index](stack,stack_index,locals,locals_offset,object)

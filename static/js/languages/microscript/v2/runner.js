@@ -9,7 +9,9 @@ this.Runner = (function() {
     this.system.preemptive = 1;
     this.main_thread = new Thread;
     this.threads = [this.main_thread];
-    return this.microvm.context.global.print = this.microvm.context.meta.print;
+    this.thread_index = 0;
+    this.microvm.context.global.print = this.microvm.context.meta.print;
+    return this.microvm.context.global.random = new Random(0);
   };
 
   Runner.prototype.run = function(src, filename) {
@@ -34,17 +36,22 @@ this.Runner = (function() {
   };
 
   Runner.prototype.call = function(name, args) {
-    var f;
-    if (name instanceof Program.Function) {
-      f = name;
-    } else {
-      f = this.microvm.context.global[name];
-    }
-    if ((f != null) && typeof f === "function") {
-      return f.apply(null, args);
+    var compiler, parser, program, res, src;
+    if (this.microvm.context.global[name] != null) {
+      src = name + "()";
+      parser = new Parser(src, "");
+      parser.parse();
+      program = parser.program;
+      compiler = new Compiler(program);
+      return res = compiler.exec(this.microvm.context);
     } else {
       return 0;
     }
+  };
+
+  Runner.prototype.tick = function() {
+    var time;
+    return time = Date.now();
   };
 
   return Runner;
@@ -56,6 +63,7 @@ this.Thread = (function() {
     this.status = 0;
     this.loop = false;
     this.processor = new Processor();
+    this.terminated = false;
   }
 
   Thread.prototype.start = function() {
@@ -76,6 +84,21 @@ this.Thread = (function() {
 
   Thread.prototype.stop = function() {
     return this.status = "stopped";
+  };
+
+  Thread.prototype.getInterface = function() {
+    return {
+      stop: (function(_this) {
+        return function() {
+          return _this.stop();
+        };
+      })(this),
+      resume: (function(_this) {
+        return function() {
+          return _this.resume();
+        };
+      })(this)
+    };
   };
 
   return Thread;

@@ -7,8 +7,10 @@ class @Runner
     @system.preemptive = 1
     @main_thread = new Thread
     @threads = [@main_thread]
+    @thread_index = 0
 
     @microvm.context.global.print = @microvm.context.meta.print
+    @microvm.context.global.random = new Random(0)
 
   run:(src,filename)->
     @init() if not @initialized
@@ -30,21 +32,32 @@ class @Runner
     return res
 
   call:(name,args)->
-    if name instanceof Program.Function
-      f = name
-    else
-      f = @microvm.context.global[name]
-
-    if f? and typeof f == "function"
-      return f.apply(null,args)
+    if @microvm.context.global[name]?
+      src = "#{name}()"
+      parser = new Parser(src,"")
+      parser.parse()
+      program = parser.program
+      compiler = new Compiler(program)
+      res = compiler.exec(@microvm.context)
     else
       return 0
+
+  tick:()->
+    time = Date.now()
+
+    #if @microvm.context.global.system.preemptive
+    #num =
+    #for t in @threads
+    # ...
+
+
 
 class @Thread
   constructor:()->
     @status = 0
     @loop = false
     @processor = new Processor()
+    @terminated = false
 
   start:()->
     @status = "started"
@@ -59,3 +72,8 @@ class @Thread
 
   stop:()->
     @status = "stopped"
+
+  getInterface:()->
+    return
+      stop: ()=>@stop()
+      resume: ()=>@resume()

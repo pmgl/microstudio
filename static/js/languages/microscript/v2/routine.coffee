@@ -10,6 +10,7 @@ class @Routine
     @label_count = 0
     @labels = {}
 
+    @transpile = false
 
     @set "OPCODE_TYPE", 1
     @set "OPCODE_VARIABLE_TYPE", 2
@@ -47,6 +48,7 @@ class @Routine
     @set "OPCODE_SUB", 31
     @set "OPCODE_MUL", 32
     @set "OPCODE_DIV", 33
+    @set "OPCODE_MODULO", 34
 
     @set "OPCODE_NEGATE", 39
 
@@ -82,6 +84,8 @@ class @Routine
     @set "OPCODE_JUMP",80
     @set "OPCODE_JUMPY",81
     @set "OPCODE_JUMPN",82
+    @set "OPCODE_JUMPY_NOPOP",83
+    @set "OPCODE_JUMPN_NOPOP",84
 
     @set "OPCODE_FUNCTION_CALL", 90
     @set "OPCODE_FUNCTION_APPLY_VARIABLE", 91
@@ -89,9 +93,15 @@ class @Routine
     @set "OPCODE_SUPER_CALL", 93
     @set "OPCODE_RETURN", 94
 
-    @set "OPCODE_SQRT",100
+    @set "OPCODE_UNARY_OP",100
+    @set "OPCODE_BINARY_OP",101
 
     @set "OPCODE_COMPILED",200
+
+    @set "OPCODE_AFTER", 110
+    @set "OPCODE_EVERY", 111
+    @set "OPCODE_DO", 112
+    @set "OPCODE_SLEEP", 113
 
   set:(op,code)->
     @[op] = code
@@ -104,36 +114,9 @@ class @Routine
     @labels[name] = @opcodes.length
 
   optimize:()->
-    # new Transpiler().transpile @
+    if @transpile
+      new Transpiler().transpile @
     return
-
-  transpile:()->
-    for i in [0..@opcodes.length-1] by 1
-      op = @table[@opcodes[i]]
-      if transpile[op]? and transpile[op](@arg1[i])?
-        j = i+1
-        while j<@opcodes.length and transpile[@table[@opcodes[j]]]? and @removeable(j) and transpile[@table[@opcodes[j]]](@arg1[j])?
-          j += 1
-
-        j -= 1
-
-        if j-i>=3
-          #console.info "transpilable segment: "+(j-i)
-          s = "f = function(stack,stack_index,locals,locals_offset,object,meta) {\n"
-          for k in [i..j] by 1
-            s += transpile[@table[@opcodes[k]]](@arg1[k])+"\n" ;
-          s += """return stack_index ;\n}"""
-
-          #console.info s
-          try
-            eval(s)
-          catch err
-            console.error err
-
-          @opcodes[i] = 200
-          @arg1[i] = f
-          for k in [i+1..j] by 1
-            @remove(i+1)
 
   removeable:(index)->
     for label,value of @labels
@@ -157,7 +140,7 @@ class @Routine
 
   resolveLabels:()->
     for i in [0..@opcodes.length-1]
-      if @opcodes[i] in [@OPCODE_JUMP,@OPCODE_JUMPY,@OPCODE_JUMPN]
+      if @opcodes[i] in [@OPCODE_JUMP,@OPCODE_JUMPY,@OPCODE_JUMPN,@OPCODE_JUMPY_NOPOP,@OPCODE_JUMPN_NOPOP]
         if @labels[@arg1[i]]
           @arg1[i] = @labels[@arg1[i]]
       else if @opcodes[i] in [@OPCODE_FORLOOP_CONTROL,@OPCODE_FORLOOP_INIT,@OPCODE_FORIN_CONTROL,@OPCODE_FORIN_INIT]
@@ -195,6 +178,7 @@ class @Routine
   SUB:(ref)-> @OP @OPCODE_SUB,ref
   MUL:(ref)-> @OP @OPCODE_MUL,ref
   DIV:(ref)-> @OP @OPCODE_DIV,ref
+  MODULO:(ref)-> @OP @OPCODE_MODULO,ref
 
   NEGATE:(ref)-> @OP @OPCODE_NEGATE,ref
 
@@ -230,6 +214,8 @@ class @Routine
   JUMP:(index,ref)-> @OP @OPCODE_JUMP,ref,index
   JUMPY:(index,ref)-> @OP @OPCODE_JUMPY,ref,index
   JUMPN:(index,ref)-> @OP @OPCODE_JUMPN,ref,index
+  JUMPY_NOPOP:(index,ref)-> @OP @OPCODE_JUMPY_NOPOP,ref,index
+  JUMPN_NOPOP:(index,ref)-> @OP @OPCODE_JUMPN_NOPOP,ref,index
 
   STORE_LOCAL:(index,ref)-> @OP @OPCODE_STORE_LOCAL,ref,index
   STORE_VARIABLE:(field,ref)-> @OP @OPCODE_STORE_VARIABLE,ref,field
@@ -242,9 +228,13 @@ class @Routine
   SUPER_CALL:(args,ref)-> @OP @OPCODE_SUPER_CALL,ref,args
   RETURN:(local_offset,ref)-> @OP @OPCODE_RETURN,ref,local_offset
 
-  SQRT:(ref)-> @OP @OPCODE_SQRT,ref
+  AFTER:(ref)-> @OP @OPCODE_AFTER,ref
+  EVERY:(ref)-> @OP @OPCODE_EVERY,ref
+  DO:(ref)-> @OP @OPCODE_DO,ref
+  SLEEP:(ref)-> @OP @OPCODE_SLEEP,ref
 
-  TEST:(ref)-> @OP @OPCODE_TEST,ref
+  UNARY_OP:(f,ref)-> @OP @OPCODE_UNARY_OP,ref,f
+  BINARY_OP:(f,ref)-> @OP @OPCODE_BINARY_OP,ref,f
 
   toString:()->
     s = ""

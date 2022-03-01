@@ -9,6 +9,7 @@ this.Routine = (function() {
     this.table = {};
     this.label_count = 0;
     this.labels = {};
+    this.transpile = false;
     this.set("OPCODE_TYPE", 1);
     this.set("OPCODE_VARIABLE_TYPE", 2);
     this.set("OPCODE_PROPERTY_TYPE", 3);
@@ -38,6 +39,7 @@ this.Routine = (function() {
     this.set("OPCODE_SUB", 31);
     this.set("OPCODE_MUL", 32);
     this.set("OPCODE_DIV", 33);
+    this.set("OPCODE_MODULO", 34);
     this.set("OPCODE_NEGATE", 39);
     this.set("OPCODE_EQ", 40);
     this.set("OPCODE_NEQ", 41);
@@ -65,13 +67,20 @@ this.Routine = (function() {
     this.set("OPCODE_JUMP", 80);
     this.set("OPCODE_JUMPY", 81);
     this.set("OPCODE_JUMPN", 82);
+    this.set("OPCODE_JUMPY_NOPOP", 83);
+    this.set("OPCODE_JUMPN_NOPOP", 84);
     this.set("OPCODE_FUNCTION_CALL", 90);
     this.set("OPCODE_FUNCTION_APPLY_VARIABLE", 91);
     this.set("OPCODE_FUNCTION_APPLY_PROPERTY", 92);
     this.set("OPCODE_SUPER_CALL", 93);
     this.set("OPCODE_RETURN", 94);
-    this.set("OPCODE_SQRT", 100);
+    this.set("OPCODE_UNARY_OP", 100);
+    this.set("OPCODE_BINARY_OP", 101);
     this.set("OPCODE_COMPILED", 200);
+    this.set("OPCODE_AFTER", 110);
+    this.set("OPCODE_EVERY", 111);
+    this.set("OPCODE_DO", 112);
+    this.set("OPCODE_SLEEP", 113);
   }
 
   Routine.prototype.set = function(op, code) {
@@ -91,49 +100,10 @@ this.Routine = (function() {
     return this.labels[name] = this.opcodes.length;
   };
 
-  Routine.prototype.optimize = function() {};
-
-  Routine.prototype.transpile = function() {
-    var err, i, j, k, l, m, op, ref1, ref2, ref3, results, s;
-    results = [];
-    for (i = l = 0, ref1 = this.opcodes.length - 1; l <= ref1; i = l += 1) {
-      op = this.table[this.opcodes[i]];
-      if ((transpile[op] != null) && (transpile[op](this.arg1[i]) != null)) {
-        j = i + 1;
-        while (j < this.opcodes.length && (transpile[this.table[this.opcodes[j]]] != null) && this.removeable(j) && (transpile[this.table[this.opcodes[j]]](this.arg1[j]) != null)) {
-          j += 1;
-        }
-        j -= 1;
-        if (j - i >= 3) {
-          s = "f = function(stack,stack_index,locals,locals_offset,object,meta) {\n";
-          for (k = m = ref2 = i, ref3 = j; m <= ref3; k = m += 1) {
-            s += transpile[this.table[this.opcodes[k]]](this.arg1[k]) + "\n";
-          }
-          s += "return stack_index ;\n}";
-          try {
-            eval(s);
-          } catch (error) {
-            err = error;
-            console.error(err);
-          }
-          this.opcodes[i] = 200;
-          this.arg1[i] = f;
-          results.push((function() {
-            var n, ref4, ref5, results1;
-            results1 = [];
-            for (k = n = ref4 = i + 1, ref5 = j; n <= ref5; k = n += 1) {
-              results1.push(this.remove(i + 1));
-            }
-            return results1;
-          }).call(this));
-        } else {
-          results.push(void 0);
-        }
-      } else {
-        results.push(void 0);
-      }
+  Routine.prototype.optimize = function() {
+    if (this.transpile) {
+      new Transpiler().transpile(this);
     }
-    return results;
   };
 
   Routine.prototype.removeable = function(index) {
@@ -167,10 +137,10 @@ this.Routine = (function() {
   };
 
   Routine.prototype.resolveLabels = function() {
-    var i, l, ref1, ref2, ref3, results;
+    var i, j, ref1, ref2, ref3, results;
     results = [];
-    for (i = l = 0, ref1 = this.opcodes.length - 1; 0 <= ref1 ? l <= ref1 : l >= ref1; i = 0 <= ref1 ? ++l : --l) {
-      if ((ref2 = this.opcodes[i]) === this.OPCODE_JUMP || ref2 === this.OPCODE_JUMPY || ref2 === this.OPCODE_JUMPN) {
+    for (i = j = 0, ref1 = this.opcodes.length - 1; 0 <= ref1 ? j <= ref1 : j >= ref1; i = 0 <= ref1 ? ++j : --j) {
+      if ((ref2 = this.opcodes[i]) === this.OPCODE_JUMP || ref2 === this.OPCODE_JUMPY || ref2 === this.OPCODE_JUMPN || ref2 === this.OPCODE_JUMPY_NOPOP || ref2 === this.OPCODE_JUMPN_NOPOP) {
         if (this.labels[this.arg1[i]]) {
           results.push(this.arg1[i] = this.labels[this.arg1[i]]);
         } else {
@@ -290,6 +260,10 @@ this.Routine = (function() {
     return this.OP(this.OPCODE_DIV, ref);
   };
 
+  Routine.prototype.MODULO = function(ref) {
+    return this.OP(this.OPCODE_MODULO, ref);
+  };
+
   Routine.prototype.NEGATE = function(ref) {
     return this.OP(this.OPCODE_NEGATE, ref);
   };
@@ -398,6 +372,14 @@ this.Routine = (function() {
     return this.OP(this.OPCODE_JUMPN, ref, index);
   };
 
+  Routine.prototype.JUMPY_NOPOP = function(index, ref) {
+    return this.OP(this.OPCODE_JUMPY_NOPOP, ref, index);
+  };
+
+  Routine.prototype.JUMPN_NOPOP = function(index, ref) {
+    return this.OP(this.OPCODE_JUMPN_NOPOP, ref, index);
+  };
+
   Routine.prototype.STORE_LOCAL = function(index, ref) {
     return this.OP(this.OPCODE_STORE_LOCAL, ref, index);
   };
@@ -434,19 +416,35 @@ this.Routine = (function() {
     return this.OP(this.OPCODE_RETURN, ref, local_offset);
   };
 
-  Routine.prototype.SQRT = function(ref) {
-    return this.OP(this.OPCODE_SQRT, ref);
+  Routine.prototype.AFTER = function(ref) {
+    return this.OP(this.OPCODE_AFTER, ref);
   };
 
-  Routine.prototype.TEST = function(ref) {
-    return this.OP(this.OPCODE_TEST, ref);
+  Routine.prototype.EVERY = function(ref) {
+    return this.OP(this.OPCODE_EVERY, ref);
+  };
+
+  Routine.prototype.DO = function(ref) {
+    return this.OP(this.OPCODE_DO, ref);
+  };
+
+  Routine.prototype.SLEEP = function(ref) {
+    return this.OP(this.OPCODE_SLEEP, ref);
+  };
+
+  Routine.prototype.UNARY_OP = function(f, ref) {
+    return this.OP(this.OPCODE_UNARY_OP, ref, f);
+  };
+
+  Routine.prototype.BINARY_OP = function(f, ref) {
+    return this.OP(this.OPCODE_BINARY_OP, ref, f);
   };
 
   Routine.prototype.toString = function() {
-    var i, l, len, op, ref1, s;
+    var i, j, len, op, ref1, s;
     s = "";
     ref1 = this.opcodes;
-    for (i = l = 0, len = ref1.length; l < len; i = ++l) {
+    for (i = j = 0, len = ref1.length; j < len; i = ++j) {
       op = ref1[i];
       s += this.table[op];
       if (this.arg1[i] || this.arg2[i]) {

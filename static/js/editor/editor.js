@@ -198,6 +198,9 @@ this.Editor = (function() {
         case "lua":
           this.language = this.app.languages.lua;
           break;
+        case "microscript_v2":
+          this.language = this.app.languages.microscript2;
+          break;
         default:
           this.language = this.app.languages.microscript;
       }

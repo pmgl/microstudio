@@ -9,6 +9,7 @@ window.addEventListener("load", function() {
 App = (function() {
   function App() {
     this.languages = {
+      microscript2: LANGUAGE_MICROSCRIPT2,
       microscript: LANGUAGE_MICROSCRIPT,
       python: LANGUAGE_PYTHON,
       javascript: LANGUAGE_JAVASCRIPT,

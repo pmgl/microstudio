@@ -179,6 +179,10 @@ class @Parser
         throw "malformed number" if not Number.isInteger(next.value)
         return new Program.Value(token,Program.Value.TYPE_NUMBER,Number.parseFloat(".#{next.string_value}"))
 
+      when Token.TYPE_AFTER then @parseAfter token
+      when Token.TYPE_EVERY then @parseEvery token
+      when Token.TYPE_DO then @parseDo token
+
       else
         @tokenizer.pushBack token
         return null
@@ -479,3 +483,72 @@ class @Parser
   parseNew:(token)->
     exp = @assertExpression()
     return new Program.NewCall(token,exp)
+
+  parseAfter:(after)->
+    @nesting += 1
+    @addTerminable after
+    delay = @assertExpression()
+    token = @nextToken()
+    if not token? or token.type != Token.TYPE_DO then @error "Expected keyword 'do'"
+
+    sequence = []
+    loop
+      token = @nextToken()
+      if token.type == Token.TYPE_END
+        @nesting -= 1
+        @endTerminable()
+        return new Program.After after,delay,sequence,token
+      else
+        @tokenizer.pushBack token
+        line = @parseLine()
+        if line?
+          sequence.push line
+        else
+          @error "Unexpected data while parsing after"
+
+    return
+
+  parseEvery:(every)->
+    @nesting += 1
+    @addTerminable every
+    delay = @assertExpression()
+    token = @nextToken()
+    if not token? or token.type != Token.TYPE_DO then @error "Expected keyword 'do'"
+
+    sequence = []
+    loop
+      token = @nextToken()
+      if token.type == Token.TYPE_END
+        @nesting -= 1
+        @endTerminable()
+        return new Program.Every every,delay,sequence,token
+      else
+        @tokenizer.pushBack token
+        line = @parseLine()
+        if line?
+          sequence.push line
+        else
+          @error "Unexpected data while parsing after"
+
+    return
+
+  parseDo:(do_token)->
+    @nesting += 1
+    @addTerminable do_token
+
+    sequence = []
+    loop
+      token = @nextToken()
+      if token.type == Token.TYPE_END
+        @nesting -= 1
+        @endTerminable()
+        return new Program.Do do_token,sequence,token
+      else
+        @tokenizer.pushBack token
+        line = @parseLine()
+        if line?
+          sequence.push line
+        else
+          @error "Unexpected data while parsing after"
+
+    return

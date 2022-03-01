@@ -1,6 +1,11 @@
-var LANGUAGE_MICROSCRIPT;
+var LANGUAGE_MICROSCRIPT, LANGUAGE_MICROSCRIPT2;
 
 LANGUAGE_MICROSCRIPT = {
   ace_mode: "ace/mode/microscript",
+  parser: Parser
+};
+
+LANGUAGE_MICROSCRIPT2 = {
+  ace_mode: "ace/mode/microscript2",
   parser: Parser
 };

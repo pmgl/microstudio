@@ -52,6 +52,10 @@ class @Token
 @Token.TYPE_CONTINUE = 52
 
 @Token.TYPE_FUNCTION = 60
+@Token.TYPE_AFTER = 61
+@Token.TYPE_EVERY = 62
+@Token.TYPE_DO = 63
+
 @Token.TYPE_LOCAL = 70
 @Token.TYPE_OBJECT = 80
 

@@ -27,7 +27,7 @@ this.Processor = (function() {
   Processor.prototype.applyFunction = function(args) {};
 
   Processor.prototype.run = function(context) {
-    var a, arg1, args, argv, b, c, call_stack_arg1, call_stack_index, call_stack_object, call_stack_op_index, call_stack_opcodes, call_stack_routine, call_stack_super, call_stack_supername, call_super, call_supername, con, f, field, global, i, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, src, stack, stack_index, sup, token, v, v1, v2, value;
+    var a, arg1, args, argv, b, c, call_stack_arg1, call_stack_index, call_stack_object, call_stack_op_index, call_stack_opcodes, call_stack_routine, call_stack_super, call_stack_supername, call_super, call_supername, con, continue_time, f, field, global, i, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, src, stack, stack_index, sup, t, token, v, v1, v2, value;
     local_index = this.local_index;
     stack_index = this.stack_index;
     op_index = this.op_index;
@@ -346,6 +346,10 @@ this.Processor = (function() {
           stack[stack_index - 1] /= stack[stack_index--];
           op_index++;
           break;
+        case 34:
+          stack[stack_index - 1] %= stack[stack_index--];
+          op_index++;
+          break;
         case 39:
           stack[stack_index] = -stack[stack_index];
           op_index++;
@@ -537,6 +541,20 @@ this.Processor = (function() {
           break;
         case 82:
           if (!stack[stack_index--]) {
+            op_index = arg1[op_index];
+          } else {
+            op_index++;
+          }
+          break;
+        case 83:
+          if (stack[stack_index]) {
+            op_index = arg1[op_index];
+          } else {
+            op_index++;
+          }
+          break;
+        case 84:
+          if (!stack[stack_index]) {
             op_index = arg1[op_index];
           } else {
             op_index++;
@@ -790,9 +808,41 @@ this.Processor = (function() {
           length = opcodes.length;
           break;
         case 100:
-          v = Math.sqrt(stack[stack_index]);
+          v = arg1[op_index](stack[stack_index]);
           stack[stack_index] = isFinite(v) ? v : 0;
           op_index++;
+          break;
+        case 101:
+          v = arg1[op_index](stack[stack_index - 1], stack[stack_index]);
+          stack[--stack_index] = isFinite(v) ? v : 0;
+          op_index++;
+          break;
+        case 110:
+          t = new Thread();
+          t.routine = stack[stack_index - 1];
+          t.start_time = Date.now() + stack[stack_index];
+          stack[--stack_index] = t;
+          op_index += 1;
+          break;
+        case 111:
+          t = new Thread();
+          t.routine = stack[stack_index - 1];
+          t.start_time = Date.now() + stack[stack_index];
+          t.repeat = stack[stack_index];
+          stack[--stack_index] = t;
+          op_index += 1;
+          break;
+        case 112:
+          t = new Thread();
+          t.routine = stack[stack_index];
+          stack[stack_index] = t;
+          op_index += 1;
+          break;
+        case 113:
+          continue_time = Date.now() + (isFinite(stack[stack_index]) ? stack[stack_index] : 0);
+          op_index += 1;
+          restore_op_index = op_index;
+          op_index = length;
           break;
         case 200:
           stack_index = arg1[op_index](stack, stack_index, locals, locals_offset, object);

@@ -140,6 +140,7 @@ class @Editor
         when "python" then @language = @app.languages.python
         when "javascript" then @language = @app.languages.javascript
         when "lua" then @language = @app.languages.lua
+        when "microscript_v2" then @language = @app.languages.microscript2
         else
           @language = @app.languages.microscript
 

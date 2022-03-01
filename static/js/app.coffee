@@ -6,6 +6,7 @@ window.addEventListener "load",()->
 class App
   constructor:()->
     @languages =
+      microscript2: LANGUAGE_MICROSCRIPT2
       microscript: LANGUAGE_MICROSCRIPT
       python: LANGUAGE_PYTHON
       javascript: LANGUAGE_JAVASCRIPT

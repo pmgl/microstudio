@@ -276,7 +276,7 @@ Transpiler = (function() {
       return "";
     } else {
       v = this.createVariable();
-      res = "let " + v + " = object[\"" + arg + "\"] ; // LOAD_VARIABLE\nif (" + v + " == null) {\n  let obj = object ;\n  while ((" + v + " == null) && (obj[\"class\"] != null)) { obj = obj[\"class\"] ; " + v + " = obj[\"" + arg + "]\" }\n  if (" + v + " == null) v = global[\"" + arg + "\"] ;\n  if (" + v + " == null) { " + v + " = 0 ; }\n}";
+      res = "let " + v + " = object[\"" + arg + "\"] ; // LOAD_VARIABLE\nif (" + v + " == null) {\n  let obj = object ;\n  while ((" + v + " == null) && (obj[\"class\"] != null)) { obj = obj[\"class\"] ; " + v + " = obj[\"" + arg + "\"] }\n  if (" + v + " == null) v = global[\"" + arg + "\"] ;\n  if (" + v + " == null) { " + v + " = 0 ; }\n}";
       this.stack.push(v);
       this.variables[arg] = v;
       return res;

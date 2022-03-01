@@ -209,6 +209,12 @@ this.Parser = (function() {
           throw "malformed number";
         }
         return new Program.Value(token, Program.Value.TYPE_NUMBER, Number.parseFloat("." + next.string_value));
+      case Token.TYPE_AFTER:
+        return this.parseAfter(token);
+      case Token.TYPE_EVERY:
+        return this.parseEvery(token);
+      case Token.TYPE_DO:
+        return this.parseDo(token);
       default:
         this.tokenizer.pushBack(token);
         return null;
@@ -581,6 +587,85 @@ this.Parser = (function() {
     var exp;
     exp = this.assertExpression();
     return new Program.NewCall(token, exp);
+  };
+
+  Parser.prototype.parseAfter = function(after) {
+    var delay, line, sequence, token;
+    this.nesting += 1;
+    this.addTerminable(after);
+    delay = this.assertExpression();
+    token = this.nextToken();
+    if ((token == null) || token.type !== Token.TYPE_DO) {
+      this.error("Expected keyword 'do'");
+    }
+    sequence = [];
+    while (true) {
+      token = this.nextToken();
+      if (token.type === Token.TYPE_END) {
+        this.nesting -= 1;
+        this.endTerminable();
+        return new Program.After(after, delay, sequence, token);
+      } else {
+        this.tokenizer.pushBack(token);
+        line = this.parseLine();
+        if (line != null) {
+          sequence.push(line);
+        } else {
+          this.error("Unexpected data while parsing after");
+        }
+      }
+    }
+  };
+
+  Parser.prototype.parseEvery = function(every) {
+    var delay, line, sequence, token;
+    this.nesting += 1;
+    this.addTerminable(every);
+    delay = this.assertExpression();
+    token = this.nextToken();
+    if ((token == null) || token.type !== Token.TYPE_DO) {
+      this.error("Expected keyword 'do'");
+    }
+    sequence = [];
+    while (true) {
+      token = this.nextToken();
+      if (token.type === Token.TYPE_END) {
+        this.nesting -= 1;
+        this.endTerminable();
+        return new Program.Every(every, delay, sequence, token);
+      } else {
+        this.tokenizer.pushBack(token);
+        line = this.parseLine();
+        if (line != null) {
+          sequence.push(line);
+        } else {
+          this.error("Unexpected data while parsing after");
+        }
+      }
+    }
+  };
+
+  Parser.prototype.parseDo = function(do_token) {
+    var line, sequence, token;
+    this.nesting += 1;
+    this.addTerminable(do_token);
+    sequence = [];
+    while (true) {
+      token = this.nextToken();
+      if (token.type === Token.TYPE_END) {
+        this.nesting -= 1;
+        this.endTerminable();
+        return new Program.Do(do_token, sequence, token);
+      } else {
+        this.tokenizer.pushBack(token);
+        line = this.parseLine();
+        if (line != null) {
+          sequence.push(line);
+        } else {
+          this.error("Unexpected data while parsing after");
+        }
+      }
+    }
   };
 
   return Parser;

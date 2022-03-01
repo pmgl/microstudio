@@ -143,6 +143,18 @@ class @Program.NewCall
     if @expression not instanceof Program.FunctionCall
       @expression = new Program.FunctionCall @token,@expression,[]
 
+class @Program.After
+  constructor:(@token,@delay,@sequence,end)->
+    @source = "after "+@token.tokenizer.input.substring(@token.index,end.index+2)
+
+class @Program.Every
+  constructor:(@token,@delay,@sequence,end)->
+    @source = "every "+@token.tokenizer.input.substring(@token.index,end.index+2)
+
+class @Program.Do
+  constructor:(@token,@sequence,end)->
+    @source = "do "+@token.tokenizer.input.substring(@token.index,end.index+2)
+
 @Program.Precedence =
   "^":21
   "/":20

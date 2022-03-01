@@ -5,11 +5,6 @@ class Compiler
     @code = ""
     @code = [@code]
 
-    context =
-      local_variables: {}
-      temp_variable_count: 0
-      tmpcount: 0
-
     @routine = new Routine()
 
     @locals = new Locals()
@@ -17,7 +12,7 @@ class Compiler
     @count = 0
 
     for s,i in @program.statements
-      @compile s,context
+      @compile s
       if i<@program.statements.length-1
         @routine.POP(s)
 
@@ -28,73 +23,79 @@ class Compiler
     console.info(@routine.toString())
     console.info("total length: "+@count)
 
-  compile:(statement,context,retain)->
+  compile:(statement)->
     if statement instanceof Program.Value
-      return @compileValue(statement,context)
+      return @compileValue(statement)
     else if statement instanceof Program.Operation
-      return @compileOperation(statement,context)
+      return @compileOperation(statement)
     else if statement instanceof Program.Assignment
-      return @compileAssignment(statement,context,retain)
+      return @compileAssignment(statement)
     else if statement instanceof Program.Variable
-      return @compileVariable(statement,context)
+      return @compileVariable(statement)
     else if statement instanceof Program.Function
-      return @compileFunction(statement,context)
+      return @compileFunction(statement)
     else if statement instanceof Program.FunctionCall
-      return @compileFunctionCall(statement,context,retain)
+      return @compileFunctionCall(statement)
     else if statement instanceof Program.While
-      return @compileWhile(statement,context,retain)
+      return @compileWhile(statement)
     if statement instanceof Program.SelfAssignment
-      return @compileSelfAssignment(statement,context,retain)
+      return @compileSelfAssignment(statement)
     else if statement instanceof Program.Braced
-      return @compileBraced(statement,context,retain)
+      return @compileBraced(statement)
     else if statement instanceof Program.CreateObject
-      return @compileCreateObject(statement,context)
+      return @compileCreateObject(statement)
     else if statement instanceof Program.Field
-      return @compileField(statement,context)
+      return @compileField(statement)
     else if statement instanceof Program.Negate
-      return @compileNegate(statement,context,retain)
+      return @compileNegate(statement)
     else if statement instanceof Program.For
-      return @compileFor(statement,context,retain)
+      return @compileFor(statement)
     else if statement instanceof Program.ForIn
-      return @compileForIn(statement,context,retain)
+      return @compileForIn(statement)
     else if statement instanceof Program.Not
-      return @compileNot(statement,context,retain)
+      return @compileNot(statement)
     else if statement instanceof Program.Return
-      return @compileReturn(statement,context)
+      return @compileReturn(statement)
     else if statement instanceof Program.Condition
-      return @compileCondition(statement,context,retain)
+      return @compileCondition(statement)
     else if statement instanceof Program.Break
-      return @compileBreak(statement,context)
+      return @compileBreak(statement)
     else if statement instanceof Program.Continue
-      return @compileContinue(statement,context)
+      return @compileContinue(statement)
     else if statement instanceof Program.CreateClass
-      return @compileCreateClass(statement,context)
+      return @compileCreateClass(statement)
     else if statement instanceof Program.NewCall
-      return @compileNewCall(statement,context)
+      return @compileNewCall(statement)
+    else if statement instanceof Program.After
+      return @compileAfter(statement)
+    else if statement instanceof Program.Every
+      return @compileEvery(statement)
+    else if statement instanceof Program.Do
+      return @compileDo(statement)
     else if true
       console.info statement
       throw "Not implemented"
 
 
-  compileAssignment:(statement,context,retain)->
+  compileAssignment:(statement)->
     if statement.local
       if statement.field instanceof Program.Variable
         index = @locals.register(statement.field.identifier)
-        @compile(statement.expression,context,true)
+        @compile(statement.expression)
         @routine.STORE_LOCAL index,statement
       else
         throw "illegal"
     else
       if statement.field instanceof Program.Variable
         if @locals.get(statement.field.identifier)?
-          @compile(statement.expression,context,true)
+          @compile(statement.expression)
           index = @locals.get(statement.field.identifier)
           @routine.STORE_LOCAL index,statement
           return
         else if statement.expression instanceof Program.CreateClass
           @compileUpdateClass(statement.expression,statement.field.identifier)
         else
-          @compile(statement.expression,context,true)
+          @compile(statement.expression)
           @routine.STORE_VARIABLE statement.field.identifier,statement
           return
       else
@@ -110,18 +111,18 @@ class Compiler
           else
             @routine.LOAD_VARIABLE_OBJECT f.expression.identifier,statement
         else
-          @compile f.expression,context,true
+          @compile f.expression
           @routine.MAKE_OBJECT statement
 
         for i in [0..f.chain.length-2] by 1
-          @compile f.chain[i],context,true
+          @compile f.chain[i]
           @routine.LOAD_PROPERTY_OBJECT f.chain[i]
 
-        @compile f.chain[f.chain.length-1],context,true
-        @compile statement.expression,context,true
+        @compile f.chain[f.chain.length-1]
+        @compile statement.expression
         @routine.STORE_PROPERTY statement
 
-  compileSelfAssignment:(statement,context,retain)->
+  compileSelfAssignment:(statement)->
     switch statement.operation
       when Token.TYPE_PLUS_EQUALS then op = "+"
       when Token.TYPE_MINUS_EQUALS then op = "-"
@@ -130,7 +131,7 @@ class Compiler
 
     if statement.field instanceof Program.Variable
       if @locals.get(statement.field.identifier)?
-        @compile(statement.expression,context,true)
+        @compile(statement.expression)
         index = @locals.get(statement.field.identifier)
 
         switch op
@@ -139,11 +140,18 @@ class Compiler
 
         return
       else
-        @compile(statement.expression,context,true)
+        @compile(statement.expression)
 
         switch op
-          when "+" then @routine.ADD_VARIABLE statement.field.identifier,statement
+          when "+" #then @routine.ADD_VARIABLE statement.field.identifier,statement
+            @routine.LOAD_VARIABLE statement.field.identifier,statement
+            @routine.ADD statement
+            @routine.STORE_VARIABLE statement.field.identifier,statement
           when "-" then @routine.SUB_VARIABLE statement.field.identifier,statement
+          when "*"
+            @routine.LOAD_VARIABLE statement.field.identifier,statement
+            @routine.MUL statement
+            @routine.STORE_VARIABLE statement.field.identifier,statement
 
         return
     else
@@ -159,24 +167,24 @@ class Compiler
         else
           @routine.LOAD_VARIABLE_OBJECT f.expression.identifier,statement
       else
-        @compile f.expression,context,true
+        @compile f.expression
         @routine.MAKE_OBJECT statement
 
       for i in [0..f.chain.length-2] by 1
-        @compile f.chain[i],context,true
+        @compile f.chain[i]
         @routine.LOAD_PROPERTY_OBJECT f.chain[i]
 
       c = f.chain[f.chain.length-1]
-      @compile f.chain[f.chain.length-1],context,true
-      @compile statement.expression,context,true
+      @compile f.chain[f.chain.length-1]
+      @compile statement.expression
       switch op
         when "+" then @routine.ADD_PROPERTY statement
         when "-" then @routine.SUB_PROPERTY statement
 
-  compileOperation:(op,context)->
+  compileOperation:(op)->
     if op.operation in ["+","-","*","/","%"]
-      @compile(op.term1,context,true)
-      @compile(op.term2,context,true)
+      @compile(op.term1)
+      @compile(op.term2)
       switch op.operation
         when "+" then @routine.ADD(op)
         when "-" then @routine.SUB(op)
@@ -185,8 +193,8 @@ class Compiler
         when "%" then @routine.MODULO(op)
       return
     else if op.operation in ["==","!=","<",">","<=",">="]
-      @compile(op.term1,context,true)
-      @compile(op.term2,context,true)
+      @compile(op.term1)
+      @compile(op.term2)
       switch op.operation
         when "==" then @routine.EQ(op)
         when "!=" then @routine.NEQ(op)
@@ -197,30 +205,42 @@ class Compiler
 
       return
     else if op.operation == "and"
-      return """((#{@transpile(op.term1,context,true)} && #{@transpile(op.term2,context,true)})? 1 : 0)"""
+      jump = @routine.createLabel "and"
+      @compile op.term1
+      @routine.JUMPN_NOPOP jump,op
+      @routine.POP op
+      @compile op.term2
+      @routine.setLabel jump
     else if op.operation == "or"
-      return """((#{@transpile(op.term1,context,true)} || #{@transpile(op.term2,context,true)})? 1 : 0)"""
+      jump = @routine.createLabel "or"
+      @compile op.term1
+      @routine.JUMPY_NOPOP jump,op
+      @routine.POP op
+      @compile op.term2
+      @routine.setLabel jump
     else if op.operation == "^"
-      return """Math.pow(#{@transpile(op.term1,context,true)},#{@transpile(op.term2,context,true)})"""
+      @compile op.term1
+      @compile op.term2
+      @routine.BINARY_OP Compiler.predefined_binary_functions.pow, op
     else
       return ""
 
-  compileBraced:(expression,context,retain)->
-    @compile expression.expression,context,retain
+  compileBraced:(expression)->
+    @compile expression.expression
     return
 
-  compileNegate:(expression,context,retain)->
+  compileNegate:(expression)->
     if expression.expression instanceof Program.Value and expression.expression.type == Program.Value.TYPE_NUMBER
       @routine.LOAD_VALUE -expression.expression.value,expression
     else
-      @compile expression.expression,context,true
+      @compile expression.expression
       @routine.NEGATE expression
 
-  compileNot:(expression,context,retain)->
-    @compile expression.expression,context,true
+  compileNot:(expression)->
+    @compile expression.expression
     @routine.NOT expression
 
-  compileValue:(value,context)->
+  compileValue:(value)->
     switch value.type
       when Program.Value.TYPE_NUMBER
         @routine.LOAD_VALUE(value.value,value)
@@ -230,7 +250,7 @@ class Compiler
         @routine.CREATE_ARRAY value
         for i in [0..value.value.length-1] by 1
           @routine.LOAD_VALUE i,value
-          @compile(value.value[i],context,true)
+          @compile(value.value[i])
           @routine.CREATE_PROPERTY value
 
     return
@@ -256,7 +276,7 @@ class Compiler
 
     return
 
-  compileFieldParent:(field,context)->
+  compileFieldParent:(field)->
     @compile field.expression
     for i in [0..field.chain.length-2] by 1
       c = field.chain[i]
@@ -280,13 +300,16 @@ class Compiler
         else
           @routine.LOAD_VALUE 0,call
 
-        @routine[funk] call
+        @routine.UNARY_OP funk,call
       else if Compiler.predefined_binary_functions[call.expression.identifier]?
         funk = Compiler.predefined_binary_functions[call.expression.identifier]
         if call.args.length>0 then @compile call.args[0] else @routine.LOAD_VALUE 0,call
         if call.args.length>1 then @compile call.args[1] else @routine.LOAD_VALUE 0,call
 
-        @routine[funk] call
+        @routine.BINARY_OP funk,call
+      else if call.expression.identifier == "sleep"
+        if call.args.length>0 then @compile call.args[0] else @routine.LOAD_VALUE 0,call
+        @routine.SLEEP call
       else if call.expression.identifier == "super"
         for a,i in call.args
           @compile(a)
@@ -311,17 +334,17 @@ class Compiler
       @compile call.expression
       @routine.FUNCTION_CALL call.args.length,call
 
-  compileFor:(forloop,context,retain)->
+  compileFor:(forloop)->
     iterator = @locals.register(forloop.iterator)
     @locals.allocate() # range_to
     @locals.allocate() # step
 
-    @compile(forloop.range_from,context,true)
+    @compile(forloop.range_from)
     @routine.STORE_LOCAL iterator,forloop
     @routine.POP forloop
-    @compile(forloop.range_to,context,true)
+    @compile(forloop.range_to)
     if forloop.range_by != 0
-      @compile(forloop.range_by,context,true)
+      @compile(forloop.range_by)
     else
       @routine.LOAD_VALUE 0,forloop
 
@@ -340,7 +363,7 @@ class Compiler
     @break_label = for_end
     @continue_label = for_continue
 
-    @compileSequence forloop.sequence,context
+    @compileSequence forloop.sequence
 
     @break_label = save_break
     @continue_label = save_continue
@@ -351,12 +374,12 @@ class Compiler
 
     @locals.pop()
 
-  compileForIn:(forloop,context,retain)->
+  compileForIn:(forloop)->
     iterator = @locals.register(forloop.iterator)
     @locals.allocate() # array
     @locals.allocate() # index
 
-    @compile(forloop.list,context,true)
+    @compile(forloop.list)
 
     for_start = @routine.createLabel "for_start"
     for_continue = @routine.createLabel "for_continue"
@@ -373,7 +396,7 @@ class Compiler
     @break_label = for_end
     @continue_label = for_continue
 
-    @compileSequence forloop.sequence,context
+    @compileSequence forloop.sequence
 
     @break_label = save_break
     @continue_label = save_continue
@@ -384,21 +407,21 @@ class Compiler
 
     @locals.pop()
 
-  compileSequence:(sequence,context)->
+  compileSequence:(sequence)->
     for i in [0..sequence.length-1] by 1
       if not sequence[i].nopop
         @routine.POP sequence[i]
-      @compile(sequence[i],context,true)
+      @compile(sequence[i])
     return
 
-  compileWhile:(whiloop,context,retain)->
+  compileWhile:(whiloop)->
     @locals.push()
     start = @routine.createLabel "while_start"
     end = @routine.createLabel "while_end"
 
     @routine.LOAD_VALUE 0,whiloop
     @routine.setLabel start
-    @compile whiloop.condition,context,true
+    @compile whiloop.condition
     @routine.JUMPN end
 
     save_break = @break_label
@@ -407,7 +430,7 @@ class Compiler
     @break_label = end
     @continue_label = start
 
-    @compileSequence whiloop.sequence,context
+    @compileSequence whiloop.sequence
     @routine.JUMP start,whiloop
 
     @break_label = save_break
@@ -416,33 +439,38 @@ class Compiler
     @routine.setLabel end
     @locals.pop()
 
-  compileBreak:(statement,context)->
+  compileBreak:(statement)->
     if @break_label?
       @routine.JUMP @break_label
 
-  compileContinue:(statement,context)->
+  compileContinue:(statement)->
     if @continue_label?
       @routine.JUMP @continue_label
 
-  compileFunction:(func,context)->
+  compileFunction:(func)->
+    r = @compileFunctionBody(func)
+    @routine.LOAD_VALUE r,func
+
+  compileFunctionBody:(func)->
     routine = @routine
     locals = @locals
 
-    @routine = new Routine(func.args.length)
+    @routine = new Routine(if func.args? then func.args.length else 0)
     @locals = new Locals()
 
     ## TODO: DEFAULT ARG VALUES
 
     local_index = @locals.index
 
-    for i in [func.args.length-1..0] by -1
-      a = func.args[i]
-      index = @locals.register(a.name)
-      @routine.STORE_LOCAL index,func
-      @routine.POP func
+    if func.args?
+      for i in [func.args.length-1..0] by -1
+        a = func.args[i]
+        index = @locals.register(a.name)
+        @routine.STORE_LOCAL index,func
+        @routine.POP func
 
     for i in [0..func.sequence.length-1] by 1
-      @compile(func.sequence[i],context,true)
+      @compile(func.sequence[i])
       if i<func.sequence.length-1
         @routine.POP func.sequence[i]
       else
@@ -457,18 +485,17 @@ class Compiler
 
     @routine = routine
     @locals = locals
+    r
 
-    @routine.LOAD_VALUE r,func
-
-  compileReturn:(ret,context)->
+  compileReturn:(ret)->
     if ret.expression?
-      @compile(ret.expression,context,true)
+      @compile(ret.expression)
       @routine.RETURN ret
     else
       @routine.LOAD_VALUE 0,ret
       @routine.RETURN ret
 
-  compileCondition:(condition,context,retain)->
+  compileCondition:(condition)->
     chain = condition.chain
     @routine.LOAD_VALUE 0,condition
     condition_end = @routine.createLabel "condition_end"
@@ -476,13 +503,13 @@ class Compiler
     for i in [0..chain.length-1] by 1
       condition_next = @routine.createLabel "condition_next"
       c = chain[i]
-      @compile c.condition,context,true
+      @compile c.condition
       @routine.JUMPN condition_next
-      @compileSequence(c.sequence,context,true)
+      @compileSequence(c.sequence)
       @routine.JUMP condition_end,condition
       @routine.setLabel condition_next
       if i==chain.length-1 and c.else?
-        @compileSequence(c.else,context,true)
+        @compileSequence(c.else)
 
     @routine.setLabel condition_end
     return
@@ -491,18 +518,18 @@ class Compiler
     if field == "constructor" then field = "_constructor"
     field.toString().replace(/"/g,"\\\"")
 
-  compileCreateObject:(statement,context)->
+  compileCreateObject:(statement)->
     @routine.CREATE_OBJECT statement
     for f in statement.fields
       @routine.LOAD_VALUE f.field,statement
-      @compile(f.value,context,true)
+      @compile(f.value)
       @routine.CREATE_PROPERTY statement
 
     return
 
-  compileCreateClass:(statement,context)->
+  compileCreateClass:(statement)->
     if statement.ext?
-      @compile statement.ext,context,true
+      @compile statement.ext
     else
       @routine.LOAD_VALUE 0,statement
 
@@ -510,7 +537,7 @@ class Compiler
     @routine.CREATE_CLASS variable,statement
     for f in statement.fields
       @routine.LOAD_VALUE f.field,statement
-      @compile(f.value,context,true)
+      @compile(f.value)
       @routine.CREATE_PROPERTY statement
 
     return
@@ -529,42 +556,59 @@ class Compiler
     @routine.NEW_CALL call.args.length,statement
     @routine.POP statement # pop return value of class constructor
 
+  compileAfter:(after)->
+    r = @compileFunctionBody(after)
+    @routine.LOAD_VALUE r,after
+    @compile after.delay
+    @routine.AFTER after
+
+  compileEvery:(every)->
+    r = @compileFunctionBody(every)
+    @routine.LOAD_VALUE r,every
+    @compile every.delay
+    @routine.EVERY every
+
+  compileDo:(dostuff)->
+    r = @compileFunctionBody(dostuff)
+    @routine.LOAD_VALUE r,dostuff
+    @routine.DO dostuff
+
   exec:(context)->
     @processor = new Processor()
     @processor.load @routine
     @processor.run(context)
 
   @predefined_unary_functions =
-    "round": "ROUND"
-    "floor": "FLOOR"
-    "ceil": "CEIL"
-    "abs": "ABS"
+    "round": Math.round
+    "floor": Math.floor
+    "ceil": Math.ceil
+    "abs": Math.abs
 
     "sqrt": Math.sqrt
 
-    "sin": "SIN"
-    "cos": "COS"
-    "tan": "TAN"
-    "acos": "ACOS"
-    "asin": "ASIN"
-    "atan": "ATAN"
+    "sin": Math.sin
+    "cos": Math.cos
+    "tan": Math.tan
+    "acos": Math.acos
+    "asin": Math.asin
+    "atan": Math.atan
 
-    "sind": "SIND"
-    "cosd": "COSD"
-    "tand": "TAND"
-    "asind": "ASIND"
-    "acosd": "ACOSD"
-    "atand": "ATAND"
+    "sind": (x)->Math.sin(x*Math.PI/180)
+    "cosd": (x)->Math.cos(x*Math.PI/180)
+    "tand": (x)->Math.tan(x*Math.PI/180)
+    "asind": (x)->Math.asin(x)/Math.PI*180
+    "acosd": (x)->Math.acos(x)/Math.PI*180
+    "atand": (x)->Math.atan(x)/Math.PI*180
 
-    "log": "LOG"
-    "exp": "EXP"
+    "log": Math.log
+    "exp": Math.exp
 
   @predefined_binary_functions =
-    "min": "MIN"
-    "max": "MAX"
-    "pow": "POW"
-    "atan2": "ATAND"
-    "atan2d": "ATAN2D"
+    "min": Math.min
+    "max": Math.max
+    "pow": Math.pow
+    "atan2": Math.atan2
+    "atan2d": (y,x)->Math.atan2(y,x)/Math.PI*180
 
   @predefined_values =
     PI: Math.PI
@@ -573,16 +617,7 @@ class Compiler
 
 # meta.global
 # meta.print
-    # meta.round = (x)->Math.round(x)
-    # meta.floor = (x)->Math.floor(x)
-    # meta.ceil = (x)->Math.ceil(x)
-    # meta.abs = (x)->Math.abs(x)
-    #
-    # meta.min = (x,y)->Math.min(x,y)
-    # meta.max = (x,y)->Math.max(x,y)
-    #
-    # meta.sqrt = (x)->Math.sqrt(x)
-    # meta.pow = (x,y)->Math.pow(x,y)
+
     #
     # meta.sin = (x)->Math.sin(x)
     # meta.cos = (x)->Math.cos(x)

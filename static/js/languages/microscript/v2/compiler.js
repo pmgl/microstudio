@@ -2,23 +2,18 @@ var Compiler, LocalLayer;
 
 Compiler = (function() {
   function Compiler(program) {
-    var context, i, j, len, ref, s;
+    var i, j, len, ref, s;
     this.program = program;
     this.code_saves = [];
     this.code = "";
     this.code = [this.code];
-    context = {
-      local_variables: {},
-      temp_variable_count: 0,
-      tmpcount: 0
-    };
     this.routine = new Routine();
     this.locals = new Locals();
     this.count = 0;
     ref = this.program.statements;
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
       s = ref[i];
-      this.compile(s, context);
+      this.compile(s);
       if (i < this.program.statements.length - 1) {
         this.routine.POP(s);
       }
@@ -31,62 +26,68 @@ Compiler = (function() {
     console.info("total length: " + this.count);
   }
 
-  Compiler.prototype.compile = function(statement, context, retain) {
+  Compiler.prototype.compile = function(statement) {
     if (statement instanceof Program.Value) {
-      return this.compileValue(statement, context);
+      return this.compileValue(statement);
     } else if (statement instanceof Program.Operation) {
-      return this.compileOperation(statement, context);
+      return this.compileOperation(statement);
     } else if (statement instanceof Program.Assignment) {
-      return this.compileAssignment(statement, context, retain);
+      return this.compileAssignment(statement);
     } else if (statement instanceof Program.Variable) {
-      return this.compileVariable(statement, context);
+      return this.compileVariable(statement);
     } else if (statement instanceof Program.Function) {
-      return this.compileFunction(statement, context);
+      return this.compileFunction(statement);
     } else if (statement instanceof Program.FunctionCall) {
-      return this.compileFunctionCall(statement, context, retain);
+      return this.compileFunctionCall(statement);
     } else if (statement instanceof Program.While) {
-      return this.compileWhile(statement, context, retain);
+      return this.compileWhile(statement);
     }
     if (statement instanceof Program.SelfAssignment) {
-      return this.compileSelfAssignment(statement, context, retain);
+      return this.compileSelfAssignment(statement);
     } else if (statement instanceof Program.Braced) {
-      return this.compileBraced(statement, context, retain);
+      return this.compileBraced(statement);
     } else if (statement instanceof Program.CreateObject) {
-      return this.compileCreateObject(statement, context);
+      return this.compileCreateObject(statement);
     } else if (statement instanceof Program.Field) {
-      return this.compileField(statement, context);
+      return this.compileField(statement);
     } else if (statement instanceof Program.Negate) {
-      return this.compileNegate(statement, context, retain);
+      return this.compileNegate(statement);
     } else if (statement instanceof Program.For) {
-      return this.compileFor(statement, context, retain);
+      return this.compileFor(statement);
     } else if (statement instanceof Program.ForIn) {
-      return this.compileForIn(statement, context, retain);
+      return this.compileForIn(statement);
     } else if (statement instanceof Program.Not) {
-      return this.compileNot(statement, context, retain);
+      return this.compileNot(statement);
     } else if (statement instanceof Program.Return) {
-      return this.compileReturn(statement, context);
+      return this.compileReturn(statement);
     } else if (statement instanceof Program.Condition) {
-      return this.compileCondition(statement, context, retain);
+      return this.compileCondition(statement);
     } else if (statement instanceof Program.Break) {
-      return this.compileBreak(statement, context);
+      return this.compileBreak(statement);
     } else if (statement instanceof Program.Continue) {
-      return this.compileContinue(statement, context);
+      return this.compileContinue(statement);
     } else if (statement instanceof Program.CreateClass) {
-      return this.compileCreateClass(statement, context);
+      return this.compileCreateClass(statement);
     } else if (statement instanceof Program.NewCall) {
-      return this.compileNewCall(statement, context);
+      return this.compileNewCall(statement);
+    } else if (statement instanceof Program.After) {
+      return this.compileAfter(statement);
+    } else if (statement instanceof Program.Every) {
+      return this.compileEvery(statement);
+    } else if (statement instanceof Program.Do) {
+      return this.compileDo(statement);
     } else if (true) {
       console.info(statement);
       throw "Not implemented";
     }
   };
 
-  Compiler.prototype.compileAssignment = function(statement, context, retain) {
+  Compiler.prototype.compileAssignment = function(statement) {
     var f, i, index, j, ref;
     if (statement.local) {
       if (statement.field instanceof Program.Variable) {
         index = this.locals.register(statement.field.identifier);
-        this.compile(statement.expression, context, true);
+        this.compile(statement.expression);
         return this.routine.STORE_LOCAL(index, statement);
       } else {
         throw "illegal";
@@ -94,13 +95,13 @@ Compiler = (function() {
     } else {
       if (statement.field instanceof Program.Variable) {
         if (this.locals.get(statement.field.identifier) != null) {
-          this.compile(statement.expression, context, true);
+          this.compile(statement.expression);
           index = this.locals.get(statement.field.identifier);
           this.routine.STORE_LOCAL(index, statement);
         } else if (statement.expression instanceof Program.CreateClass) {
           return this.compileUpdateClass(statement.expression, statement.field.identifier);
         } else {
-          this.compile(statement.expression, context, true);
+          this.compile(statement.expression);
           this.routine.STORE_VARIABLE(statement.field.identifier, statement);
         }
       } else {
@@ -117,21 +118,21 @@ Compiler = (function() {
             this.routine.LOAD_VARIABLE_OBJECT(f.expression.identifier, statement);
           }
         } else {
-          this.compile(f.expression, context, true);
+          this.compile(f.expression);
           this.routine.MAKE_OBJECT(statement);
         }
         for (i = j = 0, ref = f.chain.length - 2; j <= ref; i = j += 1) {
-          this.compile(f.chain[i], context, true);
+          this.compile(f.chain[i]);
           this.routine.LOAD_PROPERTY_OBJECT(f.chain[i]);
         }
-        this.compile(f.chain[f.chain.length - 1], context, true);
-        this.compile(statement.expression, context, true);
+        this.compile(f.chain[f.chain.length - 1]);
+        this.compile(statement.expression);
         return this.routine.STORE_PROPERTY(statement);
       }
     }
   };
 
-  Compiler.prototype.compileSelfAssignment = function(statement, context, retain) {
+  Compiler.prototype.compileSelfAssignment = function(statement) {
     var c, f, i, index, j, op, ref;
     switch (statement.operation) {
       case Token.TYPE_PLUS_EQUALS:
@@ -148,7 +149,7 @@ Compiler = (function() {
     }
     if (statement.field instanceof Program.Variable) {
       if (this.locals.get(statement.field.identifier) != null) {
-        this.compile(statement.expression, context, true);
+        this.compile(statement.expression);
         index = this.locals.get(statement.field.identifier);
         switch (op) {
           case "+":
@@ -158,13 +159,20 @@ Compiler = (function() {
             this.routine.SUB_LOCAL(index, statement);
         }
       } else {
-        this.compile(statement.expression, context, true);
+        this.compile(statement.expression);
         switch (op) {
           case "+":
-            this.routine.ADD_VARIABLE(statement.field.identifier, statement);
+            this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
+            this.routine.ADD(statement);
+            this.routine.STORE_VARIABLE(statement.field.identifier, statement);
             break;
           case "-":
             this.routine.SUB_VARIABLE(statement.field.identifier, statement);
+            break;
+          case "*":
+            this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
+            this.routine.MUL(statement);
+            this.routine.STORE_VARIABLE(statement.field.identifier, statement);
         }
       }
     } else {
@@ -181,16 +189,16 @@ Compiler = (function() {
           this.routine.LOAD_VARIABLE_OBJECT(f.expression.identifier, statement);
         }
       } else {
-        this.compile(f.expression, context, true);
+        this.compile(f.expression);
         this.routine.MAKE_OBJECT(statement);
       }
       for (i = j = 0, ref = f.chain.length - 2; j <= ref; i = j += 1) {
-        this.compile(f.chain[i], context, true);
+        this.compile(f.chain[i]);
         this.routine.LOAD_PROPERTY_OBJECT(f.chain[i]);
       }
       c = f.chain[f.chain.length - 1];
-      this.compile(f.chain[f.chain.length - 1], context, true);
-      this.compile(statement.expression, context, true);
+      this.compile(f.chain[f.chain.length - 1]);
+      this.compile(statement.expression);
       switch (op) {
         case "+":
           return this.routine.ADD_PROPERTY(statement);
@@ -200,11 +208,11 @@ Compiler = (function() {
     }
   };
 
-  Compiler.prototype.compileOperation = function(op, context) {
-    var ref, ref1;
+  Compiler.prototype.compileOperation = function(op) {
+    var jump, ref, ref1;
     if ((ref = op.operation) === "+" || ref === "-" || ref === "*" || ref === "/" || ref === "%") {
-      this.compile(op.term1, context, true);
-      this.compile(op.term2, context, true);
+      this.compile(op.term1);
+      this.compile(op.term2);
       switch (op.operation) {
         case "+":
           this.routine.ADD(op);
@@ -222,8 +230,8 @@ Compiler = (function() {
           this.routine.MODULO(op);
       }
     } else if ((ref1 = op.operation) === "==" || ref1 === "!=" || ref1 === "<" || ref1 === ">" || ref1 === "<=" || ref1 === ">=") {
-      this.compile(op.term1, context, true);
-      this.compile(op.term2, context, true);
+      this.compile(op.term1);
+      this.compile(op.term2);
       switch (op.operation) {
         case "==":
           this.routine.EQ(op);
@@ -244,35 +252,47 @@ Compiler = (function() {
           this.routine.GTE(op);
       }
     } else if (op.operation === "and") {
-      return "((" + (this.transpile(op.term1, context, true)) + " && " + (this.transpile(op.term2, context, true)) + ")? 1 : 0)";
+      jump = this.routine.createLabel("and");
+      this.compile(op.term1);
+      this.routine.JUMPN_NOPOP(jump, op);
+      this.routine.POP(op);
+      this.compile(op.term2);
+      return this.routine.setLabel(jump);
     } else if (op.operation === "or") {
-      return "((" + (this.transpile(op.term1, context, true)) + " || " + (this.transpile(op.term2, context, true)) + ")? 1 : 0)";
+      jump = this.routine.createLabel("or");
+      this.compile(op.term1);
+      this.routine.JUMPY_NOPOP(jump, op);
+      this.routine.POP(op);
+      this.compile(op.term2);
+      return this.routine.setLabel(jump);
     } else if (op.operation === "^") {
-      return "Math.pow(" + (this.transpile(op.term1, context, true)) + "," + (this.transpile(op.term2, context, true)) + ")";
+      this.compile(op.term1);
+      this.compile(op.term2);
+      return this.routine.BINARY_OP(Compiler.predefined_binary_functions.pow, op);
     } else {
       return "";
     }
   };
 
-  Compiler.prototype.compileBraced = function(expression, context, retain) {
-    this.compile(expression.expression, context, retain);
+  Compiler.prototype.compileBraced = function(expression) {
+    this.compile(expression.expression);
   };
 
-  Compiler.prototype.compileNegate = function(expression, context, retain) {
+  Compiler.prototype.compileNegate = function(expression) {
     if (expression.expression instanceof Program.Value && expression.expression.type === Program.Value.TYPE_NUMBER) {
       return this.routine.LOAD_VALUE(-expression.expression.value, expression);
     } else {
-      this.compile(expression.expression, context, true);
+      this.compile(expression.expression);
       return this.routine.NEGATE(expression);
     }
   };
 
-  Compiler.prototype.compileNot = function(expression, context, retain) {
-    this.compile(expression.expression, context, true);
+  Compiler.prototype.compileNot = function(expression) {
+    this.compile(expression.expression);
     return this.routine.NOT(expression);
   };
 
-  Compiler.prototype.compileValue = function(value, context) {
+  Compiler.prototype.compileValue = function(value) {
     var i, j, ref;
     switch (value.type) {
       case Program.Value.TYPE_NUMBER:
@@ -285,7 +305,7 @@ Compiler = (function() {
         this.routine.CREATE_ARRAY(value);
         for (i = j = 0, ref = value.value.length - 1; j <= ref; i = j += 1) {
           this.routine.LOAD_VALUE(i, value);
-          this.compile(value.value[i], context, true);
+          this.compile(value.value[i]);
           this.routine.CREATE_PROPERTY(value);
         }
     }
@@ -317,7 +337,7 @@ Compiler = (function() {
     }
   };
 
-  Compiler.prototype.compileFieldParent = function(field, context) {
+  Compiler.prototype.compileFieldParent = function(field) {
     var c, i, j, ref;
     this.compile(field.expression);
     for (i = j = 0, ref = field.chain.length - 2; j <= ref; i = j += 1) {
@@ -346,7 +366,7 @@ Compiler = (function() {
         } else {
           this.routine.LOAD_VALUE(0, call);
         }
-        return this.routine[funk](call);
+        return this.routine.UNARY_OP(funk, call);
       } else if (Compiler.predefined_binary_functions[call.expression.identifier] != null) {
         funk = Compiler.predefined_binary_functions[call.expression.identifier];
         if (call.args.length > 0) {
@@ -359,7 +379,14 @@ Compiler = (function() {
         } else {
           this.routine.LOAD_VALUE(0, call);
         }
-        return this.routine[funk](call);
+        return this.routine.BINARY_OP(funk, call);
+      } else if (call.expression.identifier === "sleep") {
+        if (call.args.length > 0) {
+          this.compile(call.args[0]);
+        } else {
+          this.routine.LOAD_VALUE(0, call);
+        }
+        return this.routine.SLEEP(call);
       } else if (call.expression.identifier === "super") {
         ref1 = call.args;
         for (i = k = 0, len1 = ref1.length; k < len1; i = ++k) {
@@ -396,17 +423,17 @@ Compiler = (function() {
     }
   };
 
-  Compiler.prototype.compileFor = function(forloop, context, retain) {
+  Compiler.prototype.compileFor = function(forloop) {
     var for_continue, for_end, for_start, iterator, save_break, save_continue;
     iterator = this.locals.register(forloop.iterator);
     this.locals.allocate();
     this.locals.allocate();
-    this.compile(forloop.range_from, context, true);
+    this.compile(forloop.range_from);
     this.routine.STORE_LOCAL(iterator, forloop);
     this.routine.POP(forloop);
-    this.compile(forloop.range_to, context, true);
+    this.compile(forloop.range_to);
     if (forloop.range_by !== 0) {
-      this.compile(forloop.range_by, context, true);
+      this.compile(forloop.range_by);
     } else {
       this.routine.LOAD_VALUE(0, forloop);
     }
@@ -420,7 +447,7 @@ Compiler = (function() {
     save_continue = this.continue_label;
     this.break_label = for_end;
     this.continue_label = for_continue;
-    this.compileSequence(forloop.sequence, context);
+    this.compileSequence(forloop.sequence);
     this.break_label = save_break;
     this.continue_label = save_continue;
     this.routine.setLabel(for_continue);
@@ -429,12 +456,12 @@ Compiler = (function() {
     return this.locals.pop();
   };
 
-  Compiler.prototype.compileForIn = function(forloop, context, retain) {
+  Compiler.prototype.compileForIn = function(forloop) {
     var for_continue, for_end, for_start, iterator, save_break, save_continue;
     iterator = this.locals.register(forloop.iterator);
     this.locals.allocate();
     this.locals.allocate();
-    this.compile(forloop.list, context, true);
+    this.compile(forloop.list);
     for_start = this.routine.createLabel("for_start");
     for_continue = this.routine.createLabel("for_continue");
     for_end = this.routine.createLabel("for_end");
@@ -445,7 +472,7 @@ Compiler = (function() {
     save_continue = this.continue_label;
     this.break_label = for_end;
     this.continue_label = for_continue;
-    this.compileSequence(forloop.sequence, context);
+    this.compileSequence(forloop.sequence);
     this.break_label = save_break;
     this.continue_label = save_continue;
     this.routine.setLabel(for_continue);
@@ -454,30 +481,30 @@ Compiler = (function() {
     return this.locals.pop();
   };
 
-  Compiler.prototype.compileSequence = function(sequence, context) {
+  Compiler.prototype.compileSequence = function(sequence) {
     var i, j, ref;
     for (i = j = 0, ref = sequence.length - 1; j <= ref; i = j += 1) {
       if (!sequence[i].nopop) {
         this.routine.POP(sequence[i]);
       }
-      this.compile(sequence[i], context, true);
+      this.compile(sequence[i]);
     }
   };
 
-  Compiler.prototype.compileWhile = function(whiloop, context, retain) {
+  Compiler.prototype.compileWhile = function(whiloop) {
     var end, save_break, save_continue, start;
     this.locals.push();
     start = this.routine.createLabel("while_start");
     end = this.routine.createLabel("while_end");
     this.routine.LOAD_VALUE(0, whiloop);
     this.routine.setLabel(start);
-    this.compile(whiloop.condition, context, true);
+    this.compile(whiloop.condition);
     this.routine.JUMPN(end);
     save_break = this.break_label;
     save_continue = this.continue_label;
     this.break_label = end;
     this.continue_label = start;
-    this.compileSequence(whiloop.sequence, context);
+    this.compileSequence(whiloop.sequence);
     this.routine.JUMP(start, whiloop);
     this.break_label = save_break;
     this.continue_label = save_continue;
@@ -485,33 +512,41 @@ Compiler = (function() {
     return this.locals.pop();
   };
 
-  Compiler.prototype.compileBreak = function(statement, context) {
+  Compiler.prototype.compileBreak = function(statement) {
     if (this.break_label != null) {
       return this.routine.JUMP(this.break_label);
     }
   };
 
-  Compiler.prototype.compileContinue = function(statement, context) {
+  Compiler.prototype.compileContinue = function(statement) {
     if (this.continue_label != null) {
       return this.routine.JUMP(this.continue_label);
     }
   };
 
-  Compiler.prototype.compileFunction = function(func, context) {
+  Compiler.prototype.compileFunction = function(func) {
+    var r;
+    r = this.compileFunctionBody(func);
+    return this.routine.LOAD_VALUE(r, func);
+  };
+
+  Compiler.prototype.compileFunctionBody = function(func) {
     var a, i, index, j, k, local_index, locals, r, ref, ref1, routine;
     routine = this.routine;
     locals = this.locals;
-    this.routine = new Routine(func.args.length);
+    this.routine = new Routine(func.args != null ? func.args.length : 0);
     this.locals = new Locals();
     local_index = this.locals.index;
-    for (i = j = ref = func.args.length - 1; j >= 0; i = j += -1) {
-      a = func.args[i];
-      index = this.locals.register(a.name);
-      this.routine.STORE_LOCAL(index, func);
-      this.routine.POP(func);
+    if (func.args != null) {
+      for (i = j = ref = func.args.length - 1; j >= 0; i = j += -1) {
+        a = func.args[i];
+        index = this.locals.register(a.name);
+        this.routine.STORE_LOCAL(index, func);
+        this.routine.POP(func);
+      }
     }
     for (i = k = 0, ref1 = func.sequence.length - 1; k <= ref1; i = k += 1) {
-      this.compile(func.sequence[i], context, true);
+      this.compile(func.sequence[i]);
       if (i < func.sequence.length - 1) {
         this.routine.POP(func.sequence[i]);
       } else {
@@ -525,12 +560,12 @@ Compiler = (function() {
     this.routine.locals_size = locals.index;
     this.routine = routine;
     this.locals = locals;
-    return this.routine.LOAD_VALUE(r, func);
+    return r;
   };
 
-  Compiler.prototype.compileReturn = function(ret, context) {
+  Compiler.prototype.compileReturn = function(ret) {
     if (ret.expression != null) {
-      this.compile(ret.expression, context, true);
+      this.compile(ret.expression);
       return this.routine.RETURN(ret);
     } else {
       this.routine.LOAD_VALUE(0, ret);
@@ -538,7 +573,7 @@ Compiler = (function() {
     }
   };
 
-  Compiler.prototype.compileCondition = function(condition, context, retain) {
+  Compiler.prototype.compileCondition = function(condition) {
     var c, chain, condition_end, condition_next, i, j, ref;
     chain = condition.chain;
     this.routine.LOAD_VALUE(0, condition);
@@ -546,13 +581,13 @@ Compiler = (function() {
     for (i = j = 0, ref = chain.length - 1; j <= ref; i = j += 1) {
       condition_next = this.routine.createLabel("condition_next");
       c = chain[i];
-      this.compile(c.condition, context, true);
+      this.compile(c.condition);
       this.routine.JUMPN(condition_next);
-      this.compileSequence(c.sequence, context, true);
+      this.compileSequence(c.sequence);
       this.routine.JUMP(condition_end, condition);
       this.routine.setLabel(condition_next);
       if (i === chain.length - 1 && (c["else"] != null)) {
-        this.compileSequence(c["else"], context, true);
+        this.compileSequence(c["else"]);
       }
     }
     this.routine.setLabel(condition_end);
@@ -565,22 +600,22 @@ Compiler = (function() {
     return field.toString().replace(/"/g, "\\\"");
   };
 
-  Compiler.prototype.compileCreateObject = function(statement, context) {
+  Compiler.prototype.compileCreateObject = function(statement) {
     var f, j, len, ref;
     this.routine.CREATE_OBJECT(statement);
     ref = statement.fields;
     for (j = 0, len = ref.length; j < len; j++) {
       f = ref[j];
       this.routine.LOAD_VALUE(f.field, statement);
-      this.compile(f.value, context, true);
+      this.compile(f.value);
       this.routine.CREATE_PROPERTY(statement);
     }
   };
 
-  Compiler.prototype.compileCreateClass = function(statement, context) {
+  Compiler.prototype.compileCreateClass = function(statement) {
     var f, j, len, ref, variable;
     if (statement.ext != null) {
-      this.compile(statement.ext, context, true);
+      this.compile(statement.ext);
     } else {
       this.routine.LOAD_VALUE(0, statement);
     }
@@ -590,7 +625,7 @@ Compiler = (function() {
     for (j = 0, len = ref.length; j < len; j++) {
       f = ref[j];
       this.routine.LOAD_VALUE(f.field, statement);
-      this.compile(f.value, context, true);
+      this.compile(f.value);
       this.routine.CREATE_PROPERTY(statement);
     }
   };
@@ -614,6 +649,29 @@ Compiler = (function() {
     return this.routine.POP(statement);
   };
 
+  Compiler.prototype.compileAfter = function(after) {
+    var r;
+    r = this.compileFunctionBody(after);
+    this.routine.LOAD_VALUE(r, after);
+    this.compile(after.delay);
+    return this.routine.AFTER(after);
+  };
+
+  Compiler.prototype.compileEvery = function(every) {
+    var r;
+    r = this.compileFunctionBody(every);
+    this.routine.LOAD_VALUE(r, every);
+    this.compile(every.delay);
+    return this.routine.EVERY(every);
+  };
+
+  Compiler.prototype.compileDo = function(dostuff) {
+    var r;
+    r = this.compileFunctionBody(dostuff);
+    this.routine.LOAD_VALUE(r, dostuff);
+    return this.routine.DO(dostuff);
+  };
+
   Compiler.prototype.exec = function(context) {
     this.processor = new Processor();
     this.processor.load(this.routine);
@@ -621,33 +679,47 @@ Compiler = (function() {
   };
 
   Compiler.predefined_unary_functions = {
-    "round": "ROUND",
-    "floor": "FLOOR",
-    "ceil": "CEIL",
-    "abs": "ABS",
+    "round": Math.round,
+    "floor": Math.floor,
+    "ceil": Math.ceil,
+    "abs": Math.abs,
     "sqrt": Math.sqrt,
-    "sin": "SIN",
-    "cos": "COS",
-    "tan": "TAN",
-    "acos": "ACOS",
-    "asin": "ASIN",
-    "atan": "ATAN",
-    "sind": "SIND",
-    "cosd": "COSD",
-    "tand": "TAND",
-    "asind": "ASIND",
-    "acosd": "ACOSD",
-    "atand": "ATAND",
-    "log": "LOG",
-    "exp": "EXP"
+    "sin": Math.sin,
+    "cos": Math.cos,
+    "tan": Math.tan,
+    "acos": Math.acos,
+    "asin": Math.asin,
+    "atan": Math.atan,
+    "sind": function(x) {
+      return Math.sin(x * Math.PI / 180);
+    },
+    "cosd": function(x) {
+      return Math.cos(x * Math.PI / 180);
+    },
+    "tand": function(x) {
+      return Math.tan(x * Math.PI / 180);
+    },
+    "asind": function(x) {
+      return Math.asin(x) / Math.PI * 180;
+    },
+    "acosd": function(x) {
+      return Math.acos(x) / Math.PI * 180;
+    },
+    "atand": function(x) {
+      return Math.atan(x) / Math.PI * 180;
+    },
+    "log": Math.log,
+    "exp": Math.exp
   };
 
   Compiler.predefined_binary_functions = {
-    "min": "MIN",
-    "max": "MAX",
-    "pow": "POW",
-    "atan2": "ATAND",
-    "atan2d": "ATAN2D"
+    "min": Math.min,
+    "max": Math.max,
+    "pow": Math.pow,
+    "atan2": Math.atan2,
+    "atan2d": function(y, x) {
+      return Math.atan2(y, x) / Math.PI * 180;
+    }
   };
 
   Compiler.predefined_values = {

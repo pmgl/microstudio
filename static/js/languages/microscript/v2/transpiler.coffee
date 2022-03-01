@@ -274,7 +274,7 @@ let #{v} = #{@stack.get()} ;
       let #{v} = object["#{arg}"] ; // LOAD_VARIABLE
       if (#{v} == null) {
         let obj = object ;
-        while ((#{v} == null) && (obj["class"] != null)) { obj = obj["class"] ; #{v} = obj["#{arg}]" }
+        while ((#{v} == null) && (obj["class"] != null)) { obj = obj["class"] ; #{v} = obj["#{arg}"] }
         if (#{v} == null) v = global["#{arg}"] ;
         if (#{v} == null) { #{v} = 0 ; }
       }

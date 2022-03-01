@@ -84,6 +84,12 @@ this.Token.TYPE_CONTINUE = 52;
 
 this.Token.TYPE_FUNCTION = 60;
 
+this.Token.TYPE_AFTER = 61;
+
+this.Token.TYPE_EVERY = 62;
+
+this.Token.TYPE_DO = 63;
+
 this.Token.TYPE_LOCAL = 70;
 
 this.Token.TYPE_OBJECT = 80;
