@@ -151,9 +151,10 @@ this.MicroVM = (function() {
             global.mouse.pressed = 0;
             global.touch.touching = 0;
             result = window.prompt(text);
-            if ((callback != null) && callback instanceof Program.Function) {
+            if ((callback != null) && typeof callback === "function") {
               args = [(result != null ? 1 : 0), result];
-              return _this.call(callback, args);
+              _this.context.timeout = Date.now() + 1000;
+              return callback.apply(null, args);
             }
           }), 0);
         };

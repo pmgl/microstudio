@@ -192,10 +192,10 @@ a#run-link {
 
 .devicecontainer {
   position: absolute ;
-  top: 40px ;
-  left: 0 ;
-  right: 0 ;
-  bottom: 0 ;
+  top: 42px ;
+  left: 2px ;
+  right: 2px ;
+  bottom: 2px ;
 }
 #device {
   position: absolute ;

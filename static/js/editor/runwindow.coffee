@@ -34,6 +34,11 @@ class @RunWindow
 
     @initWarnings()
 
+    # document.getElementById("backward-button").addEventListener "mousedown",()=>
+    #   @startBackward()
+    #
+    # document.addEventListener "mouseup",()=>
+    #   @stopBackward()
 
   initWarnings:()->
     document.getElementById("console-options-warning-undefined").addEventListener "change",()=>
@@ -360,6 +365,12 @@ class @RunWindow
         when "picture_taken"
           @showPicture(msg.data)
 
+        when "code_paused"
+          @pause()
+
+        when "exit"
+          @exit()
+
     catch err
 
   runCommand:(command,output_callback)->
@@ -593,3 +604,26 @@ class @RunWindow
   hideAll:()->
     @hideQRCode()
     @hidePicture()
+
+  startBackward:()->
+    e = document.getElementById("runiframe")
+    if e?
+      e.contentWindow.postMessage  JSON.stringify({
+        name:"start_backward"
+      }),"*"
+
+  stopBackward:()->
+    e = document.getElementById("runiframe")
+    if e?
+      e.contentWindow.postMessage  JSON.stringify({
+        name:"stop_backward"
+      }),"*"
+
+  exit:()->
+    @projectClosed()
+    document.getElementById("run-button").classList.remove("selected")
+    document.getElementById("pause-button").classList.remove("selected")
+    document.getElementById("reload-button").classList.remove("selected")
+    document.getElementById("run-button-win").classList.remove("selected")
+    document.getElementById("pause-button-win").classList.remove("selected")
+    document.getElementById("reload-button-win").classList.remove("selected")

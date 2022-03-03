@@ -92,6 +92,14 @@ class @Player
       name:"log"
       data: text
 
+  codePaused:()->
+    @postMessage
+      name:"code_paused"
+
+  exit:()->
+    @postMessage
+      name: "exit"
+
   messageReceived:(msg)->
     data = msg.data
     try
@@ -131,9 +139,15 @@ class @Player
             @postMessage
               name: "picture_taken"
               data: pic
-              
+
           if @runtime.stopped
             @runtime.drawCall()
+
+        when "start_backward"
+          @runtime.startBackward()
+
+        when "stop_backward"
+          @runtime.stopBackward()
 
     catch err
       console.error err

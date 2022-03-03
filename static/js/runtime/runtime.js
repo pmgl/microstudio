@@ -27,6 +27,9 @@ this.Runtime = (function() {
       };
     })(this);
     this.update_memory = {};
+    this.flight_recorder = false;
+    this.history = [];
+    this.history_index = 0;
   }
 
   Runtime.prototype.updateSource = function(file, src, reinit) {
@@ -218,6 +221,16 @@ this.Runtime = (function() {
     }
     namespace = location.pathname;
     this.vm = new MicroVM(meta, global, namespace, location.hash === "#transpiler");
+    this.vm.context.global.system.pause = (function(_this) {
+      return function() {
+        return _this.listener.codePaused();
+      };
+    })(this);
+    this.vm.context.global.system.exit = (function(_this) {
+      return function() {
+        return _this.exit();
+      };
+    })(this);
     ref1 = this.sources;
     for (file in ref1) {
       src = ref1[file];
@@ -412,12 +425,14 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.resume = function() {
-    this.stopped = false;
-    return requestAnimationFrame((function(_this) {
-      return function() {
-        return _this.timer();
-      };
-    })(this));
+    if (this.stopped) {
+      this.stopped = false;
+      return requestAnimationFrame((function(_this) {
+        return function() {
+          return _this.timer();
+        };
+      })(this));
+    }
   };
 
   Runtime.prototype.timer = function() {
@@ -431,7 +446,7 @@ this.Runtime = (function() {
       };
     })(this));
     time = Date.now();
-    if (Math.abs(time - this.last_time) > 1000) {
+    if (Math.abs(time - this.last_time) > 160) {
       this.last_time = time - 16;
     }
     dt = time - this.last_time;
@@ -439,10 +454,10 @@ this.Runtime = (function() {
     this.last_time = time;
     this.vm.context.global.system.fps = Math.round(fps = 1000 / this.dt);
     this.floating_frame += this.dt * 60 / 1000;
-    ds = Math.min(30, Math.round(this.floating_frame - this.current_frame));
-    if (ds === 0 && fps > 58) {
+    ds = Math.min(10, Math.round(this.floating_frame - this.current_frame));
+    if (ds === 0 || ds === 2 && Math.abs(fps - 60) < 2) {
       ds = 1;
-      this.floating_frame = this.current_frame + .5;
+      this.floating_frame = this.current_frame + 1;
     }
     for (i = j = 1, ref = ds; j <= ref; i = j += 1) {
       this.updateCall();
@@ -456,6 +471,9 @@ this.Runtime = (function() {
     this.updateControls();
     try {
       this.vm.call("update");
+      if (this.flight_recorder) {
+        this.history[this.history_index++] = this.storableHistory(this.vm.context.global);
+      }
       this.reportWarnings();
       if (this.vm.error_info != null) {
         err = this.vm.error_info;
@@ -596,6 +614,112 @@ this.Runtime = (function() {
 
   Runtime.prototype.getAssetURL = function(asset) {
     return this.url + "assets/" + asset + ".glb";
+  };
+
+  Runtime.prototype.startBackward = function() {
+    console.info("START_BACKWARD");
+    if (!this.backwarding) {
+      this.backwarding = true;
+      return requestAnimationFrame((function(_this) {
+        return function() {
+          return _this.backward();
+        };
+      })(this));
+    }
+  };
+
+  Runtime.prototype.stopBackward = function() {
+    console.info("STOP_BACKWARD");
+    return this.backwarding = false;
+  };
+
+  Runtime.prototype.backward = function() {
+    if (!this.backwarding) {
+      return;
+    }
+    requestAnimationFrame((function(_this) {
+      return function() {
+        return _this.backward();
+      };
+    })(this));
+    this.history_index--;
+    if (this.history_index >= 0 && (this.history[this.history_index] != null)) {
+      this.vm.context.global = this.history[this.history_index];
+      return this.vm.call("draw");
+    }
+  };
+
+  Runtime.prototype.storableHistory = function(value) {
+    var referenced;
+    referenced = [this.vm.context.global.screen, this.vm.context.global.system, this.vm.context.global.keyboard, this.vm.context.global.audio, this.vm.context.global.gamepad, this.vm.context.global.touch, this.vm.context.global.mouse, this.vm.context.global.sprites, this.vm.context.global.maps, this.vm.context.global.sounds, this.vm.context.global.music, this.vm.context.global.assets, this.vm.context.global.asset_manager, this.vm.context.global.fonts, this.vm.context.global.storage];
+    return this.makeStorableObject(value, referenced);
+  };
+
+  Runtime.prototype.makeStorableObject = function(value, referenced) {
+    var i, j, key, len, res, v;
+    if (value == null) {
+      return value;
+    }
+    if (typeof value === "function" || value instanceof Program.Function) {
+      return value;
+    } else if (typeof value === "object") {
+      if (referenced.indexOf(value) >= 0) {
+        return value;
+      }
+      referenced.push(value);
+      if (Array.isArray(value)) {
+        res = [];
+        for (i = j = 0, len = value.length; j < len; i = ++j) {
+          v = value[i];
+          v = this.makeStorableObject(v, referenced);
+          if (v != null) {
+            res[i] = v;
+          }
+        }
+        return res;
+      } else {
+        res = {};
+        for (key in value) {
+          v = value[key];
+          v = this.makeStorableObject(v, referenced);
+          if (v != null) {
+            res[key] = v;
+          }
+        }
+        return res;
+      }
+    } else {
+      return value;
+    }
+  };
+
+  Runtime.prototype.exit = function() {
+    var err;
+    this.stop();
+    if (this.screen.clear != null) {
+      setTimeout(((function(_this) {
+        return function() {
+          return _this.screen.clear();
+        };
+      })(this)), 1);
+    }
+    try {
+      this.listener.exit();
+    } catch (error) {
+      err = error;
+    }
+    try {
+      if ((navigator.app != null) && (navigator.app.exitApp != null)) {
+        navigator.app.exitApp();
+      }
+    } catch (error) {
+      err = error;
+    }
+    try {
+      return window.close();
+    } catch (error) {
+      err = error;
+    }
   };
 
   return Runtime;

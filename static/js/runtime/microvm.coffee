@@ -90,9 +90,10 @@ class @MicroVM
             global.touch.touching = 0
 
             result = window.prompt(text)
-            if callback? and callback instanceof Program.Function
+            if callback? and typeof callback == "function"
               args = [(if result? then 1 else 0),result]
-              @call(callback,args)
+              @context.timeout = Date.now()+1000
+              callback.apply(null,args)
           ),0
 
       say:(text)=>

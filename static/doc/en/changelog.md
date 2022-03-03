@@ -1,5 +1,13 @@
 ## Changelog
 
+### Update 2022-03-03
+* Fixed fast forward bug when pressing play several times
+* New API features on `system`:
+  * system.fps
+  * system.pause()
+  * system.exit()
+  * also documented system.prompt(), system.say(), system.inputs and system.language
+
 ### Update 2022-02-25
 * Asset Manager! Activate the tab for your project, then import your text files (TXT and CSV), JSON data, fonts (TTF), 3D models (GLB and OBJ)
 * Sprite editor toolbar fixes by @Karlmolina (thanks!)

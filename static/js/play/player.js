@@ -121,6 +121,18 @@ this.Player = (function() {
     });
   };
 
+  Player.prototype.codePaused = function() {
+    return this.postMessage({
+      name: "code_paused"
+    });
+  };
+
+  Player.prototype.exit = function() {
+    return this.postMessage({
+      name: "exit"
+    });
+  };
+
   Player.prototype.messageReceived = function(msg) {
     var code, data, err, file, res;
     data = msg.data;
@@ -166,6 +178,11 @@ this.Player = (function() {
           if (this.runtime.stopped) {
             return this.runtime.drawCall();
           }
+          break;
+        case "start_backward":
+          return this.runtime.startBackward();
+        case "stop_backward":
+          return this.runtime.stopBackward();
       }
     } catch (error1) {
       err = error1;

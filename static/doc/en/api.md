@@ -773,22 +773,79 @@ end
 
 
 ## System
-The object ```system``` allows to access the function ```time```, which returns the elapsed time in milliseconds (since January 1st, 1970). But above all, invoked at various times, it makes it possible to measure time differences.
+The object ```system``` allows provides general information about the host system,
+gives the current time and allows some control on the execution flow.
 
+### Information
+
+<!--- suggest_start system.inputs --->
+#### system.inputs
+Provides information on the availability of input methods on the host system: keyboard, mouse, touch screen or gamepad.
+
+<!--- suggest_end --->
+
+<!--- suggest_start system.language --->
+#### system.language
+Is set to the user's preferred language.
+<!--- suggest_end --->
+
+<!--- suggest_start system.fps --->
+#### system.fps
+Gives the current effective frame rate.
+<!--- suggest_end --->
+
+### Prompt
+
+<!--- suggest_start system.say --->
+##### system.say( message )
+Opens a window to display a text message.
+<!--- suggest_end --->
+
+<!--- suggest_start system.prompt --->
+##### system.prompt( message, callback )
+Opens a window asking the user to input text.
+<!--- suggest_end --->
+
+The callback function passed as
+argument is called with two parameters, `callback( ok, text )`
+
+|callback argument|description|
+|-|-|
+|ok|1 if the user validated his input, 0 otherwise|
+|text|the text typed by the user, if they did validate the input|
+
+
+### Pause and Exit
+
+<!--- suggest_start system.pause --->
+##### system.pause()
+Pauses execution of the program. This only works when the program is run within the
+microStudio development environment. Execution can be resumed manually in the environment.
+<!--- suggest_end --->
+
+<!--- suggest_start system.exit --->
+##### system.exit()
+Exits the program.
+<!--- suggest_end --->
+
+
+### Time
 <!--- suggest_start system.time --->
-### system.time()
+##### system.time()
 Returns the elapsed time in milliseconds (since January 1, 1970)
 <!--- suggest_end --->
+
+###
 
 ## Storage
 The ```storage``` object allows for the permanent storage of your application data. You can use it to store user progress, highscores or other status information about your game or project.
 
 <!--- suggest_start storage.set --->
-### storage.set( name , value )
+##### storage.set( name , value )
 Stores your value permanently, referenced by the string ```name```. The value can be any number, string, list or structured object.
 <!--- suggest_end --->
 
 <!--- suggest_start storage.get --->
-### storage.get( name )
+##### storage.get( name )
 Returns the value permanently recorded under reference string ```name```. Returns ```0``` when no such record exists.
 <!--- suggest_end --->

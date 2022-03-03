@@ -475,6 +475,10 @@ this.RunWindow = (function() {
           break;
         case "picture_taken":
           return this.showPicture(msg.data);
+        case "code_paused":
+          return this.pause();
+        case "exit":
+          return this.exit();
       }
     } catch (error1) {
       err = error1;
@@ -789,6 +793,36 @@ this.RunWindow = (function() {
   RunWindow.prototype.hideAll = function() {
     this.hideQRCode();
     return this.hidePicture();
+  };
+
+  RunWindow.prototype.startBackward = function() {
+    var e;
+    e = document.getElementById("runiframe");
+    if (e != null) {
+      return e.contentWindow.postMessage(JSON.stringify({
+        name: "start_backward"
+      }), "*");
+    }
+  };
+
+  RunWindow.prototype.stopBackward = function() {
+    var e;
+    e = document.getElementById("runiframe");
+    if (e != null) {
+      return e.contentWindow.postMessage(JSON.stringify({
+        name: "stop_backward"
+      }), "*");
+    }
+  };
+
+  RunWindow.prototype.exit = function() {
+    this.projectClosed();
+    document.getElementById("run-button").classList.remove("selected");
+    document.getElementById("pause-button").classList.remove("selected");
+    document.getElementById("reload-button").classList.remove("selected");
+    document.getElementById("run-button-win").classList.remove("selected");
+    document.getElementById("pause-button-win").classList.remove("selected");
+    return document.getElementById("reload-button-win").classList.remove("selected");
   };
 
   return RunWindow;

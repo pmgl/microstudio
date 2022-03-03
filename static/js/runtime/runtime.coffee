@@ -25,6 +25,10 @@ class @Runtime
 
     @update_memory = {}
 
+    @flight_recorder = false
+    @history = []
+    @history_index = 0
+
   updateSource:(file,src,reinit=false)->
     return false if not @vm?
     return false if src == @update_memory[file]
@@ -160,6 +164,12 @@ class @Runtime
 
     namespace = location.pathname
     @vm = new MicroVM(meta,global,namespace,location.hash == "#transpiler")
+    @vm.context.global.system.pause = ()=>
+      @listener.codePaused()
+
+    @vm.context.global.system.exit = ()=>
+      @exit()
+
     for file,src of @sources
       @updateSource(file,src,false)
 
@@ -300,14 +310,15 @@ class @Runtime
     @audio.cancelBeeps()
 
   resume:()->
-    @stopped = false
-    requestAnimationFrame(()=>@timer())
+    if @stopped
+      @stopped = false
+      requestAnimationFrame(()=>@timer())
 
   timer:()->
     return if @stopped
     requestAnimationFrame(()=>@timer())
     time = Date.now()
-    if Math.abs(time-@last_time)>1000
+    if Math.abs(time-@last_time)>160
       @last_time = time-16
 
     dt = time-@last_time
@@ -317,17 +328,18 @@ class @Runtime
     @vm.context.global.system.fps = Math.round(fps = 1000/@dt)
 
     @floating_frame += @dt*60/1000
-    ds = Math.min(30,Math.round(@floating_frame-@current_frame))
-    if ds == 0 and fps>58
+    ds = Math.min(10,Math.round(@floating_frame-@current_frame))
+    if ds == 0 or ds == 2 and Math.abs(fps-60) < 2
+      #console.info "INCORRECT DS: "+ds+ " floating = "+@floating_frame+" current = "+@current_frame
       ds = 1
-      @floating_frame = @current_frame+.5
+      @floating_frame = @current_frame+1
 
     for i in [1..ds] by 1
       @updateCall()
 
     @current_frame += ds
     @drawCall()
-    #if ds == 0
+    #if ds != 1
     #  console.info "frame missed"
     #if @current_frame%60 == 0
     #  console.info("fps: #{Math.round(1000/@dt)}")
@@ -337,6 +349,10 @@ class @Runtime
     try
       #time = Date.now()
       @vm.call("update")
+
+      if @flight_recorder
+        @history[@history_index++] = @storableHistory(@vm.context.global)
+
       @reportWarnings()
       #console.info "update time: "+(Date.now()-time)
       if @vm.error_info?
@@ -442,3 +458,91 @@ class @Runtime
 
   getAssetURL:(asset)->
     @url+"assets/"+asset+".glb"
+
+  startBackward:()->
+    console.info "START_BACKWARD"
+    if not @backwarding
+      @backwarding = true
+      requestAnimationFrame ()=>@backward()
+
+  stopBackward:()->
+    console.info "STOP_BACKWARD"
+    @backwarding = false
+
+  backward:()->
+    return if not @backwarding
+    requestAnimationFrame ()=>@backward()
+
+    @history_index--
+    if @history_index>=0 and @history[@history_index]?
+      @vm.context.global = @history[@history_index]
+      @vm.call("draw")
+
+
+  storableHistory:(value)->
+    referenced = [
+      @vm.context.global.screen
+      @vm.context.global.system
+      @vm.context.global.keyboard
+      @vm.context.global.audio
+      @vm.context.global.gamepad
+      @vm.context.global.touch
+      @vm.context.global.mouse
+      @vm.context.global.sprites
+      @vm.context.global.maps
+      @vm.context.global.sounds
+      @vm.context.global.music
+      @vm.context.global.assets
+      @vm.context.global.asset_manager
+      @vm.context.global.fonts
+      @vm.context.global.storage
+    ]
+
+    @makeStorableObject(value,referenced)
+
+  makeStorableObject:(value,referenced)->
+    return value if not value?
+    if typeof value == "function" or value instanceof Program.Function
+      value
+    else if typeof value == "object"
+      return value if referenced.indexOf(value)>=0
+      referenced.push(value)
+      if Array.isArray(value)
+        res = []
+        for v,i in value
+          v = @makeStorableObject(v,referenced)
+          if v?
+            res[i] = v
+        res
+      else
+        res = {}
+        for key,v of value
+          v = @makeStorableObject(v,referenced)
+          if v?
+            res[key] = v
+        res
+    else
+      value
+
+  exit:()->
+    @stop()
+    if @screen.clear?
+      setTimeout (()=>@screen.clear()),1
+
+    # microStudio embedded exit
+    try
+      @listener.exit()
+    catch err
+
+    # TODO: Cordova exit, this might work
+    try
+      if navigator.app? and navigator.app.exitApp?
+        navigator.app.exitApp()
+    catch err
+
+    # TODO: Electron exit, may already be covered by window.close()
+
+    # Windowed mode exit
+    try
+      window.close()
+    catch err
