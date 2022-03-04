@@ -1,6 +1,6 @@
 ## Changelog
 
-### Update 2022-03-03
+### Update 2022-03-04
 * Fixed fast forward bug when pressing play several times
 * New API features on `system`:
   * system.fps
