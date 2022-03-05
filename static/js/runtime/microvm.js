@@ -344,7 +344,11 @@ this.MicroVM = (function() {
         get: (function(_this) {
           return function(name) {
             if (name != null) {
-              return storage[name];
+              if (storage[name] != null) {
+                return storage[name];
+              } else {
+                return 0;
+              }
             } else {
               return 0;
             }

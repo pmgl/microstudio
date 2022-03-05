@@ -232,7 +232,7 @@ class @MicroVM
 
         get:(name)=>
           if name?
-            storage[name]
+            if storage[name]? then storage[name] else 0
           else
             0
 
