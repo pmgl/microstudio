@@ -1,5 +1,12 @@
 ## Changelog
 
+### Update 2022-03-08
+* Watch variables! There is a brand new, feature-rich variable watcher!
+  * see variables change in realtime
+  * explore and track values in deep data structures (objects and lists)
+  * change values on the fly
+  * works for microScript v1 (interpreted or transpiled) and v2
+
 ### Update 2022-03-04
 * Fixed fast forward bug when pressing play several times
 * New API features on `system`:

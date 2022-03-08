@@ -164,30 +164,19 @@ a#run-link {
   left: 0px ;
   top: 100px ;
   right: 0 ;
-  height: 40px ;
+  height: 12px ;
+  border-bottom: solid 2px #000 ;
   transition-property: height ;
   transition-duration: 0.5s ;
   cursor: ns-resize;
   z-index: 3 ;
   overflow: hidden ;
   white-space: nowrap;
+  box-sizing: border-box ;
 }
 
 .runtime-splitbar span {
   margin-left: 20px ;
-}
-
-#console-options {
-  background: rgba(0,0,0,.2);
-  display: block ;
-  padding: 20px ;
-  line-height: 25px ;
-  white-space: nowrap;
-  color: rgba(255,255,255,.8);
-}
-
-#console-options label {
-  margin-left: 5px ;
 }
 
 .devicecontainer {
@@ -628,4 +617,12 @@ a#run-link {
 
 .show-picture div.close {
   background: hsl(0,50%,40%);
+}
+
+
+#runtime-left {
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  bottom: 0 ;
 }

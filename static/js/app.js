@@ -32,6 +32,7 @@ App = (function() {
     this.sound_editor = new SoundEditor(this);
     this.music_editor = new MusicEditor(this);
     this.runwindow = new RunWindow(this);
+    this.debug = new Debug(this);
     this.options = new Options(this);
     this.publish = new Publish(this);
     this.user_settings = new UserSettings(this);
@@ -303,6 +304,7 @@ App = (function() {
     this.music_editor.projectOpened();
     this.assets_manager.projectOpened();
     this.runwindow.projectOpened();
+    this.debug.projectOpened();
     this.options.projectOpened();
     this.publish.loadProject(this.project);
     this.project.load();

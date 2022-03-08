@@ -264,7 +264,10 @@ this.Runtime = (function() {
         return _this.timer();
       };
     })(this));
-    return this.screen.startControl();
+    this.screen.startControl();
+    return this.listener.postMessage({
+      name: "started"
+    });
   };
 
   Runtime.prototype.updateMaps = function() {
@@ -288,6 +291,9 @@ this.Runtime = (function() {
         err = this.vm.error_info;
         err.type = "exec";
         this.listener.reportError(err);
+      }
+      if (this.watching_variables) {
+        this.watchStep();
       }
       return res;
     } catch (error) {
@@ -463,7 +469,10 @@ this.Runtime = (function() {
       this.updateCall();
     }
     this.current_frame += ds;
-    return this.drawCall();
+    this.drawCall();
+    if (ds > 0 && this.watching_variables) {
+      return this.watchStep();
+    }
   };
 
   Runtime.prototype.updateCall = function() {
@@ -646,6 +655,118 @@ this.Runtime = (function() {
     if (this.history_index >= 0 && (this.history[this.history_index] != null)) {
       this.vm.context.global = this.history[this.history_index];
       return this.vm.call("draw");
+    }
+  };
+
+  Runtime.prototype.watch = function(variables) {
+    this.watching = true;
+    this.watching_variables = variables;
+    this.exclusion_list = [this.vm.context.global.screen, this.vm.context.global.system, this.vm.context.global.keyboard, this.vm.context.global.audio, this.vm.context.global.gamepad, this.vm.context.global.touch, this.vm.context.global.mouse, this.vm.context.global.sprites, this.vm.context.global.maps, this.vm.context.global.sounds, this.vm.context.global.music, this.vm.context.global.assets, this.vm.context.global.asset_manager, this.vm.context.global.fonts, this.vm.context.global.storage];
+    return this.watchStep();
+  };
+
+  Runtime.prototype.stopWatching = function() {
+    return this.watching = false;
+  };
+
+  Runtime.prototype.watchStep = function(variables) {
+    var index, j, len, res, v, value, vs;
+    if (variables == null) {
+      variables = this.watching_variables;
+    }
+    res = {};
+    for (j = 0, len = variables.length; j < len; j++) {
+      v = variables[j];
+      if (v === "global") {
+        value = this.vm.context.global;
+      } else {
+        vs = v.split(".");
+        value = this.vm.context.global;
+        index = 0;
+        while (index < vs.length && (value != null)) {
+          value = value[vs[index++]];
+        }
+      }
+      if ((value != null) && this.exclusion_list.indexOf(value) < 0) {
+        res[v] = this.exploreValue(value, 1, 10);
+      }
+    }
+    return this.listener.postMessage({
+      name: "watch_update",
+      data: res
+    });
+  };
+
+  Runtime.prototype.exploreValue = function(value, depth, array_max) {
+    var i, j, key, len, res, v;
+    if (depth == null) {
+      depth = 1;
+    }
+    if (array_max == null) {
+      array_max = 10;
+    }
+    if (typeof value === "function" || value instanceof Program.Function || (typeof Routine !== "undefined" && Routine !== null) && value instanceof Routine) {
+      return {
+        type: "function",
+        value: ""
+      };
+    } else if (typeof value === "object") {
+      if (Array.isArray(value)) {
+        if (depth === 0) {
+          return {
+            type: "list",
+            value: "",
+            length: value.length
+          };
+        }
+        res = [];
+        for (i = j = 0, len = value.length; j < len; i = ++j) {
+          v = value[i];
+          if (i >= 100) {
+            break;
+          }
+          if (this.exclusion_list.indexOf(v) < 0) {
+            v = this.exploreValue(v, depth - 1, array_max);
+            res[i] = v != null ? v : 0;
+          }
+        }
+        return res;
+      } else {
+        if (depth === 0) {
+          return {
+            type: "object",
+            value: ""
+          };
+        }
+        res = {};
+        for (key in value) {
+          v = value[key];
+          if (this.exclusion_list.indexOf(v) < 0) {
+            res[key] = this.exploreValue(v, depth - 1, array_max);
+          }
+        }
+        return res;
+      }
+    } else if (typeof value === "string") {
+      return {
+        type: "string",
+        value: value.length < 43 ? value : value.substring(0, 40) + "..."
+      };
+    } else if (typeof value === "number") {
+      return {
+        type: "number",
+        value: value
+      };
+    } else if (typeof value === "boolean") {
+      return {
+        type: "number",
+        value: value ? 1 : 0
+      };
+    } else {
+      return {
+        type: "unknown",
+        value: value
+      };
     }
   };
 

@@ -175,6 +175,9 @@ AppUI = (function() {
     this.code_splitbar = new SplitBar("code-section", "horizontal");
     this.runtime_splitbar = new SplitBar("runtime-container", "vertical");
     this.runtime_splitbar.setPosition(67);
+    this.debug_splitbar = new SplitBar("runtime-terminal", "horizontal");
+    this.debug_splitbar.closed2 = true;
+    this.debug_splitbar.splitbar_size = 12;
     this.sprites_splitbar = new SplitBar("sprites-section", "horizontal");
     this.sprites_splitbar.setPosition(20);
     this.maps_splitbar = new SplitBar("maps-section", "horizontal");
@@ -381,6 +384,7 @@ AppUI = (function() {
     this.hide("projectview");
     this.show("myprojects");
     this.app.runwindow.projectClosed();
+    this.app.debug.projectClosed();
     this.app.project = null;
     this.project = null;
     this.app.updateProjectList();
@@ -419,6 +423,7 @@ AppUI = (function() {
     }
     if (section === "code") {
       this.code_splitbar.update();
+      this.debug_splitbar.update();
       this.runtime_splitbar.update();
       this.app.runwindow.windowResized();
       this.app.editor.editor.resize();
@@ -532,6 +537,7 @@ AppUI = (function() {
     }
     if (section === "projects") {
       this.code_splitbar.update();
+      this.debug_splitbar.update();
       this.runtime_splitbar.update();
       this.app.runwindow.windowResized();
     }
@@ -1036,6 +1042,8 @@ AppUI = (function() {
     this.hide("myprojects");
     this.project.addListener(this);
     this.code_splitbar.setPosition(50);
+    this.debug_splitbar.closed2 = true;
+    this.debug_splitbar.update();
     this.runtime_splitbar.setPosition(50);
     this.app.runwindow.terminal.start();
     return this.updateActiveUsers();

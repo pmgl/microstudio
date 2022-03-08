@@ -59,27 +59,19 @@ div.runtime-container#runtime-container
         canvas#ruler-canvas
 
   div.runtime-splitbar#runtime-splitbar
-    span Console
-    div.buttons
-      div#clear-button(title="Clear console")
-        i.fa.fa-trash-alt
-      div#console-options-button(title="Console options")
-        i.fa.fa-cogs
-    div#console-options
-      input#console-options-warning-undefined(type="checkbox")
-      label(for="console-options-warning-undefined") #{translator.get("Display warning when using an undefined variable")}
-      br
-      input#console-options-warning-nonfunction(type="checkbox")
-      label(for="console-options-warning-nonfunction") #{translator.get("Display warning when calling something that isn't a function")}
-      br
-      input#console-options-warning-assign(type="checkbox")
-      label(for="console-options-warning-assign") #{translator.get("Display warning when setting property on an undefined variable")}
-      br
-      em
-        small #{translator.get("(Transpiler activation was moved to project settings)")}
 
   div.runtime-terminal#runtime-terminal
     div#terminal
+      div#terminal-toolbar
+        span Console
+        div.buttons
+          div#clear-button(title="Clear console")
+            i.fa.fa-trash-alt
+          div#console-options-button(title="Console options")
+            i.fa.fa-cogs
+
+        i#open-debugger-button.fa.fa-bug
+
       div#terminal-view
         div#terminal-lines
       div#terminal-input-line
@@ -87,3 +79,37 @@ div.runtime-container#runtime-container
           i.fa.fa-angle-right
         div#terminal-input-container
           input#terminal-input(autocomplete="off" name="terminalinput")
+
+      div#console-options
+        div
+          input#console-options-warning-undefined(type="checkbox")
+          label(for="console-options-warning-undefined") #{translator.get("Display warning when using an undefined variable")}
+          br
+          input#console-options-warning-nonfunction(type="checkbox")
+          label(for="console-options-warning-nonfunction") #{translator.get("Display warning when calling something that isn't a function")}
+          br
+          input#console-options-warning-assign(type="checkbox")
+          label(for="console-options-warning-assign") #{translator.get("Display warning when setting property on an undefined variable")}
+
+    div#debug-splitbar
+
+    div#debug-main-view
+      div#debug-main-toolbar
+        div#debug-tab-watch <i class="fa fa-eye"></i> #{translator.get("Watch")}
+        // div#debug-tab-time-machine <i class="fas fa-history"></i> #{translator.get("Time Machine")}
+
+      div#debug-watch-view
+        div#debug-watch-bar
+          i.fa.fa-eye
+          span #{translator.get("Watch")}
+          i.fa.fa-filter
+          input#debug-watch-filter
+          i#debug-watch-type-number.fas.fa-calculator.type.active(title=translator.get("Show Numbers"))
+          i#debug-watch-type-string.fas.fa-quote-left.type.active(title=translator.get("Show Strings"))
+          i#debug-watch-type-list.fas.fa-list.type.active(title=translator.get("Show Lists"))
+          i#debug-watch-type-object.fas.fa-boxes.type.active(title=translator.get("Show Objects"))
+          i#debug-watch-type-function.fas.fa-microchip.type.active(title=translator.get("Show Functions"))
+
+        div#debug-watch-content
+
+      div#debug-timemachine-view

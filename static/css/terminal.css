@@ -13,10 +13,92 @@
   right: 0 ;
   bottom: 0 ;
   top: 0 ;
+  overflow: hidden ;
 }
+
+
+
+#terminal-toolbar {
+  position: absolute ;
+  top: 0px ;
+  left: 0 ;
+  right: 0 ;
+  height: 40px ;
+  background: hsl(200,30%,30%);
+  overflow: hidden ;
+  white-space: nowrap;
+}
+#terminal-toolbar span {
+  margin-left: 20px ;
+}
+#terminal-toolbar * {
+  display: inline-block ;
+}
+#terminal-toolbar .buttons {
+  display: inline-block ;
+  margin-left: 60px ;
+}
+#terminal-toolbar .buttons div {
+  margin-left: 1px ;
+  padding: 10px 15px ;
+  cursor: pointer ;
+  background: hsl(160,50%,40%);
+}
+#terminal-toolbar .buttons div:hover  {
+  background: hsl(160,50%,60%);
+}
+
+#terminal-toolbar .buttons div:active  {
+  background: hsl(160,30%,30%);
+}
+#terminal-toolbar .buttons .selected,
+#terminal-toolbar .buttons div.selected:hover
+{
+  background: hsl(160,20%,35%);
+  cursor: default ;
+}
+#open-debugger-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 12px 13px;
+  background: hsl(300,40%,45%);
+  cursor: pointer ;
+}
+
+
+#console-options {
+  background: hsl(200,20%,20%);
+  display: block ;
+  line-height: 25px ;
+  white-space: nowrap;
+  color: rgba(255,255,255,.8);
+  position: absolute ;
+  top: 42px ;
+  left: 0 ;
+  right: 2px ;
+  height: 0px ;
+  transition-property: height ;
+  transition-duration: 0.5s ;
+  overflow: hidden ;
+}
+
+#console-options > div {
+  padding: 20px ;
+}
+
+
+
+#console-options label {
+  margin-left: 5px ;
+}
+
+
+
 #terminal-view {
   position: absolute ;
-  top:0 ;
+  top: 40px ;
   left: 0 ;
   right: 0 ;
   bottom: 40px ;

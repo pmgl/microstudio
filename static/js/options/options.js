@@ -273,6 +273,7 @@ this.Options = (function() {
             return function() {
               _this.app.project.setLanguage(value);
               _this.app.editor.updateLanguage();
+              _this.app.debug.updateDebuggerVisibility();
               if (DEFAULT_CODE[value] != null) {
                 _this.app.editor.setCode(DEFAULT_CODE[value]);
               } else {
@@ -297,6 +298,7 @@ this.Options = (function() {
   Options.prototype.setLanguage = function(value) {
     this.app.project.setLanguage(value);
     this.app.editor.updateLanguage();
+    this.app.debug.updateDebuggerVisibility();
     return this.app.client.sendRequest({
       name: "set_project_option",
       project: this.app.project.id,

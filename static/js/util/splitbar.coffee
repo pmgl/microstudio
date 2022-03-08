@@ -6,6 +6,10 @@ class @SplitBar
     @side2 = @element.childNodes[2]
     @position = 50
 
+    @closed1 = false
+    @closed2 = false
+
+    @splitbar_size = 10
 
     @splitbar.addEventListener "touchstart", (event) => @startDrag(event.touches[0]) if event.touches? and event.touches[0]?
     document.addEventListener "touchmove", (event) => @drag(event.touches[0]) if event.touches? and event.touches[0]?
@@ -63,13 +67,20 @@ class @SplitBar
       when "horizontal"
         @total_width = w = @element.clientWidth-@splitbar.clientWidth
 
-        w1 = Math.round(@position/100*w)
-        w2 = w1+@splitbar.clientWidth
-        w3 = @element.clientWidth-w2
+        if not @closed2
+          w1 = Math.round(@position/100*w)
+          w2 = w1+Math.max(@splitbar.clientWidth,@splitbar_size)
+          w3 = @element.clientWidth-w2
 
-        @side1.style.width = w1+"px"
-        @splitbar.style.left = w1+"px"
-        @side2.style.width = w3+"px"
+          @side1.style.width = w1+"px"
+          @splitbar.style.left = w1+"px"
+          @side2.style.width = w3+"px"
+          @splitbar.style.display = "block"
+          @side2.style.display = "block"
+        else
+          @side1.style.width = @element.clientWidth+"px"
+          @splitbar.style.display = "none"
+          @side2.style.display = "none"
       else
         @total_height = h = @element.clientHeight-@splitbar.clientHeight
 

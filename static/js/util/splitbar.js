@@ -6,6 +6,9 @@ this.SplitBar = (function() {
     this.splitbar = this.element.childNodes[1];
     this.side2 = this.element.childNodes[2];
     this.position = 50;
+    this.closed1 = false;
+    this.closed2 = false;
+    this.splitbar_size = 10;
     this.splitbar.addEventListener("touchstart", (function(_this) {
       return function(event) {
         if ((event.touches != null) && (event.touches[0] != null)) {
@@ -112,12 +115,21 @@ this.SplitBar = (function() {
     switch (this.type) {
       case "horizontal":
         this.total_width = w = this.element.clientWidth - this.splitbar.clientWidth;
-        w1 = Math.round(this.position / 100 * w);
-        w2 = w1 + this.splitbar.clientWidth;
-        w3 = this.element.clientWidth - w2;
-        this.side1.style.width = w1 + "px";
-        this.splitbar.style.left = w1 + "px";
-        return this.side2.style.width = w3 + "px";
+        if (!this.closed2) {
+          w1 = Math.round(this.position / 100 * w);
+          w2 = w1 + Math.max(this.splitbar.clientWidth, this.splitbar_size);
+          w3 = this.element.clientWidth - w2;
+          this.side1.style.width = w1 + "px";
+          this.splitbar.style.left = w1 + "px";
+          this.side2.style.width = w3 + "px";
+          this.splitbar.style.display = "block";
+          return this.side2.style.display = "block";
+        } else {
+          this.side1.style.width = this.element.clientWidth + "px";
+          this.splitbar.style.display = "none";
+          return this.side2.style.display = "none";
+        }
+        break;
       default:
         this.total_height = h = this.element.clientHeight - this.splitbar.clientHeight;
         h1 = Math.round(this.position / 100 * h);

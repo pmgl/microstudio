@@ -76,6 +76,8 @@ this.RunWindow = (function() {
     this.floating_window = new FloatingWindow(this.app, "run-window", this);
     this.floating_window.max_ratio = 1;
     this.initWarnings();
+    this.message_listeners = {};
+    this.listeners = [];
   }
 
   RunWindow.prototype.initWarnings = function() {
@@ -181,7 +183,8 @@ this.RunWindow = (function() {
     document.getElementById("reload-button").classList.remove("selected");
     document.getElementById("run-button-win").classList.add("selected");
     document.getElementById("pause-button-win").classList.remove("selected");
-    return document.getElementById("reload-button-win").classList.remove("selected");
+    document.getElementById("reload-button-win").classList.remove("selected");
+    return this.propagate("reload");
   };
 
   RunWindow.prototype.play = function() {
@@ -194,7 +197,8 @@ this.RunWindow = (function() {
       document.getElementById("reload-button").classList.remove("selected");
       document.getElementById("run-button-win").classList.add("selected");
       document.getElementById("pause-button-win").classList.remove("selected");
-      return document.getElementById("reload-button-win").classList.remove("selected");
+      document.getElementById("reload-button-win").classList.remove("selected");
+      return this.propagate("play");
     }
   };
 
@@ -211,7 +215,8 @@ this.RunWindow = (function() {
     document.getElementById("reload-button").classList.remove("selected");
     document.getElementById("run-button-win").classList.remove("selected");
     document.getElementById("pause-button-win").classList.add("selected");
-    return document.getElementById("reload-button-win").classList.remove("selected");
+    document.getElementById("reload-button-win").classList.remove("selected");
+    return this.propagate("pause");
   };
 
   RunWindow.prototype.resume = function() {
@@ -228,7 +233,8 @@ this.RunWindow = (function() {
     document.getElementById("reload-button").classList.remove("selected");
     document.getElementById("run-button-win").classList.add("selected");
     document.getElementById("pause-button-win").classList.remove("selected");
-    return document.getElementById("reload-button-win").classList.remove("selected");
+    document.getElementById("reload-button-win").classList.remove("selected");
+    return this.propagate("resume");
   };
 
   RunWindow.prototype.resetButtons = function() {
@@ -246,11 +252,13 @@ this.RunWindow = (function() {
 
   RunWindow.prototype.toggleConsoleOptions = function() {
     var div;
-    div = document.getElementById("runtime-splitbar");
+    div = document.getElementById("console-options");
     if (div.getBoundingClientRect().height <= 41) {
-      div.style.height = "180px";
+      div.style.height = "115px";
+      document.getElementById("terminal-view").style.top = "155px";
     } else {
-      div.style.height = "40px";
+      div.style.height = "0px";
+      document.getElementById("terminal-view").style.top = "40px";
     }
     return setTimeout(((function(_this) {
       return function() {
@@ -479,6 +487,12 @@ this.RunWindow = (function() {
           return this.pause();
         case "exit":
           return this.exit();
+        case "started":
+          return this.propagate("started");
+        default:
+          if ((msg.name != null) && (this.message_listeners[msg.name] != null)) {
+            return this.message_listeners[msg.name](msg);
+          }
       }
     } catch (error1) {
       err = error1;
@@ -822,7 +836,35 @@ this.RunWindow = (function() {
     document.getElementById("reload-button").classList.remove("selected");
     document.getElementById("run-button-win").classList.remove("selected");
     document.getElementById("pause-button-win").classList.remove("selected");
-    return document.getElementById("reload-button-win").classList.remove("selected");
+    document.getElementById("reload-button-win").classList.remove("selected");
+    return this.propagate("exit");
+  };
+
+  RunWindow.prototype.postMessage = function(data) {
+    var iframe;
+    iframe = document.getElementById("runiframe");
+    if (iframe != null) {
+      return iframe.contentWindow.postMessage(JSON.stringify(data), "*");
+    }
+  };
+
+  RunWindow.prototype.addMessageListener = function(name, callback) {
+    return this.message_listeners[name] = callback;
+  };
+
+  RunWindow.prototype.addListener = function(callback) {
+    return this.listeners.push(callback);
+  };
+
+  RunWindow.prototype.propagate = function(event) {
+    var i, l, len, ref, results;
+    ref = this.listeners;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      l = ref[i];
+      results.push(l(event));
+    }
+    return results;
   };
 
   return RunWindow;

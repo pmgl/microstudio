@@ -149,6 +149,12 @@ class @Player
         when "stop_backward"
           @runtime.stopBackward()
 
+        when "watch"
+          @runtime.watch(data.list)
+
+        when "stop_watching"
+          @runtime.stopWatching()
+
     catch err
       console.error err
 

@@ -183,6 +183,10 @@ this.Player = (function() {
           return this.runtime.startBackward();
         case "stop_backward":
           return this.runtime.stopBackward();
+        case "watch":
+          return this.runtime.watch(data.list);
+        case "stop_watching":
+          return this.runtime.stopWatching();
       }
     } catch (error1) {
       err = error1;

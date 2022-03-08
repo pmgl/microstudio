@@ -145,6 +145,10 @@ class AppUI
     @code_splitbar = new SplitBar("code-section","horizontal")
     @runtime_splitbar = new SplitBar("runtime-container","vertical")
     @runtime_splitbar.setPosition(67)
+    @debug_splitbar = new SplitBar("runtime-terminal","horizontal")
+    @debug_splitbar.closed2 = true
+    @debug_splitbar.splitbar_size = 12
+
     @sprites_splitbar = new SplitBar("sprites-section","horizontal")
     @sprites_splitbar.setPosition(20)
     @maps_splitbar = new SplitBar("maps-section","horizontal")
@@ -287,6 +291,7 @@ class AppUI
     @hide "projectview"
     @show "myprojects"
     @app.runwindow.projectClosed()
+    @app.debug.projectClosed()
     @app.project = null
     @project = null
     @app.updateProjectList()
@@ -315,6 +320,7 @@ class AppUI
 
     if section == "code"
       @code_splitbar.update()
+      @debug_splitbar.update()
       @runtime_splitbar.update()
       @app.runwindow.windowResized()
       @app.editor.editor.resize()
@@ -406,6 +412,7 @@ class AppUI
 
     if section == "projects"
       @code_splitbar.update()
+      @debug_splitbar.update()
       @runtime_splitbar.update()
       @app.runwindow.windowResized()
 
@@ -809,6 +816,8 @@ class AppUI
     @hide "myprojects"
     @project.addListener @
     @code_splitbar.setPosition(50)
+    @debug_splitbar.closed2 = true
+    @debug_splitbar.update()
     @runtime_splitbar.setPosition(50)
     @app.runwindow.terminal.start()
     @updateActiveUsers()

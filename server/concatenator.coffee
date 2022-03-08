@@ -132,6 +132,7 @@ class @Concatenator
       "/css/home.css"
       "/css/doc.css"
       "/css/code.css"
+      "/css/debug.css"
       "/css/assets.css"
       "/css/sprites.css"
       "/css/sounds.css"
@@ -229,6 +230,9 @@ class @Concatenator
       "/js/runtime/spriteframe.js"
       "/js/runtime/map.js"
 
+      "/js/debug/debug.js"
+      "/js/debug/watch.js"
+      "/js/debug/timemachine.js"
       "/js/terminal/terminal.js"
 
       "/js/project/project.js"

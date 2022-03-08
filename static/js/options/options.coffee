@@ -187,6 +187,7 @@ class @Options
             (()=>
               @app.project.setLanguage(value)
               @app.editor.updateLanguage()
+              @app.debug.updateDebuggerVisibility()
               if DEFAULT_CODE[value]?
                 @app.editor.setCode DEFAULT_CODE[value]
               else
@@ -205,6 +206,7 @@ class @Options
   setLanguage:(value)->
     @app.project.setLanguage(value)
     @app.editor.updateLanguage()
+    @app.debug.updateDebuggerVisibility()
     @app.client.sendRequest {
       name: "set_project_option"
       project: @app.project.id

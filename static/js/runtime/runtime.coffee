@@ -195,6 +195,8 @@ class @Runtime
     @floating_frame = 0
     requestAnimationFrame(()=>@timer())
     @screen.startControl()
+    @listener.postMessage
+      name: "started"
 
   updateMaps:()->
     for key,map of @maps
@@ -212,6 +214,8 @@ class @Runtime
         err = @vm.error_info
         err.type = "exec"
         @listener.reportError err
+      if @watching_variables
+        @watchStep()
       res
     catch err
       @listener.reportError err
@@ -339,6 +343,10 @@ class @Runtime
 
     @current_frame += ds
     @drawCall()
+
+    if ds>0 and @watching_variables
+      @watchStep()
+
     #if ds != 1
     #  console.info "frame missed"
     #if @current_frame%60 == 0
@@ -478,6 +486,95 @@ class @Runtime
       @vm.context.global = @history[@history_index]
       @vm.call("draw")
 
+  watch:(variables)->
+    @watching = true
+    @watching_variables = variables
+    @exclusion_list = [
+      @vm.context.global.screen
+      @vm.context.global.system
+      @vm.context.global.keyboard
+      @vm.context.global.audio
+      @vm.context.global.gamepad
+      @vm.context.global.touch
+      @vm.context.global.mouse
+      @vm.context.global.sprites
+      @vm.context.global.maps
+      @vm.context.global.sounds
+      @vm.context.global.music
+      @vm.context.global.assets
+      @vm.context.global.asset_manager
+      @vm.context.global.fonts
+      @vm.context.global.storage
+    ]
+    @watchStep()
+
+  stopWatching:()->
+    @watching = false
+
+  watchStep:(variables=@watching_variables)->
+    res = {}
+    for v in variables
+      if v == "global"
+        value = @vm.context.global
+      else
+        vs = v.split(".")
+        value = @vm.context.global
+        index = 0
+        while index < vs.length and value?
+          value = value[vs[index++]]
+
+      if value? and @exclusion_list.indexOf(value) < 0
+        res[v] = @exploreValue(value,1,10)
+
+    @listener.postMessage
+      name: "watch_update"
+      data: res
+
+  exploreValue:(value,depth=1,array_max=10)->
+    if typeof value == "function" or value instanceof Program.Function or Routine? and value instanceof Routine
+      return
+        type: "function"
+        value: ""
+    else if typeof value == "object"
+      if Array.isArray(value)
+        if depth == 0 then return
+          type: "list"
+          value: ""
+          length: value.length
+
+        res = []
+        for v,i in value
+          break if i>=100
+          if @exclusion_list.indexOf(v) < 0
+            v = @exploreValue(v,depth-1,array_max)
+            res[i] = if v? then v else 0
+        res
+      else
+        if depth == 0 then return
+          type: "object"
+          value: ""
+
+        res = {}
+        for key,v of value
+          if @exclusion_list.indexOf(v) < 0
+            res[key] = @exploreValue(v,depth-1,array_max)
+        res
+    else if typeof value == "string"
+      return
+        type: "string"
+        value: if value.length < 43 then value else value.substring(0,40)+"..."
+    else if typeof value == "number"
+      return
+        type: "number"
+        value: value
+    else if typeof value == "boolean"
+      return
+        type: "number"
+        value: if value then 1 else 0
+    else
+      return
+        type: "unknown"
+        value: value
 
   storableHistory:(value)->
     referenced = [

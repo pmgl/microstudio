@@ -34,6 +34,9 @@ class @RunWindow
 
     @initWarnings()
 
+    @message_listeners = {}
+    @listeners = []
+
     # document.getElementById("backward-button").addEventListener "mousedown",()=>
     #   @startBackward()
     #
@@ -131,6 +134,7 @@ class @RunWindow
     document.getElementById("run-button-win").classList.add("selected")
     document.getElementById("pause-button-win").classList.remove("selected")
     document.getElementById("reload-button-win").classList.remove("selected")
+    @propagate "reload"
 
   play:()->
     if document.getElementById("runiframe")?
@@ -143,6 +147,7 @@ class @RunWindow
       document.getElementById("run-button-win").classList.add("selected")
       document.getElementById("pause-button-win").classList.remove("selected")
       document.getElementById("reload-button-win").classList.remove("selected")
+      @propagate "play"
 
   pause:()->
     e = document.getElementById("runiframe")
@@ -156,6 +161,7 @@ class @RunWindow
     document.getElementById("run-button-win").classList.remove("selected")
     document.getElementById("pause-button-win").classList.add("selected")
     document.getElementById("reload-button-win").classList.remove("selected")
+    @propagate "pause"
 
   resume:()->
     e = document.getElementById("runiframe")
@@ -170,6 +176,7 @@ class @RunWindow
     document.getElementById("run-button-win").classList.add("selected")
     document.getElementById("pause-button-win").classList.remove("selected")
     document.getElementById("reload-button-win").classList.remove("selected")
+    @propagate "resume"
 
   resetButtons:()->
     document.getElementById("run-button").classList.remove("selected")
@@ -183,11 +190,13 @@ class @RunWindow
     @terminal.clear()
 
   toggleConsoleOptions:()->
-    div = document.getElementById("runtime-splitbar")
+    div = document.getElementById("console-options")
     if div.getBoundingClientRect().height<= 41
-      div.style.height = "180px"
+      div.style.height = "115px"
+      document.getElementById("terminal-view").style.top = "155px"
     else
-      div.style.height = "40px"
+      div.style.height = "0px"
+      document.getElementById("terminal-view").style.top = "40px"
     setTimeout (()=>@app.appui.runtime_splitbar.update()),600
 
   updateCode:(file,src)->
@@ -370,6 +379,13 @@ class @RunWindow
 
         when "exit"
           @exit()
+
+        when "started"
+          @propagate "started"
+
+        else
+          if msg.name? and @message_listeners[msg.name]?
+            @message_listeners[msg.name](msg)
 
     catch err
 
@@ -627,3 +643,19 @@ class @RunWindow
     document.getElementById("run-button-win").classList.remove("selected")
     document.getElementById("pause-button-win").classList.remove("selected")
     document.getElementById("reload-button-win").classList.remove("selected")
+    @propagate "exit"
+
+  postMessage:(data)->
+    iframe = document.getElementById("runiframe")
+    if iframe?
+      iframe.contentWindow.postMessage JSON.stringify(data),"*"
+
+  addMessageListener:(name,callback)->
+    @message_listeners[name] = callback
+
+  addListener:(callback)->
+    @listeners.push(callback)
+
+  propagate:(event)->
+    for l in @listeners
+      l(event)

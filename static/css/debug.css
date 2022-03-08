@@ -1,0 +1,211 @@
+
+#debug-splitbar {
+  background: hsl(300,30%,35%);
+  position: absolute ;
+  left: 400px ;
+  top: 0 ;
+  bottom: 0 ;
+  width: 10px ;
+  cursor: ew-resize;
+  z-index: 2 ;
+  box-sizing: border-box;
+  border-left: solid 2px hsl(200,10%,10%);
+}
+
+#debug-main-view {
+  background: hsl(270,10%,20%);
+  position: absolute ;
+  top: 0 ;
+  bottom: 0 ;
+  right: 0 ;
+  color: rgba(0,0,0,.8) ;
+  font-size: 12px ;
+  box-sizing:border-box;
+}
+
+.watch-line {
+  position: relative ;
+  margin-bottom: 1px ;
+  padding: 2px 3px ;
+  border-radius: 3px ;
+  min-width: 117px ;
+}
+.watch-line.open {
+  margin-bottom: 5px ;
+}
+.watch-line i {
+  color: rgba(0,0,0,.5) ;
+  margin-right: 5px ;
+  vertical-align: middle ;
+  cursor: pointer ;
+  width: 14px ;
+}
+.watch-line-content {
+  margin-left: px ;
+  padding: 2px ;
+  border-radius: 5px ;
+  background: hsl(270,10%,20%) ;
+  position: relative;
+  left: 3px;
+  top: 3px;
+}
+.watch-line.number > div > i:before { content: "\f1ec" ; }
+.watch-line.string > div > i:before { content: "\f10d" ; }
+.watch-line.list > div > i:before { content: "\f03a" ; }
+.watch-line.object > div > i:before { content: "\f468" ; }
+.watch-line.function > div > i:before { content: "\f2db" ; }
+
+.watch-line.object > div > i:hover:before, .watch-line.list > div > i:hover:before {
+  content: "\f067";
+}
+
+.watch-line.string { background: hsl(110,40%,70%) ; }
+/*.watch-line.string:nth-child(odd) { background: hsl(90,40%,60%) ; }*/
+.watch-line.string .watch-line-value { background: hsl(110,40%,90%) ; }
+
+.watch-line.number { background: hsl(20,40%,70%) ; }
+/*.watch-line.number:nth-child(odd) { background: hsl(20,40%,60%) ; }*/
+.watch-line.number .watch-line-value { background: hsl(20,40%,90%) ; }
+
+.watch-line.function { background: hsl(50,40%,70%) ; }
+/*.watch-line.function:nth-child(odd) { background: hsl(300,40%,60%) ; }*/
+.watch-line.function .watch-line-value { background: hsl(50,40%,90%) ; }
+
+.watch-line.list { background: hsl(180,40%,70%) ; }
+/*.watch-line.list:nth-child(odd) { background: hsl(200,40%,60%) ; }*/
+.watch-line.list .watch-line-value { background: hsl(200,40%,90%) ; }
+
+.watch-line.object { background: hsl(210,40%,70%) ; }
+/*.watch-line.object:nth-child(odd) { background: hsl(160,40%,60%) ; }*/
+.watch-line.object .watch-line-value { background: hsl(160,40%,90%) ; }
+
+
+
+.watch-line-value {
+  position: absolute;
+  right: 2px;
+  top: 1px;
+  bottom: 1px;
+  width: 100px;
+  height: 17px ;
+  padding: 0px 10px;
+  background: hsl(270,50%,90%);
+  border-radius: 3px;
+  white-space: nowrap;
+  overflow: hidden ;
+}
+
+.watch-line input {
+  position: absolute;
+  right: 2px;
+  top: 1px;
+  bottom: 1px;
+  width: 98px;
+  height: 15px ;
+  background: hsl(270,50%,100%);
+
+  border: solid 1px rgba(0,0,0,.5) ;
+  border-radius: 3px ;
+  font-size: 12px ;
+  padding: 0px 10px;
+  color: rgba(0,0,0,.8);
+  font-family: "Source Sans Pro",Verdana ;
+
+}
+.watch-line input:focus {
+  outline: none ;
+}
+
+
+#debug-main-toolbar {
+  background: hsl(300,40%,45%) ;
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  right: 0 ;
+  box-sizing: border-box ;
+  height: 40px ;
+  padding: 8px 10px ;
+  white-space: nowrap ;
+  overflow: hidden ;
+}
+
+#debug-main-toolbar div {
+  display: inline-block ;
+  border-radius: 5px ;
+  background-color: hsl(300,30%,35%) ;
+  margin-right: 20px ;
+  color: rgba(255,255,255,.8);
+  padding: 3px 10px ;
+  font-size: 16px ;
+  cursor: pointer ;
+}
+
+#debug-watch-view {
+  position: absolute ;
+  top: 40px ;
+  left: 0 ;
+  right: 0px ;
+  bottom: 0 ;
+}
+#debug-watch-bar {
+  position: absolute ;
+  top: 2px ;
+  left: 0px ;
+  right: 0px ;
+  box-sizing: border-box ;
+  height: 26px ;
+  background: hsl(300,30%,35%);
+  color: rgba(255,255,255,.8) ;
+  white-space: nowrap;
+  overflow: hidden ;
+  padding: 4px 10px ;
+  font-size: 14px ;
+}
+
+#debug-watch-bar input {
+  display: inline-block ;
+  border: none ;
+  border-radius: 3px ;
+  font-size: 12px ;
+  width: 60px ;
+  padding: 2px 5px 1px 20px;
+  background: rgba(255,255,255,.5);
+  color: rgba(0,0,0,.8);
+  font-family: "Source Sans Pro",Verdana ;
+  margin-right: 20px ;
+}
+#debug-watch-bar i {
+  margin-right: 10px ;
+}
+#debug-watch-bar i.fa-filter {
+  color: rgba(0,0,0,.25) ;
+  font-size: 12px ;
+  position: relative ;
+  right: -25px ;
+}
+#debug-watch-bar i.type {
+  margin-right: 10px ;
+  cursor: pointer ;
+}
+#debug-watch-bar i.type.filtered {
+  color: rgba(255,255,255,.3);
+}
+
+
+#debug-watch-bar input:focus {
+  outline: none ;
+}
+
+#debug-watch-content {
+  position: absolute ;
+  overflow: auto ;
+  top: 30px ;
+  left: 0 ;
+  bottom: 0 ;
+  right: 0 ;
+}
+
+#debug-timemachine-view {
+
+}

@@ -33,6 +33,7 @@ class App
     @sound_editor = new SoundEditor @
     @music_editor = new MusicEditor @
     @runwindow = new RunWindow @
+    @debug = new Debug @
     @options = new Options @
     @publish = new Publish @
     @user_settings = new UserSettings @
@@ -217,6 +218,7 @@ class App
     @music_editor.projectOpened()
     @assets_manager.projectOpened()
     @runwindow.projectOpened()
+    @debug.projectOpened()
     @options.projectOpened()
     @publish.loadProject(@project)
     @project.load()
