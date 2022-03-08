@@ -95,7 +95,7 @@ this.Watch = (function() {
     for (set_key in data) {
       set_value = data[set_key];
       if (set_key !== "global") {
-        if (this.watch_lines[set_key] != null) {
+        if (this.watch_lines.hasOwnProperty(set_key)) {
           alive[set_key] = true;
           this.watch_lines[set_key].updateContents(set_value);
         }
@@ -105,7 +105,7 @@ this.Watch = (function() {
     ref = data.global;
     for (key in ref) {
       value = ref[key];
-      if (this.watch_lines[key]) {
+      if (this.watch_lines.hasOwnProperty(key)) {
         this.watch_lines[key].updateValue(value);
       } else {
         this.watch_lines[key] = new WatchLine(this, e, key, value);
@@ -272,7 +272,7 @@ this.WatchLine = (function() {
     results = [];
     for (key in data) {
       value = data[key];
-      if (this.watch_lines[key]) {
+      if (this.watch_lines.hasOwnProperty(key)) {
         results.push(this.watch_lines[key].updateValue(value));
       } else {
         results.push(this.watch_lines[key] = new WatchLine(this.watch, this.content, key, value, this.prefixed));

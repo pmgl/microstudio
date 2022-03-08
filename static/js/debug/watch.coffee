@@ -63,13 +63,13 @@ class @Watch
 
     for set_key,set_value of data
       if set_key != "global"
-        if @watch_lines[set_key]?
+        if @watch_lines.hasOwnProperty(set_key)
           alive[set_key] = true
           @watch_lines[set_key].updateContents set_value
 
     e = document.getElementById("debug-watch-content")
     for key,value of data.global
-      if @watch_lines[key]
+      if @watch_lines.hasOwnProperty(key)
         @watch_lines[key].updateValue(value)
       else
         @watch_lines[key] = new WatchLine(@,e,key,value)
@@ -188,7 +188,7 @@ class @WatchLine
       @content.classList.add "watch-line-content"
       @element.appendChild @content
     for key,value of data
-      if @watch_lines[key]
+      if @watch_lines.hasOwnProperty(key)
         @watch_lines[key].updateValue(value)
       else
         @watch_lines[key] = new WatchLine(@watch,@content,key,value,@prefixed)
