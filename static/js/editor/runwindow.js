@@ -46,6 +46,16 @@ this.RunWindow = (function() {
         return _this.takePicture();
       };
     })(this));
+    this.app.appui.setAction("step-forward-button", (function(_this) {
+      return function() {
+        return _this.stepForward();
+      };
+    })(this));
+    this.app.appui.setAction("step-forward-button-win", (function(_this) {
+      return function() {
+        return _this.stepForward();
+      };
+    })(this));
     if (window.ms_standalone) {
       document.getElementById("qrcode-button").style.display = "none";
     }
@@ -184,6 +194,8 @@ this.RunWindow = (function() {
     document.getElementById("run-button-win").classList.add("selected");
     document.getElementById("pause-button-win").classList.remove("selected");
     document.getElementById("reload-button-win").classList.remove("selected");
+    document.getElementById("step-forward-button").style.display = "none";
+    document.getElementById("step-forward-button-win").style.display = "none";
     return this.propagate("reload");
   };
 
@@ -198,6 +210,8 @@ this.RunWindow = (function() {
       document.getElementById("run-button-win").classList.add("selected");
       document.getElementById("pause-button-win").classList.remove("selected");
       document.getElementById("reload-button-win").classList.remove("selected");
+      document.getElementById("step-forward-button").style.display = "none";
+      document.getElementById("step-forward-button-win").style.display = "none";
       return this.propagate("play");
     }
   };
@@ -216,7 +230,19 @@ this.RunWindow = (function() {
     document.getElementById("run-button-win").classList.remove("selected");
     document.getElementById("pause-button-win").classList.add("selected");
     document.getElementById("reload-button-win").classList.remove("selected");
+    document.getElementById("step-forward-button").style.display = "inline-block";
+    document.getElementById("step-forward-button-win").style.display = "inline-block";
     return this.propagate("pause");
+  };
+
+  RunWindow.prototype.isPaused = function() {
+    return document.getElementById("pause-button").classList.contains("selected") || document.getElementById("pause-button-win").classList.contains("selected");
+  };
+
+  RunWindow.prototype.stepForward = function() {
+    return this.postMessage({
+      name: "step_forward"
+    });
   };
 
   RunWindow.prototype.resume = function() {
@@ -234,6 +260,8 @@ this.RunWindow = (function() {
     document.getElementById("run-button-win").classList.add("selected");
     document.getElementById("pause-button-win").classList.remove("selected");
     document.getElementById("reload-button-win").classList.remove("selected");
+    document.getElementById("step-forward-button").style.display = "none";
+    document.getElementById("step-forward-button-win").style.display = "none";
     return this.propagate("resume");
   };
 
@@ -243,7 +271,9 @@ this.RunWindow = (function() {
     document.getElementById("reload-button").classList.add("selected");
     document.getElementById("run-button-win").classList.remove("selected");
     document.getElementById("pause-button-win").classList.add("selected");
-    return document.getElementById("reload-button-win").classList.add("selected");
+    document.getElementById("reload-button-win").classList.add("selected");
+    document.getElementById("step-forward-button").style.display = "none";
+    return document.getElementById("step-forward-button-win").style.display = "none";
   };
 
   RunWindow.prototype.clear = function() {
@@ -489,6 +519,8 @@ this.RunWindow = (function() {
           return this.exit();
         case "started":
           return this.propagate("started");
+        case "time_machine":
+          return this.app.debug.time_machine.messageReceived(msg);
         default:
           if ((msg.name != null) && (this.message_listeners[msg.name] != null)) {
             return this.message_listeners[msg.name](msg);
@@ -807,26 +839,6 @@ this.RunWindow = (function() {
   RunWindow.prototype.hideAll = function() {
     this.hideQRCode();
     return this.hidePicture();
-  };
-
-  RunWindow.prototype.startBackward = function() {
-    var e;
-    e = document.getElementById("runiframe");
-    if (e != null) {
-      return e.contentWindow.postMessage(JSON.stringify({
-        name: "start_backward"
-      }), "*");
-    }
-  };
-
-  RunWindow.prototype.stopBackward = function() {
-    var e;
-    e = document.getElementById("runiframe");
-    if (e != null) {
-      return e.contentWindow.postMessage(JSON.stringify({
-        name: "stop_backward"
-      }), "*");
-    }
   };
 
   RunWindow.prototype.exit = function() {

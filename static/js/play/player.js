@@ -89,6 +89,8 @@ this.Player = (function() {
           results.push(this.runtime.updateSource(file, src, false));
         }
         return results;
+      } else if (this.runtime.stopped) {
+        return this.runtime.drawCall();
       }
     }
   };
@@ -151,6 +153,8 @@ this.Player = (function() {
           break;
         case "pause":
           return this.runtime.stop();
+        case "step_forward":
+          return this.runtime.stepForward();
         case "resume":
           return this.runtime.resume();
         case "code_updated":
@@ -179,10 +183,8 @@ this.Player = (function() {
             return this.runtime.drawCall();
           }
           break;
-        case "start_backward":
-          return this.runtime.startBackward();
-        case "stop_backward":
-          return this.runtime.stopBackward();
+        case "time_machine":
+          return this.runtime.time_machine.messageReceived(data);
         case "watch":
           return this.runtime.watch(data.list);
         case "stop_watching":

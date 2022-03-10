@@ -25,9 +25,7 @@ class @Runtime
 
     @update_memory = {}
 
-    @flight_recorder = false
-    @history = []
-    @history_index = 0
+    @time_machine = new TimeMachine @
 
   updateSource:(file,src,reinit=false)->
     return false if not @vm?
@@ -313,6 +311,13 @@ class @Runtime
     @stopped = true
     @audio.cancelBeeps()
 
+  stepForward:()->
+    if @stopped
+      @updateCall()
+      @drawCall()
+      if @watching_variables
+        @watchStep()
+
   resume:()->
     if @stopped
       @stopped = false
@@ -358,8 +363,7 @@ class @Runtime
       #time = Date.now()
       @vm.call("update")
 
-      if @flight_recorder
-        @history[@history_index++] = @storableHistory(@vm.context.global)
+      @time_machine.step()
 
       @reportWarnings()
       #console.info "update time: "+(Date.now()-time)
@@ -467,25 +471,6 @@ class @Runtime
   getAssetURL:(asset)->
     @url+"assets/"+asset+".glb"
 
-  startBackward:()->
-    console.info "START_BACKWARD"
-    if not @backwarding
-      @backwarding = true
-      requestAnimationFrame ()=>@backward()
-
-  stopBackward:()->
-    console.info "STOP_BACKWARD"
-    @backwarding = false
-
-  backward:()->
-    return if not @backwarding
-    requestAnimationFrame ()=>@backward()
-
-    @history_index--
-    if @history_index>=0 and @history[@history_index]?
-      @vm.context.global = @history[@history_index]
-      @vm.call("draw")
-
   watch:(variables)->
     @watching = true
     @watching_variables = variables
@@ -550,9 +535,13 @@ class @Runtime
             res[i] = if v? then v else 0
         res
       else
-        if depth == 0 then return
-          type: "object"
-          value: ""
+        if depth == 0
+          v = ""
+          if value.classname then v = "class "+value.classname
+          if value.class? and value.class.classname? then v = value.class.classname
+          return
+            type: "object"
+            value: v
 
         res = {}
         for key,v of value
@@ -575,51 +564,6 @@ class @Runtime
       return
         type: "unknown"
         value: value
-
-  storableHistory:(value)->
-    referenced = [
-      @vm.context.global.screen
-      @vm.context.global.system
-      @vm.context.global.keyboard
-      @vm.context.global.audio
-      @vm.context.global.gamepad
-      @vm.context.global.touch
-      @vm.context.global.mouse
-      @vm.context.global.sprites
-      @vm.context.global.maps
-      @vm.context.global.sounds
-      @vm.context.global.music
-      @vm.context.global.assets
-      @vm.context.global.asset_manager
-      @vm.context.global.fonts
-      @vm.context.global.storage
-    ]
-
-    @makeStorableObject(value,referenced)
-
-  makeStorableObject:(value,referenced)->
-    return value if not value?
-    if typeof value == "function" or value instanceof Program.Function
-      value
-    else if typeof value == "object"
-      return value if referenced.indexOf(value)>=0
-      referenced.push(value)
-      if Array.isArray(value)
-        res = []
-        for v,i in value
-          v = @makeStorableObject(v,referenced)
-          if v?
-            res[i] = v
-        res
-      else
-        res = {}
-        for key,v of value
-          v = @makeStorableObject(v,referenced)
-          if v?
-            res[key] = v
-        res
-    else
-      value
 
   exit:()->
     @stop()

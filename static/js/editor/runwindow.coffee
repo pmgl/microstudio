@@ -10,6 +10,9 @@ class @RunWindow
     @app.appui.setAction "qrcode-button",()=> @showQRCode()
     @app.appui.setAction "take-picture-button",()=> @takePicture()
 
+    @app.appui.setAction "step-forward-button",()=> @stepForward()
+    @app.appui.setAction "step-forward-button-win",()=> @stepForward()
+
     if window.ms_standalone
       document.getElementById("qrcode-button").style.display = "none"
 
@@ -36,12 +39,6 @@ class @RunWindow
 
     @message_listeners = {}
     @listeners = []
-
-    # document.getElementById("backward-button").addEventListener "mousedown",()=>
-    #   @startBackward()
-    #
-    # document.addEventListener "mouseup",()=>
-    #   @stopBackward()
 
   initWarnings:()->
     document.getElementById("console-options-warning-undefined").addEventListener "change",()=>
@@ -134,6 +131,9 @@ class @RunWindow
     document.getElementById("run-button-win").classList.add("selected")
     document.getElementById("pause-button-win").classList.remove("selected")
     document.getElementById("reload-button-win").classList.remove("selected")
+
+    document.getElementById("step-forward-button").style.display = "none"
+    document.getElementById("step-forward-button-win").style.display = "none"
     @propagate "reload"
 
   play:()->
@@ -147,6 +147,10 @@ class @RunWindow
       document.getElementById("run-button-win").classList.add("selected")
       document.getElementById("pause-button-win").classList.remove("selected")
       document.getElementById("reload-button-win").classList.remove("selected")
+
+      document.getElementById("step-forward-button").style.display = "none"
+      document.getElementById("step-forward-button-win").style.display = "none"
+
       @propagate "play"
 
   pause:()->
@@ -161,7 +165,19 @@ class @RunWindow
     document.getElementById("run-button-win").classList.remove("selected")
     document.getElementById("pause-button-win").classList.add("selected")
     document.getElementById("reload-button-win").classList.remove("selected")
+
+    document.getElementById("step-forward-button").style.display = "inline-block"
+    document.getElementById("step-forward-button-win").style.display = "inline-block"
+
     @propagate "pause"
+
+  isPaused:()->
+    document.getElementById("pause-button").classList.contains("selected") or document.getElementById("pause-button-win").classList.contains("selected")
+
+
+  stepForward:()->
+    @postMessage
+      name: "step_forward"
 
   resume:()->
     e = document.getElementById("runiframe")
@@ -176,6 +192,10 @@ class @RunWindow
     document.getElementById("run-button-win").classList.add("selected")
     document.getElementById("pause-button-win").classList.remove("selected")
     document.getElementById("reload-button-win").classList.remove("selected")
+
+    document.getElementById("step-forward-button").style.display = "none"
+    document.getElementById("step-forward-button-win").style.display = "none"
+
     @propagate "resume"
 
   resetButtons:()->
@@ -185,6 +205,9 @@ class @RunWindow
     document.getElementById("run-button-win").classList.remove("selected")
     document.getElementById("pause-button-win").classList.add("selected")
     document.getElementById("reload-button-win").classList.add("selected")
+
+    document.getElementById("step-forward-button").style.display = "none"
+    document.getElementById("step-forward-button-win").style.display = "none"
 
   clear:()->
     @terminal.clear()
@@ -382,6 +405,9 @@ class @RunWindow
 
         when "started"
           @propagate "started"
+
+        when "time_machine"
+          @app.debug.time_machine.messageReceived msg
 
         else
           if msg.name? and @message_listeners[msg.name]?
@@ -620,20 +646,6 @@ class @RunWindow
   hideAll:()->
     @hideQRCode()
     @hidePicture()
-
-  startBackward:()->
-    e = document.getElementById("runiframe")
-    if e?
-      e.contentWindow.postMessage  JSON.stringify({
-        name:"start_backward"
-      }),"*"
-
-  stopBackward:()->
-    e = document.getElementById("runiframe")
-    if e?
-      e.contentWindow.postMessage  JSON.stringify({
-        name:"stop_backward"
-      }),"*"
 
   exit:()->
     @projectClosed()

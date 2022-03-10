@@ -661,6 +661,7 @@ JSTranspiler = (function() {
     if (statement.ext != null) {
       res += "  \"class\": " + classvar + " , ";
     }
+    res += "  \"classname\": \"" + variable + "\" , ";
     res += "}";
     cls = this.createTempVariable(context);
     key = this.createTempVariable(context);

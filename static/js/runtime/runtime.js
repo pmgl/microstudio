@@ -27,9 +27,7 @@ this.Runtime = (function() {
       };
     })(this);
     this.update_memory = {};
-    this.flight_recorder = false;
-    this.history = [];
-    this.history_index = 0;
+    this.time_machine = new TimeMachine(this);
   }
 
   Runtime.prototype.updateSource = function(file, src, reinit) {
@@ -430,6 +428,16 @@ this.Runtime = (function() {
     return this.audio.cancelBeeps();
   };
 
+  Runtime.prototype.stepForward = function() {
+    if (this.stopped) {
+      this.updateCall();
+      this.drawCall();
+      if (this.watching_variables) {
+        return this.watchStep();
+      }
+    }
+  };
+
   Runtime.prototype.resume = function() {
     if (this.stopped) {
       this.stopped = false;
@@ -480,9 +488,7 @@ this.Runtime = (function() {
     this.updateControls();
     try {
       this.vm.call("update");
-      if (this.flight_recorder) {
-        this.history[this.history_index++] = this.storableHistory(this.vm.context.global);
-      }
+      this.time_machine.step();
       this.reportWarnings();
       if (this.vm.error_info != null) {
         err = this.vm.error_info;
@@ -625,39 +631,6 @@ this.Runtime = (function() {
     return this.url + "assets/" + asset + ".glb";
   };
 
-  Runtime.prototype.startBackward = function() {
-    console.info("START_BACKWARD");
-    if (!this.backwarding) {
-      this.backwarding = true;
-      return requestAnimationFrame((function(_this) {
-        return function() {
-          return _this.backward();
-        };
-      })(this));
-    }
-  };
-
-  Runtime.prototype.stopBackward = function() {
-    console.info("STOP_BACKWARD");
-    return this.backwarding = false;
-  };
-
-  Runtime.prototype.backward = function() {
-    if (!this.backwarding) {
-      return;
-    }
-    requestAnimationFrame((function(_this) {
-      return function() {
-        return _this.backward();
-      };
-    })(this));
-    this.history_index--;
-    if (this.history_index >= 0 && (this.history[this.history_index] != null)) {
-      this.vm.context.global = this.history[this.history_index];
-      return this.vm.call("draw");
-    }
-  };
-
   Runtime.prototype.watch = function(variables) {
     this.watching = true;
     this.watching_variables = variables;
@@ -733,9 +706,16 @@ this.Runtime = (function() {
         return res;
       } else {
         if (depth === 0) {
+          v = "";
+          if (value.classname) {
+            v = "class " + value.classname;
+          }
+          if ((value["class"] != null) && (value["class"].classname != null)) {
+            v = value["class"].classname;
+          }
           return {
             type: "object",
-            value: ""
+            value: v
           };
         }
         res = {};
@@ -767,50 +747,6 @@ this.Runtime = (function() {
         type: "unknown",
         value: value
       };
-    }
-  };
-
-  Runtime.prototype.storableHistory = function(value) {
-    var referenced;
-    referenced = [this.vm.context.global.screen, this.vm.context.global.system, this.vm.context.global.keyboard, this.vm.context.global.audio, this.vm.context.global.gamepad, this.vm.context.global.touch, this.vm.context.global.mouse, this.vm.context.global.sprites, this.vm.context.global.maps, this.vm.context.global.sounds, this.vm.context.global.music, this.vm.context.global.assets, this.vm.context.global.asset_manager, this.vm.context.global.fonts, this.vm.context.global.storage];
-    return this.makeStorableObject(value, referenced);
-  };
-
-  Runtime.prototype.makeStorableObject = function(value, referenced) {
-    var i, j, key, len, res, v;
-    if (value == null) {
-      return value;
-    }
-    if (typeof value === "function" || value instanceof Program.Function) {
-      return value;
-    } else if (typeof value === "object") {
-      if (referenced.indexOf(value) >= 0) {
-        return value;
-      }
-      referenced.push(value);
-      if (Array.isArray(value)) {
-        res = [];
-        for (i = j = 0, len = value.length; j < len; i = ++j) {
-          v = value[i];
-          v = this.makeStorableObject(v, referenced);
-          if (v != null) {
-            res[i] = v;
-          }
-        }
-        return res;
-      } else {
-        res = {};
-        for (key in value) {
-          v = value[key];
-          v = this.makeStorableObject(v, referenced);
-          if (v != null) {
-            res[key] = v;
-          }
-        }
-        return res;
-      }
-    } else {
-      return value;
     }
   };
 

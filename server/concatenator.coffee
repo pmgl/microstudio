@@ -32,6 +32,7 @@ class @Concatenator
       "/js/languages/microscript/program.js"
       "/js/languages/microscript/jstranspiler.js"
       '/js/runtime/runtime.js'
+      '/js/runtime/timemachine.js'
       '/js/runtime/assetmanager.js'
       '/js/runtime/keyboard.js'
       '/js/runtime/gamepad.js'
@@ -267,6 +268,7 @@ class @Concatenator
       "/js/languages/microscript/jstranspiler.js"
 
       '/js/runtime/runtime.js'
+      '/js/runtime/timemachine.js'
       '/js/runtime/screen.js'
       '/js/runtime/assetmanager.js'
       '/js/runtime/keyboard.js'

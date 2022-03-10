@@ -79,6 +79,8 @@ class @Watch
       for key,value of @watch_lines
         if not alive[key]
           value.remove()
+          e.removeChild value.element
+          delete @watch_lines[key]
 
     @watch_list_updated = false
     return
@@ -162,7 +164,7 @@ class @WatchLine
       when "string" then '"'+@value.value+'"'
       when "function" then "function()"
       when "list" then "[list:#{@value.length}]"
-      when "object" then "object .. end"
+      when "object" then @value.value or "object .. end"
       else @value.value
 
   updateValue:(value)->
@@ -187,11 +189,21 @@ class @WatchLine
       @content = document.createElement "div"
       @content.classList.add "watch-line-content"
       @element.appendChild @content
+
+    active = {}
     for key,value of data
       if @watch_lines.hasOwnProperty(key)
         @watch_lines[key].updateValue(value)
       else
         @watch_lines[key] = new WatchLine(@watch,@content,key,value,@prefixed)
+      active[key] = true
+
+    for key,value of @watch_lines
+      if not active[key]
+        delete @watch_lines[key]
+        value.remove()
+        if @content?
+          @content.removeChild value.element
         # @watch.watch_lines[@watch_lines[key].prefixed] = @watch_lines[key] NOPE
 
   filterUpdate:()->

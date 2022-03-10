@@ -68,6 +68,8 @@ class @Player
         @runtime.update_memory = {}
         for file,src of @runtime.sources
           @runtime.updateSource(file,src,false)
+      else if @runtime.stopped
+        @runtime.drawCall()
 
   setFullScreen:()->
     if document.documentElement.webkitRequestFullScreen? and not document.webkitIsFullScreen
@@ -116,6 +118,9 @@ class @Player
         when "pause"
           @runtime.stop()
 
+        when "step_forward"
+          @runtime.stepForward()
+
         when "resume"
           @runtime.resume()
 
@@ -143,11 +148,8 @@ class @Player
           if @runtime.stopped
             @runtime.drawCall()
 
-        when "start_backward"
-          @runtime.startBackward()
-
-        when "stop_backward"
-          @runtime.stopBackward()
+        when "time_machine"
+          @runtime.time_machine.messageReceived data
 
         when "watch"
           @runtime.watch(data.list)

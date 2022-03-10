@@ -723,6 +723,7 @@ class JSTranspiler
     if statement.ext?
       res += """  "class": #{classvar} , """
 
+    res += """  "classname": "#{variable}" , """
     res += "}"
 
     cls = @createTempVariable context

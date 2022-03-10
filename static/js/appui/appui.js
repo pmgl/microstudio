@@ -175,7 +175,7 @@ AppUI = (function() {
     this.code_splitbar = new SplitBar("code-section", "horizontal");
     this.runtime_splitbar = new SplitBar("runtime-container", "vertical");
     this.runtime_splitbar.setPosition(67);
-    this.debug_splitbar = new SplitBar("runtime-terminal", "horizontal");
+    this.debug_splitbar = new SplitBar("terminal-debug-container", "horizontal");
     this.debug_splitbar.closed2 = true;
     this.debug_splitbar.splitbar_size = 12;
     this.sprites_splitbar = new SplitBar("sprites-section", "horizontal");

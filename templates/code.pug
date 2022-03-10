@@ -41,6 +41,8 @@ div.runtime-container#runtime-container
           i.fas.fa-play
         div#pause-button.selected(title=translator.get("Pause execution"))
           i.fas.fa-pause
+        div#step-forward-button(title=translator.get("One Step Forward") style="display: none")
+          i.fas.fa-step-forward
         div#reload-button.selected(title=translator.get("Restart project"))
           i.fa.fa-redo
         div#detach-button(title=translator.get("Detach run window"))
@@ -61,55 +63,72 @@ div.runtime-container#runtime-container
   div.runtime-splitbar#runtime-splitbar
 
   div.runtime-terminal#runtime-terminal
-    div#terminal
-      div#terminal-toolbar
-        span Console
-        div.buttons
-          div#clear-button(title="Clear console")
-            i.fa.fa-trash-alt
-          div#console-options-button(title="Console options")
-            i.fa.fa-cogs
 
-        i#open-debugger-button.fa.fa-bug
+    div#debug-timemachine-bar
+      i.fa.fa-history
+      span #{translator.get("Time Machine")}
 
-      div#terminal-view
-        div#terminal-lines
-      div#terminal-input-line
-        div#terminal-input-gt
-          i.fa.fa-angle-right
-        div#terminal-input-container
-          input#terminal-input(autocomplete="off" name="terminalinput")
+      div#debug-timemachine-recording
+        i#debug-timemachine-record.rec.fas.fa-circle(title=translator.get("Record"))
+        div#debug-timemachine-recorder-trail
+          div#debug-timemachine-recorder-head
 
-      div#console-options
-        div
-          input#console-options-warning-undefined(type="checkbox")
-          label(for="console-options-warning-undefined") #{translator.get("Display warning when using an undefined variable")}
-          br
-          input#console-options-warning-nonfunction(type="checkbox")
-          label(for="console-options-warning-nonfunction") #{translator.get("Display warning when calling something that isn't a function")}
-          br
-          input#console-options-warning-assign(type="checkbox")
-          label(for="console-options-warning-assign") #{translator.get("Display warning when setting property on an undefined variable")}
+      div#debug-timemachine-buttons
+        i#debug-timemachine-backward.fas.fa-backward(title=translator.get("Backward"))
+        i#debug-timemachine-step-backward.fas.fa-step-backward(title=translator.get("Step Backward"))
+        i#debug-timemachine-loop.fas.fa-retweet(title=translator.get("Loop"))
+        i#debug-timemachine-step-forward.fas.fa-step-forward(title=translator.get("Step Forward"))
+        i#debug-timemachine-forward.fas.fa-forward(title=translator.get("Forward"))
 
-    div#debug-splitbar
+    div#terminal-debug-container
+      div#terminal
+        div#terminal-toolbar
+          span Console
+          div.buttons
+            div#clear-button(title="Clear console")
+              i.fa.fa-trash-alt
+            div#console-options-button(title="Console options")
+              i.fa.fa-cogs
 
-    div#debug-main-view
-      div#debug-main-toolbar
-        div#debug-tab-watch <i class="fa fa-eye"></i> #{translator.get("Watch")}
-        // div#debug-tab-time-machine <i class="fas fa-history"></i> #{translator.get("Time Machine")}
+          i#open-timemachine-button.fa.fa-history(title=translator.get("Time Machine"))
+          i#open-debugger-button.fa.fa-bug(title=translator.get("Debug Tools"))
 
-      div#debug-watch-view
-        div#debug-watch-bar
-          i.fa.fa-eye
-          span #{translator.get("Watch")}
-          i.fa.fa-filter
-          input#debug-watch-filter
-          i#debug-watch-type-number.fas.fa-calculator.type.active(title=translator.get("Show Numbers"))
-          i#debug-watch-type-string.fas.fa-quote-left.type.active(title=translator.get("Show Strings"))
-          i#debug-watch-type-list.fas.fa-list.type.active(title=translator.get("Show Lists"))
-          i#debug-watch-type-object.fas.fa-boxes.type.active(title=translator.get("Show Objects"))
-          i#debug-watch-type-function.fas.fa-microchip.type.active(title=translator.get("Show Functions"))
+        div#terminal-view
+          div#terminal-lines
+        div#terminal-input-line
+          div#terminal-input-gt
+            i.fa.fa-angle-right
+          div#terminal-input-container
+            input#terminal-input(autocomplete="off" name="terminalinput")
 
-        div#debug-watch-content
+        div#console-options
+          div
+            input#console-options-warning-undefined(type="checkbox")
+            label(for="console-options-warning-undefined") #{translator.get("Display warning when using an undefined variable")}
+            br
+            input#console-options-warning-nonfunction(type="checkbox")
+            label(for="console-options-warning-nonfunction") #{translator.get("Display warning when calling something that isn't a function")}
+            br
+            input#console-options-warning-assign(type="checkbox")
+            label(for="console-options-warning-assign") #{translator.get("Display warning when setting property on an undefined variable")}
 
-      div#debug-timemachine-view
+      div#debug-splitbar
+
+      div#debug-main-view
+        div#debug-main-toolbar
+          div#debug-tab-watch <i class="fa fa-eye"></i> #{translator.get("Watch")}
+          div#debug-tab-time-machine <i class="fas fa-history"></i> #{translator.get("Time Machine")}
+
+        div#debug-watch-view
+          div#debug-watch-bar
+            i.fa.fa-eye
+            span #{translator.get("Watch")}
+            i.fa.fa-filter
+            input#debug-watch-filter
+            i#debug-watch-type-number.fas.fa-calculator.type.active(title=translator.get("Show Numbers"))
+            i#debug-watch-type-string.fas.fa-quote-left.type.active(title=translator.get("Show Strings"))
+            i#debug-watch-type-list.fas.fa-list.type.active(title=translator.get("Show Lists"))
+            i#debug-watch-type-object.fas.fa-boxes.type.active(title=translator.get("Show Objects"))
+            i#debug-watch-type-function.fas.fa-microchip.type.active(title=translator.get("Show Functions"))
+
+          div#debug-watch-content

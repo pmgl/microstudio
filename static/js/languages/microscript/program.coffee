@@ -113,7 +113,9 @@ class @Program.Variable
     if scope[@identifier]?
       for key,val of value
         scope[@identifier][key] = val
+      scope[@identifier]
     else
+      value.classname = @identifier
       scope[@identifier] = value
 
   ensureCreated:(context)->

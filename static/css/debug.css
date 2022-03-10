@@ -26,6 +26,7 @@
 .watch-line {
   position: relative ;
   margin-bottom: 1px ;
+  margin-right: 2px ;
   padding: 2px 3px ;
   border-radius: 3px ;
   min-width: 117px ;
@@ -128,6 +129,7 @@
   padding: 8px 10px ;
   white-space: nowrap ;
   overflow: hidden ;
+  display: none ;
 }
 
 #debug-main-toolbar div {
@@ -143,23 +145,23 @@
 
 #debug-watch-view {
   position: absolute ;
-  top: 40px ;
+  top: 0px ;
   left: 0 ;
   right: 0px ;
   bottom: 0 ;
 }
 #debug-watch-bar {
   position: absolute ;
-  top: 2px ;
+  top: 0px ;
   left: 0px ;
   right: 0px ;
   box-sizing: border-box ;
-  height: 26px ;
-  background: hsl(300,30%,35%);
+  height: 40px ;
+  background: hsl(300,30%,40%);
   color: rgba(255,255,255,.8) ;
   white-space: nowrap;
   overflow: hidden ;
-  padding: 4px 10px ;
+  padding: 11px 20px ;
   font-size: 14px ;
 }
 
@@ -200,12 +202,102 @@
 #debug-watch-content {
   position: absolute ;
   overflow: auto ;
-  top: 30px ;
+  top: 42px ;
   left: 0 ;
   bottom: 0 ;
-  right: 0 ;
+  right: 0px ;
 }
 
-#debug-timemachine-view {
+#debug-timemachine-bar {
+  position: absolute ;
+  display: none ;
+  top: 2px ;
+  left: 0px ;
+  right: 0px ;
+  box-sizing: border-box ;
+  height: 38px ;
+  background: hsl(180,50%,40%);
+  color: rgba(255,255,255,.8) ;
+  white-space: nowrap;
+  overflow: hidden ;
+  padding: 6px 10px ;
+  font-size: 14px ;
+}
+#debug-timemachine-bar * {
+  vertical-align: middle ;
+}
+#debug-timemachine-bar i {
+  margin-right: 10px ;
+}
 
+#debug-timemachine-buttons i {
+  margin: 0px 2px ;
+  padding: 5px ;
+  border-radius: 5px ;
+  font-size: 16px ;
+  cursor: pointer ;
+}
+#debug-timemachine-bar i.rec {
+  padding: 7px ;
+  font-size: 12px ;
+  color: hsl(0,30%,70%);
+  background: rgba(0,0,0,.1);
+  border-radius: 5px ;
+  margin: 0 5px 0 20px ;
+  cursor: pointer ;
+}
+#debug-timemachine-bar i.rec:hover {
+  background: rgba(0,0,0,.2);
+}
+
+#debug-timemachine-bar i.recording {
+  padding: 7px ;
+  font-size: 12px ;
+  color: hsl(0,100%,70%);
+  background: rgba(0,0,0,.5);
+  border-radius: 5px ;
+  margin: 0 5px 0 20px ;
+}
+#debug-timemachine-bar i.looping {
+  background: rgba(0,0,0,.25);
+}
+
+#debug-timemachine-buttons i:hover {
+  background: rgba(0,0,0,.2) ;
+}
+
+#debug-timemachine-recording {
+  white-space: nowrap ;
+  display: inline-block ;
+}
+
+#debug-timemachine-buttons {
+  margin: 0 0 0 20px ;
+  white-space: nowrap ;
+  display: inline-block ;
+}
+
+#debug-timemachine-recorder-trail {
+  position: relative ;
+  display: inline-block ;
+  width: 160px ;
+  height: 20px ;
+  border-radius: 3px ;
+  background: rgba(0,0,0,.1) ;
+  box-sizing: border-box;
+  vertical-align: middle ;
+  margin-left: 5px ;
+  cursor: pointer ;
+}
+
+#debug-timemachine-recorder-head {
+  position: absolute ;
+  left: -5px ;
+  top: 0px ;
+  width: 10px ;
+  height: 20px ;
+  border-radius: 3px ;
+  box-shadow: 0 0 3px #000 ;
+  background: #EEE ;
+  box-sizing: border-box;
 }

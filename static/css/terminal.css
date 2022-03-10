@@ -16,6 +16,14 @@
   overflow: hidden ;
 }
 
+#terminal-debug-container {
+  position: absolute ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  top: 2px ;
+  overflow: hidden ;
+}
 
 
 #terminal-toolbar {
@@ -57,14 +65,28 @@
   background: hsl(160,20%,35%);
   cursor: default ;
 }
+#open-timemachine-button {
+  position: absolute;
+  right: 50px;
+  top: -9px;
+  bottom: 9px;
+  padding: 16px 8px 8px 8px;
+  background: hsl(180,50%,40%);
+  cursor: pointer;
+  border-radius: 10px;
+  box-shadow: 0 0 3px #000;
+}
+
 #open-debugger-button {
   position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  padding: 12px 13px;
-  background: hsl(300,40%,45%);
-  cursor: pointer ;
+  right: -8px;
+  top: 4px;
+  bottom: 5px;
+  padding: 7px 16px 7px 11px;
+  background: hsl(300,30%,40%);
+  cursor: pointer;
+  border-radius: 10px;
+  box-shadow: 0 0 3px #000;
 }
 
 

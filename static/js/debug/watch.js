@@ -118,6 +118,8 @@ this.Watch = (function() {
         value = ref1[key];
         if (!alive[key]) {
           value.remove();
+          e.removeChild(value.element);
+          delete this.watch_lines[key];
         }
       }
     }
@@ -236,7 +238,7 @@ this.WatchLine = (function() {
       case "list":
         return "[list:" + this.value.length + "]";
       case "object":
-        return "object .. end";
+        return this.value.value || "object .. end";
       default:
         return this.value.value;
     }
@@ -260,7 +262,7 @@ this.WatchLine = (function() {
   };
 
   WatchLine.prototype.updateContents = function(data) {
-    var key, results, value;
+    var active, key, ref, results, value;
     if (!this.open) {
       return;
     }
@@ -269,13 +271,30 @@ this.WatchLine = (function() {
       this.content.classList.add("watch-line-content");
       this.element.appendChild(this.content);
     }
-    results = [];
+    active = {};
     for (key in data) {
       value = data[key];
       if (this.watch_lines.hasOwnProperty(key)) {
-        results.push(this.watch_lines[key].updateValue(value));
+        this.watch_lines[key].updateValue(value);
       } else {
-        results.push(this.watch_lines[key] = new WatchLine(this.watch, this.content, key, value, this.prefixed));
+        this.watch_lines[key] = new WatchLine(this.watch, this.content, key, value, this.prefixed);
+      }
+      active[key] = true;
+    }
+    ref = this.watch_lines;
+    results = [];
+    for (key in ref) {
+      value = ref[key];
+      if (!active[key]) {
+        delete this.watch_lines[key];
+        value.remove();
+        if (this.content != null) {
+          results.push(this.content.removeChild(value.element));
+        } else {
+          results.push(void 0);
+        }
+      } else {
+        results.push(void 0);
       }
     }
     return results;

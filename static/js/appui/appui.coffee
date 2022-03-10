@@ -145,7 +145,7 @@ class AppUI
     @code_splitbar = new SplitBar("code-section","horizontal")
     @runtime_splitbar = new SplitBar("runtime-container","vertical")
     @runtime_splitbar.setPosition(67)
-    @debug_splitbar = new SplitBar("runtime-terminal","horizontal")
+    @debug_splitbar = new SplitBar("terminal-debug-container","horizontal")
     @debug_splitbar.closed2 = true
     @debug_splitbar.splitbar_size = 12
 

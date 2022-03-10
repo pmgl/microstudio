@@ -1,12 +1,14 @@
 class @Debug
   constructor:(@app)->
     document.getElementById("open-debugger-button").addEventListener "click",()=>@toggleDebugView()
+    document.getElementById("open-timemachine-button").addEventListener "click",()=>@toggleTimeMachineView()
 
     window.addEventListener "resize",()=>
       if not @app.appui.debug_splitbar.closed2 and @app.appui.debug_splitbar.position>=99
         @toggleDebugView()
 
-    @watch = new Watch(@app)
+    @watch = new Watch @app
+    @time_machine = new TimeMachine @app
 
   toggleDebugView:()->
     if @app.appui.debug_splitbar.closed2
@@ -20,6 +22,17 @@ class @Debug
       @watch.stop()
 
     @app.appui.debug_splitbar.update()
+
+  toggleTimeMachineView:()->
+    if @time_machine_open
+      @time_machine_open = false
+      document.getElementById("debug-timemachine-bar").style.display = "none"
+      document.getElementById("terminal-debug-container").style.top = "2px"
+      @time_machine.closed()
+    else
+      @time_machine_open = true
+      document.getElementById("debug-timemachine-bar").style.display = "block"
+      document.getElementById("terminal-debug-container").style.top = "42px"
 
   projectOpened:()->
     @updateDebuggerVisibility()
@@ -36,3 +49,5 @@ class @Debug
 
   projectClosed:()->
     @watch.reset()
+    if @time_machine_open
+      @toggleTimeMachineView()

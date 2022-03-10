@@ -164,7 +164,7 @@ this.Program.Variable = (function() {
   };
 
   Variable.prototype.hotUpdate = function(context, scope, value) {
-    var key, results, val;
+    var key, val;
     if (scope == null) {
       if (context.local[this.identifier] != null) {
         scope = context.local;
@@ -173,13 +173,13 @@ this.Program.Variable = (function() {
       }
     }
     if (scope[this.identifier] != null) {
-      results = [];
       for (key in value) {
         val = value[key];
-        results.push(scope[this.identifier][key] = val);
+        scope[this.identifier][key] = val;
       }
-      return results;
+      return scope[this.identifier];
     } else {
+      value.classname = this.identifier;
       return scope[this.identifier] = value;
     }
   };
