@@ -186,7 +186,7 @@ this.TimeMachine = (function() {
   TimeMachine.prototype.storableHistory = function(value) {
     var clones, global, refs;
     global = this.runtime.vm.context.global;
-    this.excluded = [global.screen, global.system, global.keyboard, global.audio, global.gamepad, global.touch, global.mouse, global.sprites, global.maps, global.sounds, global.music, global.assets, global.asset_manager, global.fonts, global.storage];
+    this.excluded = [global.screen, global.system, global.keyboard, global.audio, global.gamepad, global.touch, global.mouse, global.sprites, global.maps, global.sounds, global.music, global.assets, global.asset_manager, global.fonts, global.storage, window];
     if (global.PIXI != null) {
       this.excluded.push(global.PIXI);
     }

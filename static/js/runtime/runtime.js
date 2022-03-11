@@ -678,6 +678,12 @@ this.Runtime = (function() {
     if (array_max == null) {
       array_max = 10;
     }
+    if (value == null) {
+      return {
+        type: "number",
+        value: 0
+      };
+    }
     if (typeof value === "function" || value instanceof Program.Function || (typeof Routine !== "undefined" && Routine !== null) && value instanceof Routine) {
       return {
         type: "function",
@@ -699,8 +705,7 @@ this.Runtime = (function() {
             break;
           }
           if (this.exclusion_list.indexOf(v) < 0) {
-            v = this.exploreValue(v, depth - 1, array_max);
-            res[i] = v != null ? v : 0;
+            res[i] = this.exploreValue(v, depth - 1, array_max);
           }
         }
         return res;
@@ -735,7 +740,7 @@ this.Runtime = (function() {
     } else if (typeof value === "number") {
       return {
         type: "number",
-        value: value
+        value: isFinite(value) ? value : 0
       };
     } else if (typeof value === "boolean") {
       return {

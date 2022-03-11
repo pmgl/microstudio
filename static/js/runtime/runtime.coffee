@@ -516,6 +516,10 @@ class @Runtime
       data: res
 
   exploreValue:(value,depth=1,array_max=10)->
+    if not value?
+      return
+        type: "number"
+        value: 0
     if typeof value == "function" or value instanceof Program.Function or Routine? and value instanceof Routine
       return
         type: "function"
@@ -531,8 +535,7 @@ class @Runtime
         for v,i in value
           break if i>=100
           if @exclusion_list.indexOf(v) < 0
-            v = @exploreValue(v,depth-1,array_max)
-            res[i] = if v? then v else 0
+            res[i] = @exploreValue(v,depth-1,array_max)
         res
       else
         if depth == 0
@@ -555,7 +558,7 @@ class @Runtime
     else if typeof value == "number"
       return
         type: "number"
-        value: value
+        value: if isFinite(value) then value else 0
     else if typeof value == "boolean"
       return
         type: "number"

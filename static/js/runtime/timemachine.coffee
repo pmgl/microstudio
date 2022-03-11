@@ -163,7 +163,11 @@ class @TimeMachine
       global.asset_manager
       global.fonts
       global.storage
+      window
     ]
+    # for key,value of window
+    #   @excluded.push value
+
     @excluded.push global.PIXI if global.PIXI?
     @excluded.push global.BABYLON if global.BABYLON?
     @excluded.push global.M2D if global.M2D?
