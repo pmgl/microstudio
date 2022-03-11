@@ -255,6 +255,7 @@ this.Options = (function() {
 
   Options.prototype.graphicsChanged = function(value) {
     this.app.project.setGraphics(value);
+    this.app.debug.updateDebuggerVisibility();
     return this.app.client.sendRequest({
       name: "set_project_option",
       project: this.app.project.id,

@@ -52,7 +52,10 @@ this.Debug = (function() {
   };
 
   Debug.prototype.updateDebuggerVisibility = function() {
+    var timemachine;
     if (this.app.project != null) {
+      timemachine = this.app.project.language.indexOf("microscript") >= 0 && this.app.project.graphics.toLowerCase() === "m1";
+      document.getElementById("open-timemachine-button").style.display = timemachine ? "block" : "none";
       if (this.app.project.language.indexOf("microscript") >= 0) {
         return document.getElementById("open-debugger-button").style.display = "block";
       } else {

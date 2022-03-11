@@ -39,6 +39,9 @@ class @Debug
 
   updateDebuggerVisibility:()->
     if @app.project?
+      timemachine = @app.project.language.indexOf("microscript")>=0 and @app.project.graphics.toLowerCase() == "m1"
+      document.getElementById("open-timemachine-button").style.display = if timemachine then "block" else "none"
+
       if @app.project.language.indexOf("microscript")>=0
         document.getElementById("open-debugger-button").style.display = "block"
       else

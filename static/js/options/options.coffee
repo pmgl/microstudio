@@ -170,6 +170,7 @@ class @Options
 
   graphicsChanged:(value)->
     @app.project.setGraphics(value)
+    @app.debug.updateDebuggerVisibility()
     @app.client.sendRequest {
       name: "set_project_option"
       project: @app.project.id

@@ -1,5 +1,16 @@
 ## Changelog
 
+### Update 2022-03-11
+* Time Machine: go back in time and fix your code in the past!
+  * Start recording
+  * Rewind your game, replay past parts, see changes on screen and in the Watch window
+  * Restart playing from a past point in time
+  * Play in a loop while you adjust your code in realtime
+  * works only with microScript ; also restricted to projects using the core graphics API for now
+* Frame by frame: hit pause and then the step forward button to run your program frame by frame
+* Improved labelling of classes and object instances in the Watch window
+* Fixed a laughable bug with 60 fps stability optimization
+
 ### Update 2022-03-08
 * Watch variables! There is a brand new, feature-rich variable watcher!
   * see variables change in realtime
