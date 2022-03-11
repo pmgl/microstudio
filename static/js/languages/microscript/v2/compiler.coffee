@@ -19,7 +19,7 @@ class Compiler
     @routine.optimize()
     @routine.resolveLabels()
     @count += @routine.opcodes.length
-    @routine.locals_size = @locals.index
+    @routine.locals_size = @locals.max_index
     console.info(@routine.toString())
     console.info("total length: "+@count)
 
@@ -469,19 +469,23 @@ class Compiler
         @routine.STORE_LOCAL index,func
         @routine.POP func
 
-    for i in [0..func.sequence.length-1] by 1
-      @compile(func.sequence[i])
-      if i<func.sequence.length-1
-        @routine.POP func.sequence[i]
-      else
-        @routine.RETURN func.sequence[i]
+    if func.sequence.length > 0
+      for i in [0..func.sequence.length-1] by 1
+        @compile(func.sequence[i])
+        if i<func.sequence.length-1
+          @routine.POP func.sequence[i]
+        else
+          @routine.RETURN func.sequence[i]
+    else
+      @routine.LOAD_VALUE 0,func
+      @routine.RETURN func
 
     @routine.optimize()
     @routine.resolveLabels()
     @count += @routine.opcodes.length
     r = @routine
     # console.info r.toString()
-    @routine.locals_size = locals.index
+    @routine.locals_size = @locals.max_index
 
     @routine = routine
     @locals = locals
@@ -649,7 +653,13 @@ class @Locals
   constructor:()->
     @layers = []
     @index = 0
+    @max_index = 0
     @push()
+
+  increment:()->
+    spot = @index++
+    @max_index = Math.max(@index,@max_index)
+    spot
 
   push:()->
     @layers.push new LocalLayer @
@@ -678,10 +688,10 @@ class LocalLayer
     @registered = {}
 
   register:(name)->
-    @registered[name] = @locals.index++
+    @registered[name] = @locals.increment()
 
   allocate:()->
-    @locals.index++
+    @locals.increment()
 
   get:(name)->
     if @registered[name]?

@@ -309,14 +309,14 @@ class @Processor
                 stack[stack_index] = a+b
               else
                 stack[stack_index] = 0
-            else if typeof a == "string"
-              stack[stack_index] = a+b
             else if Array.isArray(a)
               if Array.isArray(b)
                 stack[stack_index] = a.concat(b)
               else
                 a.push(b)
                 stack[stack_index] = a
+            else if typeof a == "string" or typeof b == "string"
+              stack[stack_index] = a+b
             else
               stack[++stack_index] = a
               stack[++stack_index] = "+"

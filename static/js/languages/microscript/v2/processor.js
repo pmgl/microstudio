@@ -318,8 +318,6 @@ this.Processor = (function() {
             } else {
               stack[stack_index] = 0;
             }
-          } else if (typeof a === "string") {
-            stack[stack_index] = a + b;
           } else if (Array.isArray(a)) {
             if (Array.isArray(b)) {
               stack[stack_index] = a.concat(b);
@@ -327,6 +325,8 @@ this.Processor = (function() {
               a.push(b);
               stack[stack_index] = a;
             }
+          } else if (typeof a === "string" || typeof b === "string") {
+            stack[stack_index] = a + b;
           } else {
             stack[++stack_index] = a;
             stack[++stack_index] = "+";

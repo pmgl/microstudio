@@ -21,7 +21,7 @@ Compiler = (function() {
     this.routine.optimize();
     this.routine.resolveLabels();
     this.count += this.routine.opcodes.length;
-    this.routine.locals_size = this.locals.index;
+    this.routine.locals_size = this.locals.max_index;
     console.info(this.routine.toString());
     console.info("total length: " + this.count);
   }
@@ -545,19 +545,24 @@ Compiler = (function() {
         this.routine.POP(func);
       }
     }
-    for (i = k = 0, ref1 = func.sequence.length - 1; k <= ref1; i = k += 1) {
-      this.compile(func.sequence[i]);
-      if (i < func.sequence.length - 1) {
-        this.routine.POP(func.sequence[i]);
-      } else {
-        this.routine.RETURN(func.sequence[i]);
+    if (func.sequence.length > 0) {
+      for (i = k = 0, ref1 = func.sequence.length - 1; k <= ref1; i = k += 1) {
+        this.compile(func.sequence[i]);
+        if (i < func.sequence.length - 1) {
+          this.routine.POP(func.sequence[i]);
+        } else {
+          this.routine.RETURN(func.sequence[i]);
+        }
       }
+    } else {
+      this.routine.LOAD_VALUE(0, func);
+      this.routine.RETURN(func);
     }
     this.routine.optimize();
     this.routine.resolveLabels();
     this.count += this.routine.opcodes.length;
     r = this.routine;
-    this.routine.locals_size = locals.index;
+    this.routine.locals_size = this.locals.max_index;
     this.routine = routine;
     this.locals = locals;
     return r;
@@ -736,8 +741,16 @@ this.Locals = (function() {
   function Locals() {
     this.layers = [];
     this.index = 0;
+    this.max_index = 0;
     this.push();
   }
+
+  Locals.prototype.increment = function() {
+    var spot;
+    spot = this.index++;
+    this.max_index = Math.max(this.index, this.max_index);
+    return spot;
+  };
 
   Locals.prototype.push = function() {
     return this.layers.push(new LocalLayer(this));
@@ -779,11 +792,11 @@ LocalLayer = (function() {
   }
 
   LocalLayer.prototype.register = function(name) {
-    return this.registered[name] = this.locals.index++;
+    return this.registered[name] = this.locals.increment();
   };
 
   LocalLayer.prototype.allocate = function() {
-    return this.locals.index++;
+    return this.locals.increment();
   };
 
   LocalLayer.prototype.get = function(name) {
