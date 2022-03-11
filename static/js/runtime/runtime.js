@@ -469,7 +469,7 @@ this.Runtime = (function() {
     this.vm.context.global.system.fps = Math.round(fps = 1000 / this.dt);
     this.floating_frame += this.dt * 60 / 1000;
     ds = Math.min(10, Math.round(this.floating_frame - this.current_frame));
-    if (ds === 0 || ds === 2 && Math.abs(fps - 60) < 2) {
+    if ((ds === 0 || ds === 2) && Math.abs(fps - 60) < 2) {
       ds = 1;
       this.floating_frame = this.current_frame + 1;
     }

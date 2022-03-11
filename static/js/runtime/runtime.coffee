@@ -338,7 +338,7 @@ class @Runtime
 
     @floating_frame += @dt*60/1000
     ds = Math.min(10,Math.round(@floating_frame-@current_frame))
-    if ds == 0 or ds == 2 and Math.abs(fps-60) < 2
+    if (ds == 0 or ds == 2) and Math.abs(fps-60) < 2
       #console.info "INCORRECT DS: "+ds+ " floating = "+@floating_frame+" current = "+@current_frame
       ds = 1
       @floating_frame = @current_frame+1
