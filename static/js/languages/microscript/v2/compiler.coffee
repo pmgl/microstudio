@@ -259,6 +259,8 @@ class Compiler
     v = variable.identifier
     if v == "this"
       @routine.LOAD_THIS variable
+    else if v == "global"
+      @routine.LOAD_GLOBAL variable
     else if Compiler.predefined_values[v]?
       @routine.LOAD_VALUE Compiler.predefined_values[v],variable
     else if @locals.get(v)?
