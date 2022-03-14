@@ -41,7 +41,8 @@ class @TimeMachine
     if @record_status?
       b = document.getElementById("debug-timemachine-recorder-trail").getBoundingClientRect()
       x = event.clientX-b.x
-      max_pos = @record_status.length/@record_status.max*160
+      max = @record_status.max+180 # loop size
+      max_pos = @record_status.length/max*160
       replay_pos = (max_pos-x)/160*@record_status.max
       console.log @record_status
       if not @app.runwindow.isPaused() then @app.runwindow.pause()
@@ -152,11 +153,14 @@ class @TimeMachine
 
 
   setPosition:(length,head,max)->
+    max += 180 # loop size
     percent = 100*length/max
     document.getElementById("debug-timemachine-recorder-trail").style.background = """linear-gradient(90deg, hsl(180,100%,20%) 0%, hsl(180,100%,10%) #{percent}%,rgba(0,0,0,.1) #{percent}%,rgba(0,0,0,.1) 100%)"""
     document.getElementById("debug-timemachine-recorder-head").style.left = "#{head/max*160-5}px"
-
-
+    if @recording and not @app.runwindow.isPaused()
+      document.getElementById("debug-timemachine-recorder-head").style.transform = "scale(#{1+Math.sin(Date.now()/200)*.1},1)"
+    else
+      document.getElementById("debug-timemachine-recorder-head").style.transform = "scale(1,1)"
   reset:()->
     @stopLooping()
     #@stopRecording()

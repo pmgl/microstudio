@@ -65,11 +65,12 @@ this.TimeMachine = (function() {
   }
 
   TimeMachine.prototype.cursorAction = function(event) {
-    var b, max_pos, replay_pos, x;
+    var b, max, max_pos, replay_pos, x;
     if (this.record_status != null) {
       b = document.getElementById("debug-timemachine-recorder-trail").getBoundingClientRect();
       x = event.clientX - b.x;
-      max_pos = this.record_status.length / this.record_status.max * 160;
+      max = this.record_status.max + 180;
+      max_pos = this.record_status.length / max * 160;
       replay_pos = (max_pos - x) / 160 * this.record_status.max;
       console.log(this.record_status);
       if (!this.app.runwindow.isPaused()) {
@@ -240,9 +241,15 @@ this.TimeMachine = (function() {
 
   TimeMachine.prototype.setPosition = function(length, head, max) {
     var percent;
+    max += 180;
     percent = 100 * length / max;
     document.getElementById("debug-timemachine-recorder-trail").style.background = "linear-gradient(90deg, hsl(180,100%,20%) 0%, hsl(180,100%,10%) " + percent + "%,rgba(0,0,0,.1) " + percent + "%,rgba(0,0,0,.1) 100%)";
-    return document.getElementById("debug-timemachine-recorder-head").style.left = (head / max * 160 - 5) + "px";
+    document.getElementById("debug-timemachine-recorder-head").style.left = (head / max * 160 - 5) + "px";
+    if (this.recording && !this.app.runwindow.isPaused()) {
+      return document.getElementById("debug-timemachine-recorder-head").style.transform = "scale(" + (1 + Math.sin(Date.now() / 200) * .1) + ",1)";
+    } else {
+      return document.getElementById("debug-timemachine-recorder-head").style.transform = "scale(1,1)";
+    }
   };
 
   TimeMachine.prototype.reset = function() {
