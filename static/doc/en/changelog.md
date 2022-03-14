@@ -1,5 +1,12 @@
 ## Changelog
 
+### Update 2022-03-14
+* screen space rotation and scaling: screen.setScale() and screen.setRotation()
+* Fixed #94 paste text into console
+* slight Time Machine UI improvement (and fixed #93)
+* Time Machine looping now replays recorded user inputs
+* microScript v2 fixes
+
 ### Update 2022-03-11
 * Time Machine: go back in time and fix your code in the past!
   * Start recording
