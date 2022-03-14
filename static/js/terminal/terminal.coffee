@@ -37,16 +37,17 @@ class @Terminal
       true
 
     document.getElementById("terminal-input").addEventListener "paste",(event)=>
-      event.preventDefault()
       text = event.clipboardData.getData("text/plain")
       s = text.split("\n")
       if s.length>1
+        event.preventDefault()
         for line in s
           document.getElementById("terminal-input").value = ""
           @validateLine line
         return
-
-      document.getElementById("terminal-input").value = s[0]
+      else
+        false
+      #document.getElementById("terminal-input").value = s[0]
 
     document.getElementById("terminal-input").addEventListener "keydown",(event)=>
       # console.info event.key

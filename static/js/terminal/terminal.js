@@ -60,18 +60,18 @@ this.Terminal = (function() {
     document.getElementById("terminal-input").addEventListener("paste", (function(_this) {
       return function(event) {
         var j, len, line, s, text;
-        event.preventDefault();
         text = event.clipboardData.getData("text/plain");
         s = text.split("\n");
         if (s.length > 1) {
+          event.preventDefault();
           for (j = 0, len = s.length; j < len; j++) {
             line = s[j];
             document.getElementById("terminal-input").value = "";
             _this.validateLine(line);
           }
-          return;
+        } else {
+          return false;
         }
-        return document.getElementById("terminal-input").value = s[0];
       };
     })(this));
     return document.getElementById("terminal-input").addEventListener("keydown", (function(_this) {
