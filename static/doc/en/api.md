@@ -301,6 +301,37 @@ Don't forget to reset the translation to 0,0 whenever you need to stop translati
 screen.setTranslation(0,0)
 ```
 
+<!--- suggest_start screen.setRotation --->
+##### screen.setRotation( angle )
+Rotates the screen coordinates for subsequent drawing operations.
+<!--- suggest_end --->
+
+```
+screen.setRotation( 45 )
+```
+Rotates the whole screen by 45 degrees. This will only affect subsequent drawing operations
+
+Don't forget to reset the rotation to 0:
+```
+screen.setRotation( 0 )
+```
+
+<!--- suggest_start screen.setScale --->
+##### screen.setScale( x, y )
+Scales the screen coordinates for subsequent drawing operations.
+<!--- suggest_end --->
+
+```
+screen.setScale(2,2)
+```
+After this line, everything will be drawn twice bigger.
+
+Don't forget to reset the scale to 1,1 which is the normal scale.
+```
+screen.setScale(1,1)
+```
+
+
 <!--- suggest_start screen.setDrawRotation --->
 ##### screen.setDrawRotation( angle)
 Defines a rotation angle for the next drawing operations. The angle is expressed in degrees.

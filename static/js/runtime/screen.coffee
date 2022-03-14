@@ -14,6 +14,11 @@ class @Screen
 
     @translation_x = 0
     @translation_y = 0
+    @rotation = 0
+    @scale_x = 1
+    @scale_y = 1
+    @screen_transform = false
+
     @anchor_x = 0
     @anchor_y = 0
     @supersampling = @previous_supersampling = 1
@@ -66,6 +71,14 @@ class @Screen
     @object_rotation = 0
     @object_scale_x = 1
     @object_scale_y = 1
+
+    @translation_x = 0
+    @translation_y = 0
+    @rotation = 0
+    @scale_x = 1
+    @scale_y = 1
+    @screen_transform = false
+
     @context.lineCap = "round"
     @blending =
       normal: "source-over"
@@ -89,6 +102,8 @@ class @Screen
       setRadialGradient: (x,y,radius,c1,c2)->screen.setRadialGradient(x,y,radius,c1,c2)
       setFont: (font)->screen.setFont(font)
       setTranslation: (tx,ty)->screen.setTranslation(tx,ty)
+      setScale: (x,y)->screen.setScale(x,y)
+      setRotation: (rotation)->screen.setRotation(rotation)
       setDrawAnchor: (ax,ay)->screen.setDrawAnchor(ax,ay)
       setDrawRotation: (rotation)->screen.setDrawRotation(rotation)
       setDrawScale: (x,y)->screen.setDrawScale(x,y)
@@ -212,6 +227,30 @@ class @Screen
     1
 
   setTranslation:(@translation_x,@translation_y)->
+    if not isFinite @translation_x
+      @translation_x = 0
+
+    if not isFinite @translation_y
+      @translation_y = 0
+
+    @updateScreenTransform()
+
+  setScale:(@scale_x,@scale_y)->
+    if not isFinite(@scale_x) or @scale_x == 0
+      @scale_x = 1
+
+    if not isFinite(@scale_y) or @scale_y == 0
+      @scale_y = 1
+
+    @updateScreenTransform()
+
+  setRotation:(@rotation)->
+    if not isFinite @rotation
+      @rotation = 0
+    @updateScreenTransform()
+
+  updateScreenTransform:()->
+    @screen_transform = @translation_x != 0 or @translation_y != 0 or @scale_x != 1 or @scale_y != 1 or @rotation != 0
 
   setDrawAnchor:(@anchor_x,@anchor_y)->
     @anchor_x = 0 if typeof @anchor_x != "number"
@@ -224,10 +263,13 @@ class @Screen
   initDrawOp:(x,y)->
     res = false
 
-    if @translation_x != 0 or @translation_y != 0
+    if @screen_transform
       @context.save()
       res = true
-      @context.translate x+@translation_x,y-@translation_y
+      @context.translate @translation_x,-@translation_y
+      @context.scale @scale_x,@scale_y
+      @context.rotate -@rotation/180*Math.PI
+      @context.translate x,y
 
     if @object_rotation != 0 or @object_scale_x != 1 or @object_scale_y != 1
       if not res
@@ -343,7 +385,7 @@ class @Screen
 
     @context.globalAlpha = @alpha
     @context.lineWidth = @line_width
-    return if args.length<4
+    return if args.length < 4
     len = Math.floor(args.length/2)
     transform = @initDrawOp 0,0
     @context.beginPath()

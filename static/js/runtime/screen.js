@@ -15,6 +15,10 @@ this.Screen = (function() {
     };
     this.translation_x = 0;
     this.translation_y = 0;
+    this.rotation = 0;
+    this.scale_x = 1;
+    this.scale_y = 1;
+    this.screen_transform = false;
     this.anchor_x = 0;
     this.anchor_y = 0;
     this.supersampling = this.previous_supersampling = 1;
@@ -82,6 +86,12 @@ this.Screen = (function() {
     this.object_rotation = 0;
     this.object_scale_x = 1;
     this.object_scale_y = 1;
+    this.translation_x = 0;
+    this.translation_y = 0;
+    this.rotation = 0;
+    this.scale_x = 1;
+    this.scale_y = 1;
+    this.screen_transform = false;
     this.context.lineCap = "round";
     this.blending = {
       normal: "source-over",
@@ -126,6 +136,12 @@ this.Screen = (function() {
       },
       setTranslation: function(tx, ty) {
         return screen.setTranslation(tx, ty);
+      },
+      setScale: function(x, y) {
+        return screen.setScale(x, y);
+      },
+      setRotation: function(rotation) {
+        return screen.setRotation(rotation);
       },
       setDrawAnchor: function(ax, ay) {
         return screen.setDrawAnchor(ax, ay);
@@ -347,6 +363,37 @@ this.Screen = (function() {
   Screen.prototype.setTranslation = function(translation_x, translation_y) {
     this.translation_x = translation_x;
     this.translation_y = translation_y;
+    if (!isFinite(this.translation_x)) {
+      this.translation_x = 0;
+    }
+    if (!isFinite(this.translation_y)) {
+      this.translation_y = 0;
+    }
+    return this.updateScreenTransform();
+  };
+
+  Screen.prototype.setScale = function(scale_x, scale_y) {
+    this.scale_x = scale_x;
+    this.scale_y = scale_y;
+    if (!isFinite(this.scale_x) || this.scale_x === 0) {
+      this.scale_x = 1;
+    }
+    if (!isFinite(this.scale_y) || this.scale_y === 0) {
+      this.scale_y = 1;
+    }
+    return this.updateScreenTransform();
+  };
+
+  Screen.prototype.setRotation = function(rotation1) {
+    this.rotation = rotation1;
+    if (!isFinite(this.rotation)) {
+      this.rotation = 0;
+    }
+    return this.updateScreenTransform();
+  };
+
+  Screen.prototype.updateScreenTransform = function() {
+    return this.screen_transform = this.translation_x !== 0 || this.translation_y !== 0 || this.scale_x !== 1 || this.scale_y !== 1 || this.rotation !== 0;
   };
 
   Screen.prototype.setDrawAnchor = function(anchor_x, anchor_y) {
@@ -372,10 +419,13 @@ this.Screen = (function() {
   Screen.prototype.initDrawOp = function(x, y) {
     var res;
     res = false;
-    if (this.translation_x !== 0 || this.translation_y !== 0) {
+    if (this.screen_transform) {
       this.context.save();
       res = true;
-      this.context.translate(x + this.translation_x, y - this.translation_y);
+      this.context.translate(this.translation_x, -this.translation_y);
+      this.context.scale(this.scale_x, this.scale_y);
+      this.context.rotate(-this.rotation / 180 * Math.PI);
+      this.context.translate(x, y);
     }
     if (this.object_rotation !== 0 || this.object_scale_x !== 1 || this.object_scale_y !== 1) {
       if (!res) {
