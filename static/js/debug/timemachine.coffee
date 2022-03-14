@@ -37,11 +37,13 @@ class @TimeMachine
     document.addEventListener "mouseup",()=>
       @dragging = false
 
+    @loop_length = 60*4
+
   cursorAction:(event)->
     if @record_status?
       b = document.getElementById("debug-timemachine-recorder-trail").getBoundingClientRect()
       x = event.clientX-b.x
-      max = @record_status.max+180 # loop size
+      max = @record_status.max+@loop_length
       max_pos = @record_status.length/max*160
       replay_pos = (max_pos-x)/160*@record_status.max
       console.log @record_status
@@ -153,7 +155,7 @@ class @TimeMachine
 
 
   setPosition:(length,head,max)->
-    max += 180 # loop size
+    max += @loop_length
     percent = 100*length/max
     document.getElementById("debug-timemachine-recorder-trail").style.background = """linear-gradient(90deg, hsl(180,100%,20%) 0%, hsl(180,100%,10%) #{percent}%,rgba(0,0,0,.1) #{percent}%,rgba(0,0,0,.1) 100%)"""
     document.getElementById("debug-timemachine-recorder-head").style.left = "#{head/max*160-5}px"

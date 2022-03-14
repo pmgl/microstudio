@@ -7,7 +7,7 @@ this.TimeMachine = (function() {
     this.recording = false;
     this.max_length = 60 * 30;
     this.record_length = 0;
-    this.loop_length = 60 * 3;
+    this.loop_length = 60 * 4;
   }
 
   TimeMachine.prototype.step = function() {
@@ -116,11 +116,13 @@ this.TimeMachine = (function() {
         this.loop_index = 0;
       }
       this.replay_position = this.loop_start - this.loop_index;
+      this.replayControls();
       this.runtime.updateCall();
       this.runtime.drawCall();
       if (this.runtime.watching_variables) {
         this.runtime.watchStep();
       }
+      this.resetControls();
     }
     return this.sendStatus();
   };
@@ -145,6 +147,34 @@ this.TimeMachine = (function() {
     return this.sendStatus();
   };
 
+  TimeMachine.prototype.replayControls = function() {
+    var index;
+    if (this.replay_position >= this.record_length) {
+      return;
+    }
+    if (this.replay_position <= 0) {
+      return;
+    }
+    index = (this.record_index - this.replay_position + this.max_length) % this.max_length;
+    this.copyGlobal(this.history[index].keyboard, this.runtime.vm.context.global.keyboard);
+    this.copyGlobal(this.history[index].gamepad, this.runtime.vm.context.global.gamepad);
+    this.copyGlobal(this.history[index].touch, this.runtime.vm.context.global.touch);
+    return this.copyGlobal(this.history[index].mouse, this.runtime.vm.context.global.mouse);
+  };
+
+  TimeMachine.prototype.resetControls = function() {
+    var mouse, touch;
+    this.runtime.keyboard.reset();
+    touch = this.runtime.vm.context.global.touch;
+    touch.touching = 0;
+    touch.touches = [];
+    mouse = this.runtime.vm.context.global.mouse;
+    mouse.pressed = 0;
+    mouse.left = 0;
+    mouse.right = 0;
+    return mouse.middle = 0;
+  };
+
   TimeMachine.prototype.replay = function(clone) {
     var index;
     if (clone == null) {
@@ -162,6 +192,9 @@ this.TimeMachine = (function() {
     var key, value;
     for (key in source) {
       value = source[key];
+      if (key === "keyboard" || key === "gamepad" || key === "touch" || key === "mouse") {
+        continue;
+      }
       if (!(value instanceof Program.Function) && typeof value !== "function" && (value.classname == null)) {
         dest[key] = value;
       }
@@ -186,7 +219,7 @@ this.TimeMachine = (function() {
   TimeMachine.prototype.storableHistory = function(value) {
     var clones, global, refs;
     global = this.runtime.vm.context.global;
-    this.excluded = [global.screen, global.system, global.keyboard, global.audio, global.gamepad, global.touch, global.mouse, global.sprites, global.maps, global.sounds, global.music, global.assets, global.asset_manager, global.fonts, global.storage, window];
+    this.excluded = [global.screen, global.system, global.audio, global.sprites, global.maps, global.sounds, global.music, global.assets, global.asset_manager, global.fonts, global.storage, window];
     if (global.PIXI != null) {
       this.excluded.push(global.PIXI);
     }

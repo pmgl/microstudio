@@ -92,6 +92,16 @@ this.Keyboard = (function() {
     }
   };
 
+  Keyboard.prototype.reset = function() {
+    var key;
+    for (key in this.keyboard) {
+      if (key === "press" || key === "release") {
+        continue;
+      }
+      this.keyboard[key] = 0;
+    }
+  };
+
   return Keyboard;
 
 })();

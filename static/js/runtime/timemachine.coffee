@@ -7,7 +7,7 @@ class @TimeMachine
     @max_length = 60*30
     @record_length = 0
 
-    @loop_length = 60*3
+    @loop_length = 60*4
 
   step:()->
     if @recording
@@ -95,10 +95,13 @@ class @TimeMachine
       if @loop_index>@loop_length
         @loop_index = 0
       @replay_position = @loop_start-@loop_index
+
+      @replayControls()
       @runtime.updateCall()
       @runtime.drawCall()
       if @runtime.watching_variables
         @runtime.watchStep()
+      @resetControls()
     @sendStatus()
 
   stepBackward:()->
@@ -115,6 +118,28 @@ class @TimeMachine
     @replay()
     @sendStatus()
 
+
+  replayControls:()->
+    return if @replay_position>=@record_length
+    return if @replay_position<=0
+
+    index = (@record_index-@replay_position+@max_length)%@max_length
+    @copyGlobal @history[index].keyboard, @runtime.vm.context.global.keyboard
+    @copyGlobal @history[index].gamepad, @runtime.vm.context.global.gamepad
+    @copyGlobal @history[index].touch, @runtime.vm.context.global.touch
+    @copyGlobal @history[index].mouse, @runtime.vm.context.global.mouse
+
+  resetControls:()->
+    @runtime.keyboard.reset()
+    touch = @runtime.vm.context.global.touch
+    touch.touching = 0
+    touch.touches = []
+    mouse = @runtime.vm.context.global.mouse
+    mouse.pressed = 0
+    mouse.left = 0
+    mouse.right = 0
+    mouse.middle = 0
+
   replay:(clone = false)->
     index = (@record_index-@replay_position+@max_length)%@max_length
     @copyGlobal((if clone then @storableHistory(@history[index]) else @history[index]),@runtime.vm.context.global)
@@ -128,6 +153,7 @@ class @TimeMachine
 
   copyGlobal:(source,dest)->
     for key,value of source
+      continue if key in ["keyboard","gamepad","touch","mouse"]
       if value not instanceof Program.Function and typeof value != "function" and not value.classname?
         dest[key] = value
 
@@ -150,11 +176,11 @@ class @TimeMachine
     @excluded = [
       global.screen
       global.system
-      global.keyboard
+      #global.keyboard
       global.audio
-      global.gamepad
-      global.touch
-      global.mouse
+      #global.gamepad
+      #global.touch
+      #global.mouse
       global.sprites
       global.maps
       global.sounds

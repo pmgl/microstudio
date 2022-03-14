@@ -72,3 +72,9 @@ class @Keyboard
       @previous[key] = @keyboard[key]
 
     return
+
+  reset:()->
+    for key of @keyboard
+      continue if key in ["press","release"]
+      @keyboard[key] = 0
+    return
