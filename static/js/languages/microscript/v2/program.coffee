@@ -144,16 +144,19 @@ class @Program.NewCall
       @expression = new Program.FunctionCall @token,@expression,[]
 
 class @Program.After
-  constructor:(@token,@delay,@sequence,end)->
+  constructor:(@token,@delay,@sequence,end,@multiplier)->
     @source = "after "+@token.tokenizer.input.substring(@token.index,end.index+2)
 
 class @Program.Every
-  constructor:(@token,@delay,@sequence,end)->
+  constructor:(@token,@delay,@sequence,end,@multiplier)->
     @source = "every "+@token.tokenizer.input.substring(@token.index,end.index+2)
 
 class @Program.Do
   constructor:(@token,@sequence,end)->
     @source = "do "+@token.tokenizer.input.substring(@token.index,end.index+2)
+
+class @Program.Sleep
+  constructor:(@token,@delay,@multiplier)->
 
 @Program.Precedence =
   "^":21

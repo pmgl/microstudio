@@ -90,6 +90,8 @@ this.Token.TYPE_EVERY = 62;
 
 this.Token.TYPE_DO = 63;
 
+this.Token.TYPE_SLEEP = 64;
+
 this.Token.TYPE_LOCAL = 70;
 
 this.Token.TYPE_OBJECT = 80;
@@ -177,5 +179,7 @@ this.Token.predefined["after"] = this.Token.TYPE_AFTER;
 this.Token.predefined["every"] = this.Token.TYPE_EVERY;
 
 this.Token.predefined["do"] = this.Token.TYPE_DO;
+
+this.Token.predefined["sleep"] = this.Token.TYPE_SLEEP;
 
 this.Token.predefined["local"] = this.Token.TYPE_LOCAL;

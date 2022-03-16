@@ -1,16 +1,30 @@
 this.Processor = (function() {
-  function Processor() {
+  function Processor(runner) {
+    this.runner = runner;
     this.locals = [];
-    this.local_index = 0;
     this.stack = [];
-    this.stack_index = 0;
+    this.call_stack = [];
+    this.log = false;
+    this.time_limit = 2e308;
+    this.done = true;
   }
 
   Processor.prototype.load = function(routine1) {
     this.routine = routine1;
+    return this.resetState();
+  };
+
+  Processor.prototype.resetState = function() {
     this.local_index = 0;
     this.stack_index = -1;
-    return this.op_index = 0;
+    this.op_index = 0;
+    this.call_stack_index = 0;
+    this.global = null;
+    this.object = null;
+    this.locals_offset = 0;
+    this.call_super = null;
+    this.call_supername = "";
+    return this.done = false;
   };
 
   Processor.prototype.resolveParentClass = function(obj, global) {
@@ -27,31 +41,23 @@ this.Processor = (function() {
   Processor.prototype.applyFunction = function(args) {};
 
   Processor.prototype.run = function(context) {
-    var a, arg1, args, argv, b, c, call_stack_arg1, call_stack_index, call_stack_object, call_stack_op_index, call_stack_opcodes, call_stack_routine, call_stack_super, call_stack_supername, call_super, call_supername, con, continue_time, f, field, global, i, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, src, stack, stack_index, sup, t, token, v, v1, v2, value;
-    local_index = this.local_index;
-    stack_index = this.stack_index;
-    op_index = this.op_index;
+    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, field, global, i, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, sleep_time, src, stack, stack_index, sup, t, token, v, v1, v2, value;
     routine = this.routine;
     opcodes = this.routine.opcodes;
     arg1 = this.routine.arg1;
+    length = opcodes.length;
+    op_index = this.op_index;
     stack = this.stack;
     stack_index = this.stack_index;
     locals = this.locals;
     local_index = this.local_index;
-    length = opcodes.length;
-    global = context.global;
-    object = global;
-    call_stack_routine = [];
-    call_stack_opcodes = [];
-    call_stack_arg1 = [];
-    call_stack_op_index = [];
-    call_stack_object = [];
-    call_stack_super = [];
-    call_stack_supername = [];
-    call_stack_index = 0;
-    call_super = global;
-    call_supername = "";
-    locals_offset = 0;
+    global = this.global || context.global;
+    object = this.object || global;
+    call_stack = this.call_stack;
+    call_stack_index = this.call_stack_index;
+    call_super = this.call_super || global;
+    call_supername = this.call_supername || "";
+    locals_offset = this.locals_offset;
     op_count = 0;
     restore_op_index = -1;
     while (op_index < length) {
@@ -281,11 +287,13 @@ this.Processor = (function() {
             if ((con != null) && con instanceof Routine) {
               stack[stack_index - args - 1] = res;
               stack_index--;
-              call_stack_routine[call_stack_index] = routine;
-              call_stack_object[call_stack_index] = object;
-              call_stack_super[call_stack_index] = call_super;
-              call_stack_supername[call_stack_index] = call_supername;
-              call_stack_op_index[call_stack_index++] = op_index + 1;
+              cs = call_stack[call_stack_index] || (call_stack[call_stack_index] = {});
+              call_stack_index++;
+              cs.routine = routine;
+              cs.object = object;
+              cs["super"] = call_super;
+              cs.supername = call_supername;
+              cs.op_index = op_index + 1;
               locals_offset += routine.locals_size;
               routine = con;
               opcodes = con.opcodes;
@@ -420,6 +428,36 @@ this.Processor = (function() {
           stack_index -= 2;
           op_index++;
           break;
+        case 70:
+          obj = stack[stack_index - 2];
+          field = stack[stack_index - 1];
+          v1 = obj[field];
+          v2 = stack[stack_index];
+          if (v1 == null) {
+            v1 = 0;
+          }
+          if (typeof v1 === "number" && typeof v2 === "number") {
+            v1 *= v2;
+            stack[stack_index - 2] = obj[field] = isFinite(v1) ? v1 : 0;
+          }
+          stack_index -= 2;
+          op_index++;
+          break;
+        case 71:
+          obj = stack[stack_index - 2];
+          field = stack[stack_index - 1];
+          v1 = obj[field];
+          v2 = stack[stack_index];
+          if (v1 == null) {
+            v1 = 0;
+          }
+          if (typeof v1 === "number" && typeof v2 === "number") {
+            v1 /= v2;
+            stack[stack_index - 2] = obj[field] = isFinite(v1) ? v1 : 0;
+          }
+          stack_index -= 2;
+          op_index++;
+          break;
         case 40:
           stack[stack_index - 1] = stack[stack_index] === stack[stack_index - 1] ? 1 : 0;
           stack_index--;
@@ -482,7 +520,7 @@ this.Processor = (function() {
           }
           if (op_count++ > 100) {
             op_count = 0;
-            if (Date.now() < 0) {
+            if (Date.now() > this.time_limit) {
               restore_op_index = op_index;
               op_index = length;
             }
@@ -523,7 +561,7 @@ this.Processor = (function() {
           }
           if (op_count++ > 100) {
             op_count = 0;
-            if (Date.now() < 0) {
+            if (Date.now() > this.time_limit) {
               restore_op_index = op_index;
               op_index = length;
             }
@@ -531,6 +569,13 @@ this.Processor = (function() {
           break;
         case 80:
           op_index = arg1[op_index];
+          if (op_count++ > 100) {
+            op_count = 0;
+            if (Date.now() > this.time_limit) {
+              restore_op_index = op_index;
+              op_index = length;
+            }
+          }
           break;
         case 81:
           if (stack[stack_index--]) {
@@ -565,11 +610,13 @@ this.Processor = (function() {
           f = stack[stack_index];
           if (f instanceof Routine) {
             stack_index--;
-            call_stack_routine[call_stack_index] = routine;
-            call_stack_object[call_stack_index] = object;
-            call_stack_super[call_stack_index] = call_super;
-            call_stack_supername[call_stack_index] = call_supername;
-            call_stack_op_index[call_stack_index++] = op_index + 1;
+            cs = call_stack[call_stack_index] || (call_stack[call_stack_index] = {});
+            call_stack_index++;
+            cs.routine = routine;
+            cs.object = object;
+            cs["super"] = call_super;
+            cs.supername = call_supername;
+            cs.op_index = op_index + 1;
             locals_offset += routine.locals_size;
             routine = f;
             opcodes = f.opcodes;
@@ -635,11 +682,13 @@ this.Processor = (function() {
           args = arg1[op_index];
           if (f instanceof Routine) {
             stack_index -= 1;
-            call_stack_routine[call_stack_index] = routine;
-            call_stack_object[call_stack_index] = object;
-            call_stack_super[call_stack_index] = call_super;
-            call_stack_supername[call_stack_index] = call_supername;
-            call_stack_op_index[call_stack_index++] = op_index + 1;
+            cs = call_stack[call_stack_index] || (call_stack[call_stack_index] = {});
+            call_stack_index++;
+            cs.routine = routine;
+            cs.object = object;
+            cs["super"] = call_super;
+            cs.supername = call_supername;
+            cs.op_index = op_index + 1;
             locals_offset += routine.locals_size;
             routine = f;
             opcodes = f.opcodes;
@@ -704,11 +753,13 @@ this.Processor = (function() {
           args = arg1[op_index];
           if (f instanceof Routine) {
             stack_index -= 2;
-            call_stack_object[call_stack_index] = object;
-            call_stack_super[call_stack_index] = call_super;
-            call_stack_supername[call_stack_index] = call_supername;
-            call_stack_routine[call_stack_index] = routine;
-            call_stack_op_index[call_stack_index++] = op_index + 1;
+            cs = call_stack[call_stack_index] || (call_stack[call_stack_index] = {});
+            call_stack_index++;
+            cs.object = object;
+            cs["super"] = call_super;
+            cs.supername = call_supername;
+            cs.routine = routine;
+            cs.op_index = op_index + 1;
             locals_offset += routine.locals_size;
             routine = f;
             opcodes = f.opcodes;
@@ -772,11 +823,13 @@ this.Processor = (function() {
             }
             if ((f != null) && f instanceof Routine) {
               args = arg1[op_index];
-              call_stack_object[call_stack_index] = object;
-              call_stack_super[call_stack_index] = call_super;
-              call_stack_supername[call_stack_index] = call_supername;
-              call_stack_routine[call_stack_index] = routine;
-              call_stack_op_index[call_stack_index++] = op_index + 1;
+              cs = call_stack[call_stack_index] || (call_stack[call_stack_index] = {});
+              call_stack_index++;
+              cs.object = object;
+              cs["super"] = call_super;
+              cs.supername = call_supername;
+              cs.routine = routine;
+              cs.op_index = op_index + 1;
               locals_offset += routine.locals_size;
               routine = f;
               opcodes = f.opcodes;
@@ -796,16 +849,20 @@ this.Processor = (function() {
           break;
         case 94:
           local_index -= arg1[op_index];
-          --call_stack_index;
-          object = call_stack_object[call_stack_index];
-          call_super = call_stack_super[call_stack_index];
-          call_supername = call_stack_supername[call_stack_index];
-          routine = call_stack_routine[call_stack_index];
-          opcodes = routine.opcodes;
-          arg1 = routine.arg1;
-          op_index = call_stack_op_index[call_stack_index];
-          locals_offset -= routine.locals_size;
-          length = opcodes.length;
+          if (call_stack_index <= 0) {
+            op_index = length;
+          } else {
+            cs = call_stack[--call_stack_index];
+            object = cs.object;
+            call_super = cs["super"];
+            call_supername = cs.supername;
+            routine = cs.routine;
+            op_index = cs.op_index;
+            opcodes = routine.opcodes;
+            arg1 = routine.arg1;
+            locals_offset -= routine.locals_size;
+            length = opcodes.length;
+          }
           break;
         case 100:
           v = arg1[op_index](stack[stack_index]);
@@ -818,28 +875,23 @@ this.Processor = (function() {
           op_index++;
           break;
         case 110:
-          t = new Thread();
-          t.routine = stack[stack_index - 1];
-          t.start_time = Date.now() + stack[stack_index];
+          t = this.runner.createThread(stack[stack_index - 1], stack[stack_index], false);
           stack[--stack_index] = t;
           op_index += 1;
           break;
         case 111:
-          t = new Thread();
-          t.routine = stack[stack_index - 1];
-          t.start_time = Date.now() + stack[stack_index];
-          t.repeat = stack[stack_index];
+          t = this.runner.createThread(stack[stack_index - 1], stack[stack_index], true);
           stack[--stack_index] = t;
           op_index += 1;
           break;
         case 112:
-          t = new Thread();
-          t.routine = stack[stack_index];
+          t = this.runner.createThread(stack[stack_index], 0, false);
           stack[stack_index] = t;
           op_index += 1;
           break;
         case 113:
-          continue_time = Date.now() + (isFinite(stack[stack_index]) ? stack[stack_index] : 0);
+          sleep_time = isFinite(stack[stack_index]) ? stack[stack_index] : 0;
+          this.runner.sleep(sleep_time);
           op_index += 1;
           restore_op_index = op_index;
           op_index = length;
@@ -852,9 +904,30 @@ this.Processor = (function() {
           throw "Unsupported operation: " + opcodes[op_index];
       }
     }
-    console.info("total operations: " + op_count);
-    console.info("stack_index: " + stack_index);
-    console.info("result: " + stack[stack_index]);
+    if (restore_op_index >= 0) {
+      this.op_index = restore_op_index;
+      this.routine = routine;
+      this.stack_index = stack_index;
+      this.local_index = local_index;
+      this.object = object;
+      this.call_stack_index = call_stack_index;
+      this.call_super = call_super;
+      this.call_supername = call_supername;
+      this.locals_offset = locals_offset;
+      this.done = false;
+    } else {
+      this.op_index = 0;
+      this.done = true;
+      if (this.routine.callback != null) {
+        this.routine.callback(stack[stack_index]);
+        this.routine.callback = null;
+      }
+    }
+    if (this.log) {
+      console.info("total operations: " + op_count);
+      console.info("stack_index: " + stack_index);
+      console.info("result: " + stack[stack_index]);
+    }
     return stack[stack_index];
   };
 

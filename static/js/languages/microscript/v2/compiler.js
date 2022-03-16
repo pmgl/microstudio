@@ -22,8 +22,6 @@ Compiler = (function() {
     this.routine.resolveLabels();
     this.count += this.routine.opcodes.length;
     this.routine.locals_size = this.locals.max_index;
-    console.info(this.routine.toString());
-    console.info("total length: " + this.count);
   }
 
   Compiler.prototype.compile = function(statement) {
@@ -76,6 +74,8 @@ Compiler = (function() {
       return this.compileEvery(statement);
     } else if (statement instanceof Program.Do) {
       return this.compileDo(statement);
+    } else if (statement instanceof Program.Sleep) {
+      return this.compileSleep(statement);
     } else if (true) {
       console.info(statement);
       throw "Not implemented";
@@ -149,29 +149,56 @@ Compiler = (function() {
     }
     if (statement.field instanceof Program.Variable) {
       if (this.locals.get(statement.field.identifier) != null) {
-        this.compile(statement.expression);
         index = this.locals.get(statement.field.identifier);
         switch (op) {
           case "+":
-            this.routine.ADD_LOCAL(index, statement);
+            this.routine.LOAD_LOCAL(index, statement);
+            this.compile(statement.expression);
+            this.routine.ADD(statement);
+            this.routine.STORE_LOCAL(index, statement);
             break;
           case "-":
-            this.routine.SUB_LOCAL(index, statement);
+            this.routine.LOAD_LOCAL(index, statement);
+            this.compile(statement.expression);
+            this.routine.SUB(statement);
+            this.routine.STORE_LOCAL(index, statement);
+            break;
+          case "*":
+            this.routine.LOAD_LOCAL(index, statement);
+            this.compile(statement.expression);
+            this.routine.MUL(statement);
+            this.routine.STORE_LOCAL(index, statement);
+            break;
+          case "/":
+            this.routine.LOAD_LOCAL(index, statement);
+            this.compile(statement.expression);
+            this.routine.DIV(statement);
+            this.routine.STORE_LOCAL(index, statement);
         }
       } else {
-        this.compile(statement.expression);
         switch (op) {
           case "+":
             this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
+            this.compile(statement.expression);
             this.routine.ADD(statement);
             this.routine.STORE_VARIABLE(statement.field.identifier, statement);
             break;
           case "-":
-            this.routine.SUB_VARIABLE(statement.field.identifier, statement);
+            this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
+            this.compile(statement.expression);
+            this.routine.SUB(statement);
+            this.routine.STORE_VARIABLE(statement.field.identifier, statement);
             break;
           case "*":
             this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
+            this.compile(statement.expression);
             this.routine.MUL(statement);
+            this.routine.STORE_VARIABLE(statement.field.identifier, statement);
+            break;
+          case "/":
+            this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
+            this.compile(statement.expression);
+            this.routine.DIV(statement);
             this.routine.STORE_VARIABLE(statement.field.identifier, statement);
         }
       }
@@ -204,6 +231,10 @@ Compiler = (function() {
           return this.routine.ADD_PROPERTY(statement);
         case "-":
           return this.routine.SUB_PROPERTY(statement);
+        case "*":
+          return this.routine.MUL_PROPERTY(statement);
+        case "/":
+          return this.routine.DIV_PROPERTY(statement);
       }
     }
   };
@@ -382,13 +413,6 @@ Compiler = (function() {
           this.routine.LOAD_VALUE(0, call);
         }
         return this.routine.BINARY_OP(funk, call);
-      } else if (call.expression.identifier === "sleep") {
-        if (call.args.length > 0) {
-          this.compile(call.args[0]);
-        } else {
-          this.routine.LOAD_VALUE(0, call);
-        }
-        return this.routine.SLEEP(call);
       } else if (call.expression.identifier === "super") {
         ref1 = call.args;
         for (i = k = 0, len1 = ref1.length; k < len1; i = ++k) {
@@ -661,6 +685,10 @@ Compiler = (function() {
     r = this.compileFunctionBody(after);
     this.routine.LOAD_VALUE(r, after);
     this.compile(after.delay);
+    if ((after.multiplier != null) && after.multiplier !== 1) {
+      this.routine.LOAD_VALUE(after.multiplier, after);
+      this.routine.MUL(after);
+    }
     return this.routine.AFTER(after);
   };
 
@@ -669,6 +697,10 @@ Compiler = (function() {
     r = this.compileFunctionBody(every);
     this.routine.LOAD_VALUE(r, every);
     this.compile(every.delay);
+    if ((every.multiplier != null) && every.multiplier !== 1) {
+      this.routine.LOAD_VALUE(every.multiplier, every);
+      this.routine.MUL(every);
+    }
     return this.routine.EVERY(every);
   };
 
@@ -677,6 +709,15 @@ Compiler = (function() {
     r = this.compileFunctionBody(dostuff);
     this.routine.LOAD_VALUE(r, dostuff);
     return this.routine.DO(dostuff);
+  };
+
+  Compiler.prototype.compileSleep = function(sleep) {
+    this.compile(sleep.delay);
+    if ((sleep.multiplier != null) && sleep.multiplier !== 1) {
+      this.routine.LOAD_VALUE(sleep.multiplier, sleep);
+      this.routine.MUL(sleep);
+    }
+    return this.routine.SLEEP(sleep);
   };
 
   Compiler.prototype.exec = function(context) {

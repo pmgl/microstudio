@@ -346,10 +346,11 @@ this.Program.NewCall = (function() {
 })();
 
 this.Program.After = (function() {
-  function After(token1, delay, sequence, end) {
+  function After(token1, delay, sequence, end, multiplier) {
     this.token = token1;
     this.delay = delay;
     this.sequence = sequence;
+    this.multiplier = multiplier;
     this.source = "after " + this.token.tokenizer.input.substring(this.token.index, end.index + 2);
   }
 
@@ -358,10 +359,11 @@ this.Program.After = (function() {
 })();
 
 this.Program.Every = (function() {
-  function Every(token1, delay, sequence, end) {
+  function Every(token1, delay, sequence, end, multiplier) {
     this.token = token1;
     this.delay = delay;
     this.sequence = sequence;
+    this.multiplier = multiplier;
     this.source = "every " + this.token.tokenizer.input.substring(this.token.index, end.index + 2);
   }
 
@@ -377,6 +379,17 @@ this.Program.Do = (function() {
   }
 
   return Do;
+
+})();
+
+this.Program.Sleep = (function() {
+  function Sleep(token1, delay, multiplier) {
+    this.token = token1;
+    this.delay = delay;
+    this.multiplier = multiplier;
+  }
+
+  return Sleep;
 
 })();
 

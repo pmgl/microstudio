@@ -20,8 +20,8 @@ class Compiler
     @routine.resolveLabels()
     @count += @routine.opcodes.length
     @routine.locals_size = @locals.max_index
-    console.info(@routine.toString())
-    console.info("total length: "+@count)
+    # console.info(@routine.toString())
+    # console.info("total length: "+@count)
 
   compile:(statement)->
     if statement instanceof Program.Value
@@ -72,6 +72,8 @@ class Compiler
       return @compileEvery(statement)
     else if statement instanceof Program.Do
       return @compileDo(statement)
+    else if statement instanceof Program.Sleep
+      return @compileSleep(statement)
     else if true
       console.info statement
       throw "Not implemented"
@@ -131,26 +133,52 @@ class Compiler
 
     if statement.field instanceof Program.Variable
       if @locals.get(statement.field.identifier)?
-        @compile(statement.expression)
         index = @locals.get(statement.field.identifier)
 
         switch op
-          when "+" then @routine.ADD_LOCAL index,statement
-          when "-" then @routine.SUB_LOCAL index,statement
+          when "+"
+            @routine.LOAD_LOCAL index,statement
+            @compile(statement.expression)
+            @routine.ADD statement
+            @routine.STORE_LOCAL index,statement
+          when "-"
+            @routine.LOAD_LOCAL index,statement
+            @compile(statement.expression)
+            @routine.SUB statement
+            @routine.STORE_LOCAL index,statement
+          when "*"
+            @routine.LOAD_LOCAL index,statement
+            @compile(statement.expression)
+            @routine.MUL statement
+            @routine.STORE_LOCAL index,statement
+          when "/"
+            @routine.LOAD_LOCAL index,statement
+            @compile(statement.expression)
+            @routine.DIV statement
+            @routine.STORE_LOCAL index,statement
 
         return
       else
-        @compile(statement.expression)
-
         switch op
-          when "+" #then @routine.ADD_VARIABLE statement.field.identifier,statement
+          when "+"
             @routine.LOAD_VARIABLE statement.field.identifier,statement
+            @compile(statement.expression)
             @routine.ADD statement
             @routine.STORE_VARIABLE statement.field.identifier,statement
-          when "-" then @routine.SUB_VARIABLE statement.field.identifier,statement
+          when "-"
+            @routine.LOAD_VARIABLE statement.field.identifier,statement
+            @compile(statement.expression)
+            @routine.SUB statement
+            @routine.STORE_VARIABLE statement.field.identifier,statement
           when "*"
             @routine.LOAD_VARIABLE statement.field.identifier,statement
+            @compile(statement.expression)
             @routine.MUL statement
+            @routine.STORE_VARIABLE statement.field.identifier,statement
+          when "/"
+            @routine.LOAD_VARIABLE statement.field.identifier,statement
+            @compile(statement.expression)
+            @routine.DIV statement
             @routine.STORE_VARIABLE statement.field.identifier,statement
 
         return
@@ -180,6 +208,8 @@ class Compiler
       switch op
         when "+" then @routine.ADD_PROPERTY statement
         when "-" then @routine.SUB_PROPERTY statement
+        when "*" then @routine.MUL_PROPERTY statement
+        when "/" then @routine.DIV_PROPERTY statement
 
   compileOperation:(op)->
     if op.operation in ["+","-","*","/","%"]
@@ -309,9 +339,6 @@ class Compiler
         if call.args.length>1 then @compile call.args[1] else @routine.LOAD_VALUE 0,call
 
         @routine.BINARY_OP funk,call
-      else if call.expression.identifier == "sleep"
-        if call.args.length>0 then @compile call.args[0] else @routine.LOAD_VALUE 0,call
-        @routine.SLEEP call
       else if call.expression.identifier == "super"
         for a,i in call.args
           @compile(a)
@@ -566,18 +593,31 @@ class Compiler
     r = @compileFunctionBody(after)
     @routine.LOAD_VALUE r,after
     @compile after.delay
+    if after.multiplier? and after.multiplier != 1
+      @routine.LOAD_VALUE after.multiplier,after
+      @routine.MUL after
     @routine.AFTER after
 
   compileEvery:(every)->
     r = @compileFunctionBody(every)
     @routine.LOAD_VALUE r,every
     @compile every.delay
+    if every.multiplier? and every.multiplier != 1
+      @routine.LOAD_VALUE every.multiplier,every
+      @routine.MUL every
     @routine.EVERY every
 
   compileDo:(dostuff)->
     r = @compileFunctionBody(dostuff)
     @routine.LOAD_VALUE r,dostuff
     @routine.DO dostuff
+
+  compileSleep:(sleep)->
+    @compile sleep.delay
+    if sleep.multiplier? and sleep.multiplier != 1
+      @routine.LOAD_VALUE sleep.multiplier,sleep
+      @routine.MUL sleep
+    @routine.SLEEP sleep
 
   exec:(context)->
     @processor = new Processor()

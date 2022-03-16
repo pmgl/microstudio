@@ -55,6 +55,7 @@ class @Token
 @Token.TYPE_AFTER = 61
 @Token.TYPE_EVERY = 62
 @Token.TYPE_DO = 63
+@Token.TYPE_SLEEP = 64
 
 @Token.TYPE_LOCAL = 70
 @Token.TYPE_OBJECT = 80
@@ -107,5 +108,6 @@ class @Token
 @Token.predefined["after"] = @Token.TYPE_AFTER
 @Token.predefined["every"] = @Token.TYPE_EVERY
 @Token.predefined["do"] = @Token.TYPE_DO
+@Token.predefined["sleep"] = @Token.TYPE_SLEEP
 
 @Token.predefined["local"] = @Token.TYPE_LOCAL

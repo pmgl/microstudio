@@ -215,6 +215,8 @@ this.Parser = (function() {
         return this.parseEvery(token);
       case Token.TYPE_DO:
         return this.parseDo(token);
+      case Token.TYPE_SLEEP:
+        return this.parseSleep(token);
       default:
         this.tokenizer.pushBack(token);
         return null;
@@ -589,12 +591,30 @@ this.Parser = (function() {
     return new Program.NewCall(token, exp);
   };
 
+  Parser.prototype.multipliers = {
+    millisecond: 1,
+    milliseconds: 1,
+    second: 1000,
+    seconds: 1000,
+    minute: 60000,
+    minutes: 60000,
+    hour: 60000 * 60,
+    hours: 60000 * 60,
+    day: 60000 * 60 * 24,
+    days: 60000 * 60 * 24
+  };
+
   Parser.prototype.parseAfter = function(after) {
-    var delay, line, sequence, token;
+    var delay, line, multiplier, sequence, token;
     this.nesting += 1;
     this.addTerminable(after);
     delay = this.assertExpression();
     token = this.nextToken();
+    multiplier = null;
+    if (token.type === Token.TYPE_IDENTIFIER && this.multipliers[token.value]) {
+      multiplier = this.multipliers[token.value];
+      token = this.nextToken();
+    }
     if ((token == null) || token.type !== Token.TYPE_DO) {
       this.error("Expected keyword 'do'");
     }
@@ -604,7 +624,7 @@ this.Parser = (function() {
       if (token.type === Token.TYPE_END) {
         this.nesting -= 1;
         this.endTerminable();
-        return new Program.After(after, delay, sequence, token);
+        return new Program.After(after, delay, sequence, token, multiplier);
       } else {
         this.tokenizer.pushBack(token);
         line = this.parseLine();
@@ -618,11 +638,16 @@ this.Parser = (function() {
   };
 
   Parser.prototype.parseEvery = function(every) {
-    var delay, line, sequence, token;
+    var delay, line, multiplier, sequence, token;
     this.nesting += 1;
     this.addTerminable(every);
     delay = this.assertExpression();
     token = this.nextToken();
+    multiplier = null;
+    if (token.type === Token.TYPE_IDENTIFIER && this.multipliers[token.value]) {
+      multiplier = this.multipliers[token.value];
+      token = this.nextToken();
+    }
     if ((token == null) || token.type !== Token.TYPE_DO) {
       this.error("Expected keyword 'do'");
     }
@@ -632,7 +657,7 @@ this.Parser = (function() {
       if (token.type === Token.TYPE_END) {
         this.nesting -= 1;
         this.endTerminable();
-        return new Program.Every(every, delay, sequence, token);
+        return new Program.Every(every, delay, sequence, token, multiplier);
       } else {
         this.tokenizer.pushBack(token);
         line = this.parseLine();
@@ -666,6 +691,21 @@ this.Parser = (function() {
         }
       }
     }
+  };
+
+  Parser.prototype.parseSleep = function(sleep) {
+    var delay, multiplier, token;
+    delay = this.assertExpression();
+    token = this.nextToken();
+    multiplier = null;
+    if (token != null) {
+      if (token.type === Token.TYPE_IDENTIFIER && this.multipliers[token.value]) {
+        multiplier = this.multipliers[token.value];
+      } else {
+        this.tokenizer.pushBack(token);
+      }
+    }
+    return new Program.Sleep(sleep, delay, multiplier);
   };
 
   return Parser;

@@ -182,6 +182,7 @@ class @Parser
       when Token.TYPE_AFTER then @parseAfter token
       when Token.TYPE_EVERY then @parseEvery token
       when Token.TYPE_DO then @parseDo token
+      when Token.TYPE_SLEEP then @parseSleep token
 
       else
         @tokenizer.pushBack token
@@ -484,11 +485,28 @@ class @Parser
     exp = @assertExpression()
     return new Program.NewCall(token,exp)
 
+  multipliers:
+    millisecond: 1
+    milliseconds: 1
+    second: 1000
+    seconds: 1000
+    minute: 60000
+    minutes: 60000
+    hour: 60000*60
+    hours: 60000*60
+    day: 60000*60*24
+    days: 60000*60*24
+
   parseAfter:(after)->
     @nesting += 1
     @addTerminable after
     delay = @assertExpression()
     token = @nextToken()
+    multiplier = null
+    if token.type == Token.TYPE_IDENTIFIER and @multipliers[token.value]
+      multiplier = @multipliers[token.value]
+      token = @nextToken()
+
     if not token? or token.type != Token.TYPE_DO then @error "Expected keyword 'do'"
 
     sequence = []
@@ -497,7 +515,7 @@ class @Parser
       if token.type == Token.TYPE_END
         @nesting -= 1
         @endTerminable()
-        return new Program.After after,delay,sequence,token
+        return new Program.After after,delay,sequence,token,multiplier
       else
         @tokenizer.pushBack token
         line = @parseLine()
@@ -513,6 +531,11 @@ class @Parser
     @addTerminable every
     delay = @assertExpression()
     token = @nextToken()
+    multiplier = null
+    if token.type == Token.TYPE_IDENTIFIER and @multipliers[token.value]
+      multiplier = @multipliers[token.value]
+      token = @nextToken()
+
     if not token? or token.type != Token.TYPE_DO then @error "Expected keyword 'do'"
 
     sequence = []
@@ -521,7 +544,7 @@ class @Parser
       if token.type == Token.TYPE_END
         @nesting -= 1
         @endTerminable()
-        return new Program.Every every,delay,sequence,token
+        return new Program.Every every,delay,sequence,token,multiplier
       else
         @tokenizer.pushBack token
         line = @parseLine()
@@ -552,3 +575,15 @@ class @Parser
           @error "Unexpected data while parsing after"
 
     return
+
+  parseSleep:(sleep)->
+    delay = @assertExpression()
+    token = @nextToken()
+    multiplier = null
+    if token?
+      if token.type == Token.TYPE_IDENTIFIER and @multipliers[token.value]
+        multiplier = @multipliers[token.value]
+      else
+        @tokenizer.pushBack token
+
+    return new Program.Sleep sleep,delay,multiplier
