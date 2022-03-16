@@ -86,8 +86,8 @@ Compiler = (function() {
     var f, i, index, j, ref;
     if (statement.local) {
       if (statement.field instanceof Program.Variable) {
-        index = this.locals.register(statement.field.identifier);
         this.compile(statement.expression);
+        index = this.locals.register(statement.field.identifier);
         return this.routine.STORE_LOCAL(index, statement);
       } else {
         throw "illegal";

@@ -82,8 +82,8 @@ class Compiler
   compileAssignment:(statement)->
     if statement.local
       if statement.field instanceof Program.Variable
-        index = @locals.register(statement.field.identifier)
-        @compile(statement.expression)
+        @compile(statement.expression) ## first compile expression which may refer to another local with same name
+        index = @locals.register(statement.field.identifier) ## then register a local for that name
         @routine.STORE_LOCAL index,statement
       else
         throw "illegal"
