@@ -557,7 +557,7 @@ Compiler = (function() {
   };
 
   Compiler.prototype.compileFunctionBody = function(func) {
-    var a, i, index, j, k, local_index, locals, r, ref, ref1, routine;
+    var a, i, index, j, k, l, label, local_index, locals, r, ref, ref1, ref2, routine;
     routine = this.routine;
     locals = this.locals;
     this.routine = new Routine(func.args != null ? func.args.length : 0);
@@ -570,9 +570,22 @@ Compiler = (function() {
         this.routine.STORE_LOCAL(index, func);
         this.routine.POP(func);
       }
+      for (i = k = 0, ref1 = func.args.length - 1; k <= ref1; i = k += 1) {
+        a = func.args[i];
+        if (a["default"] != null) {
+          index = this.locals.get(a.name);
+          label = this.routine.createLabel("default_arg");
+          this.routine.LOAD_LOCAL(index, func);
+          this.routine.JUMPY(label, func);
+          this.compile(a["default"]);
+          this.routine.STORE_LOCAL(index, func);
+          this.routine.POP(func);
+          this.routine.setLabel(label);
+        }
+      }
     }
     if (func.sequence.length > 0) {
-      for (i = k = 0, ref1 = func.sequence.length - 1; k <= ref1; i = k += 1) {
+      for (i = l = 0, ref2 = func.sequence.length - 1; l <= ref2; i = l += 1) {
         this.compile(func.sequence[i]);
         if (i < func.sequence.length - 1) {
           this.routine.POP(func.sequence[i]);

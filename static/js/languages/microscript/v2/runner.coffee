@@ -5,6 +5,7 @@ class @Runner
     @initialized = true
     @system = @microvm.context.global.system
     @system.preemptive = 1
+    @system.threads = []
     @main_thread = new Thread @
     @threads = [@main_thread]
     @current_thread = @main_thread
@@ -14,6 +15,7 @@ class @Runner
     @microvm.context.global.random = new Random(0)
     @fps = 60
     @fps_max = 60
+    @cpu_load = 0
     @microvm.context.meta.print("microScript 2.0 - alpha")
 
   run:(src,filename)->
@@ -77,8 +79,6 @@ class @Runner
     else
       margin = Math.floor(1000/@fps*.8)
 
-    console.info margin
-
     time = Date.now()
     time_limit = time+32 # main_thread gets high priority
 
@@ -139,16 +139,26 @@ class @Runner
       t = @threads[i]
       if t.terminated
         @threads.splice i,1
+        index = @system.threads.indexOf(t.interface)
+        if index >= 0
+          @system.threads.splice index, 1
+
+    t = Date.now()-time
+    dt = time_limit-time
+    load = t/dt*100
+    @cpu_load = @cpu_load*.9+load*.1
+    @system.cpu_load = Math.min(100,Math.round(@cpu_load))
     return
 
   createThread:(routine,delay,repeat)->
     t = new Thread @
     t.routine = routine
     @threads.push t
-    t.start_time = Date.now()+delay
+    t.start_time = Date.now()+delay-1000/@fps
     if repeat
       t.repeat = repeat
       t.delay = delay
+    @system.threads.push t.interface
     t.interface
 
   sleep:(value)->

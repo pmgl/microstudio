@@ -7,6 +7,7 @@ this.Runner = (function() {
     this.initialized = true;
     this.system = this.microvm.context.global.system;
     this.system.preemptive = 1;
+    this.system.threads = [];
     this.main_thread = new Thread(this);
     this.threads = [this.main_thread];
     this.current_thread = this.main_thread;
@@ -15,6 +16,7 @@ this.Runner = (function() {
     this.microvm.context.global.random = new Random(0);
     this.fps = 60;
     this.fps_max = 60;
+    this.cpu_load = 0;
     return this.microvm.context.meta.print("microScript 2.0 - alpha");
   };
 
@@ -76,7 +78,7 @@ this.Runner = (function() {
   };
 
   Runner.prototype.tick = function() {
-    var frame_time, i, j, k, len, margin, processing, processor, ref, ref1, t, time, time_limit;
+    var dt, frame_time, i, index, j, k, len, load, margin, processing, processor, ref, ref1, t, time, time_limit;
     if (this.system.fps != null) {
       this.fps = this.fps * .9 + this.system.fps * .1;
     }
@@ -87,7 +89,6 @@ this.Runner = (function() {
     } else {
       margin = Math.floor(1000 / this.fps * .8);
     }
-    console.info(margin);
     time = Date.now();
     time_limit = time + 32;
     processor = this.main_thread.processor;
@@ -160,8 +161,17 @@ this.Runner = (function() {
       t = this.threads[i];
       if (t.terminated) {
         this.threads.splice(i, 1);
+        index = this.system.threads.indexOf(t["interface"]);
+        if (index >= 0) {
+          this.system.threads.splice(index, 1);
+        }
       }
     }
+    t = Date.now() - time;
+    dt = time_limit - time;
+    load = t / dt * 100;
+    this.cpu_load = this.cpu_load * .9 + load * .1;
+    this.system.cpu_load = Math.min(100, Math.round(this.cpu_load));
   };
 
   Runner.prototype.createThread = function(routine, delay, repeat) {
@@ -169,11 +179,12 @@ this.Runner = (function() {
     t = new Thread(this);
     t.routine = routine;
     this.threads.push(t);
-    t.start_time = Date.now() + delay;
+    t.start_time = Date.now() + delay - 1000 / this.fps;
     if (repeat) {
       t.repeat = repeat;
       t.delay = delay;
     }
+    this.system.threads.push(t["interface"]);
     return t["interface"];
   };
 

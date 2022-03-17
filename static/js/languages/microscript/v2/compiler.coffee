@@ -487,8 +487,6 @@ class Compiler
     @routine = new Routine(if func.args? then func.args.length else 0)
     @locals = new Locals()
 
-    ## TODO: DEFAULT ARG VALUES
-
     local_index = @locals.index
 
     if func.args?
@@ -498,10 +496,22 @@ class Compiler
         @routine.STORE_LOCAL index,func
         @routine.POP func
 
+      for i in [0..func.args.length-1] by 1
+        a = func.args[i]
+        if a.default?
+          index = @locals.get(a.name)
+          label = @routine.createLabel "default_arg"
+          @routine.LOAD_LOCAL index,func
+          @routine.JUMPY label,func
+          @compile a.default
+          @routine.STORE_LOCAL index,func
+          @routine.POP func
+          @routine.setLabel label
+
     if func.sequence.length > 0
       for i in [0..func.sequence.length-1] by 1
         @compile(func.sequence[i])
-        if i<func.sequence.length-1
+        if i < func.sequence.length-1
           @routine.POP func.sequence[i]
         else
           @routine.RETURN func.sequence[i]
