@@ -34,6 +34,27 @@ class @Processor
 
   applyFunction:(args)->
 
+  routineAsFunction:(routine,context)->
+    proc = new Processor(@runner)
+
+    f = ()->
+      count = Math.min(routine.num_args,arguments.length)
+      proc.load routine
+
+      for i in [0..count-1] by 1
+        proc.stack[++proc.stack_index] = arguments[i] or 0
+
+      proc.run context
+      res = proc.stack[0]
+
+    f
+
+  argToNative:(arg,context)->
+    if arg instanceof Routine
+      @routineAsFunction arg,context
+    else
+      if arg? then arg else 0
+
   run:(context)->
     routine = @routine
     opcodes = @routine.opcodes
@@ -619,11 +640,16 @@ class @Processor
                   v = f()
                   stack[stack_index] = if v? then v else 0
                 when 1
-                  v = f(stack[stack_index-1])
+                  v = f(@argToNative(stack[stack_index-1],context))
                   stack[stack_index-1] = if v? then v else 0
                   stack_index -= 1
                 else
-                  throw "Error, #{f} arg count not supported, please finish the job"
+                  argv = []
+                  stack_index -= args
+                  for i in [0..args-1] by 1
+                    argv[i] = @argToNative stack[stack_index+i],context
+                  v = f.apply(null, argv)
+                  stack[stack_index] = if v? then v else 0
               op_index++
           else
             stack_index -= args
@@ -693,13 +719,13 @@ class @Processor
                 v = f.call(obj)
                 stack[stack_index] = if v? then v else 0
               when 1
-                v = f.call(obj,stack[stack_index-1])
+                v = f.call(obj,@argToNative(stack[stack_index-1],context))
                 stack[--stack_index] = if v? then v else 0
               else
                 argv = []
                 stack_index -= args
                 for i in [0..args-1] by 1
-                  argv[i] = stack[stack_index+i]
+                  argv[i] = @argToNative stack[stack_index+i],context
                 v = f.apply(obj, argv)
                 stack[stack_index] = if v? then v else 0
             op_index++
@@ -763,14 +789,14 @@ class @Processor
                 v = f.call(obj)
                 stack[--stack_index] = if v? then v else 0
               when 1
-                v = f.call(obj,stack[stack_index-2])
+                v = f.call(obj,@argToNative(stack[stack_index-2],context))
                 stack[stack_index-2] = if v? then v else 0
                 stack_index -= 2
               else
                 argv = []
                 stack_index -= args+1
                 for i in [0..args-1] by 1
-                  argv[i] = stack[stack_index+i]
+                  argv[i] = @argToNative stack[stack_index+i],context
                 v = f.apply(obj, argv)
                 stack[stack_index] = if v? then v else 0
             op_index++

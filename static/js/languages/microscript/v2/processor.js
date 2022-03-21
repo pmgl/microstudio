@@ -40,8 +40,36 @@ this.Processor = (function() {
 
   Processor.prototype.applyFunction = function(args) {};
 
+  Processor.prototype.routineAsFunction = function(routine, context) {
+    var f, proc;
+    proc = new Processor(this.runner);
+    f = function() {
+      var count, i, j, ref, res;
+      count = Math.min(routine.num_args, arguments.length);
+      proc.load(routine);
+      for (i = j = 0, ref = count - 1; j <= ref; i = j += 1) {
+        proc.stack[++proc.stack_index] = arguments[i] || 0;
+      }
+      proc.run(context);
+      return res = proc.stack[0];
+    };
+    return f;
+  };
+
+  Processor.prototype.argToNative = function(arg, context) {
+    if (arg instanceof Routine) {
+      return this.routineAsFunction(arg, context);
+    } else {
+      if (arg != null) {
+        return arg;
+      } else {
+        return 0;
+      }
+    }
+  };
+
   Processor.prototype.run = function(context) {
-    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, field, global, i, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, sleep_time, src, stack, stack_index, sup, t, token, v, v1, v2, value;
+    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, field, global, i, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, v, v1, v2, value;
     routine = this.routine;
     opcodes = this.routine.opcodes;
     arg1 = this.routine.arg1;
@@ -640,12 +668,18 @@ this.Processor = (function() {
                 stack[stack_index] = v != null ? v : 0;
                 break;
               case 1:
-                v = f(stack[stack_index - 1]);
+                v = f(this.argToNative(stack[stack_index - 1], context));
                 stack[stack_index - 1] = v != null ? v : 0;
                 stack_index -= 1;
                 break;
               default:
-                throw "Error, " + f + " arg count not supported, please finish the job";
+                argv = [];
+                stack_index -= args;
+                for (i = m = 0, ref5 = args - 1; m <= ref5; i = m += 1) {
+                  argv[i] = this.argToNative(stack[stack_index + i], context);
+                }
+                v = f.apply(null, argv);
+                stack[stack_index] = v != null ? v : 0;
             }
             op_index++;
           } else {
@@ -699,7 +733,7 @@ this.Processor = (function() {
             call_super = sup;
             call_supername = name;
             if (args < f.num_args) {
-              for (i = m = ref5 = args + 1, ref6 = f.num_args; m <= ref6; i = m += 1) {
+              for (i = n = ref6 = args + 1, ref7 = f.num_args; n <= ref7; i = n += 1) {
                 stack[++stack_index] = 0;
               }
             } else if (args > f.num_args) {
@@ -712,14 +746,14 @@ this.Processor = (function() {
                 stack[stack_index] = v != null ? v : 0;
                 break;
               case 1:
-                v = f.call(obj, stack[stack_index - 1]);
+                v = f.call(obj, this.argToNative(stack[stack_index - 1], context));
                 stack[--stack_index] = v != null ? v : 0;
                 break;
               default:
                 argv = [];
                 stack_index -= args;
-                for (i = n = 0, ref7 = args - 1; n <= ref7; i = n += 1) {
-                  argv[i] = stack[stack_index + i];
+                for (i = p = 0, ref8 = args - 1; p <= ref8; i = p += 1) {
+                  argv[i] = this.argToNative(stack[stack_index + i], context);
                 }
                 v = f.apply(obj, argv);
                 stack[stack_index] = v != null ? v : 0;
@@ -770,7 +804,7 @@ this.Processor = (function() {
             call_super = sup;
             call_supername = name;
             if (args < f.num_args) {
-              for (i = p = ref8 = args + 1, ref9 = f.num_args; p <= ref9; i = p += 1) {
+              for (i = q = ref9 = args + 1, ref10 = f.num_args; q <= ref10; i = q += 1) {
                 stack[++stack_index] = 0;
               }
             } else if (args > f.num_args) {
@@ -783,15 +817,15 @@ this.Processor = (function() {
                 stack[--stack_index] = v != null ? v : 0;
                 break;
               case 1:
-                v = f.call(obj, stack[stack_index - 2]);
+                v = f.call(obj, this.argToNative(stack[stack_index - 2], context));
                 stack[stack_index - 2] = v != null ? v : 0;
                 stack_index -= 2;
                 break;
               default:
                 argv = [];
                 stack_index -= args + 1;
-                for (i = q = 0, ref10 = args - 1; q <= ref10; i = q += 1) {
-                  argv[i] = stack[stack_index + i];
+                for (i = r = 0, ref11 = args - 1; r <= ref11; i = r += 1) {
+                  argv[i] = this.argToNative(stack[stack_index + i], context);
                 }
                 v = f.apply(obj, argv);
                 stack[stack_index] = v != null ? v : 0;
@@ -838,7 +872,7 @@ this.Processor = (function() {
               length = opcodes.length;
               call_super = sup;
               if (args < f.num_args) {
-                for (i = r = ref11 = args + 1, ref12 = f.num_args; r <= ref12; i = r += 1) {
+                for (i = s = ref12 = args + 1, ref13 = f.num_args; s <= ref13; i = s += 1) {
                   stack[++stack_index] = 0;
                 }
               } else if (args > f.num_args) {
