@@ -1,216 +1,390 @@
-define("ace/mode/microscript2_highlight_rules", ["require", "exports", "module", "ace/lib/oop", "ace/mode/text_highlight_rules"], function(e, t, n) {
-    "use strict";
-    var r = e("../lib/oop"),
-        i = e("./text_highlight_rules").TextHighlightRules,
-        s = function() {
-            var e = "sleep|after|every|do|continue|break|else|elsif|end|for|by|function|if|in|to|local|return|then|while|or|and|not|object|class|extends|new|this|super",
-                t = "true|false",
-                n = "print|time|type|log|max|PI|pow|random|ceil|round|floor|abs|sqrt|min|exp|sin|atan|concat|sort|cos|sin|tan|acos|asin|atan|atan2|sind|cosd|tand|acosd|asind|atand|atan2d",
-                r = "screen|system|audio|gamepad|keyboard|touch|mouse",
-                i = "setn|foreach|foreachi|gcinfo|log10|maxn",
-                s = this.createKeywordMapper({
-                    keyword: e,
-                    "support.function": n,
-                    "keyword.deprecated": i,
-                    "constant.library": r,
-                    "constant.language": t,
-                    "variable.language": "this"
-                }, "identifier"),
-                o = "(?:(?:[1-9]\\d*)|(?:0))",
-                u = "(?:0[xX][\\dA-Fa-f]+)",
-                a = "(?:" + o + "|" + u + ")",
-                f = "(?:\\.\\d+)",
-                l = "(?:\\d+)",
-                c = "(?:(?:" + l + "?" + f + ")|(?:" + l + "\\.))",
-                h = "(?:" + c + ")";
-            this.$rules = {
-                start: [{
-                    token: "comment",
-                    regex: "\\/\\/.*$"
-                }, {
-                    token: "string",
-                    regex: '"(?:[^\\\\]|\\\\.)*?"'
-                }, {
-                    token: "string",
-                    regex: "'(?:[^\\\\]|\\\\.)*?'"
-                }, {
-                    token: "constant.numeric",
-                    regex: h
-                }, {
-                    token: "constant.numeric",
-                    regex: a + "\\b"
-                }, {
-                    token: s,
-                    regex: "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
-                }, {
-                    token: "keyword.operator",
-                    regex: "\\+|\\-|\\*|\\/|%|\\^|<|>|<=|=>|==|="
-                }, {
-                    token: "paren.lparen",
-                    regex: "[\\[\\(\\{]"
-                }, {
-                    token: "paren.rparen",
-                    regex: "[\\]\\)\\}]"
-                }, {
-                    token: "text",
-                    regex: "\\s+|\\w+"
-                }]
-            }, this.normalizeRules()
-        };
-    r.inherits(s, i), t.microscript2HighlightRules = s
-}), define("ace/mode/folding/microscript2", ["require", "exports", "module", "ace/lib/oop", "ace/mode/folding/fold_mode", "ace/range", "ace/token_iterator"], function(e, t, n) {
-    "use strict";
-    var r = e("../../lib/oop"),
-        i = e("./fold_mode").FoldMode,
-        s = e("../../range").Range,
-        o = e("../../token_iterator").TokenIterator,
-        u = t.FoldMode = function() {};
-    r.inherits(u, i),
-        function() {
-            this.foldingStartMarker = /\b(function|then|while|for|repeat|class|object)\b|{\s*$|(\[=*\[)/, this.foldingStopMarker = /\bend\b|^\s*}|\]=*\]/, this.getFoldWidget = function(e, t, n) {
-                var r = e.getLine(n),
-                    i = this.foldingStartMarker.test(r),
-                    s = this.foldingStopMarker.test(r);
-                if (i && !s) {
-                    var o = r.match(this.foldingStartMarker);
-                    if (o[1] == "then" && /\belseif\b/.test(r)) return;
-                    if (o[1]) {
-                        if (e.getTokenAt(n, o.index + 1).type === "keyword") return "start"
-                    } else {
-                        if (!o[2]) return "start";
-                        var u = e.bgTokenizer.getState(n) || "";
-                        if (u[0] == "bracketedComment" || u[0] == "bracketedString") return "start"
-                    }
-                }
-                if (t != "markbeginend" || !s || i && s) return "";
-                var o = r.match(this.foldingStopMarker);
-                if (o[0] === "end") {
-                    if (e.getTokenAt(n, o.index + 1).type === "keyword") return "end"
-                } else {
-                    if (o[0][0] !== "]") return "end";
-                    var u = e.bgTokenizer.getState(n - 1) || "";
-                    if (u[0] == "bracketedComment" || u[0] == "bracketedString") return "end"
-                }
-            }, this.getFoldWidgetRange = function(e, t, n) {
-                var r = e.doc.getLine(n),
-                    i = this.foldingStartMarker.exec(r);
-                if (i) return i[1] ? this.microscript2Block(e, n, i.index + 1) : i[2] ? e.getCommentFoldRange(n, i.index + 1) : this.openingBracketBlock(e, "{", n, i.index);
-                var i = this.foldingStopMarker.exec(r);
-                if (i) return i[0] === "end" && e.getTokenAt(n, i.index + 1).type === "keyword" ? this.microscript2Block(e, n, i.index + 1) : i[0][0] === "]" ? e.getCommentFoldRange(n, i.index + 1) : this.closingBracketBlock(e, "}", n, i.index + i[0].length)
-            }, this.microscript2Block = function(e, t, n, r) {
-                var i = new o(e, t, n),
-                    u = {
-                        "function": 1,
-                        then: 1,
-                        elsif: -1,
-                        end: -1,
-                        "while": 1,
-                        "for": 1,
-                        "object": 1,
-                        "class": 1
-                    },
-                    a = i.getCurrentToken();
-                if (!a || a.type != "keyword") return;
-                var f = a.value,
-                    l = [f],
-                    c = u[f];
-                if (!c) return;
-                var h = c === -1 ? i.getCurrentTokenColumn() : e.getLine(t).length,
-                    p = t;
-                i.step = c === -1 ? i.stepBackward : i.stepForward;
-                while (a = i.step()) {
-                    if (a.type !== "keyword") continue;
-                    var d = c * u[a.value];
-                    if (d > 0) l.unshift(a.value);
-                    else if (d <= 0) {
-                        l.shift();
-                        if (!l.length && a.value != "elsif") break;
-                        d === 0 && l.unshift(a.value)
-                    }
-                }
-                if (!a) return null;
-                if (r) return i.getCurrentTokenRange();
-                var t = i.getCurrentTokenRow();
-                return c === -1 ? new s(t, e.getLine(t).length, p, h) : new s(p, h, t, i.getCurrentTokenColumn())
-            }
-        }.call(u.prototype)
-}), define("ace/mode/microscript2", ["require", "exports", "module", "ace/lib/oop", "ace/mode/text", "ace/mode/microscript2_highlight_rules", "ace/mode/folding/microscript2", "ace/range", "ace/worker/worker_client"], function(e, t, n) {
-    "use strict";
-    var r = e("../lib/oop"),
-        i = e("./text").Mode,
-        s = e("./microscript2_highlight_rules").microscript2HighlightRules,
-        o = e("./folding/microscript2").FoldMode,
-        u = e("../range").Range,
-        a = e("../worker/worker_client").WorkerClient,
-        f = function() {
-            this.HighlightRules = s, this.foldingRules = new o, this.$behaviour = this.$defaultBehaviour
-        };
-    r.inherits(f, i),
-        function() {
-            function n(t) {
-                var n = 0;
-                for (var r = 0; r < t.length; r++) {
-                    var i = t[r];
-                    i.type == "keyword" ? i.value in e && (n += e[i.value]) : i.type == "paren.lparen" ? n += i.value.length : i.type == "paren.rparen" && (n -= i.value.length)
-                }
-                return n < 0 ? -1 : n > 0 ? 1 : 0
-            }
-            this.lineCommentStart = "//", this.blockComment = {
-                start: "//",
-                end: "\n"
-            };
-            var e = {
-                    "function": 1,
-                    "then": 1,
-                    "else": 1,
-                    "elsif": 1,
-                    "while": 1,
-                    "end": -1,
-                    "for": 1,
-                    "object": 1,
-                    "class": 1
-                },
-                t = ["else", "elsif", "end"];
-            this.getNextLineIndent = function(e, t, r) {
-                var i = this.$getIndent(t),
-                    s = 0,
-                    o = this.getTokenizer().getLineTokens(t, e),
-                    u = o.tokens;
-                return e == "start" && (s = n(u)), s > 0 ? i + r : s < 0 && i.substr(i.length - r.length) == r && !this.checkOutdent(e, t, "\n") ? i.substr(0, i.length - r.length) : i
-            }, this.checkOutdent = function(e, n, r) {
-                if (r != "\n" && r != "\r" && r != "\r\n") return !1;
-                if (n.match(/^\s*[\)\}\]]$/)) return !0;
-                var i = this.getTokenizer().getLineTokens(n.trim(), e).tokens;
-                return !i || !i.length ? !1 : i[0].type == "keyword" && t.indexOf(i[0].value) != -1
-            }, this.getMatching = function(t, n, r) {
-                if (n == undefined) {
-                    var i = t.selection.lead;
-                    r = i.column, n = i.row
-                }
-                var s = t.getTokenAt(n, r);
-                if (s && s.value in e) return this.foldingRules.microscript2Block(t, n, r, !0)
-            }, this.autoOutdent = function(e, t, n) {
-                var r = t.getLine(n),
-                    i = r.match(/^\s*/)[0].length;
-                if (!i || !n) return;
-                var s = this.getMatching(t, n, i + 1);
-                if (!s || s.start.row == n) return;
-                var o = this.$getIndent(t.getLine(s.start.row));
-                o.length != i && (t.replace(new u(n, 0, n, i), o), t.outdentRows(new u(n + 1, 0, n + 1, 0)))
-            }, this.createWorker = function(e) {
-                var t = new a(["ace"], "ace/mode/microscript2_worker", "Worker");
-                return t.attachToDocument(e.getDocument()), t.on("annotate", function(t) {
-                    e.setAnnotations(t.data)
-                }), t.on("terminate", function() {
-                    e.clearAnnotations()
-                }), t
-            }, this.$id = "ace/mode/microscript2"
-        }.call(f.prototype), t.Mode = f
-});
+//
+// See doc: https://github.com/ajaxorg/ace/wiki/Creating-or-Extending-an-Edit-Mode#minimal-new-mode
+//
+
+
+define('ace/mode/microscript2', function(require, exports, module) {
+
+var oop = require("ace/lib/oop");
+var TextMode = require("ace/mode/text").Mode;
+var Microscript2HighlightRules = require("ace/mode/microscript2_highlight_rules").Microscript2HighlightRules;
+
+
+
+
+
+
+
+
+
+var BaseFoldMode = require("ace/mode/folding/fold_mode").FoldMode;
+var Range = require("ace/range").Range;
+var TokenIterator = require("ace/token_iterator").TokenIterator;
+var FoldMode = exports.FoldMode = function() {};
+
+oop.inherits(FoldMode, BaseFoldMode);
+
 (function() {
-    window.require(["ace/mode/microscript2"], function(m) {
-        if (typeof module == "object" && typeof exports == "object" && module) {
-            module.exports = m;
+
+    this.foldingStartMarker = /\b(function|then|do|object|class|for|while)\b|{\s*$|(\[=*\[)/;
+    this.foldingStopMarker = /\bend\b|^\s*}|\]=*\]/;
+
+    this.getFoldWidget = function(session, foldStyle, row) {
+        var line = session.getLine(row);
+        var isStart = this.foldingStartMarker.test(line);
+        var isEnd = this.foldingStopMarker.test(line);
+
+        if (isStart && !isEnd) {
+            var match = line.match(this.foldingStartMarker);
+            if (match[1] == "then" && /\belsif\b/.test(line))
+                return;
+            if (match[1]) {
+                if (session.getTokenAt(row, match.index + 1).type === "keyword")
+                    return "start";
+            } else if (match[2]) {
+                var type = session.bgTokenizer.getState(row) || "";
+                if (type[0] == "bracketedComment" || type[0] == "bracketedString")
+                    return "start";
+            } else {
+                return "start";
+            }
         }
-    });
-})();
+        if (foldStyle != "markbeginend" || !isEnd || isStart && isEnd)
+            return "";
+
+        var match = line.match(this.foldingStopMarker);
+        if (match[0] === "end") {
+            if (session.getTokenAt(row, match.index + 1).type === "keyword")
+                return "end";
+        } else if (match[0][0] === "]") {
+            var type = session.bgTokenizer.getState(row - 1) || "";
+            if (type[0] == "bracketedComment" || type[0] == "bracketedString")
+                return "end";
+        } else
+            return "end";
+    };
+
+    this.getFoldWidgetRange = function(session, foldStyle, row) {
+        var line = session.doc.getLine(row);
+        var match = this.foldingStartMarker.exec(line);
+        if (match) {
+            if (match[1])
+                return this.microscriptBlock(session, row, match.index + 1);
+
+            if (match[2])
+                return session.getCommentFoldRange(row, match.index + 1);
+
+            return this.openingBracketBlock(session, "{", row, match.index);
+        }
+
+        var match = this.foldingStopMarker.exec(line);
+        if (match) {
+            if (match[0] === "end") {
+                if (session.getTokenAt(row, match.index + 1).type === "keyword")
+                    return this.microscriptBlock(session, row, match.index + 1);
+            }
+
+            if (match[0][0] === "]")
+                return session.getCommentFoldRange(row, match.index + 1);
+
+            return this.closingBracketBlock(session, "}", row, match.index + match[0].length);
+        }
+    };
+
+    this.microscriptBlock = function(session, row, column, tokenRange) {
+        var stream = new TokenIterator(session, row, column);
+        var indentKeywords = {
+            "function": 1,
+            "do": 1,
+            "then": 1,
+            "for": 1,
+            "while": 1,
+            "object": 1,
+            "class": 1,
+            "elsif": -1,
+            "end": -1
+        };
+
+        var token = stream.getCurrentToken();
+        if (!token || token.type != "keyword")
+            return;
+
+        var val = token.value;
+        var stack = [val];
+        var dir = indentKeywords[val];
+
+        if (!dir)
+            return;
+
+        var startColumn = dir === -1 ? stream.getCurrentTokenColumn() : session.getLine(row).length;
+        var startRow = row;
+
+        stream.step = dir === -1 ? stream.stepBackward : stream.stepForward;
+        while(token = stream.step()) {
+            if (token.type !== "keyword")
+                continue;
+            var level = dir * indentKeywords[token.value];
+
+            if (level > 0) {
+                stack.unshift(token.value);
+            } else if (level <= 0) {
+                stack.shift();
+                if (!stack.length && token.value != "elsif")
+                    break;
+                if (level === 0)
+                    stack.unshift(token.value);
+            }
+        }
+
+        if (!token)
+            return null;
+
+        if (tokenRange)
+            return stream.getCurrentTokenRange();
+
+        var row = stream.getCurrentTokenRow();
+        if (dir === -1)
+            return new Range(row, session.getLine(row).length, startRow, startColumn);
+        else
+            return new Range(startRow, startColumn, row, stream.getCurrentTokenColumn());
+    };
+
+}).call(FoldMode.prototype);
+
+
+
+
+
+
+
+
+
+var Mode = function() {
+    this.HighlightRules = Microscript2HighlightRules;
+    this.foldingRules = new FoldMode() ;
+};
+oop.inherits(Mode, TextMode);
+
+
+
+(function() {
+
+  this.lineCommentStart = "//";
+  this.blockComment = {start: "/*", end: "*/"};
+
+  var indentKeywords = {
+      "function": 1,
+      "then": 1,
+      "do": 1,
+      "else": 1,
+      "elsif": 1,
+      "while": 1,
+      "for": 1,
+      "object": 1,
+      "class": 1,
+      "end": -1
+  };
+
+  var outdentKeywords = [
+      "else",
+      "elsif",
+      "end"
+  ];
+
+  function getNetIndentLevel(tokens) {
+      var level = 0;
+      // Support single-line blocks by decrementing the indent level if
+      // an ending token is found
+      for (var i = 0; i < tokens.length; i++) {
+          var token = tokens[i];
+          if (token.type == "keyword") {
+              if (token.value in indentKeywords) {
+                  level += indentKeywords[token.value];
+              }
+          } else if (token.type == "paren.lparen") {
+              level += token.value.length;
+          } else if (token.type == "paren.rparen") {
+              level -= token.value.length;
+          }
+      }
+      // Limit the level to +/- 1 since usually users only indent one level
+      // at a time regardless of the logical nesting level
+      if (level < 0) {
+          return -1;
+      } else if (level > 0) {
+          return 1;
+      } else {
+          return 0;
+      }
+  }
+
+  this.getNextLineIndent = function(state, line, tab) {
+      var indent = this.$getIndent(line);
+      var level = 0;
+
+      var tokenizedLine = this.getTokenizer().getLineTokens(line, state);
+      var tokens = tokenizedLine.tokens;
+
+      if (state == "start") {
+          level = getNetIndentLevel(tokens);
+      }
+      if (level > 0) {
+          return indent + tab;
+      } else if (level < 0 && indent.substr(indent.length - tab.length) == tab) {
+          // Don't do a next-line outdent if we're going to do a real outdent of this line
+          if (!this.checkOutdent(state, line, "\n")) {
+              return indent.substr(0, indent.length - tab.length);
+          }
+      }
+      return indent;
+  };
+
+  this.checkOutdent = function(state, line, input) {
+      if (input != "\n" && input != "\r" && input != "\r\n")
+          return false;
+
+      if (line.match(/^\s*[\)\}\]]$/))
+          return true;
+
+      var tokens = this.getTokenizer().getLineTokens(line.trim(), state).tokens;
+
+      if (!tokens || !tokens.length)
+          return false;
+
+      return (tokens[0].type == "keyword" && outdentKeywords.indexOf(tokens[0].value) != -1);
+  };
+
+  this.getMatching = function(session, row, column) {
+      if (row == undefined) {
+          var pos = session.selection.lead;
+          column = pos.column;
+          row = pos.row;
+      }
+
+      var startToken = session.getTokenAt(row, column);
+      if (startToken && startToken.value in indentKeywords)
+          return this.foldingRules.microscriptBlock(session, row, column, true);
+  };
+
+  this.autoOutdent = function(state, session, row) {
+      var line = session.getLine(row);
+      var column = line.match(/^\s*/)[0].length;
+      if (!column || !row) return;
+
+      var startRange = this.getMatching(session, row, column + 1);
+      if (!startRange || startRange.start.row == row)
+           return;
+      var indent = this.$getIndent(session.getLine(startRange.start.row));
+      if (indent.length != column) {
+          session.replace(new Range(row, 0, row, column), indent);
+          session.outdentRows(new Range(row + 1, 0, row + 1, 0));
+      }
+  };
+
+
+
+}).call(Mode.prototype);
+
+exports.Mode = Mode;
+});
+
+define('ace/mode/microscript2_highlight_rules', function(require, exports, module) {
+
+var oop = require("ace/lib/oop");
+var TextHighlightRules = require("ace/mode/text_highlight_rules").TextHighlightRules;
+
+var Microscript2HighlightRules = function() {
+
+  var mapper = this.createKeywordMapper({
+      keyword: "do|after|every|sleep|else|elsif|end|function|if|in|to|local|then|or|and|not|object|class|extends|new|constructor",
+      "keyword.control": "for|by|return|while|break|continue",
+      "support.function": "print|time|type|log|max|PI|pow|random|ceil|round|floor|abs|sqrt|min|exp|sin|atan|concat|sortList|cos|sin|tan|acos|asin|atan|atan2|sind|cosd|tand|acosd|asind|atand|atan2d",
+      "support.function": "screen|system|audio|gamepad|keyboard|touch|mouse|storage|asset_manager",
+      "support.constant": "true|false|PI",
+      "variable.language": "this|type|super"
+    },"identifier") ;
+
+  this.$rules = {
+      start: [{
+          token: "comment.line",
+          regex: "\\/\\/.*$"
+      }, {
+          token : "comment.block", // multi line comment
+          regex : "\\/\\*",
+          next : "comment"
+      },{
+          token : "string", // multi line string
+          regex : '"',
+          next : "doublequotestr"
+      }, {
+          token : "string", // multi line string
+          regex : "'",
+          next : "singlequotestr"
+      },{
+          token : "constant.numeric", // decimal integers and floats
+          regex : /(?:\d\d*(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+\b)?/
+      }, {
+          token: mapper,
+          regex: "[a-zA-Z][a-zA-Z0-9_$]*\\b"
+      }, {
+          token: "string",
+          regex: '"(?:[^"])*"'
+      }, {
+          token: "string",
+          regex: "'(?:[^\\\\]|\\\\.)*?'"
+      }, {
+          token: "keyword.operator",
+          regex: "\\+|\\-|\\*|\\/|%|\\^|<|>|<=|=>|==|="
+      }, {
+          token: "paren.lparen",
+          regex: "[\\[\\(]"
+      }, {
+          token: "paren.rparen",
+          regex: "[\\]\\)]"
+      }, {
+          token: "text",
+          regex: "\\s+|\\w+"
+      }],
+    comment: [ {
+          token : "comment", // closing comment
+          regex : "\\*\\/",
+          next : "start"
+        }, {
+            defaultToken : "comment"
+        }
+      ],
+      doublequotestr: [ {
+            token : "comment.character.escape", // embedded quote
+            regex : '""|\\\\"',
+          },{
+                token : "comment.character.escape",
+                regex : '\\\\n',
+          },{
+            token : "string", // closing string
+            regex : '"',
+            next : "start"
+          }, {
+              defaultToken : "string"
+          }
+        ],
+        singlequotestr: [ {
+              token : "comment.character.escape", // embedded quote
+              regex : "''|\\\\'",
+            },{
+                  token : "comment.character.escape",
+                  regex : '\\\\n',
+            },{
+              token : "string", // closing string
+              regex : "'",
+              next : "start"
+            }, {
+                defaultToken : "string"
+            }
+          ]
+  }
+}
+
+oop.inherits(Microscript2HighlightRules, TextHighlightRules);
+
+exports.Microscript2HighlightRules = Microscript2HighlightRules;
+});

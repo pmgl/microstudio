@@ -3,7 +3,6 @@ class @Routine
     @ops = []
     @opcodes = []
     @arg1 = []
-    @arg2 = []
     @ref = []
 
     @table = {}
@@ -11,101 +10,6 @@ class @Routine
     @labels = {}
 
     @transpile = false
-
-    @set "OPCODE_TYPE", 1
-    @set "OPCODE_VARIABLE_TYPE", 2
-    @set "OPCODE_PROPERTY_TYPE", 3
-
-    @set "OPCODE_LOAD_THIS", 5
-    @set "OPCODE_LOAD_GLOBAL", 6
-
-    @set "OPCODE_LOAD_CONTEXT_VARIABLE", 8
-    @set "OPCODE_LOAD_CONTEXT_PROPERTY", 9
-
-    @set "OPCODE_LOAD_VALUE", 10
-    @set "OPCODE_LOAD_LOCAL", 11
-    @set "OPCODE_LOAD_VARIABLE", 12
-    @set "OPCODE_LOAD_LOCAL_OBJECT", 13
-    @set "OPCODE_LOAD_VARIABLE_OBJECT", 14
-    @set "OPCODE_POP", 15
-    @set "OPCODE_LOAD_PROPERTY", 16
-    @set "OPCODE_LOAD_PROPERTY_OBJECT", 17
-
-    @set "OPCODE_CREATE_OBJECT", 18
-    @set "OPCODE_MAKE_OBJECT", 19
-    @set "OPCODE_CREATE_ARRAY",20
-
-    @set "OPCODE_STORE_LOCAL", 21
-    @set "OPCODE_STORE_VARIABLE",23
-    @set "OPCODE_CREATE_PROPERTY",24
-    @set "OPCODE_STORE_PROPERTY",25
-
-    @set "OPCODE_UPDATE_CLASS", 27
-    @set "OPCODE_CREATE_CLASS", 28
-    @set "OPCODE_NEW_CALL", 29
-
-    @set "OPCODE_ADD", 30
-    @set "OPCODE_SUB", 31
-    @set "OPCODE_MUL", 32
-    @set "OPCODE_DIV", 33
-    @set "OPCODE_MODULO", 34
-
-    @set "OPCODE_NEGATE", 39
-
-    @set "OPCODE_EQ", 40
-    @set "OPCODE_NEQ", 41
-    @set "OPCODE_LT", 42
-    @set "OPCODE_GT", 43
-    @set "OPCODE_LTE", 44
-    @set "OPCODE_GTE", 45
-
-    @set "OPCODE_NOT", 50
-
-    @set "OPCODE_ADD_LOCAL",60
-    @set "OPCODE_SUB_LOCAL",61
-    @set "OPCODE_MUL_LOCAL",62
-    @set "OPCODE_DIV_LOCAL",63
-
-    @set "OPCODE_ADD_VARIABLE",64
-    @set "OPCODE_SUB_VARIABLE",65
-    @set "OPCODE_MUL_VARIABLE",66
-    @set "OPCODE_DIV_VARIABLE",67
-
-    @set "OPCODE_ADD_PROPERTY",68
-    @set "OPCODE_SUB_PROPERTY",69
-    @set "OPCODE_MUL_PROPERTY",70
-    @set "OPCODE_DIV_PROPERTY",71
-
-    @set "OPCODE_JUMP",80
-    @set "OPCODE_JUMPY",81
-    @set "OPCODE_JUMPN",82
-    @set "OPCODE_JUMPY_NOPOP",83
-    @set "OPCODE_JUMPN_NOPOP",84
-
-    @set "OPCODE_FUNCTION_CALL", 90
-    @set "OPCODE_FUNCTION_APPLY_VARIABLE", 91
-    @set "OPCODE_FUNCTION_APPLY_PROPERTY", 92
-    @set "OPCODE_SUPER_CALL", 93
-    @set "OPCODE_RETURN", 94
-
-    @set "OPCODE_FORLOOP_INIT",95
-    @set "OPCODE_FORLOOP_CONTROL",96
-    @set "OPCODE_FORIN_INIT",97
-    @set "OPCODE_FORIN_CONTROL",98
-
-    @set "OPCODE_UNARY_OP",100
-    @set "OPCODE_BINARY_OP",101
-
-    @set "OPCODE_COMPILED",200
-
-    @set "OPCODE_AFTER", 110
-    @set "OPCODE_EVERY", 111
-    @set "OPCODE_DO", 112
-    @set "OPCODE_SLEEP", 113
-
-  set:(op,code)->
-    @[op] = code
-    @table[code] = op.substring(7)
 
   createLabel:(str="label")->
     name = ":"+str+"_"+@label_count++
@@ -134,122 +38,220 @@ class @Routine
 
     @opcodes.splice(index,1)
     @arg1.splice(index,1)
-    @arg2.splice(index,1)
     @ref.splice(index,1)
     true
 
   resolveLabels:()->
     for i in [0..@opcodes.length-1]
-      if @opcodes[i] in [@OPCODE_JUMP,@OPCODE_JUMPY,@OPCODE_JUMPN,@OPCODE_JUMPY_NOPOP,@OPCODE_JUMPN_NOPOP]
+      if @opcodes[i] in [OPCODES.JUMP,OPCODES.JUMPY,OPCODES.JUMPN,OPCODES.JUMPY_NOPOP,OPCODES.JUMPN_NOPOP]
         if @labels[@arg1[i]]
           @arg1[i] = @labels[@arg1[i]]
-      else if @opcodes[i] in [@OPCODE_FORLOOP_CONTROL,@OPCODE_FORLOOP_INIT,@OPCODE_FORIN_CONTROL,@OPCODE_FORIN_INIT]
+      else if @opcodes[i] in [OPCODES.FORLOOP_CONTROL,OPCODES.FORLOOP_INIT,OPCODES.FORIN_CONTROL,OPCODES.FORIN_INIT]
         if @labels[@arg1[i][1]]
           @arg1[i][1] = @labels[@arg1[i][1]]
 
-  OP:(code,ref,v1=0,v2=0)->
+  OP:(code,ref,v1=0)->
     @opcodes.push code
     @arg1.push v1
-    @arg2.push v2
     @ref.push ref
 
 
-  TYPE:(ref)-> @OP @OPCODE_TYPE,ref
-  VARIABLE_TYPE:(variable,ref)-> @OP @OPCODE_VARIABLE_TYPE,ref,variable
-  PROPERTY_TYPE:(ref)-> @OP @OPCODE_PROPERTY_TYPE,ref
+  TYPE:(ref)-> @OP OPCODES.TYPE,ref
+  VARIABLE_TYPE:(variable,ref)-> @OP OPCODES.VARIABLE_TYPE,ref,variable
+  PROPERTY_TYPE:(ref)-> @OP OPCODES.PROPERTY_TYPE,ref
 
-  LOAD_THIS:(ref)-> @OP @OPCODE_LOAD_THIS,ref
-  LOAD_GLOBAL:(ref)-> @OP @OPCODE_LOAD_GLOBAL,ref
+  LOAD_THIS:(ref)-> @OP OPCODES.LOAD_THIS,ref
+  LOAD_GLOBAL:(ref)-> @OP OPCODES.LOAD_GLOBAL,ref
 
-  LOAD_CONTEXT_VARIABLE:(variable,ref)-> @OP @OPCODE_LOAD_CONTEXT_VARIABLE,ref,variable
-  LOAD_CONTEXT_PROPERTY:(variable,ref)-> @OP @OPCODE_LOAD_CONTEXT_PROPERTY,ref,variable
+  LOAD_CONTEXT_VARIABLE:(variable,ref)-> @OP OPCODES.LOAD_CONTEXT_VARIABLE,ref,variable
+  LOAD_CONTEXT_PROPERTY:(variable,ref)-> @OP OPCODES.LOAD_CONTEXT_PROPERTY,ref,variable
 
-  LOAD_VALUE:(value,ref)-> @OP @OPCODE_LOAD_VALUE,ref,value
-  LOAD_LOCAL:(index,ref)-> @OP @OPCODE_LOAD_LOCAL,ref,index
-  LOAD_VARIABLE:(variable,ref)-> @OP @OPCODE_LOAD_VARIABLE,ref,variable
-  LOAD_LOCAL_OBJECT:(index,ref)-> @OP @OPCODE_LOAD_LOCAL_OBJECT,ref,index
-  LOAD_VARIABLE_OBJECT:(variable,ref)-> @OP @OPCODE_LOAD_VARIABLE_OBJECT,ref,variable
-  POP:(ref)-> @OP @OPCODE_POP,ref
-  LOAD_PROPERTY:(ref)-> @OP @OPCODE_LOAD_PROPERTY,ref
-  LOAD_PROPERTY_OBJECT:(ref)-> @OP @OPCODE_LOAD_PROPERTY_OBJECT,ref
-  CREATE_OBJECT:(ref)-> @OP @OPCODE_CREATE_OBJECT,ref
-  MAKE_OBJECT:(ref)-> @OP @OPCODE_MAKE_OBJECT,ref
-  CREATE_ARRAY:(ref)-> @OP @OPCODE_CREATE_ARRAY,ref
-  CREATE_CLASS:(parent_var,ref)-> @OP @OPCODE_CREATE_CLASS,ref,parent_var
-  UPDATE_CLASS:(variable,ref)-> @OP @OPCODE_UPDATE_CLASS,ref,variable
-  NEW_CALL:(args,ref)-> @OP @OPCODE_NEW_CALL,ref,args
+  LOAD_VALUE:(value,ref)-> @OP OPCODES.LOAD_VALUE,ref,value
+  LOAD_LOCAL:(index,ref)-> @OP OPCODES.LOAD_LOCAL,ref,index
+  LOAD_VARIABLE:(variable,ref)-> @OP OPCODES.LOAD_VARIABLE,ref,variable
+  LOAD_LOCAL_OBJECT:(index,ref)-> @OP OPCODES.LOAD_LOCAL_OBJECT,ref,index
+  LOAD_VARIABLE_OBJECT:(variable,ref)-> @OP OPCODES.LOAD_VARIABLE_OBJECT,ref,variable
+  POP:(ref)-> @OP OPCODES.POP,ref
+  LOAD_PROPERTY:(ref)-> @OP OPCODES.LOAD_PROPERTY,ref
+  LOAD_PROPERTY_OBJECT:(ref)-> @OP OPCODES.LOAD_PROPERTY_OBJECT,ref
+  CREATE_OBJECT:(ref)-> @OP OPCODES.CREATE_OBJECT,ref
+  MAKE_OBJECT:(ref)-> @OP OPCODES.MAKE_OBJECT,ref
+  CREATE_ARRAY:(ref)-> @OP OPCODES.CREATE_ARRAY,ref
+  CREATE_CLASS:(parent_var,ref)-> @OP OPCODES.CREATE_CLASS,ref,parent_var
+  UPDATE_CLASS:(variable,ref)-> @OP OPCODES.UPDATE_CLASS,ref,variable
+  NEW_CALL:(args,ref)-> @OP OPCODES.NEW_CALL,ref,args
 
-  ADD:(ref)-> @OP @OPCODE_ADD,ref
-  SUB:(ref)-> @OP @OPCODE_SUB,ref
-  MUL:(ref)-> @OP @OPCODE_MUL,ref
-  DIV:(ref)-> @OP @OPCODE_DIV,ref
-  MODULO:(ref)-> @OP @OPCODE_MODULO,ref
+  ADD:(ref)-> @OP OPCODES.ADD,ref
+  SUB:(ref)-> @OP OPCODES.SUB,ref
+  MUL:(ref)-> @OP OPCODES.MUL,ref
+  DIV:(ref)-> @OP OPCODES.DIV,ref
+  MODULO:(ref)-> @OP OPCODES.MODULO,ref
 
-  NEGATE:(ref)-> @OP @OPCODE_NEGATE,ref
+  NEGATE:(ref)-> @OP OPCODES.NEGATE,ref
 
-  ADD_LOCAL:(index,ref)-> @OP @OPCODE_ADD_LOCAL,ref,index
-  SUB_LOCAL:(index,ref)-> @OP @OPCODE_SUB_LOCAL,ref,index
-  MUL_LOCAL:(index,ref)-> @OP @OPCODE_MUL_LOCAL,ref,index
-  DIV_LOCAL:(index,ref)-> @OP @OPCODE_DIV_LOCAL,ref,index
+  ADD_LOCAL:(index,ref)-> @OP OPCODES.ADD_LOCAL,ref,index
+  SUB_LOCAL:(index,ref)-> @OP OPCODES.SUB_LOCAL,ref,index
+  MUL_LOCAL:(index,ref)-> @OP OPCODES.MUL_LOCAL,ref,index
+  DIV_LOCAL:(index,ref)-> @OP OPCODES.DIV_LOCAL,ref,index
 
-  ADD_VARIABLE:(variable,ref)-> @OP @OPCODE_ADD_VARIABLE,ref,variable
-  SUB_VARIABLE:(variable,ref)-> @OP @OPCODE_SUB_VARIABLE,ref,variable
-  MUL_VARIABLE:(variable,ref)-> @OP @OPCODE_MUL_VARIABLE,ref,variable
-  DIV_VARIABLE:(variable,ref)-> @OP @OPCODE_DIV_VARIABLE,ref,variable
+  ADD_VARIABLE:(variable,ref)-> @OP OPCODES.ADD_VARIABLE,ref,variable
+  SUB_VARIABLE:(variable,ref)-> @OP OPCODES.SUB_VARIABLE,ref,variable
+  MUL_VARIABLE:(variable,ref)-> @OP OPCODES.MUL_VARIABLE,ref,variable
+  DIV_VARIABLE:(variable,ref)-> @OP OPCODES.DIV_VARIABLE,ref,variable
 
-  ADD_PROPERTY:(ref)-> @OP @OPCODE_ADD_PROPERTY,ref
-  SUB_PROPERTY:(ref)-> @OP @OPCODE_SUB_PROPERTY,ref
-  MUL_PROPERTY:(ref)-> @OP @OPCODE_MUL_PROPERTY,ref
-  DIV_PROPERTY:(ref)-> @OP @OPCODE_DIV_PROPERTY,ref
+  ADD_PROPERTY:(ref)-> @OP OPCODES.ADD_PROPERTY,ref
+  SUB_PROPERTY:(ref)-> @OP OPCODES.SUB_PROPERTY,ref
+  MUL_PROPERTY:(ref)-> @OP OPCODES.MUL_PROPERTY,ref
+  DIV_PROPERTY:(ref)-> @OP OPCODES.DIV_PROPERTY,ref
 
-  EQ:(ref)-> @OP @OPCODE_EQ,ref
-  NEQ:(ref)-> @OP @OPCODE_NEQ,ref
-  LT:(ref)-> @OP @OPCODE_LT,ref
-  GT:(ref)-> @OP @OPCODE_GT,ref
-  LTE:(ref)-> @OP @OPCODE_LTE,ref
-  GTE:(ref)-> @OP @OPCODE_GTE,ref
+  EQ:(ref)-> @OP OPCODES.EQ,ref
+  NEQ:(ref)-> @OP OPCODES.NEQ,ref
+  LT:(ref)-> @OP OPCODES.LT,ref
+  GT:(ref)-> @OP OPCODES.GT,ref
+  LTE:(ref)-> @OP OPCODES.LTE,ref
+  GTE:(ref)-> @OP OPCODES.GTE,ref
 
-  NOT:(ref)-> @OP @OPCODE_NOT,ref
+  NOT:(ref)-> @OP OPCODES.NOT,ref
 
-  FORLOOP_INIT:(iterator,ref)-> @OP @OPCODE_FORLOOP_INIT,ref,iterator
-  FORLOOP_CONTROL:(args,ref)-> @OP @OPCODE_FORLOOP_CONTROL,ref,args
-  FORIN_INIT:(args,ref)-> @OP @OPCODE_FORIN_INIT,ref,args
-  FORIN_CONTROL:(args,ref)-> @OP @OPCODE_FORIN_CONTROL,ref,args
+  FORLOOP_INIT:(iterator,ref)-> @OP OPCODES.FORLOOP_INIT,ref,iterator
+  FORLOOP_CONTROL:(args,ref)-> @OP OPCODES.FORLOOP_CONTROL,ref,args
+  FORIN_INIT:(args,ref)-> @OP OPCODES.FORIN_INIT,ref,args
+  FORIN_CONTROL:(args,ref)-> @OP OPCODES.FORIN_CONTROL,ref,args
 
-  JUMP:(index,ref)-> @OP @OPCODE_JUMP,ref,index
-  JUMPY:(index,ref)-> @OP @OPCODE_JUMPY,ref,index
-  JUMPN:(index,ref)-> @OP @OPCODE_JUMPN,ref,index
-  JUMPY_NOPOP:(index,ref)-> @OP @OPCODE_JUMPY_NOPOP,ref,index
-  JUMPN_NOPOP:(index,ref)-> @OP @OPCODE_JUMPN_NOPOP,ref,index
+  JUMP:(index,ref)-> @OP OPCODES.JUMP,ref,index
+  JUMPY:(index,ref)-> @OP OPCODES.JUMPY,ref,index
+  JUMPN:(index,ref)-> @OP OPCODES.JUMPN,ref,index
+  JUMPY_NOPOP:(index,ref)-> @OP OPCODES.JUMPY_NOPOP,ref,index
+  JUMPN_NOPOP:(index,ref)-> @OP OPCODES.JUMPN_NOPOP,ref,index
 
-  STORE_LOCAL:(index,ref)-> @OP @OPCODE_STORE_LOCAL,ref,index
-  STORE_VARIABLE:(field,ref)-> @OP @OPCODE_STORE_VARIABLE,ref,field
-  CREATE_PROPERTY:(ref)-> @OP @OPCODE_CREATE_PROPERTY,ref
-  STORE_PROPERTY:(ref)-> @OP @OPCODE_STORE_PROPERTY,ref
+  STORE_LOCAL:(index,ref)-> @OP OPCODES.STORE_LOCAL,ref,index
+  STORE_VARIABLE:(field,ref)-> @OP OPCODES.STORE_VARIABLE,ref,field
+  CREATE_PROPERTY:(ref)-> @OP OPCODES.CREATE_PROPERTY,ref
+  STORE_PROPERTY:(ref)-> @OP OPCODES.STORE_PROPERTY,ref
 
-  FUNCTION_CALL:(args,ref)-> @OP @OPCODE_FUNCTION_CALL,ref,args
-  FUNCTION_APPLY_VARIABLE:(args,ref)-> @OP @OPCODE_FUNCTION_APPLY_VARIABLE,ref,args
-  FUNCTION_APPLY_PROPERTY:(args,ref)-> @OP @OPCODE_FUNCTION_APPLY_PROPERTY,ref,args
-  SUPER_CALL:(args,ref)-> @OP @OPCODE_SUPER_CALL,ref,args
-  RETURN:(ref)-> @OP @OPCODE_RETURN,ref
+  FUNCTION_CALL:(args,ref)-> @OP OPCODES.FUNCTION_CALL,ref,args
+  FUNCTION_APPLY_VARIABLE:(args,ref)-> @OP OPCODES.FUNCTION_APPLY_VARIABLE,ref,args
+  FUNCTION_APPLY_PROPERTY:(args,ref)-> @OP OPCODES.FUNCTION_APPLY_PROPERTY,ref,args
+  SUPER_CALL:(args,ref)-> @OP OPCODES.SUPER_CALL,ref,args
+  RETURN:(ref)-> @OP OPCODES.RETURN,ref
 
-  AFTER:(ref)-> @OP @OPCODE_AFTER,ref
-  EVERY:(ref)-> @OP @OPCODE_EVERY,ref
-  DO:(ref)-> @OP @OPCODE_DO,ref
-  SLEEP:(ref)-> @OP @OPCODE_SLEEP,ref
+  AFTER:(ref)-> @OP OPCODES.AFTER,ref
+  EVERY:(ref)-> @OP OPCODES.EVERY,ref
+  DO:(ref)-> @OP OPCODES.DO,ref
+  SLEEP:(ref)-> @OP OPCODES.SLEEP,ref
 
-  UNARY_OP:(f,ref)-> @OP @OPCODE_UNARY_OP,ref,f
-  BINARY_OP:(f,ref)-> @OP @OPCODE_BINARY_OP,ref,f
+  UNARY_OP:(f,ref)-> @OP OPCODES.UNARY_OP,ref,f
+  BINARY_OP:(f,ref)-> @OP OPCODES.BINARY_OP,ref,f
 
   toString:()->
     s = ""
     for op,i in @opcodes
-      s += @table[op]
-      if @arg1[i] or @arg2[i]
+      s += OPCODES[op]
+      if @arg1[i]
         #if typeof @arg1[i] != "function"
           s += " #{@arg1[i]}"
-          if @arg2[i]
-            s += ", #{@arg2[i]}"
       s += "\n"
 
     s
+
+
+class @OPCODES_CLASS
+  constructor:()->
+    @table = {}
+
+    @set "TYPE", 1
+    @set "VARIABLE_TYPE", 2
+    @set "PROPERTY_TYPE", 3
+
+    @set "LOAD_THIS", 5
+    @set "LOAD_GLOBAL", 6
+
+    @set "LOAD_CONTEXT_VARIABLE", 8
+    @set "LOAD_CONTEXT_PROPERTY", 9
+
+    @set "LOAD_VALUE", 10
+    @set "LOAD_LOCAL", 11
+    @set "LOAD_VARIABLE", 12
+    @set "LOAD_LOCAL_OBJECT", 13
+    @set "LOAD_VARIABLE_OBJECT", 14
+    @set "POP", 15
+    @set "LOAD_PROPERTY", 16
+    @set "LOAD_PROPERTY_OBJECT", 17
+
+    @set "CREATE_OBJECT", 18
+    @set "MAKE_OBJECT", 19
+    @set "CREATE_ARRAY",20
+
+    @set "STORE_LOCAL", 21
+    @set "STORE_VARIABLE",23
+    @set "CREATE_PROPERTY",24
+    @set "STORE_PROPERTY",25
+
+    @set "UPDATE_CLASS", 27
+    @set "CREATE_CLASS", 28
+    @set "NEW_CALL", 29
+
+    @set "ADD", 30
+    @set "SUB", 31
+    @set "MUL", 32
+    @set "DIV", 33
+    @set "MODULO", 34
+
+    @set "NEGATE", 39
+
+    @set "EQ", 40
+    @set "NEQ", 41
+    @set "LT", 42
+    @set "GT", 43
+    @set "LTE", 44
+    @set "GTE", 45
+
+    @set "NOT", 50
+
+    @set "ADD_LOCAL",60
+    @set "SUB_LOCAL",61
+    @set "MUL_LOCAL",62
+    @set "DIV_LOCAL",63
+
+    @set "ADD_VARIABLE",64
+    @set "SUB_VARIABLE",65
+    @set "MUL_VARIABLE",66
+    @set "DIV_VARIABLE",67
+
+    @set "ADD_PROPERTY",68
+    @set "SUB_PROPERTY",69
+    @set "MUL_PROPERTY",70
+    @set "DIV_PROPERTY",71
+
+    @set "JUMP",80
+    @set "JUMPY",81
+    @set "JUMPN",82
+    @set "JUMPY_NOPOP",83
+    @set "JUMPN_NOPOP",84
+
+    @set "FUNCTION_CALL", 90
+    @set "FUNCTION_APPLY_VARIABLE", 91
+    @set "FUNCTION_APPLY_PROPERTY", 92
+    @set "SUPER_CALL", 93
+    @set "RETURN", 94
+
+    @set "FORLOOP_INIT",95
+    @set "FORLOOP_CONTROL",96
+    @set "FORIN_INIT",97
+    @set "FORIN_CONTROL",98
+
+    @set "UNARY_OP",100
+    @set "BINARY_OP",101
+
+    @set "COMPILED",200
+
+    @set "AFTER", 110
+    @set "EVERY", 111
+    @set "DO", 112
+    @set "SLEEP", 113
+
+  set:(op,code)->
+    @[op] = code
+    @[code] = op
+
+@OPCODES = new @OPCODES_CLASS
