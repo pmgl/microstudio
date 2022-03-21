@@ -87,6 +87,62 @@ class @Processor
     while op_index < length
       switch opcodes[op_index]
 
+        when 1 # OPCODE_TYPE
+          v = stack[stack_index]
+          switch typeof v
+            when "number" then stack[stack_index] = "number"
+            when "string" then stack[stack_index] = "string"
+            when "function" then stack[stack_index] = "function"
+            when "object"
+              if Array.isArray v
+                stack[stack_index] = "list"
+              else if v instanceof Routine
+                stack[stack_index] = "function"
+              else
+                stack[stack_index] = "object"
+
+          op_index++
+
+        when 2 # OPCODE_TYPE_VARIABLE
+          v = object[arg1[op_index]]
+          if not v?
+            v = global[arg1[op_index]]
+          if not v?
+            stack[++stack_index] = 0
+          else
+            switch typeof v
+              when "number" then stack[++stack_index] = "number"
+              when "string" then stack[++stack_index] = "string"
+              when "function" then stack[++stack_index] = "function"
+              else
+                if Array.isArray v
+                  stack[++stack_index] = "list"
+                else if v instanceof Routine
+                  stack[++stack_index] = "function"
+                else
+                  stack[++stack_index] = "object"
+
+          op_index++
+
+        when 3 # OPCODE_TYPE_PROPERTY
+          v = stack[stack_index-1][stack[stack_index]]
+          if not v?
+            stack[--stack_index] = 0
+          else
+            switch typeof v
+              when "number" then stack[--stack_index] = "number"
+              when "string" then stack[--stack_index] = "string"
+              when "function" then stack[--stack_index] = "function"
+              else
+                if Array.isArray v
+                  stack[--stack_index] = "list"
+                else if v instanceof Routine
+                  stack[--stack_index] = "function"
+                else
+                  stack[--stack_index] = "object"
+
+          op_index++
+
         when 5 # OPCODE_LOAD_THIS
           stack[++stack_index] = object
           op_index++

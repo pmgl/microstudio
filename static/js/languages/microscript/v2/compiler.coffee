@@ -300,13 +300,39 @@ class Compiler
       @routine.LOAD_VARIABLE v,variable
 
   compileField:(field)->
-    @compile field.expression
+    c = field.chain[field.chain.length-1]
+    if c instanceof Program.Value and c.value == "type"
+      if field.chain.length == 1
+        if field.expression instanceof Program.Variable # variable.type
+          id = field.expression.identifier
+          if Compiler.predefined_values[id]?
+            @routine.LOAD_VALUE "number",field
+          else if Compiler.predefined_unary_functions[id]? or Compiler.predefined_binary_functions[id]
+            @routine.LOAD_VALUE "function",field
+          else
+            @routine.VARIABLE_TYPE id, field.expression
+          return
+        else
+          @compile field.expression
+          @routine.TYPE field
+          return
+      else
+        @compile field.expression
+        for i in [0..field.chain.length-3] by 1
+          @compile field.chain[i]
+          @routine.LOAD_PROPERTY field
 
-    for c in field.chain
-      @compile c
-      @routine.LOAD_PROPERTY field
+        @compile field.chain[field.chain.length-2]
+        @routine.PROPERTY_TYPE field.expression
+        return
+    else
+      @compile field.expression
 
-    return
+      for c in field.chain
+        @compile c
+        @routine.LOAD_PROPERTY field
+
+      return
 
   compileFieldParent:(field)->
     @compile field.expression

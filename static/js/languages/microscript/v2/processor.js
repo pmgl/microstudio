@@ -90,6 +90,86 @@ this.Processor = (function() {
     restore_op_index = -1;
     while (op_index < length) {
       switch (opcodes[op_index]) {
+        case 1:
+          v = stack[stack_index];
+          switch (typeof v) {
+            case "number":
+              stack[stack_index] = "number";
+              break;
+            case "string":
+              stack[stack_index] = "string";
+              break;
+            case "function":
+              stack[stack_index] = "function";
+              break;
+            case "object":
+              if (Array.isArray(v)) {
+                stack[stack_index] = "list";
+              } else if (v instanceof Routine) {
+                stack[stack_index] = "function";
+              } else {
+                stack[stack_index] = "object";
+              }
+          }
+          op_index++;
+          break;
+        case 2:
+          v = object[arg1[op_index]];
+          if (v == null) {
+            v = global[arg1[op_index]];
+          }
+          if (v == null) {
+            stack[++stack_index] = 0;
+          } else {
+            switch (typeof v) {
+              case "number":
+                stack[++stack_index] = "number";
+                break;
+              case "string":
+                stack[++stack_index] = "string";
+                break;
+              case "function":
+                stack[++stack_index] = "function";
+                break;
+              default:
+                if (Array.isArray(v)) {
+                  stack[++stack_index] = "list";
+                } else if (v instanceof Routine) {
+                  stack[++stack_index] = "function";
+                } else {
+                  stack[++stack_index] = "object";
+                }
+            }
+          }
+          op_index++;
+          break;
+        case 3:
+          v = stack[stack_index - 1][stack[stack_index]];
+          if (v == null) {
+            stack[--stack_index] = 0;
+          } else {
+            switch (typeof v) {
+              case "number":
+                stack[--stack_index] = "number";
+                break;
+              case "string":
+                stack[--stack_index] = "string";
+                break;
+              case "function":
+                stack[--stack_index] = "function";
+                break;
+              default:
+                if (Array.isArray(v)) {
+                  stack[--stack_index] = "list";
+                } else if (v instanceof Routine) {
+                  stack[--stack_index] = "function";
+                } else {
+                  stack[--stack_index] = "object";
+                }
+            }
+          }
+          op_index++;
+          break;
         case 5:
           stack[++stack_index] = object;
           op_index++;

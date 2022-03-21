@@ -360,13 +360,40 @@ Compiler = (function() {
   };
 
   Compiler.prototype.compileField = function(field) {
-    var c, j, len, ref;
-    this.compile(field.expression);
-    ref = field.chain;
-    for (j = 0, len = ref.length; j < len; j++) {
-      c = ref[j];
-      this.compile(c);
-      this.routine.LOAD_PROPERTY(field);
+    var c, i, id, j, k, len, ref, ref1;
+    c = field.chain[field.chain.length - 1];
+    if (c instanceof Program.Value && c.value === "type") {
+      if (field.chain.length === 1) {
+        if (field.expression instanceof Program.Variable) {
+          id = field.expression.identifier;
+          if (Compiler.predefined_values[id] != null) {
+            this.routine.LOAD_VALUE("number", field);
+          } else if ((Compiler.predefined_unary_functions[id] != null) || Compiler.predefined_binary_functions[id]) {
+            this.routine.LOAD_VALUE("function", field);
+          } else {
+            this.routine.VARIABLE_TYPE(id, field.expression);
+          }
+        } else {
+          this.compile(field.expression);
+          this.routine.TYPE(field);
+        }
+      } else {
+        this.compile(field.expression);
+        for (i = j = 0, ref = field.chain.length - 3; j <= ref; i = j += 1) {
+          this.compile(field.chain[i]);
+          this.routine.LOAD_PROPERTY(field);
+        }
+        this.compile(field.chain[field.chain.length - 2]);
+        this.routine.PROPERTY_TYPE(field.expression);
+      }
+    } else {
+      this.compile(field.expression);
+      ref1 = field.chain;
+      for (k = 0, len = ref1.length; k < len; k++) {
+        c = ref1[k];
+        this.compile(c);
+        this.routine.LOAD_PROPERTY(field);
+      }
     }
   };
 

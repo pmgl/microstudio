@@ -76,11 +76,6 @@ class @Routine
     @set "OPCODE_MUL_PROPERTY",70
     @set "OPCODE_DIV_PROPERTY",71
 
-    @set "OPCODE_FORLOOP_INIT",95
-    @set "OPCODE_FORLOOP_CONTROL",96
-    @set "OPCODE_FORIN_INIT",97
-    @set "OPCODE_FORIN_CONTROL",98
-
     @set "OPCODE_JUMP",80
     @set "OPCODE_JUMPY",81
     @set "OPCODE_JUMPN",82
@@ -92,6 +87,11 @@ class @Routine
     @set "OPCODE_FUNCTION_APPLY_PROPERTY", 92
     @set "OPCODE_SUPER_CALL", 93
     @set "OPCODE_RETURN", 94
+
+    @set "OPCODE_FORLOOP_INIT",95
+    @set "OPCODE_FORLOOP_CONTROL",96
+    @set "OPCODE_FORIN_INIT",97
+    @set "OPCODE_FORIN_CONTROL",98
 
     @set "OPCODE_UNARY_OP",100
     @set "OPCODE_BINARY_OP",101
@@ -152,6 +152,11 @@ class @Routine
     @arg1.push v1
     @arg2.push v2
     @ref.push ref
+
+
+  TYPE:(ref)-> @OP @OPCODE_TYPE,ref
+  VARIABLE_TYPE:(variable,ref)-> @OP @OPCODE_VARIABLE_TYPE,ref,variable
+  PROPERTY_TYPE:(ref)-> @OP @OPCODE_PROPERTY_TYPE,ref
 
   LOAD_THIS:(ref)-> @OP @OPCODE_LOAD_THIS,ref
   LOAD_GLOBAL:(ref)-> @OP @OPCODE_LOAD_GLOBAL,ref
@@ -226,7 +231,7 @@ class @Routine
   FUNCTION_APPLY_VARIABLE:(args,ref)-> @OP @OPCODE_FUNCTION_APPLY_VARIABLE,ref,args
   FUNCTION_APPLY_PROPERTY:(args,ref)-> @OP @OPCODE_FUNCTION_APPLY_PROPERTY,ref,args
   SUPER_CALL:(args,ref)-> @OP @OPCODE_SUPER_CALL,ref,args
-  RETURN:(local_offset,ref)-> @OP @OPCODE_RETURN,ref,local_offset
+  RETURN:(ref)-> @OP @OPCODE_RETURN,ref
 
   AFTER:(ref)-> @OP @OPCODE_AFTER,ref
   EVERY:(ref)-> @OP @OPCODE_EVERY,ref

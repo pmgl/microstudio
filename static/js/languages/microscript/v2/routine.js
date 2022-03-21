@@ -60,10 +60,6 @@ this.Routine = (function() {
     this.set("OPCODE_SUB_PROPERTY", 69);
     this.set("OPCODE_MUL_PROPERTY", 70);
     this.set("OPCODE_DIV_PROPERTY", 71);
-    this.set("OPCODE_FORLOOP_INIT", 95);
-    this.set("OPCODE_FORLOOP_CONTROL", 96);
-    this.set("OPCODE_FORIN_INIT", 97);
-    this.set("OPCODE_FORIN_CONTROL", 98);
     this.set("OPCODE_JUMP", 80);
     this.set("OPCODE_JUMPY", 81);
     this.set("OPCODE_JUMPN", 82);
@@ -74,6 +70,10 @@ this.Routine = (function() {
     this.set("OPCODE_FUNCTION_APPLY_PROPERTY", 92);
     this.set("OPCODE_SUPER_CALL", 93);
     this.set("OPCODE_RETURN", 94);
+    this.set("OPCODE_FORLOOP_INIT", 95);
+    this.set("OPCODE_FORLOOP_CONTROL", 96);
+    this.set("OPCODE_FORIN_INIT", 97);
+    this.set("OPCODE_FORIN_CONTROL", 98);
     this.set("OPCODE_UNARY_OP", 100);
     this.set("OPCODE_BINARY_OP", 101);
     this.set("OPCODE_COMPILED", 200);
@@ -170,6 +170,18 @@ this.Routine = (function() {
     this.arg1.push(v1);
     this.arg2.push(v2);
     return this.ref.push(ref);
+  };
+
+  Routine.prototype.TYPE = function(ref) {
+    return this.OP(this.OPCODE_TYPE, ref);
+  };
+
+  Routine.prototype.VARIABLE_TYPE = function(variable, ref) {
+    return this.OP(this.OPCODE_VARIABLE_TYPE, ref, variable);
+  };
+
+  Routine.prototype.PROPERTY_TYPE = function(ref) {
+    return this.OP(this.OPCODE_PROPERTY_TYPE, ref);
   };
 
   Routine.prototype.LOAD_THIS = function(ref) {
@@ -412,8 +424,8 @@ this.Routine = (function() {
     return this.OP(this.OPCODE_SUPER_CALL, ref, args);
   };
 
-  Routine.prototype.RETURN = function(local_offset, ref) {
-    return this.OP(this.OPCODE_RETURN, ref, local_offset);
+  Routine.prototype.RETURN = function(ref) {
+    return this.OP(this.OPCODE_RETURN, ref);
   };
 
   Routine.prototype.AFTER = function(ref) {
