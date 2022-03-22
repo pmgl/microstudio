@@ -212,7 +212,7 @@ class Compiler
         when "/" then @routine.DIV_PROPERTY statement
 
   compileOperation:(op)->
-    if op.operation in ["+","-","*","/","%"]
+    if op.operation in ["+","-","*","/","%","&","|","<<",">>"]
       @compile(op.term1)
       @compile(op.term2)
       switch op.operation
@@ -221,6 +221,10 @@ class Compiler
         when "*" then @routine.MUL(op)
         when "/" then @routine.DIV(op)
         when "%" then @routine.MODULO(op)
+        when "&" then @routine.BINARY_AND(op)
+        when "|" then @routine.BINARY_OR(op)
+        when "<<" then @routine.SHIFT_LEFT(op)
+        when ">>" then @routine.SHIFT_RIGHT(op)
       return
     else if op.operation in ["==","!=","<",">","<=",">="]
       @compile(op.term1)
@@ -598,6 +602,7 @@ class Compiler
 
   compileCreateClass:(statement)->
     if statement.ext?
+      statement.ext.nowarning = true
       @compile statement.ext
     else
       @routine.LOAD_VALUE 0,statement

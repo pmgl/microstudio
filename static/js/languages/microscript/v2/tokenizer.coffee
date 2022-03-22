@@ -18,6 +18,8 @@ class @Tokenizer
     @chars[","] = Token.TYPE_COMMA
     @chars["."] = Token.TYPE_DOT
     @chars["%"] = Token.TYPE_MODULO
+    @chars["&"] = Token.TYPE_BINARY_AND
+    @chars["|"] = Token.TYPE_BINARY_OR
 
     @doubles = {}
     @doubles[">"] = [Token.TYPE_GREATER,Token.TYPE_GREATER_OR_EQUALS]
@@ -27,6 +29,10 @@ class @Tokenizer
     @doubles["-"] = [Token.TYPE_MINUS,Token.TYPE_MINUS_EQUALS]
     @doubles["*"] = [Token.TYPE_MULTIPLY,Token.TYPE_MULTIPLY_EQUALS]
     @doubles["/"] = [Token.TYPE_DIVIDE,Token.TYPE_DIVIDE_EQUALS]
+
+    @shifts =
+      "<": Token.TYPE_SHIFT_LEFT
+      ">": Token.TYPE_SHIFT_RIGHT
 
     @letter_regex = RegExp(/^\p{L}/,'u')
 
@@ -127,7 +133,10 @@ class @Tokenizer
       @pushBack token
 
   parseDouble:(c,d)->
-    if @index<@input.length and @input.charAt(@index) == "="
+    if @shifts[c]? and @index<@input.length and @input.charAt(@index) == c
+      @nextChar()
+      return new Token @,@shifts[c],c+c
+    else if @index<@input.length and @input.charAt(@index) == "="
       @nextChar()
       return new Token @,d[1],c+"="
     else

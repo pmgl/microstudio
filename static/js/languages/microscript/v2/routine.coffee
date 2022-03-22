@@ -86,18 +86,12 @@ class @Routine
   MUL:(ref)-> @OP OPCODES.MUL,ref
   DIV:(ref)-> @OP OPCODES.DIV,ref
   MODULO:(ref)-> @OP OPCODES.MODULO,ref
+  BINARY_AND:(ref)-> @OP OPCODES.BINARY_AND,ref
+  BINARY_OR:(ref)-> @OP OPCODES.BINARY_OR,ref
+  SHIFT_LEFT:(ref)-> @OP OPCODES.SHIFT_LEFT,ref
+  SHIFT_RIGHT:(ref)-> @OP OPCODES.SHIFT_RIGHT,ref
 
   NEGATE:(ref)-> @OP OPCODES.NEGATE,ref
-
-  ADD_LOCAL:(index,ref)-> @OP OPCODES.ADD_LOCAL,ref,index
-  SUB_LOCAL:(index,ref)-> @OP OPCODES.SUB_LOCAL,ref,index
-  MUL_LOCAL:(index,ref)-> @OP OPCODES.MUL_LOCAL,ref,index
-  DIV_LOCAL:(index,ref)-> @OP OPCODES.DIV_LOCAL,ref,index
-
-  ADD_VARIABLE:(variable,ref)-> @OP OPCODES.ADD_VARIABLE,ref,variable
-  SUB_VARIABLE:(variable,ref)-> @OP OPCODES.SUB_VARIABLE,ref,variable
-  MUL_VARIABLE:(variable,ref)-> @OP OPCODES.MUL_VARIABLE,ref,variable
-  DIV_VARIABLE:(variable,ref)-> @OP OPCODES.DIV_VARIABLE,ref,variable
 
   ADD_PROPERTY:(ref)-> @OP OPCODES.ADD_PROPERTY,ref
   SUB_PROPERTY:(ref)-> @OP OPCODES.SUB_PROPERTY,ref
@@ -196,6 +190,10 @@ class @OPCODES_CLASS
     @set "MUL", 32
     @set "DIV", 33
     @set "MODULO", 34
+    @set "BINARY_AND", 35
+    @set "BINARY_OR", 36
+    @set "SHIFT_LEFT", 37
+    @set "SHIFT_RIGHT", 38
 
     @set "NEGATE", 39
 
@@ -207,16 +205,6 @@ class @OPCODES_CLASS
     @set "GTE", 45
 
     @set "NOT", 50
-
-    @set "ADD_LOCAL",60
-    @set "SUB_LOCAL",61
-    @set "MUL_LOCAL",62
-    @set "DIV_LOCAL",63
-
-    @set "ADD_VARIABLE",64
-    @set "SUB_VARIABLE",65
-    @set "MUL_VARIABLE",66
-    @set "DIV_VARIABLE",67
 
     @set "ADD_PROPERTY",68
     @set "SUB_PROPERTY",69

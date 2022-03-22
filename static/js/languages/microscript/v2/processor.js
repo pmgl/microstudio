@@ -224,7 +224,7 @@ this.Processor = (function() {
           if (v == null) {
             v = global[name];
           }
-          if (v == null) {
+          if ((v == null) && !routine.ref[op_index].nowarning) {
             token = routine.ref[op_index].token;
             id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
             if (!context.warnings.using_undefined_variable[id]) {
@@ -477,44 +477,32 @@ this.Processor = (function() {
           stack[stack_index - 1] %= stack[stack_index--];
           op_index++;
           break;
+        case 35:
+          v = stack[stack_index - 1] & stack[stack_index];
+          stack[--stack_index] = isFinite(v) ? v : 0;
+          op_index++;
+          break;
+        case 36:
+          v = stack[stack_index - 1] | stack[stack_index];
+          stack[--stack_index] = isFinite(v) ? v : 0;
+          op_index++;
+          break;
+        case 37:
+          v = stack[stack_index - 1] << stack[stack_index];
+          stack[--stack_index] = isFinite(v) ? v : 0;
+          op_index++;
+          break;
+        case 38:
+          v = stack[stack_index - 1] >> stack[stack_index];
+          stack[--stack_index] = isFinite(v) ? v : 0;
+          op_index++;
+          break;
         case 39:
           stack[stack_index] = -stack[stack_index];
           op_index++;
           break;
         case 50:
-          stack[stack_index] = stack[stack_index] === 0 ? 1 : 0;
-          op_index++;
-          break;
-        case 60:
-          stack[stack_index] = locals[locals_offset + arg1[op_index]] += stack[stack_index];
-          op_index++;
-          break;
-        case 61:
-          stack[stack_index] = locals[locals_offset + arg1[op_index]] -= stack[stack_index];
-          op_index++;
-          break;
-        case 64:
-          v1 = object[arg1[op_index]];
-          if (v1 == null) {
-            v1 = 0;
-          }
-          v2 = stack[stack_index];
-          if (typeof v1 === "number" && typeof v2 === "number") {
-            v1 += v2;
-            stack[stack_index] = object[arg1[op_index]] = isFinite(v1) ? v1 : 0;
-          }
-          op_index++;
-          break;
-        case 65:
-          v1 = object[arg1[op_index]];
-          if (v1 == null) {
-            v1 = 0;
-          }
-          v2 = stack[stack_index];
-          if (typeof v1 === "number" && typeof v2 === "number") {
-            v1 -= v2;
-            stack[stack_index] = object[arg1[op_index]] = isFinite(v1) ? v1 : 0;
-          }
+          stack[stack_index] = stack[stack_index] ? 0 : 1;
           op_index++;
           break;
         case 68:

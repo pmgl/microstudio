@@ -241,7 +241,7 @@ Compiler = (function() {
 
   Compiler.prototype.compileOperation = function(op) {
     var jump, ref, ref1;
-    if ((ref = op.operation) === "+" || ref === "-" || ref === "*" || ref === "/" || ref === "%") {
+    if ((ref = op.operation) === "+" || ref === "-" || ref === "*" || ref === "/" || ref === "%" || ref === "&" || ref === "|" || ref === "<<" || ref === ">>") {
       this.compile(op.term1);
       this.compile(op.term2);
       switch (op.operation) {
@@ -259,6 +259,18 @@ Compiler = (function() {
           break;
         case "%":
           this.routine.MODULO(op);
+          break;
+        case "&":
+          this.routine.BINARY_AND(op);
+          break;
+        case "|":
+          this.routine.BINARY_OR(op);
+          break;
+        case "<<":
+          this.routine.SHIFT_LEFT(op);
+          break;
+        case ">>":
+          this.routine.SHIFT_RIGHT(op);
       }
     } else if ((ref1 = op.operation) === "==" || ref1 === "!=" || ref1 === "<" || ref1 === ">" || ref1 === "<=" || ref1 === ">=") {
       this.compile(op.term1);
@@ -686,6 +698,7 @@ Compiler = (function() {
   Compiler.prototype.compileCreateClass = function(statement) {
     var f, j, len, ref, variable;
     if (statement.ext != null) {
+      statement.ext.nowarning = true;
       this.compile(statement.ext);
     } else {
       this.routine.LOAD_VALUE(0, statement);

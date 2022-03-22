@@ -171,7 +171,7 @@ this.Runtime = (function() {
     meta = {
       print: (function(_this) {
         return function(text) {
-          if (typeof text === "object") {
+          if (typeof text === "object" || typeof text === "function") {
             text = Program.toString(text);
           }
           return _this.listener.log(text);
@@ -581,7 +581,7 @@ this.Runtime = (function() {
   Runtime.prototype.updateControls = function() {
     var err, j, key, len, t, touches;
     touches = Object.keys(this.screen.touches);
-    this.touch.touching = touches.length > 0;
+    this.touch.touching = touches.length > 0 ? 1 : 0;
     this.touch.touches = [];
     for (j = 0, len = touches.length; j < len; j++) {
       key = touches[j];

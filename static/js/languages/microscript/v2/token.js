@@ -13,7 +13,7 @@ this.Token = (function() {
       this.type = Token.predefined[this.value];
       this.reserved_keyword = true;
     }
-    this.is_binary_operator = (this.type >= 30 && this.type <= 35) || (this.type >= 200 && this.type <= 201) || (this.type >= 2 && this.type <= 7);
+    this.is_binary_operator = (this.type >= 30 && this.type <= 39) || (this.type >= 200 && this.type <= 201) || (this.type >= 2 && this.type <= 7);
   }
 
   Token.prototype.toString = function() {
@@ -67,6 +67,14 @@ this.Token.TYPE_DIVIDE = 33;
 this.Token.TYPE_POWER = 34;
 
 this.Token.TYPE_MODULO = 35;
+
+this.Token.TYPE_BINARY_AND = 36;
+
+this.Token.TYPE_BINARY_OR = 37;
+
+this.Token.TYPE_SHIFT_LEFT = 38;
+
+this.Token.TYPE_SHIFT_RIGHT = 39;
 
 this.Token.TYPE_PLUS_EQUALS = 40;
 

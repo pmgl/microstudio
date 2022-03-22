@@ -219,7 +219,7 @@ Program.toString = function(value, nesting) {
   if (nesting == null) {
     nesting = 0;
   }
-  if (value instanceof Program.Function) {
+  if (value instanceof Routine) {
     if (nesting === 0) {
       return value.source;
     } else {
@@ -406,6 +406,10 @@ this.Program.Precedence = {
   ">=": 13,
   "==": 12,
   "!=": 11,
-  "and": 10,
-  "or": 9
+  "<<": 10,
+  ">>": 9,
+  "&": 8,
+  "|": 7,
+  "and": 6,
+  "or": 5
 };

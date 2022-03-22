@@ -194,40 +194,24 @@ this.Routine = (function() {
     return this.OP(OPCODES.MODULO, ref);
   };
 
+  Routine.prototype.BINARY_AND = function(ref) {
+    return this.OP(OPCODES.BINARY_AND, ref);
+  };
+
+  Routine.prototype.BINARY_OR = function(ref) {
+    return this.OP(OPCODES.BINARY_OR, ref);
+  };
+
+  Routine.prototype.SHIFT_LEFT = function(ref) {
+    return this.OP(OPCODES.SHIFT_LEFT, ref);
+  };
+
+  Routine.prototype.SHIFT_RIGHT = function(ref) {
+    return this.OP(OPCODES.SHIFT_RIGHT, ref);
+  };
+
   Routine.prototype.NEGATE = function(ref) {
     return this.OP(OPCODES.NEGATE, ref);
-  };
-
-  Routine.prototype.ADD_LOCAL = function(index, ref) {
-    return this.OP(OPCODES.ADD_LOCAL, ref, index);
-  };
-
-  Routine.prototype.SUB_LOCAL = function(index, ref) {
-    return this.OP(OPCODES.SUB_LOCAL, ref, index);
-  };
-
-  Routine.prototype.MUL_LOCAL = function(index, ref) {
-    return this.OP(OPCODES.MUL_LOCAL, ref, index);
-  };
-
-  Routine.prototype.DIV_LOCAL = function(index, ref) {
-    return this.OP(OPCODES.DIV_LOCAL, ref, index);
-  };
-
-  Routine.prototype.ADD_VARIABLE = function(variable, ref) {
-    return this.OP(OPCODES.ADD_VARIABLE, ref, variable);
-  };
-
-  Routine.prototype.SUB_VARIABLE = function(variable, ref) {
-    return this.OP(OPCODES.SUB_VARIABLE, ref, variable);
-  };
-
-  Routine.prototype.MUL_VARIABLE = function(variable, ref) {
-    return this.OP(OPCODES.MUL_VARIABLE, ref, variable);
-  };
-
-  Routine.prototype.DIV_VARIABLE = function(variable, ref) {
-    return this.OP(OPCODES.DIV_VARIABLE, ref, variable);
   };
 
   Routine.prototype.ADD_PROPERTY = function(ref) {
@@ -422,6 +406,10 @@ this.OPCODES_CLASS = (function() {
     this.set("MUL", 32);
     this.set("DIV", 33);
     this.set("MODULO", 34);
+    this.set("BINARY_AND", 35);
+    this.set("BINARY_OR", 36);
+    this.set("SHIFT_LEFT", 37);
+    this.set("SHIFT_RIGHT", 38);
     this.set("NEGATE", 39);
     this.set("EQ", 40);
     this.set("NEQ", 41);
@@ -430,14 +418,6 @@ this.OPCODES_CLASS = (function() {
     this.set("LTE", 44);
     this.set("GTE", 45);
     this.set("NOT", 50);
-    this.set("ADD_LOCAL", 60);
-    this.set("SUB_LOCAL", 61);
-    this.set("MUL_LOCAL", 62);
-    this.set("DIV_LOCAL", 63);
-    this.set("ADD_VARIABLE", 64);
-    this.set("SUB_VARIABLE", 65);
-    this.set("MUL_VARIABLE", 66);
-    this.set("DIV_VARIABLE", 67);
     this.set("ADD_PROPERTY", 68);
     this.set("SUB_PROPERTY", 69);
     this.set("MUL_PROPERTY", 70);

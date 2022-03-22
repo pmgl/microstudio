@@ -191,7 +191,7 @@ class @Processor
 
           if not v? then v = global[name]
 
-          if not v?
+          if not v? and not routine.ref[op_index].nowarning
             token = routine.ref[op_index].token
             id = token.tokenizer.filename+"-"+token.line+"-"+token.column
             if not context.warnings.using_undefined_variable[id]
@@ -434,50 +434,32 @@ class @Processor
           stack[stack_index-1] %= stack[stack_index--]
           op_index++
 
+        when 35 # OPCODE_BINARY_AND
+          v = stack[stack_index-1] & stack[stack_index]
+          stack[--stack_index] = if isFinite(v) then v else 0
+          op_index++
+
+        when 36 # OPCODE_BINARY_OR
+          v = stack[stack_index-1] | stack[stack_index]
+          stack[--stack_index] = if isFinite(v) then v else 0
+          op_index++
+
+        when 37 # OPCODE_SHIFT_LEFT
+          v = stack[stack_index-1] << stack[stack_index]
+          stack[--stack_index] = if isFinite(v) then v else 0
+          op_index++
+
+        when 38 # OPCODE_SHIFT_RIGHT
+          v = stack[stack_index-1] >> stack[stack_index]
+          stack[--stack_index] = if isFinite(v) then v else 0
+          op_index++
+
         when 39 # OPCODE_NEGATE
           stack[stack_index] = -stack[stack_index]
           op_index++
 
         when 50 # OPCODE_NOT
-          stack[stack_index] = if stack[stack_index] == 0 then 1 else 0
-          op_index++
-
-        when 60 # OPCODE_ADD_LOCAL
-          stack[stack_index] = locals[locals_offset+arg1[op_index]] += stack[stack_index]
-          op_index++
-
-        when 61 # OPCODE_SUB_LOCAL
-          stack[stack_index] = locals[locals_offset+arg1[op_index]] -= stack[stack_index]
-          op_index++
-
-        # when 62 # OPCODE_MUL_LOCAL
-        #   stack[stack_index] *= locals[locals_offset+arg1[op_index]] *= stack[stack_index]
-        #   op_index++
-        #
-        # when 63 # OPCODE_DIV_LOCAL
-        #   stack[stack_index] = locals[locals_offset+arg1[op_index]] /= stack[stack_index]
-        #   op_index++
-
-        when 64 # OPCODE_ADD_VARIABLE
-          v1 = object[arg1[op_index]]
-          if not v1? then v1 = 0
-          v2 = stack[stack_index]
-
-          if typeof v1 == "number" and typeof v2 == "number"
-            v1 += v2
-            stack[stack_index] = object[arg1[op_index]] = if isFinite(v1) then v1 else 0
-
-          op_index++
-
-        when 65 # OPCODE_SUB_VARIABLE
-          v1 = object[arg1[op_index]]
-          if not v1? then v1 = 0
-          v2 = stack[stack_index]
-
-          if typeof v1 == "number" and typeof v2 == "number"
-            v1 -= v2
-            stack[stack_index] = object[arg1[op_index]] = if isFinite(v1) then v1 else 0
-
+          stack[stack_index] = if stack[stack_index] then 0 else 1
           op_index++
 
         when 68 # OPCODE_ADD_PROPERTY

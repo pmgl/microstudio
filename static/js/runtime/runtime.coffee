@@ -123,7 +123,7 @@ class @Runtime
   startReady:()->
     meta =
       print: (text)=>
-        if typeof text == "object"
+        if typeof text == "object" or typeof text == "function"
           text = Program.toString(text)
         @listener.log(text)
 
@@ -425,7 +425,7 @@ class @Runtime
 
   updateControls:()->
     touches = Object.keys(@screen.touches)
-    @touch.touching = touches.length>0
+    @touch.touching = if touches.length>0 then 1 else 0
     @touch.touches = []
     for key in touches
       t = @screen.touches[key]

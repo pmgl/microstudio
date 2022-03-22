@@ -80,21 +80,23 @@ class @Runner
       margin = Math.floor(1000/@fps*.8)
 
     time = Date.now()
-    time_limit = time+32 # main_thread gets high priority
+    time_limit = time+100 # allow more time to prevent interrupting main_thread in the middle of a draw()
+    time_out = if @system.preemptive then time_limit else Infinity
 
     processor = @main_thread.processor
     if not processor.done
       if @main_thread.sleep_until?
         if Date.now() >= @main_thread.sleep_until
           delete @main_thread.sleep_until
-          @process @main_thread, time_limit
+          @process @main_thread, time_out
       else
-        @process @main_thread, time_limit
+        @process @main_thread, time_out
 
-    while processor.done and Date.now() < time_limit and @main_thread.loadNext()
-      @process @main_thread, time_limit
+    while processor.done and Date.now() < time_out and @main_thread.loadNext()
+      @process @main_thread, time_out
 
     time_limit = time+margin # secondary threads get remaining time
+    time_out = if @system.preemptive then time_limit else Infinity
 
     processing = true
     while processing
@@ -108,10 +110,10 @@ class @Runner
             if t.sleep_until?
               if Date.now() >= t.sleep_until
                 delete t.sleep_until
-                @process t, time_limit
+                @process t, time_out
                 processing = true
             else
-              @process t, time_limit
+              @process t, time_out
               processing = true
           else if t.start_time?
             if t.repeat
@@ -122,13 +124,13 @@ class @Runner
                   t.start_time += t.delay
 
                 processor.load t.routine
-                @process t, time_limit
+                @process t, time_out
                 processing = true
             else
               if time >= t.start_time
                 delete t.start_time
                 processor.load t.routine
-                @process t, time_limit
+                @process t, time_out
                 processing = true
           else
             t.terminated = true
@@ -202,12 +204,19 @@ class @Thread
     if @interface.status == "running"
       @interface.status = "paused"
       @paused = true
+      1
+    else
+      0
 
   resume:()->
     if @interface.status == "paused"
       @interface.status = "running"
       @paused = false
+      1
+    else
+      0
 
   stop:()->
     @interface.status = "stopped"
     @terminated = true
+    1

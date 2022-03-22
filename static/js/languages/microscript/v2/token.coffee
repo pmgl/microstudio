@@ -9,7 +9,7 @@ class @Token
       @type = Token.predefined[@value]
       @reserved_keyword = true
 
-    @is_binary_operator = (@type>=30 and @type<=35) or (@type>=200 and @type<=201) or (@type>=2 and @type<=7)
+    @is_binary_operator = (@type>=30 and @type<=39) or (@type>=200 and @type<=201) or (@type>=2 and @type<=7)
 
   toString:()->
     return @value+ " : "+@type
@@ -41,6 +41,10 @@ class @Token
 @Token.TYPE_DIVIDE = 33
 @Token.TYPE_POWER = 34
 @Token.TYPE_MODULO = 35
+@Token.TYPE_BINARY_AND = 36
+@Token.TYPE_BINARY_OR = 37
+@Token.TYPE_SHIFT_LEFT = 38
+@Token.TYPE_SHIFT_RIGHT = 39
 
 @Token.TYPE_PLUS_EQUALS = 40
 @Token.TYPE_MINUS_EQUALS = 41

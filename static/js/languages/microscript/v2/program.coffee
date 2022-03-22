@@ -87,7 +87,7 @@ class @Program.ForIn
   constructor:(@token,@iterator,@list,@sequence)->
 
 Program.toString = (value,nesting=0)->
-  if value instanceof Program.Function
+  if value instanceof Routine
     if nesting == 0
       return value.source
     else
@@ -171,5 +171,9 @@ class @Program.Sleep
   ">=":13
   "==":12
   "!=":11
-  "and":10
-  "or":9
+  "<<":10
+  ">>":9
+  "&":8
+  "|":7
+  "and":6
+  "or":5

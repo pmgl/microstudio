@@ -78,7 +78,7 @@ this.Runner = (function() {
   };
 
   Runner.prototype.tick = function() {
-    var dt, frame_time, i, index, j, k, len, load, margin, processing, processor, ref, ref1, t, time, time_limit;
+    var dt, frame_time, i, index, j, k, len, load, margin, processing, processor, ref, ref1, t, time, time_limit, time_out;
     if (this.system.fps != null) {
       this.fps = this.fps * .9 + this.system.fps * .1;
     }
@@ -90,22 +90,24 @@ this.Runner = (function() {
       margin = Math.floor(1000 / this.fps * .8);
     }
     time = Date.now();
-    time_limit = time + 32;
+    time_limit = time + 100;
+    time_out = this.system.preemptive ? time_limit : 2e308;
     processor = this.main_thread.processor;
     if (!processor.done) {
       if (this.main_thread.sleep_until != null) {
         if (Date.now() >= this.main_thread.sleep_until) {
           delete this.main_thread.sleep_until;
-          this.process(this.main_thread, time_limit);
+          this.process(this.main_thread, time_out);
         }
       } else {
-        this.process(this.main_thread, time_limit);
+        this.process(this.main_thread, time_out);
       }
     }
-    while (processor.done && Date.now() < time_limit && this.main_thread.loadNext()) {
-      this.process(this.main_thread, time_limit);
+    while (processor.done && Date.now() < time_out && this.main_thread.loadNext()) {
+      this.process(this.main_thread, time_out);
     }
     time_limit = time + margin;
+    time_out = this.system.preemptive ? time_limit : 2e308;
     processing = true;
     while (processing) {
       processing = false;
@@ -121,11 +123,11 @@ this.Runner = (function() {
             if (t.sleep_until != null) {
               if (Date.now() >= t.sleep_until) {
                 delete t.sleep_until;
-                this.process(t, time_limit);
+                this.process(t, time_out);
                 processing = true;
               }
             } else {
-              this.process(t, time_limit);
+              this.process(t, time_out);
               processing = true;
             }
           } else if (t.start_time != null) {
@@ -137,14 +139,14 @@ this.Runner = (function() {
                   t.start_time += t.delay;
                 }
                 processor.load(t.routine);
-                this.process(t, time_limit);
+                this.process(t, time_out);
                 processing = true;
               }
             } else {
               if (time >= t.start_time) {
                 delete t.start_time;
                 processor.load(t.routine);
-                this.process(t, time_limit);
+                this.process(t, time_out);
                 processing = true;
               }
             }
@@ -254,20 +256,27 @@ this.Thread = (function() {
   Thread.prototype.pause = function() {
     if (this["interface"].status === "running") {
       this["interface"].status = "paused";
-      return this.paused = true;
+      this.paused = true;
+      return 1;
+    } else {
+      return 0;
     }
   };
 
   Thread.prototype.resume = function() {
     if (this["interface"].status === "paused") {
       this["interface"].status = "running";
-      return this.paused = false;
+      this.paused = false;
+      return 1;
+    } else {
+      return 0;
     }
   };
 
   Thread.prototype.stop = function() {
     this["interface"].status = "stopped";
-    return this.terminated = true;
+    this.terminated = true;
+    return 1;
   };
 
   return Thread;
