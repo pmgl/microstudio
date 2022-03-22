@@ -69,7 +69,7 @@ this.Processor = (function() {
   };
 
   Processor.prototype.run = function(context) {
-    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, field, global, i, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, v, v1, v2, value;
+    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, fc, field, global, i, i1, i2, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, v, v1, v2, value;
     routine = this.routine;
     opcodes = this.routine.opcodes;
     arg1 = this.routine.arg1;
@@ -218,7 +218,7 @@ this.Processor = (function() {
             obj = object;
             while ((v == null) && (obj["class"] != null)) {
               obj = obj["class"];
-              v = obj[v];
+              v = obj[name];
             }
           }
           if (v == null) {
@@ -258,9 +258,19 @@ this.Processor = (function() {
           op_index++;
           break;
         case 14:
-          v = object[arg1[op_index]];
-          if (typeof v !== "object") {
-            v = object[arg1[op_index]] = {};
+          name = arg1[op_index];
+          obj = object;
+          v = obj[name];
+          while ((v == null) && (obj["class"] != null)) {
+            obj = obj["class"];
+            v = obj[name];
+          }
+          if ((v == null) && (global[name] != null)) {
+            obj = global;
+            v = global[name];
+          }
+          if ((v == null) || typeof v !== "object") {
+            v = obj[name] = {};
             token = routine.ref[op_index].token;
             id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
             if (!context.warnings.assigning_field_to_undefined[id]) {
@@ -459,7 +469,8 @@ this.Processor = (function() {
           op_index++;
           break;
         case 33:
-          stack[stack_index - 1] /= stack[stack_index--];
+          v = stack[stack_index - 1] / stack[stack_index];
+          stack[--stack_index] = isFinite(v) ? v : 0;
           op_index++;
           break;
         case 34:
@@ -768,11 +779,14 @@ this.Processor = (function() {
             token = routine.ref[op_index].token;
             id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
             if (!context.warnings.invoking_non_function[id]) {
+              fc = routine.ref[op_index];
+              i1 = fc.expression.token.start;
+              i2 = fc.token.start + fc.token.length;
               context.warnings.invoking_non_function[id] = {
                 file: token.tokenizer.filename,
                 line: token.line,
                 column: token.column,
-                expression: ""
+                expression: fc.token.tokenizer.input.substring(i1, i2)
               };
             }
             op_index++;
@@ -845,11 +859,14 @@ this.Processor = (function() {
             token = routine.ref[op_index].token;
             id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
             if (!context.warnings.invoking_non_function[id]) {
+              fc = routine.ref[op_index];
+              i1 = fc.expression.token.start;
+              i2 = fc.token.start + fc.token.length;
               context.warnings.invoking_non_function[id] = {
                 file: token.tokenizer.filename,
                 line: token.line,
                 column: token.column,
-                expression: ""
+                expression: fc.token.tokenizer.input.substring(i1, i2)
               };
             }
             op_index++;
@@ -917,11 +934,14 @@ this.Processor = (function() {
             token = routine.ref[op_index].token;
             id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
             if (!context.warnings.invoking_non_function[id]) {
+              fc = routine.ref[op_index];
+              i1 = fc.expression.token.start;
+              i2 = fc.token.start + fc.token.length;
               context.warnings.invoking_non_function[id] = {
                 file: token.tokenizer.filename,
                 line: token.line,
                 column: token.column,
-                expression: ""
+                expression: fc.token.tokenizer.input.substring(i1, i2)
               };
             }
             op_index++;

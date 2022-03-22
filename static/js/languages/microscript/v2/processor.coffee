@@ -187,7 +187,7 @@ class @Processor
             obj = object
             while not v? and obj.class?
               obj = obj.class
-              v = obj[v]
+              v = obj[name]
 
           if not v? then v = global[name]
 
@@ -222,10 +222,19 @@ class @Processor
           op_index++
 
         when 14 # OPCODE_LOAD_VARIABLE_OBJECT
-          v = object[arg1[op_index]]
-          if typeof v != "object"
-            v = object[arg1[op_index]] = {}
+          name = arg1[op_index]
+          obj = object
+          v = obj[name]
+          while not v? and obj.class?
+            obj = obj.class
+            v = obj[name]
 
+          if not v? and global[name]?
+            obj = global
+            v = global[name]
+
+          if not v? or typeof v != "object"
+            v = obj[name] = {}
             token = routine.ref[op_index].token
             id = token.tokenizer.filename+"-"+token.line+"-"+token.column
             if not context.warnings.assigning_field_to_undefined[id]
@@ -417,7 +426,8 @@ class @Processor
           op_index++
 
         when 33 # OPCODE_DIV
-          stack[stack_index-1] /= stack[stack_index--]
+          v = stack[stack_index-1] / stack[stack_index]
+          stack[--stack_index] = if isFinite(v) then v else 0
           op_index++
 
         when 34 # OPCODE_MODULO
@@ -714,11 +724,14 @@ class @Processor
             token = routine.ref[op_index].token
             id = token.tokenizer.filename+"-"+token.line+"-"+token.column
             if not context.warnings.invoking_non_function[id]
+              fc = routine.ref[op_index]
+              i1 = fc.expression.token.start
+              i2 = fc.token.start+fc.token.length
               context.warnings.invoking_non_function[id] =
                 file: token.tokenizer.filename
                 line: token.line
                 column: token.column
-                expression: ""
+                expression: fc.token.tokenizer.input.substring i1,i2
 
             op_index++
 
@@ -791,12 +804,16 @@ class @Processor
 
             token = routine.ref[op_index].token
             id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+
             if not context.warnings.invoking_non_function[id]
+              fc = routine.ref[op_index]
+              i1 = fc.expression.token.start
+              i2 = fc.token.start+fc.token.length
               context.warnings.invoking_non_function[id] =
                 file: token.tokenizer.filename
                 line: token.line
                 column: token.column
-                expression: ""
+                expression: fc.token.tokenizer.input.substring i1,i2
 
             op_index++
 
@@ -863,11 +880,14 @@ class @Processor
             token = routine.ref[op_index].token
             id = token.tokenizer.filename+"-"+token.line+"-"+token.column
             if not context.warnings.invoking_non_function[id]
+              fc = routine.ref[op_index]
+              i1 = fc.expression.token.start
+              i2 = fc.token.start+fc.token.length
               context.warnings.invoking_non_function[id] =
                 file: token.tokenizer.filename
                 line: token.line
                 column: token.column
-                expression: ""
+                expression: fc.token.tokenizer.input.substring i1,i2
 
             op_index++
 

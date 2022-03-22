@@ -51,6 +51,25 @@ class @Tokenizer
         @last_column = @column
         @column = 0
         return @nextChar()
+      else if @input.charAt(@index) == "*"
+        endseq = 0
+        loop
+          c = @input.charAt(@index++)
+          if c == "\n"
+            @line += 1
+            @last_column = @column
+            @column = 0
+            endseq = 0
+          else if c == "*"
+            endseq = 1
+          else if c == "/" and endseq == 1
+            break
+          else
+            endseq = 0
+          break if @index>=@input.length
+
+        return @nextChar()
+
     else
       @column += 1
     c
@@ -196,7 +215,15 @@ class @Tokenizer
       return @error("Unclosed string value") if @index>=@input.length
       c = @nextChar(true)
       code = c.charCodeAt(0)
-      if c == close
+      if c == "\\"
+        n = @nextChar(true)
+        switch n
+          when "n" then s += "\n"
+          when "\\" then s += "\\"
+          when close then s += close
+          else
+            s += "\\"+n
+      else if c == close
         n = @nextChar(true)
         if n == close
           s += c

@@ -229,6 +229,8 @@ class @Parser
     Program.BuildOperations(ops,terms)
 
   parseAssignment:(token,expression)->
+    if expression not instanceof Program.Variable and expression not instanceof Program.Field
+      throw "Expected variable identifier or property"
     return new Program.Assignment token,expression,@assertExpression()
 
   parseSelfAssignment:(token,expression,operation)->

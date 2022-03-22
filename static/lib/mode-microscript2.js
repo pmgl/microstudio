@@ -321,11 +321,14 @@ var Microscript2HighlightRules = function() {
           regex : "'",
           next : "singlequotestr"
       },{
+          token : "constant.numeric", // hex number
+          regex : "0x[a-fA-F0-9]+"
+      },{
           token : "constant.numeric", // decimal integers and floats
           regex : /(?:\d\d*(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+\b)?/
       }, {
           token: mapper,
-          regex: "[a-zA-Z][a-zA-Z0-9_$]*\\b"
+          regex: "[a-zA-Z][a-zA-Z0-9_]*\\b"
       }, {
           token: "string",
           regex: '"(?:[^"])*"'
@@ -355,7 +358,7 @@ var Microscript2HighlightRules = function() {
       ],
       doublequotestr: [ {
             token : "comment.character.escape", // embedded quote
-            regex : '""|\\\\"',
+            regex : '""|\\\\"|\\\\\\\\',
           },{
                 token : "comment.character.escape",
                 regex : '\\\\n',
@@ -369,7 +372,7 @@ var Microscript2HighlightRules = function() {
         ],
         singlequotestr: [ {
               token : "comment.character.escape", // embedded quote
-              regex : "''|\\\\'",
+              regex : "''|\\\\'|\\\\\\\\",
             },{
                   token : "comment.character.escape",
                   regex : '\\\\n',

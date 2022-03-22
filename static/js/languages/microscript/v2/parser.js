@@ -275,6 +275,9 @@ this.Parser = (function() {
   };
 
   Parser.prototype.parseAssignment = function(token, expression) {
+    if (!(expression instanceof Program.Variable) && !(expression instanceof Program.Field)) {
+      throw "Expected variable identifier or property";
+    }
     return new Program.Assignment(token, expression, this.assertExpression());
   };
 

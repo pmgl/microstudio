@@ -38,7 +38,7 @@ this.Tokenizer = (function() {
   };
 
   Tokenizer.prototype.nextChar = function(ignore_comments) {
-    var c;
+    var c, endseq;
     if (ignore_comments == null) {
       ignore_comments = false;
     }
@@ -58,6 +58,27 @@ this.Tokenizer = (function() {
         this.line += 1;
         this.last_column = this.column;
         this.column = 0;
+        return this.nextChar();
+      } else if (this.input.charAt(this.index) === "*") {
+        endseq = 0;
+        while (true) {
+          c = this.input.charAt(this.index++);
+          if (c === "\n") {
+            this.line += 1;
+            this.last_column = this.column;
+            this.column = 0;
+            endseq = 0;
+          } else if (c === "*") {
+            endseq = 1;
+          } else if (c === "/" && endseq === 1) {
+            break;
+          } else {
+            endseq = 0;
+          }
+          if (this.index >= this.input.length) {
+            break;
+          }
+        }
         return this.nextChar();
       }
     } else {
@@ -258,7 +279,22 @@ this.Tokenizer = (function() {
       }
       c = this.nextChar(true);
       code = c.charCodeAt(0);
-      if (c === close) {
+      if (c === "\\") {
+        n = this.nextChar(true);
+        switch (n) {
+          case "n":
+            s += "\n";
+            break;
+          case "\\":
+            s += "\\";
+            break;
+          case close:
+            s += close;
+            break;
+          default:
+            s += "\\" + n;
+        }
+      } else if (c === close) {
         n = this.nextChar(true);
         if (n === close) {
           s += c;
