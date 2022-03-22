@@ -392,6 +392,7 @@ this.Processor = (function() {
             }
             stack_index -= args;
             stack[stack_index - 1] = new c(...a);
+            op_index++;
           } else {
             this.resolveParentClass(c, global);
             res = {
@@ -430,7 +431,7 @@ this.Processor = (function() {
               }
             } else {
               stack_index -= args;
-              stack[stack_index] = res;
+              stack[stack_index - 1] = res;
               op_index++;
             }
           }

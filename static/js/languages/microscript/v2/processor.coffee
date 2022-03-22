@@ -352,7 +352,9 @@ class @Processor
               a.push stack[stack_index-args+i]
 
             stack_index -= args
+            # NEW CALL is followed by a POP (to get rid of constructor return value)
             stack[stack_index-1] = `new c(...a)`
+            op_index++
           else
             @resolveParentClass c,global
             res = { class: c }
@@ -391,7 +393,7 @@ class @Processor
                 stack_index -= args-con.num_args
             else
               stack_index -= args
-              stack[stack_index] = res
+              stack[stack_index-1] = res
               op_index++
 
         when 30 # OPCODE_ADD
