@@ -86,12 +86,6 @@ this.Screen = (function() {
     this.object_rotation = 0;
     this.object_scale_x = 1;
     this.object_scale_y = 1;
-    this.translation_x = 0;
-    this.translation_y = 0;
-    this.rotation = 0;
-    this.scale_x = 1;
-    this.scale_y = 1;
-    this.screen_transform = false;
     this.context.lineCap = "round";
     this.blending = {
       normal: "source-over",

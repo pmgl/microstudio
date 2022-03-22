@@ -72,12 +72,12 @@ class @Screen
     @object_scale_x = 1
     @object_scale_y = 1
 
-    @translation_x = 0
-    @translation_y = 0
-    @rotation = 0
-    @scale_x = 1
-    @scale_y = 1
-    @screen_transform = false
+    # @translation_x = 0
+    # @translation_y = 0
+    # @rotation = 0
+    # @scale_x = 1
+    # @scale_y = 1
+    # @screen_transform = false
 
     @context.lineCap = "round"
     @blending =
