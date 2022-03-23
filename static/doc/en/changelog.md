@@ -1,5 +1,17 @@
 ## Changelog
 
+### Update 2022-03-23
+* microScript v2: variable.type
+* microScript v2: multi-line comments
+* microScript v2: binary ops
+* microScript v2: system.preemptive flag
+* do not reset screen transform when window is resized
+* Fixed #95
+* Reduced upfront microStudio website download (to be continued)
+
+### Update 2022-03-16
+* microScript v2: Threads are working!
+
 ### Update 2022-03-14
 * screen space rotation and scaling: screen.setScale() and screen.setRotation()
 * Fixed #94 paste text into console
