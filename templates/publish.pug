@@ -12,7 +12,7 @@ div.publish-box#publish-box-online
       i.fa.fa-eye-slash
       | #{translator.get("Make private again")}
     div.publish-text #{translator.get("This project is currently public.")}
-    
+
     br
     input(type="checkbox" id="publish-unlisted")
     label(for="publish-unlisted") #{translator.get("Unlisted")}
@@ -54,7 +54,7 @@ div.publish-box#publish-box-online
     div.validate-button <i class="fa fa-plus"></i> #{translator.get("Add")}
 
   div#publish-tag-list
-    
+
 div.publish-box
   div.action-box#html-export
     div.publish-button
@@ -66,19 +66,12 @@ div.publish-box
   p #{translator.get("You can also easily publish your HTML5 game on a number of platforms supporting HTML5 games. We have listed a few popular ones below, which you can check out:")}
 
   div.logos
-    a(href="https://itch.io" target="_blank")
-      img.logo(src="/img/itchio.svg" alt="itch.io" title="itch.io")
-    a(href="https://gamejolt.com" target="_blank")
-      img.logo(src="/img/gamejolt.png" alt="Gamejolt" title="Gamejolt")
-    a(href="https://gamedistribution.com" target="_blank")
-      img.logo(src="/img/gamedistribution.svg" alt="Game Distribution" title="Game Distribution")
-    a(href="https://kongregate.com" target="_blank")
-      img.logo(src="/img/kongregate.svg" alt="Kongregate" title="Kongregate")
-    a(href="https://gamepix.com" target="_blank")
-      img.logo(src="/img/gamepix.png" alt="Gamepix" title="Gamepix")
-    a(href="https://crazygames.com" target="_blank")
-      img.logo(src="/img/crazygames.svg" alt="CrazyGames" title="CrazyGames")
-
+    a(href="https://itch.io" target="_blank" style="background-image:url(/img/itchio.svg);" title="itch.io")
+    a(href="https://gamejolt.com" target="_blank" style="background-image:url(/img/gamejolt.png);" title="Gamejolt")
+    a(href="https://gamedistribution.com" target="_blank" style="background-image:url(/img/gamedistribution.svg);" title="Game Distribution")
+    a(href="https://kongregate.com" target="_blank" style="background-image:url(/img/kongregate.svg);" title="Kongregate")
+    a(href="https://gamepix.com" target="_blank" style="background-image:url(/img/gamepix.png);" title="Gamepix")
+    a(href="https://crazygames.com" target="_blank" style="background-image:url(/img/crazygames.svg);" title="CrazyGames")
 
 div.publish-box#publish-box-android
   img.title(src="/img/android_robot.svg")
@@ -124,7 +117,7 @@ div.publish-box#publish-box-linux
   h2 #{translator.get("Build for Linux")} <span class="beta">beta</span>
   p #{translator.get("This will build your game as an executable for Linux (Ubuntu, x86).")}
   div.clear
-    
+
 div.publish-box#publish-box-raspbian
   img.title(src="/img/raspberry.svg")
   div.action-box#raspbian-export

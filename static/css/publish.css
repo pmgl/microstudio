@@ -109,7 +109,15 @@
 .publish-box a {
   color: hsl(200,100%,80%);
   text-decoration: none;
-  padding: 10px 0;
+  margin: 20px 40px 0 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: inline-block ;
+  width: 140px ;
+  height: 60px ;
+  background-repeat: no-repeat;
+  background-size: contain ;
+  background-position: center ;
 }
 
 .publish-box .validate-button-container {
