@@ -90,7 +90,11 @@ class @Options
     @updateUserList()
     @app.project.addListener @
 
-    document.querySelector("#projectoptions-users").style.display = if @app.user.flags.guest then "none" else "block"
+    if window.ms_standalone or @app.user.flags.guest
+      document.querySelector("#projectoptions-users-content").style.display = "none"
+    else
+      document.querySelector("#projectoptions-users-content").style.display = "block"
+
     @updateProjectTabSelection()
     @updateProjectTabs()
 

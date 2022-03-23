@@ -147,7 +147,11 @@ this.Options = (function() {
     this.updateSecretCodeLine();
     this.updateUserList();
     this.app.project.addListener(this);
-    document.querySelector("#projectoptions-users").style.display = this.app.user.flags.guest ? "none" : "block";
+    if (window.ms_standalone || this.app.user.flags.guest) {
+      document.querySelector("#projectoptions-users-content").style.display = "none";
+    } else {
+      document.querySelector("#projectoptions-users-content").style.display = "block";
+    }
     this.updateProjectTabSelection();
     return this.updateProjectTabs();
   };
