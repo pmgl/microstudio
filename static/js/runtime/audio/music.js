@@ -15,6 +15,7 @@ this.Music = (function() {
     }
     this.playing = true;
     this.tag.loop = loopit ? true : false;
+    this.tag.volume = volume;
     if (this.audio.isStarted()) {
       this.tag.play();
     } else {

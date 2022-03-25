@@ -6,6 +6,7 @@ class @Music
   play:(volume=1,loopit=false)->
     @playing = true
     @tag.loop = if loopit then true else false
+    @tag.volume = volume
 
     if @audio.isStarted()
       @tag.play()
