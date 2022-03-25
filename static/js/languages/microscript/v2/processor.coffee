@@ -18,7 +18,7 @@ class @Processor
     @op_index = 0
     @call_stack_index = 0
     @global = null
-    @object = null
+    @object = @routine.object or null
     @locals_offset = 0
     @call_super = null
     @call_supername = ""
@@ -142,6 +142,9 @@ class @Processor
                   stack[--stack_index] = "object"
 
           op_index++
+
+        when 4 # OPCODE_LOAD_IMPORT
+          stack[++stack_index] = routine.import_values[arg1[op_index++]]
 
         when 5 # OPCODE_LOAD_THIS
           stack[++stack_index] = object
@@ -653,6 +656,19 @@ class @Processor
           else
             op_index++
 
+
+        when 89 # OPCODE_LOAD_ROUTINE
+          r = arg1[op_index++]
+          rc = r.clone()
+          for ir in r.import_refs
+            # console.info "importing ref: "+ir
+            rc.import_values.push locals[locals_offset+ir]
+
+          rc.object = object
+
+          stack[++stack_index] = rc
+
+
         when 90 # OPCODE_FUNCTION_CALL
           args = arg1[op_index]
           f = stack[stack_index]
@@ -675,7 +691,7 @@ class @Processor
             arg1 = f.arg1
             op_index = 0
             length = opcodes.length
-            object = global
+            object = if routine.object? then routine.object else global
             call_super = global
             call_supername = ""
 

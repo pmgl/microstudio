@@ -182,6 +182,10 @@ class @ExportFeatures
       music_list = []
       fullsource = "\n\n"
 
+      wrapsource = (s)->s
+      if project.language == "microscript_v2" # this is to prevent local variables contamination between files
+        wrapsource = (s)->"\nfunction()\n#{s}\nend()\n"
+
       libs = []
       if project.graphics? and typeof project.graphics == "string"
         g = project.graphics.toLowerCase()
@@ -348,7 +352,7 @@ class @ExportFeatures
                 #console.info "reading: "+JSON.stringify src
                 @webapp.server.content.files.read "#{user.id}/#{project.id}/ms/#{src.file}","text",(content)=>
                   if content?
-                    fullsource += content+"\n\n"
+                    fullsource += wrapsource(content)+"\n\n"
                   queue.next()
 
           queue.add ()=>

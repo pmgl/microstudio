@@ -218,7 +218,7 @@ this.ExportFeatures = (function() {
   ExportFeatures.prototype.addPublishHTML = function() {
     return this.webapp.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?publish\/html\/$/, (function(_this) {
       return function(req, res) {
-        var access, assets, fn, fonts, fullsource, g, i, images, j, k, l, len, len1, len2, len3, lib, libs, manager, maps_dict, music_list, n, optlib, proglang, project, queue, ref, ref1, ref2, s, sounds_list, user, zip;
+        var access, assets, fn, fonts, fullsource, g, i, images, j, k, l, len, len1, len2, len3, lib, libs, manager, maps_dict, music_list, n, optlib, proglang, project, queue, ref, ref1, ref2, s, sounds_list, user, wrapsource, zip;
         access = _this.webapp.getProjectAccess(req, res);
         if (access == null) {
           return;
@@ -234,6 +234,14 @@ this.ExportFeatures = (function() {
         sounds_list = [];
         music_list = [];
         fullsource = "\n\n";
+        wrapsource = function(s) {
+          return s;
+        };
+        if (project.language === "microscript_v2") {
+          wrapsource = function(s) {
+            return "\nfunction()\n" + s + "\nend()\n";
+          };
+        }
         libs = [];
         if ((project.graphics != null) && typeof project.graphics === "string") {
           g = project.graphics.toLowerCase();
@@ -461,7 +469,7 @@ this.ExportFeatures = (function() {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/ms/" + src.file, "text", function(content) {
                   if (content != null) {
-                    fullsource += content + "\n\n";
+                    fullsource += wrapsource(content) + "\n\n";
                   }
                   return queue.next();
                 });

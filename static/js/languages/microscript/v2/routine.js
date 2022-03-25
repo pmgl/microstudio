@@ -9,7 +9,19 @@ this.Routine = (function() {
     this.label_count = 0;
     this.labels = {};
     this.transpile = false;
+    this.import_refs = [];
+    this.import_values = [];
   }
+
+  Routine.prototype.clone = function() {
+    var r;
+    r = new Routine(this.num_args);
+    r.opcodes = this.opcodes;
+    r.arg1 = this.arg1;
+    r.ref = this.ref;
+    r.locals_size = this.locals_size;
+    return r;
+  };
 
   Routine.prototype.createLabel = function(str) {
     var name;
@@ -88,6 +100,23 @@ this.Routine = (function() {
     this.opcodes.push(code);
     this.arg1.push(v1);
     return this.ref.push(ref);
+  };
+
+  Routine.prototype.OP_INSERT = function(code, ref, v1, index) {
+    var label, ref1, value;
+    if (v1 == null) {
+      v1 = 0;
+    }
+    this.opcodes.splice(index, 0, code);
+    this.arg1.splice(index, 0, v1);
+    this.ref.splice(index, 0, ref);
+    ref1 = this.labels;
+    for (label in ref1) {
+      value = ref1[label];
+      if (value >= index) {
+        this.labels[label] += 1;
+      }
+    }
   };
 
   Routine.prototype.TYPE = function(ref) {
@@ -310,6 +339,10 @@ this.Routine = (function() {
     return this.OP(OPCODES.STORE_PROPERTY, ref);
   };
 
+  Routine.prototype.LOAD_ROUTINE = function(value, ref) {
+    return this.OP(OPCODES.LOAD_ROUTINE, ref, value);
+  };
+
   Routine.prototype.FUNCTION_CALL = function(args, ref) {
     return this.OP(OPCODES.FUNCTION_CALL, ref, args);
   };
@@ -379,6 +412,7 @@ this.OPCODES_CLASS = (function() {
     this.set("TYPE", 1);
     this.set("VARIABLE_TYPE", 2);
     this.set("PROPERTY_TYPE", 3);
+    this.set("LOAD_IMPORT", 4);
     this.set("LOAD_THIS", 5);
     this.set("LOAD_GLOBAL", 6);
     this.set("LOAD_CONTEXT_VARIABLE", 8);
@@ -427,6 +461,7 @@ this.OPCODES_CLASS = (function() {
     this.set("JUMPN", 82);
     this.set("JUMPY_NOPOP", 83);
     this.set("JUMPN_NOPOP", 84);
+    this.set("LOAD_ROUTINE", 89);
     this.set("FUNCTION_CALL", 90);
     this.set("FUNCTION_APPLY_VARIABLE", 91);
     this.set("FUNCTION_APPLY_PROPERTY", 92);

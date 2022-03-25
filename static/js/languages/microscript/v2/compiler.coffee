@@ -7,7 +7,7 @@ class Compiler
 
     @routine = new Routine()
 
-    @locals = new Locals()
+    @locals = new Locals @
 
     @count = 0
 
@@ -508,14 +508,14 @@ class Compiler
 
   compileFunction:(func)->
     r = @compileFunctionBody(func)
-    @routine.LOAD_VALUE r,func
+    @routine.LOAD_ROUTINE r,func
 
   compileFunctionBody:(func)->
     routine = @routine
     locals = @locals
 
     @routine = new Routine(if func.args? then func.args.length else 0)
-    @locals = new Locals()
+    @locals = new Locals @,locals
 
     local_index = @locals.index
 
@@ -549,12 +549,21 @@ class Compiler
       @routine.LOAD_VALUE 0,func
       @routine.RETURN func
 
+    index = 0
+    for i in @locals.imports
+      @routine.OP_INSERT OPCODES.LOAD_IMPORT,func,index,index*3
+      @routine.OP_INSERT OPCODES.STORE_LOCAL,func,i.index,index*3+1
+      @routine.OP_INSERT OPCODES.POP,func,0,index*3+2
+      @routine.import_refs.push i.source
+      index += 1
+
     @routine.optimize()
     @routine.resolveLabels()
     @count += @routine.opcodes.length
     r = @routine
     # console.info r.toString()
     @routine.locals_size = @locals.max_index
+
 
     @routine = routine
     @locals = locals
@@ -632,7 +641,7 @@ class Compiler
 
   compileAfter:(after)->
     r = @compileFunctionBody(after)
-    @routine.LOAD_VALUE r,after
+    @routine.LOAD_ROUTINE r,after
     @compile after.delay
     if after.multiplier? and after.multiplier != 1
       @routine.LOAD_VALUE after.multiplier,after
@@ -641,7 +650,7 @@ class Compiler
 
   compileEvery:(every)->
     r = @compileFunctionBody(every)
-    @routine.LOAD_VALUE r,every
+    @routine.LOAD_ROUTINE r,every
     @compile every.delay
     if every.multiplier? and every.multiplier != 1
       @routine.LOAD_VALUE every.multiplier,every
@@ -650,7 +659,7 @@ class Compiler
 
   compileDo:(dostuff)->
     r = @compileFunctionBody(dostuff)
-    @routine.LOAD_VALUE r,dostuff
+    @routine.LOAD_ROUTINE r,dostuff
     @routine.DO dostuff
 
   compileSleep:(sleep)->
@@ -733,11 +742,12 @@ class Compiler
 
 
 class @Locals
-  constructor:()->
+  constructor:(@compiler,@parent = null)->
     @layers = []
     @index = 0
     @max_index = 0
     @push()
+    @imports = []
 
   increment:()->
     spot = @index++
@@ -762,6 +772,16 @@ class @Locals
       v = @layers[i].get(name)
       if v?
         return v
+
+    if @parent?
+      v = @parent.get name
+      if v?
+        index = @register name
+        @imports.push
+          name: name
+          index: index
+          source: v
+        return index
 
     return null
 

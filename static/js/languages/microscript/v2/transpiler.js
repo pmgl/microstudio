@@ -7,10 +7,10 @@ Transpiler = (function() {
     var i, j, l, op, ref, results;
     results = [];
     for (i = l = 0, ref = r.opcodes.length - 1; l <= ref; i = l += 1) {
-      op = r.table[r.opcodes[i]];
+      op = OPCODES[r.opcodes[i]];
       if (this.transpilable(op, r.arg1[i])) {
         j = i + 1;
-        while (j < r.opcodes.length && r.removeable(j) && this.transpilable(r.table[r.opcodes[j]], r.arg1[j])) {
+        while (j < r.opcodes.length && r.removeable(j) && this.transpilable(OPCODES[r.opcodes[j]], r.arg1[j])) {
           j += 1;
         }
         j -= 1;
@@ -34,7 +34,7 @@ Transpiler = (function() {
     this.variables = {};
     s = "f = function(stack,stack_index,locals,locals_offset,object) {\n";
     for (k = l = ref = i, ref1 = j; l <= ref1; k = l += 1) {
-      comp = this[r.table[r.opcodes[k]]](r.arg1[k]);
+      comp = this[OPCODES[r.opcodes[k]]](r.arg1[k]);
       if (comp) {
         s += comp + "\n";
       }

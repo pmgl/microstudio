@@ -8,7 +8,7 @@ Compiler = (function() {
     this.code = "";
     this.code = [this.code];
     this.routine = new Routine();
-    this.locals = new Locals();
+    this.locals = new Locals(this);
     this.count = 0;
     ref = this.program.statements;
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
@@ -592,15 +592,15 @@ Compiler = (function() {
   Compiler.prototype.compileFunction = function(func) {
     var r;
     r = this.compileFunctionBody(func);
-    return this.routine.LOAD_VALUE(r, func);
+    return this.routine.LOAD_ROUTINE(r, func);
   };
 
   Compiler.prototype.compileFunctionBody = function(func) {
-    var a, i, index, j, k, l, label, local_index, locals, r, ref, ref1, ref2, routine;
+    var a, i, index, j, k, l, label, len, local_index, locals, m, r, ref, ref1, ref2, ref3, routine;
     routine = this.routine;
     locals = this.locals;
     this.routine = new Routine(func.args != null ? func.args.length : 0);
-    this.locals = new Locals();
+    this.locals = new Locals(this, locals);
     local_index = this.locals.index;
     if (func.args != null) {
       for (i = j = ref = func.args.length - 1; j >= 0; i = j += -1) {
@@ -635,6 +635,16 @@ Compiler = (function() {
     } else {
       this.routine.LOAD_VALUE(0, func);
       this.routine.RETURN(func);
+    }
+    index = 0;
+    ref3 = this.locals.imports;
+    for (m = 0, len = ref3.length; m < len; m++) {
+      i = ref3[m];
+      this.routine.OP_INSERT(OPCODES.LOAD_IMPORT, func, index, index * 3);
+      this.routine.OP_INSERT(OPCODES.STORE_LOCAL, func, i.index, index * 3 + 1);
+      this.routine.OP_INSERT(OPCODES.POP, func, 0, index * 3 + 2);
+      this.routine.import_refs.push(i.source);
+      index += 1;
     }
     this.routine.optimize();
     this.routine.resolveLabels();
@@ -736,7 +746,7 @@ Compiler = (function() {
   Compiler.prototype.compileAfter = function(after) {
     var r;
     r = this.compileFunctionBody(after);
-    this.routine.LOAD_VALUE(r, after);
+    this.routine.LOAD_ROUTINE(r, after);
     this.compile(after.delay);
     if ((after.multiplier != null) && after.multiplier !== 1) {
       this.routine.LOAD_VALUE(after.multiplier, after);
@@ -748,7 +758,7 @@ Compiler = (function() {
   Compiler.prototype.compileEvery = function(every) {
     var r;
     r = this.compileFunctionBody(every);
-    this.routine.LOAD_VALUE(r, every);
+    this.routine.LOAD_ROUTINE(r, every);
     this.compile(every.delay);
     if ((every.multiplier != null) && every.multiplier !== 1) {
       this.routine.LOAD_VALUE(every.multiplier, every);
@@ -760,7 +770,7 @@ Compiler = (function() {
   Compiler.prototype.compileDo = function(dostuff) {
     var r;
     r = this.compileFunctionBody(dostuff);
-    this.routine.LOAD_VALUE(r, dostuff);
+    this.routine.LOAD_ROUTINE(r, dostuff);
     return this.routine.DO(dostuff);
   };
 
@@ -834,11 +844,14 @@ Compiler = (function() {
 })();
 
 this.Locals = (function() {
-  function Locals() {
+  function Locals(compiler, parent) {
+    this.compiler = compiler;
+    this.parent = parent != null ? parent : null;
     this.layers = [];
     this.index = 0;
     this.max_index = 0;
     this.push();
+    this.imports = [];
   }
 
   Locals.prototype.increment = function() {
@@ -866,11 +879,23 @@ this.Locals = (function() {
   };
 
   Locals.prototype.get = function(name) {
-    var i, j, ref, v;
+    var i, index, j, ref, v;
     for (i = j = ref = this.layers.length - 1; j >= 0; i = j += -1) {
       v = this.layers[i].get(name);
       if (v != null) {
         return v;
+      }
+    }
+    if (this.parent != null) {
+      v = this.parent.get(name);
+      if (v != null) {
+        index = this.register(name);
+        this.imports.push({
+          name: name,
+          index: index,
+          source: v
+        });
+        return index;
       }
     }
     return null;

@@ -20,7 +20,7 @@ this.Processor = (function() {
     this.op_index = 0;
     this.call_stack_index = 0;
     this.global = null;
-    this.object = null;
+    this.object = this.routine.object || null;
     this.locals_offset = 0;
     this.call_super = null;
     this.call_supername = "";
@@ -69,7 +69,7 @@ this.Processor = (function() {
   };
 
   Processor.prototype.run = function(context) {
-    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, fc, field, global, i, i1, i2, id, index, iter, iterator, j, k, key, l, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, v, v1, v2, value;
+    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, fc, field, global, i, i1, i2, id, index, ir, iter, iterator, j, k, key, l, len, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, rc, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, u, v, v1, v2, value, w;
     routine = this.routine;
     opcodes = this.routine.opcodes;
     arg1 = this.routine.arg1;
@@ -169,6 +169,9 @@ this.Processor = (function() {
             }
           }
           op_index++;
+          break;
+        case 4:
+          stack[++stack_index] = routine.import_values[arg1[op_index++]];
           break;
         case 5:
           stack[++stack_index] = object;
@@ -713,6 +716,17 @@ this.Processor = (function() {
             op_index++;
           }
           break;
+        case 89:
+          r = arg1[op_index++];
+          rc = r.clone();
+          ref3 = r.import_refs;
+          for (l = 0, len = ref3.length; l < len; l++) {
+            ir = ref3[l];
+            rc.import_values.push(locals[locals_offset + ir]);
+          }
+          rc.object = object;
+          stack[++stack_index] = rc;
+          break;
         case 90:
           args = arg1[op_index];
           f = stack[stack_index];
@@ -731,11 +745,11 @@ this.Processor = (function() {
             arg1 = f.arg1;
             op_index = 0;
             length = opcodes.length;
-            object = global;
+            object = routine.object != null ? routine.object : global;
             call_super = global;
             call_supername = "";
             if (args < f.num_args) {
-              for (i = l = ref3 = args + 1, ref4 = f.num_args; l <= ref4; i = l += 1) {
+              for (i = m = ref4 = args + 1, ref5 = f.num_args; m <= ref5; i = m += 1) {
                 stack[++stack_index] = 0;
               }
             } else if (args > f.num_args) {
@@ -755,7 +769,7 @@ this.Processor = (function() {
               default:
                 argv = [];
                 stack_index -= args;
-                for (i = m = 0, ref5 = args - 1; m <= ref5; i = m += 1) {
+                for (i = n = 0, ref6 = args - 1; n <= ref6; i = n += 1) {
                   argv[i] = this.argToNative(stack[stack_index + i], context);
                 }
                 v = f.apply(null, argv);
@@ -816,7 +830,7 @@ this.Processor = (function() {
             call_super = sup;
             call_supername = name;
             if (args < f.num_args) {
-              for (i = n = ref6 = args + 1, ref7 = f.num_args; n <= ref7; i = n += 1) {
+              for (i = p = ref7 = args + 1, ref8 = f.num_args; p <= ref8; i = p += 1) {
                 stack[++stack_index] = 0;
               }
             } else if (args > f.num_args) {
@@ -835,7 +849,7 @@ this.Processor = (function() {
               default:
                 argv = [];
                 stack_index -= args;
-                for (i = p = 0, ref8 = args - 1; p <= ref8; i = p += 1) {
+                for (i = q = 0, ref9 = args - 1; q <= ref9; i = q += 1) {
                   argv[i] = this.argToNative(stack[stack_index + i], context);
                 }
                 v = f.apply(obj, argv);
@@ -890,7 +904,7 @@ this.Processor = (function() {
             call_super = sup;
             call_supername = name;
             if (args < f.num_args) {
-              for (i = q = ref9 = args + 1, ref10 = f.num_args; q <= ref10; i = q += 1) {
+              for (i = s = ref10 = args + 1, ref11 = f.num_args; s <= ref11; i = s += 1) {
                 stack[++stack_index] = 0;
               }
             } else if (args > f.num_args) {
@@ -910,7 +924,7 @@ this.Processor = (function() {
               default:
                 argv = [];
                 stack_index -= args + 1;
-                for (i = r = 0, ref11 = args - 1; r <= ref11; i = r += 1) {
+                for (i = u = 0, ref12 = args - 1; u <= ref12; i = u += 1) {
                   argv[i] = this.argToNative(stack[stack_index + i], context);
                 }
                 v = f.apply(obj, argv);
@@ -961,7 +975,7 @@ this.Processor = (function() {
               length = opcodes.length;
               call_super = sup;
               if (args < f.num_args) {
-                for (i = s = ref12 = args + 1, ref13 = f.num_args; s <= ref13; i = s += 1) {
+                for (i = w = ref13 = args + 1, ref14 = f.num_args; w <= ref14; i = w += 1) {
                   stack[++stack_index] = 0;
                 }
               } else if (args > f.num_args) {

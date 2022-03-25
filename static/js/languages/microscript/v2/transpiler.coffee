@@ -3,10 +3,10 @@ class Transpiler
 
   transpile:(r)->
     for i in [0..r.opcodes.length-1] by 1
-      op = r.table[r.opcodes[i]]
+      op = OPCODES[r.opcodes[i]]
       if @transpilable(op,r.arg1[i])
         j = i+1
-        while j < r.opcodes.length and r.removeable(j) and @transpilable(r.table[r.opcodes[j]],r.arg1[j])
+        while j < r.opcodes.length and r.removeable(j) and @transpilable(OPCODES[r.opcodes[j]],r.arg1[j])
           j += 1
 
         j -= 1
@@ -23,7 +23,7 @@ class Transpiler
 
     s = "f = function(stack,stack_index,locals,locals_offset,object) {\n"
     for k in [i..j] by 1
-      comp = @[r.table[r.opcodes[k]]](r.arg1[k])
+      comp = @[OPCODES[r.opcodes[k]]](r.arg1[k])
       if comp
         s += comp+"\n" ;
 

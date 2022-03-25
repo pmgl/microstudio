@@ -10,6 +10,16 @@ class @Routine
     @labels = {}
 
     @transpile = false
+    @import_refs = []
+    @import_values = []
+
+  clone:()->
+    r = new Routine @num_args
+    r.opcodes = @opcodes
+    r.arg1 = @arg1
+    r.ref = @ref
+    r.locals_size = @locals_size
+    r
 
   createLabel:(str="label")->
     name = ":"+str+"_"+@label_count++
@@ -55,6 +65,15 @@ class @Routine
     @arg1.push v1
     @ref.push ref
 
+  OP_INSERT:(code,ref,v1=0,index)->
+    @opcodes.splice index,0,code
+    @arg1.splice index,0,v1
+    @ref.splice index,0,ref
+
+    for label,value of @labels
+      if value >= index
+        @labels[label] += 1
+    return
 
   TYPE:(ref)-> @OP OPCODES.TYPE,ref
   VARIABLE_TYPE:(variable,ref)-> @OP OPCODES.VARIABLE_TYPE,ref,variable
@@ -123,6 +142,7 @@ class @Routine
   CREATE_PROPERTY:(ref)-> @OP OPCODES.CREATE_PROPERTY,ref
   STORE_PROPERTY:(ref)-> @OP OPCODES.STORE_PROPERTY,ref
 
+  LOAD_ROUTINE:(value,ref)-> @OP OPCODES.LOAD_ROUTINE,ref,value
   FUNCTION_CALL:(args,ref)-> @OP OPCODES.FUNCTION_CALL,ref,args
   FUNCTION_APPLY_VARIABLE:(args,ref)-> @OP OPCODES.FUNCTION_APPLY_VARIABLE,ref,args
   FUNCTION_APPLY_PROPERTY:(args,ref)-> @OP OPCODES.FUNCTION_APPLY_PROPERTY,ref,args
@@ -157,6 +177,7 @@ class @OPCODES_CLASS
     @set "VARIABLE_TYPE", 2
     @set "PROPERTY_TYPE", 3
 
+    @set "LOAD_IMPORT", 4
     @set "LOAD_THIS", 5
     @set "LOAD_GLOBAL", 6
 
@@ -217,6 +238,7 @@ class @OPCODES_CLASS
     @set "JUMPY_NOPOP",83
     @set "JUMPN_NOPOP",84
 
+    @set "LOAD_ROUTINE", 89
     @set "FUNCTION_CALL", 90
     @set "FUNCTION_APPLY_VARIABLE", 91
     @set "FUNCTION_APPLY_PROPERTY", 92
