@@ -1,7 +1,38 @@
 this.AssetManager = (function() {
   function AssetManager(runtime) {
     this.runtime = runtime;
+    this["interface"] = {
+      loadFont: (function(_this) {
+        return function(font) {
+          return _this.loadFont(font);
+        };
+      })(this),
+      loadModel: (function(_this) {
+        return function(path, scene, callback) {
+          return _this.loadModel(path, scene, callback);
+        };
+      })(this),
+      loadJSON: (function(_this) {
+        return function(path, callback) {
+          return _this.loadJSON(path, callback);
+        };
+      })(this),
+      loadText: (function(_this) {
+        return function(path, callback) {
+          return _this.loadText(path, callback);
+        };
+      })(this),
+      loadCSV: (function(_this) {
+        return function(path, callback) {
+          return _this.loadCSV(path, callback);
+        };
+      })(this)
+    };
   }
+
+  AssetManager.prototype.getInterface = function() {
+    return this["interface"];
+  };
 
   AssetManager.prototype.loadFont = function(font) {
     var err, file, name, split;

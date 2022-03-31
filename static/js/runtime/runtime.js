@@ -187,7 +187,7 @@ this.Runtime = (function() {
       sounds: this.sounds,
       music: this.music,
       assets: this.assets,
-      asset_manager: this.asset_manager,
+      asset_manager: this.asset_manager.getInterface(),
       maps: this.maps,
       touch: this.touch,
       mouse: this.mouse,

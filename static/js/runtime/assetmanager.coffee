@@ -1,5 +1,14 @@
 class @AssetManager
   constructor:(@runtime)->
+    @interface =
+      loadFont: (font) => @loadFont font
+      loadModel: (path,scene,callback) => @loadModel path,scene,callback
+      loadJSON: (path,callback) => @loadJSON path,callback
+      loadText: (path,callback) => @loadText path,callback
+      loadCSV: (path,callback) => @loadCSV path,callback
+
+  getInterface:()->
+    @interface
 
   loadFont:(font)->
     return if typeof font != "string"

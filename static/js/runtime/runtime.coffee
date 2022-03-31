@@ -136,7 +136,7 @@ class @Runtime
       sounds: @sounds
       music: @music
       assets: @assets
-      asset_manager: @asset_manager
+      asset_manager: @asset_manager.getInterface()
       maps: @maps
       touch: @touch
       mouse: @mouse
