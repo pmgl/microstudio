@@ -13,6 +13,34 @@ class @Runner
 
     @microvm.context.global.print = @microvm.context.meta.print
     @microvm.context.global.random = new Random(0)
+    @microvm.context.global.Function =
+      bind:(obj)->
+        if this instanceof Routine
+          rc = this.clone()
+          rc.object = obj
+          rc
+        else
+          this
+
+    @microvm.context.global.List =
+      sortList:(f)=>
+        if f? and f instanceof Program.Function
+          funk = (a,b)->f.call(@microvm.context.global,[a,b],true)
+        else if f? and typeof f == "function"
+          funk = f
+        this.sort(funk)
+
+    @microvm.context.global.String =
+      fromCharCode:`function(...args) { return String.fromCharCode(...args) }`
+
+    @microvm.context.global.Number =
+      parse:(s)->
+        res = Number.parseFloat(s)
+        if isFinite(res) then res else 0
+
+      toString:()->
+        this.toString()
+
     @fps = 60
     @fps_max = 60
     @cpu_load = 0

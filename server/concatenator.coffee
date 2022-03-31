@@ -106,7 +106,7 @@ class @Concatenator
         lib: []
 
       microscript_v2:
-        title: "microScript v2 - pre-alpha"
+        title: "microScript v2 - alpha"
         scripts: [ "/js/languages/microscript/v2/compiler.js",
           "/js/languages/microscript/v2/parser.js",
           "/js/languages/microscript/v2/processor.js",

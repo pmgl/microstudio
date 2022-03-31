@@ -885,6 +885,17 @@ this.Processor = (function() {
             f = sup[name];
           }
           args = arg1[op_index];
+          if (f == null) {
+            if (obj instanceof Routine) {
+              f = global.Function[name];
+            } else if (typeof obj === "string") {
+              f = global.String[name];
+            } else if (typeof obj === "number") {
+              f = global.Number[name];
+            } else if (Array.isArray(obj)) {
+              f = global.List[name];
+            }
+          }
           if (f instanceof Routine) {
             stack_index -= 2;
             cs = call_stack[call_stack_index] || (call_stack[call_stack_index] = {});

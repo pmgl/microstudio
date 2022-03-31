@@ -100,7 +100,7 @@ this.Concatenator = (function() {
         lib: []
       },
       microscript_v2: {
-        title: "microScript v2 - pre-alpha",
+        title: "microScript v2 - alpha",
         scripts: ["/js/languages/microscript/v2/compiler.js", "/js/languages/microscript/v2/parser.js", "/js/languages/microscript/v2/processor.js", "/js/languages/microscript/v2/program.js", "/js/languages/microscript/v2/routine.js", "/js/languages/microscript/v2/runner.js", "/js/languages/microscript/v2/token.js", "/js/languages/microscript/v2/tokenizer.js", "/js/languages/microscript/v2/transpiler.js"],
         lib: []
       }

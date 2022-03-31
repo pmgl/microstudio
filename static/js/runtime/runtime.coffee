@@ -491,6 +491,12 @@ class @Runtime
       @vm.context.global.fonts
       @vm.context.global.storage
     ]
+    @exclusion_list.push(@vm.context.global.Function) if @vm.context.global.Function?
+    @exclusion_list.push(@vm.context.global.String) if @vm.context.global.String?
+    @exclusion_list.push(@vm.context.global.List) if @vm.context.global.List?
+    @exclusion_list.push(@vm.context.global.Number) if @vm.context.global.Number?
+    @exclusion_list.push(@vm.context.global.random) if @vm.context.global.random?
+    @exclusion_list.push(@vm.context.global.print) if @vm.context.global.print?
     @watchStep()
 
   stopWatching:()->

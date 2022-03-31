@@ -635,6 +635,24 @@ this.Runtime = (function() {
     this.watching = true;
     this.watching_variables = variables;
     this.exclusion_list = [this.vm.context.global.screen, this.vm.context.global.system, this.vm.context.global.keyboard, this.vm.context.global.audio, this.vm.context.global.gamepad, this.vm.context.global.touch, this.vm.context.global.mouse, this.vm.context.global.sprites, this.vm.context.global.maps, this.vm.context.global.sounds, this.vm.context.global.music, this.vm.context.global.assets, this.vm.context.global.asset_manager, this.vm.context.global.fonts, this.vm.context.global.storage];
+    if (this.vm.context.global.Function != null) {
+      this.exclusion_list.push(this.vm.context.global.Function);
+    }
+    if (this.vm.context.global.String != null) {
+      this.exclusion_list.push(this.vm.context.global.String);
+    }
+    if (this.vm.context.global.List != null) {
+      this.exclusion_list.push(this.vm.context.global.List);
+    }
+    if (this.vm.context.global.Number != null) {
+      this.exclusion_list.push(this.vm.context.global.Number);
+    }
+    if (this.vm.context.global.random != null) {
+      this.exclusion_list.push(this.vm.context.global.random);
+    }
+    if (this.vm.context.global.print != null) {
+      this.exclusion_list.push(this.vm.context.global.print);
+    }
     return this.watchStep();
   };
 

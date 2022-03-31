@@ -14,6 +14,50 @@ this.Runner = (function() {
     this.thread_index = 0;
     this.microvm.context.global.print = this.microvm.context.meta.print;
     this.microvm.context.global.random = new Random(0);
+    this.microvm.context.global.Function = {
+      bind: function(obj) {
+        var rc;
+        if (this instanceof Routine) {
+          rc = this.clone();
+          rc.object = obj;
+          return rc;
+        } else {
+          return this;
+        }
+      }
+    };
+    this.microvm.context.global.List = {
+      sortList: (function(_this) {
+        return function(f) {
+          var funk;
+          if ((f != null) && f instanceof Program.Function) {
+            funk = function(a, b) {
+              return f.call(this.microvm.context.global, [a, b], true);
+            };
+          } else if ((f != null) && typeof f === "function") {
+            funk = f;
+          }
+          return _this.sort(funk);
+        };
+      })(this)
+    };
+    this.microvm.context.global.String = {
+      fromCharCode: function(...args) { return String.fromCharCode(...args) }
+    };
+    this.microvm.context.global.Number = {
+      parse: function(s) {
+        var res;
+        res = Number.parseFloat(s);
+        if (isFinite(res)) {
+          return res;
+        } else {
+          return 0;
+        }
+      },
+      toString: function() {
+        return this.toString();
+      }
+    };
     this.fps = 60;
     this.fps_max = 60;
     this.cpu_load = 0;

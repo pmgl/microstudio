@@ -827,6 +827,15 @@ class @Processor
             f = sup[name]
 
           args = arg1[op_index]
+          if not f?
+            if obj instanceof Routine
+              f = global.Function[name]
+            else if typeof obj == "string"
+              f = global.String[name]
+            else if typeof obj == "number"
+              f = global.Number[name]
+            else if Array.isArray obj
+              f = global.List[name]
 
           if f instanceof Routine
             stack_index -= 2
