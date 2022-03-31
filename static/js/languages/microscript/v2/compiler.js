@@ -22,6 +22,7 @@ Compiler = (function() {
     this.routine.resolveLabels();
     this.count += this.routine.opcodes.length;
     this.routine.locals_size = this.locals.max_index;
+    console.info(this.routine.toString());
   }
 
   Compiler.prototype.compile = function(statement) {
@@ -372,13 +373,17 @@ Compiler = (function() {
   };
 
   Compiler.prototype.compileField = function(field) {
-    var c, i, id, j, k, len, ref, ref1;
+    var c, i, id, index, j, k, len, ref, ref1;
     c = field.chain[field.chain.length - 1];
     if (c instanceof Program.Value && c.value === "type") {
       if (field.chain.length === 1) {
         if (field.expression instanceof Program.Variable) {
           id = field.expression.identifier;
-          if (Compiler.predefined_values[id] != null) {
+          if (this.locals.get(id) != null) {
+            index = this.locals.get(id);
+            this.routine.LOAD_LOCAL(index, field);
+            this.routine.TYPE(field);
+          } else if (Compiler.predefined_values[id] != null) {
             this.routine.LOAD_VALUE("number", field);
           } else if ((Compiler.predefined_unary_functions[id] != null) || Compiler.predefined_binary_functions[id]) {
             this.routine.LOAD_VALUE("function", field);

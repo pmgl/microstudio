@@ -20,7 +20,7 @@ class Compiler
     @routine.resolveLabels()
     @count += @routine.opcodes.length
     @routine.locals_size = @locals.max_index
-    # console.info(@routine.toString())
+    console.info(@routine.toString())
     # console.info("total length: "+@count)
 
   compile:(statement)->
@@ -309,7 +309,11 @@ class Compiler
       if field.chain.length == 1
         if field.expression instanceof Program.Variable # variable.type
           id = field.expression.identifier
-          if Compiler.predefined_values[id]?
+          if @locals.get(id)?
+            index = @locals.get(id)
+            @routine.LOAD_LOCAL index,field
+            @routine.TYPE field
+          else if Compiler.predefined_values[id]?
             @routine.LOAD_VALUE "number",field
           else if Compiler.predefined_unary_functions[id]? or Compiler.predefined_binary_functions[id]
             @routine.LOAD_VALUE "function",field
