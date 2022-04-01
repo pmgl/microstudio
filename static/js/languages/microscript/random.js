@@ -1,8 +1,11 @@
 var Random;
 
 Random = (function() {
-  function Random(_seed) {
+  function Random(_seed, hash) {
     this._seed = _seed != null ? _seed : Math.random();
+    if (hash == null) {
+      hash = true;
+    }
     if (this._seed === 0) {
       this._seed = Math.random();
     }
@@ -14,9 +17,11 @@ Random = (function() {
     this.size = 1 << 30;
     this.mask = this.size - 1;
     this.norm = 1 / this.size;
-    this.nextSeed();
-    this.nextSeed();
-    this.nextSeed();
+    if (hash) {
+      this.nextSeed();
+      this.nextSeed();
+      this.nextSeed();
+    }
   }
 
   Random.prototype.next = function() {
@@ -40,6 +45,15 @@ Random = (function() {
     this.nextSeed();
     this.nextSeed();
     return this.nextSeed();
+  };
+
+  Random.prototype.clone = function(seed) {
+    if (seed != null) {
+      return new Random(seed);
+    } else {
+      seed = this._seed;
+      return new Random(seed, false);
+    }
   };
 
   return Random;
