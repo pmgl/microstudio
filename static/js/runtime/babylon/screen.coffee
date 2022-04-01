@@ -111,13 +111,13 @@ class @Screen
 
 
   startControl:(@element)->
-    @canvas.addEventListener "touchstart", (event) => @touchStart(event)
-    @canvas.addEventListener "touchmove", (event) => @touchMove(event)
+    document.addEventListener "touchstart", (event) => @touchStart(event)
+    document.addEventListener "touchmove", (event) => @touchMove(event)
     document.addEventListener "touchend" , (event) => @touchRelease(event)
     document.addEventListener "touchcancel" , (event) => @touchRelease(event)
 
-    @canvas.addEventListener "mousedown", (event) => @mouseDown(event)
-    @canvas.addEventListener "mousemove", (event) => @mouseMove(event)
+    document.addEventListener "mousedown", (event) => @mouseDown(event)
+    document.addEventListener "mousemove", (event) => @mouseMove(event)
     document.addEventListener "mouseup", (event) => @mouseUp(event)
 
     @ratio = devicePixelRatio

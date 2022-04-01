@@ -125,12 +125,12 @@ this.Screen = (function() {
 
   Screen.prototype.startControl = function(element) {
     this.element = element;
-    this.canvas.addEventListener("touchstart", (function(_this) {
+    document.addEventListener("touchstart", (function(_this) {
       return function(event) {
         return _this.touchStart(event);
       };
     })(this));
-    this.canvas.addEventListener("touchmove", (function(_this) {
+    document.addEventListener("touchmove", (function(_this) {
       return function(event) {
         return _this.touchMove(event);
       };
@@ -145,12 +145,12 @@ this.Screen = (function() {
         return _this.touchRelease(event);
       };
     })(this));
-    this.canvas.addEventListener("mousedown", (function(_this) {
+    document.addEventListener("mousedown", (function(_this) {
       return function(event) {
         return _this.mouseDown(event);
       };
     })(this));
-    this.canvas.addEventListener("mousemove", (function(_this) {
+    document.addEventListener("mousemove", (function(_this) {
       return function(event) {
         return _this.mouseMove(event);
       };

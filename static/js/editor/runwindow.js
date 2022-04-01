@@ -348,7 +348,7 @@ this.RunWindow = (function() {
   };
 
   RunWindow.prototype.windowResized = function() {
-    var c, ch, cw, h, r, ratio, ref, w;
+    var c, ch, cw, h, r, ratio, w;
     r = document.getElementById("device");
     c = document.getElementById("device").firstChild;
     if (this.app.project == null) {
@@ -362,9 +362,6 @@ this.RunWindow = (function() {
       "2x1": 2 / 1,
       "1x1": 1 / 1
     }[this.app.project.aspect];
-    if ((ratio == null) && ((ref = this.app.project.orientation) === "portrait" || ref === "landscape")) {
-      ratio = 16 / 9;
-    }
     if (ratio != null) {
       switch (this.app.project.orientation) {
         case "portrait":
@@ -393,9 +390,9 @@ this.RunWindow = (function() {
       h = ch;
     }
     if (c != null) {
-      c.style["margin-top"] = Math.round((ch - h) / 2) + "px";
-      c.style.width = Math.round(w) + "px";
-      c.style.height = Math.round(h) + "px";
+      c.style["margin-top"] = "0px";
+      c.style.width = Math.round(cw) + "px";
+      c.style.height = Math.round(ch) + "px";
     }
     return this.rulercanvas.resize(Math.round(w), Math.round(h), Math.round((ch - h) / 2));
   };

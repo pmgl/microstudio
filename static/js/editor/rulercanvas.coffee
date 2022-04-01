@@ -15,7 +15,7 @@ class @RulerCanvas
     @canvas.style.display = "none"
 
   show:()->
-    @canvas.style.display = "block"
+    @canvas.style.display = "inline-block"
 
   showX:(x,y,w,h)->
     @show()

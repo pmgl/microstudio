@@ -18,7 +18,7 @@ this.RulerCanvas = (function() {
   };
 
   RulerCanvas.prototype.show = function() {
-    return this.canvas.style.display = "block";
+    return this.canvas.style.display = "inline-block";
   };
 
   RulerCanvas.prototype.showX = function(x, y, w, h) {
