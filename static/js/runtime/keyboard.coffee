@@ -22,8 +22,9 @@ class @Keyboard
     res
 
   keydown:(event)->
-    event.preventDefault()
-    #console.info event
+    if not event.altKey and not event.ctrlKey and not event.metaKey and not /Escape|(F\d+)/.test event.key
+      event.preventDefault()
+
     code = event.code
     key = event.key
 

@@ -36,7 +36,9 @@ this.Keyboard = (function() {
 
   Keyboard.prototype.keydown = function(event) {
     var code, key;
-    event.preventDefault();
+    if (!event.altKey && !event.ctrlKey && !event.metaKey && !/Escape|(F\d+)/.test(event.key)) {
+      event.preventDefault();
+    }
     code = event.code;
     key = event.key;
     this.keyboard[this.convertCode(code)] = 1;
