@@ -21,20 +21,20 @@ class Transpiler
     @locals = {}
     @variables = {}
 
-    s = "f = function(stack,stack_index,locals,locals_offset,object) {\n"
+    s = "f = function(stack,stack_index,locals,locals_offset,object,global) {\n"
     for k in [i..j] by 1
       comp = @[OPCODES[r.opcodes[k]]](r.arg1[k])
       if comp
         s += comp+"\n" ;
 
 
-    if @stack.index>0
+    if @stack.index > 0
       if @stack.touched[0]
         s += "stack[stack_index] = #{@stack.get(-@stack.index)} ;\n"
 
       for k in [1..@stack.index] by 1
         s += "stack[++stack_index] = #{@stack.get(-@stack.index+k)} ;\n"
-    else if @stack.index<0
+    else if @stack.index < 0
       s += "stack_index -= #{-@stack.index} ;\n"
       if @stack.touched[@stack.index]
         s += "stack[stack_index] = #{@stack.stack[@stack.index]} ;\n"
@@ -48,6 +48,7 @@ class Transpiler
     try
       eval(s)
     catch err
+      console.error s
       console.error err
 
     r.opcodes[i] = 200
@@ -150,7 +151,6 @@ class Transpiler
     @stack.push(v)
     res
 
-
   SUB:()->
     v = @createVariable()
 
@@ -178,6 +178,15 @@ class Transpiler
   """
     @stack.pop()
     @stack.pop()
+    @stack.push(v)
+    res
+
+  LOAD_PROPERTY_ATOP:(arg)->
+    v = @createVariable()
+    res = """
+      let #{v} = #{@stack.get(-1)}[#{@stack.get()}] ; // LOAD_PROPERTY_ATOP
+      if (#{v} == null) { #{v} = 0 ; }
+  """
     @stack.push(v)
     res
 
@@ -293,6 +302,17 @@ let #{v} = #{@stack.get()} ;
       """
       object["#{arg}"] = #{@stack.get()} ; // STORE_VARIABLE
       """
+
+  STORE_PROPERTY:(arg)->
+    v = @createVariable()
+    res = """
+      let #{v} = #{@stack.get(-2)}[#{@stack.get(-1)}] = #{@stack.get(0)} ; // STORE_PROPERTY
+  """
+    @stack.pop()
+    @stack.pop()
+    @stack.pop()
+    @stack.push(v)
+    res
 
 class @Stack
   constructor:()->

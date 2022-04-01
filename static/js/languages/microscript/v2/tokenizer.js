@@ -17,9 +17,6 @@ this.Tokenizer = (function() {
     this.chars["^"] = Token.TYPE_POWER;
     this.chars[","] = Token.TYPE_COMMA;
     this.chars["."] = Token.TYPE_DOT;
-    this.chars["%"] = Token.TYPE_MODULO;
-    this.chars["&"] = Token.TYPE_BINARY_AND;
-    this.chars["|"] = Token.TYPE_BINARY_OR;
     this.doubles = {};
     this.doubles[">"] = [Token.TYPE_GREATER, Token.TYPE_GREATER_OR_EQUALS];
     this.doubles["<"] = [Token.TYPE_LOWER, Token.TYPE_LOWER_OR_EQUALS];
@@ -28,6 +25,9 @@ this.Tokenizer = (function() {
     this.doubles["-"] = [Token.TYPE_MINUS, Token.TYPE_MINUS_EQUALS];
     this.doubles["*"] = [Token.TYPE_MULTIPLY, Token.TYPE_MULTIPLY_EQUALS];
     this.doubles["/"] = [Token.TYPE_DIVIDE, Token.TYPE_DIVIDE_EQUALS];
+    this.doubles["%"] = [Token.TYPE_MODULO, Token.TYPE_MODULO_EQUALS];
+    this.doubles["&"] = [Token.TYPE_BINARY_AND, Token.TYPE_AND_EQUALS];
+    this.doubles["|"] = [Token.TYPE_BINARY_OR, Token.TYPE_OR_EQUALS];
     this.shifts = {
       "<": Token.TYPE_SHIFT_LEFT,
       ">": Token.TYPE_SHIFT_RIGHT
@@ -113,7 +113,7 @@ this.Tokenizer = (function() {
       }
       c = this.nextChar();
       code = c.charCodeAt(0);
-      if (code > 32) {
+      if (code > 32 && code !== 160) {
         break;
       }
     }

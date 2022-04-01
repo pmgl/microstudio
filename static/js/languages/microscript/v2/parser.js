@@ -153,6 +153,10 @@ this.Parser = (function() {
         return this.parseSelfAssignment(token, expression, token.type);
       case Token.TYPE_DIVIDE_EQUALS:
         return this.parseSelfAssignment(token, expression, token.type);
+      case Token.TYPE_MODULO_EQUALS:
+      case Token.TYPE_AND_EQUALS:
+      case Token.TYPE_OR_EQUALS:
+        return this.parseSelfAssignment(token, expression, token.type);
       default:
         if (filter === "self") {
           this.tokenizer.pushBack(token);
@@ -282,6 +286,9 @@ this.Parser = (function() {
   };
 
   Parser.prototype.parseSelfAssignment = function(token, expression, operation) {
+    if (!(expression instanceof Program.Variable) && !(expression instanceof Program.Field)) {
+      throw "Expected variable identifier or property";
+    }
     return new Program.SelfAssignment(token, expression, operation, this.assertExpression());
   };
 

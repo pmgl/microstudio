@@ -139,14 +139,6 @@ this.Routine = (function() {
     return this.OP(OPCODES.LOAD_GLOBAL, ref);
   };
 
-  Routine.prototype.LOAD_CONTEXT_VARIABLE = function(variable, ref) {
-    return this.OP(OPCODES.LOAD_CONTEXT_VARIABLE, ref, variable);
-  };
-
-  Routine.prototype.LOAD_CONTEXT_PROPERTY = function(variable, ref) {
-    return this.OP(OPCODES.LOAD_CONTEXT_PROPERTY, ref, variable);
-  };
-
   Routine.prototype.LOAD_VALUE = function(value, ref) {
     return this.OP(OPCODES.LOAD_VALUE, ref, value);
   };
@@ -243,20 +235,8 @@ this.Routine = (function() {
     return this.OP(OPCODES.NEGATE, ref);
   };
 
-  Routine.prototype.ADD_PROPERTY = function(ref) {
-    return this.OP(OPCODES.ADD_PROPERTY, ref);
-  };
-
-  Routine.prototype.SUB_PROPERTY = function(ref) {
-    return this.OP(OPCODES.SUB_PROPERTY, ref);
-  };
-
-  Routine.prototype.MUL_PROPERTY = function(ref) {
-    return this.OP(OPCODES.MUL_PROPERTY, ref);
-  };
-
-  Routine.prototype.DIV_PROPERTY = function(ref) {
-    return this.OP(OPCODES.DIV_PROPERTY, ref);
+  Routine.prototype.LOAD_PROPERTY_ATOP = function(ref) {
+    return this.OP(OPCODES.LOAD_PROPERTY_ATOP, ref);
   };
 
   Routine.prototype.EQ = function(ref) {
@@ -415,8 +395,6 @@ this.OPCODES_CLASS = (function() {
     this.set("LOAD_IMPORT", 4);
     this.set("LOAD_THIS", 5);
     this.set("LOAD_GLOBAL", 6);
-    this.set("LOAD_CONTEXT_VARIABLE", 8);
-    this.set("LOAD_CONTEXT_PROPERTY", 9);
     this.set("LOAD_VALUE", 10);
     this.set("LOAD_LOCAL", 11);
     this.set("LOAD_VARIABLE", 12);
@@ -452,10 +430,7 @@ this.OPCODES_CLASS = (function() {
     this.set("LTE", 44);
     this.set("GTE", 45);
     this.set("NOT", 50);
-    this.set("ADD_PROPERTY", 68);
-    this.set("SUB_PROPERTY", 69);
-    this.set("MUL_PROPERTY", 70);
-    this.set("DIV_PROPERTY", 71);
+    this.set("LOAD_PROPERTY_ATOP", 68);
     this.set("JUMP", 80);
     this.set("JUMPY", 81);
     this.set("JUMPN", 82);

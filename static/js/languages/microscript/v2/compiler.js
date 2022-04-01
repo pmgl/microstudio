@@ -136,71 +136,38 @@ Compiler = (function() {
     var c, f, i, index, j, op, ref;
     switch (statement.operation) {
       case Token.TYPE_PLUS_EQUALS:
-        op = "+";
+        op = "ADD";
         break;
       case Token.TYPE_MINUS_EQUALS:
-        op = "-";
+        op = "SUB";
         break;
       case Token.TYPE_MULTIPLY_EQUALS:
-        op = "*";
+        op = "MUL";
         break;
       case Token.TYPE_DIVIDE_EQUALS:
-        op = "/";
+        op = "DIV";
+        break;
+      case Token.TYPE_MODULO_EQUALS:
+        op = "MODULO";
+        break;
+      case Token.TYPE_AND_EQUALS:
+        op = "BINARY_AND";
+        break;
+      case Token.TYPE_OR_EQUALS:
+        op = "BINARY_OR";
     }
     if (statement.field instanceof Program.Variable) {
       if (this.locals.get(statement.field.identifier) != null) {
         index = this.locals.get(statement.field.identifier);
-        switch (op) {
-          case "+":
-            this.routine.LOAD_LOCAL(index, statement);
-            this.compile(statement.expression);
-            this.routine.ADD(statement);
-            this.routine.STORE_LOCAL(index, statement);
-            break;
-          case "-":
-            this.routine.LOAD_LOCAL(index, statement);
-            this.compile(statement.expression);
-            this.routine.SUB(statement);
-            this.routine.STORE_LOCAL(index, statement);
-            break;
-          case "*":
-            this.routine.LOAD_LOCAL(index, statement);
-            this.compile(statement.expression);
-            this.routine.MUL(statement);
-            this.routine.STORE_LOCAL(index, statement);
-            break;
-          case "/":
-            this.routine.LOAD_LOCAL(index, statement);
-            this.compile(statement.expression);
-            this.routine.DIV(statement);
-            this.routine.STORE_LOCAL(index, statement);
-        }
+        this.routine.LOAD_LOCAL(index, statement);
+        this.compile(statement.expression);
+        this.routine[op](statement);
+        this.routine.STORE_LOCAL(index, statement);
       } else {
-        switch (op) {
-          case "+":
-            this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
-            this.compile(statement.expression);
-            this.routine.ADD(statement);
-            this.routine.STORE_VARIABLE(statement.field.identifier, statement);
-            break;
-          case "-":
-            this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
-            this.compile(statement.expression);
-            this.routine.SUB(statement);
-            this.routine.STORE_VARIABLE(statement.field.identifier, statement);
-            break;
-          case "*":
-            this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
-            this.compile(statement.expression);
-            this.routine.MUL(statement);
-            this.routine.STORE_VARIABLE(statement.field.identifier, statement);
-            break;
-          case "/":
-            this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
-            this.compile(statement.expression);
-            this.routine.DIV(statement);
-            this.routine.STORE_VARIABLE(statement.field.identifier, statement);
-        }
+        this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
+        this.compile(statement.expression);
+        this.routine[op](statement);
+        this.routine.STORE_VARIABLE(statement.field.identifier, statement);
       }
     } else {
       f = statement.field;
@@ -225,17 +192,10 @@ Compiler = (function() {
       }
       c = f.chain[f.chain.length - 1];
       this.compile(f.chain[f.chain.length - 1]);
+      this.routine.LOAD_PROPERTY_ATOP(statement);
       this.compile(statement.expression);
-      switch (op) {
-        case "+":
-          return this.routine.ADD_PROPERTY(statement);
-        case "-":
-          return this.routine.SUB_PROPERTY(statement);
-        case "*":
-          return this.routine.MUL_PROPERTY(statement);
-        case "/":
-          return this.routine.DIV_PROPERTY(statement);
-      }
+      this.routine[op](statement);
+      return this.routine.STORE_PROPERTY(statement);
     }
   };
 

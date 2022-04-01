@@ -115,6 +115,8 @@ class @Parser
         @parseSelfAssignment(token,expression,token.type)
       when Token.TYPE_DIVIDE_EQUALS
         @parseSelfAssignment(token,expression,token.type)
+      when Token.TYPE_MODULO_EQUALS,Token.TYPE_AND_EQUALS,Token.TYPE_OR_EQUALS
+        @parseSelfAssignment(token,expression,token.type)
       else
         if filter == "self"
           @tokenizer.pushBack token
@@ -234,6 +236,8 @@ class @Parser
     return new Program.Assignment token,expression,@assertExpression()
 
   parseSelfAssignment:(token,expression,operation)->
+    if expression not instanceof Program.Variable and expression not instanceof Program.Field
+      throw "Expected variable identifier or property"
     return new Program.SelfAssignment token,expression,operation,@assertExpression()
 
   parseLocalAssignment:(local)->

@@ -82,9 +82,6 @@ class @Routine
   LOAD_THIS:(ref)-> @OP OPCODES.LOAD_THIS,ref
   LOAD_GLOBAL:(ref)-> @OP OPCODES.LOAD_GLOBAL,ref
 
-  LOAD_CONTEXT_VARIABLE:(variable,ref)-> @OP OPCODES.LOAD_CONTEXT_VARIABLE,ref,variable
-  LOAD_CONTEXT_PROPERTY:(variable,ref)-> @OP OPCODES.LOAD_CONTEXT_PROPERTY,ref,variable
-
   LOAD_VALUE:(value,ref)-> @OP OPCODES.LOAD_VALUE,ref,value
   LOAD_LOCAL:(index,ref)-> @OP OPCODES.LOAD_LOCAL,ref,index
   LOAD_VARIABLE:(variable,ref)-> @OP OPCODES.LOAD_VARIABLE,ref,variable
@@ -112,10 +109,7 @@ class @Routine
 
   NEGATE:(ref)-> @OP OPCODES.NEGATE,ref
 
-  ADD_PROPERTY:(ref)-> @OP OPCODES.ADD_PROPERTY,ref
-  SUB_PROPERTY:(ref)-> @OP OPCODES.SUB_PROPERTY,ref
-  MUL_PROPERTY:(ref)-> @OP OPCODES.MUL_PROPERTY,ref
-  DIV_PROPERTY:(ref)-> @OP OPCODES.DIV_PROPERTY,ref
+  LOAD_PROPERTY_ATOP:(ref)-> @OP OPCODES.LOAD_PROPERTY_ATOP,ref
 
   EQ:(ref)-> @OP OPCODES.EQ,ref
   NEQ:(ref)-> @OP OPCODES.NEQ,ref
@@ -181,9 +175,6 @@ class @OPCODES_CLASS
     @set "LOAD_THIS", 5
     @set "LOAD_GLOBAL", 6
 
-    @set "LOAD_CONTEXT_VARIABLE", 8
-    @set "LOAD_CONTEXT_PROPERTY", 9
-
     @set "LOAD_VALUE", 10
     @set "LOAD_LOCAL", 11
     @set "LOAD_VARIABLE", 12
@@ -227,10 +218,7 @@ class @OPCODES_CLASS
 
     @set "NOT", 50
 
-    @set "ADD_PROPERTY",68
-    @set "SUB_PROPERTY",69
-    @set "MUL_PROPERTY",70
-    @set "DIV_PROPERTY",71
+    @set "LOAD_PROPERTY_ATOP",68
 
     @set "JUMP",80
     @set "JUMPY",81

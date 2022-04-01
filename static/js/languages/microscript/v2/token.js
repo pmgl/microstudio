@@ -84,6 +84,12 @@ this.Token.TYPE_MULTIPLY_EQUALS = 42;
 
 this.Token.TYPE_DIVIDE_EQUALS = 43;
 
+this.Token.TYPE_MODULO_EQUALS = 44;
+
+this.Token.TYPE_AND_EQUALS = 45;
+
+this.Token.TYPE_OR_EQUALS = 46;
+
 this.Token.TYPE_RETURN = 50;
 
 this.Token.TYPE_BREAK = 51;

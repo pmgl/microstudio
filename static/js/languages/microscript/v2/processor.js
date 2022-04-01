@@ -56,6 +56,23 @@ this.Processor = (function() {
     return f;
   };
 
+  Processor.prototype.routineAsApplicableFunction = function(routine, context) {
+    var f, proc;
+    proc = new Processor(this.runner);
+    f = function() {
+      var count, i, j, ref, res;
+      count = Math.min(routine.num_args, arguments.length);
+      proc.load(routine);
+      proc.object = this;
+      for (i = j = 0, ref = count - 1; j <= ref; i = j += 1) {
+        proc.stack[++proc.stack_index] = arguments[i] || 0;
+      }
+      proc.run(context);
+      return res = proc.stack[0];
+    };
+    return f;
+  };
+
   Processor.prototype.argToNative = function(arg, context) {
     if (arg instanceof Routine) {
       return this.routineAsFunction(arg, context);
@@ -69,7 +86,7 @@ this.Processor = (function() {
   };
 
   Processor.prototype.run = function(context) {
-    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, fc, field, global, i, i1, i2, id, index, ir, iter, iterator, j, k, key, l, len, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, rc, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, u, v, v1, v2, value, w;
+    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, fc, field, global, i, i1, i2, id, index, ir, iter, iterator, j, k, key, l, len, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, rc, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, u, v, value, w;
     routine = this.routine;
     opcodes = this.routine.opcodes;
     arg1 = this.routine.arg1;
@@ -179,33 +196,6 @@ this.Processor = (function() {
           break;
         case 6:
           stack[++stack_index] = global;
-          op_index++;
-          break;
-        case 8:
-          name = arg1[op_index];
-          v = object[name];
-          obj = object;
-          while ((v == null) && (obj["class"] != null)) {
-            obj = obj["class"];
-            v = obj[name];
-          }
-          if (v != null) {
-            stack[++stack_index] = object;
-            stack[++stack_index] = v;
-          } else {
-            v = global[name];
-            if (v == null) {
-              v = 0;
-            }
-            stack[++stack_index] = global;
-            stack[++stack_index] = v;
-          }
-          op_index++;
-          break;
-        case 9:
-          obj = stack[stack_index - 1];
-          v = obj[stack[stack_index]];
-          stack[stack_index] = v != null ? v : 0;
           op_index++;
           break;
         case 10:
@@ -443,11 +433,11 @@ this.Processor = (function() {
           b = stack[stack_index--];
           a = stack[stack_index];
           if (typeof a === "number" && typeof b === "number") {
-            if (isFinite(a + b)) {
-              stack[stack_index] = a + b;
-            } else {
-              stack[stack_index] = 0;
-            }
+            a += b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          } else if (typeof a === "string" || typeof b === "string") {
+            a += b;
+            stack[stack_index] = a != null ? a : 0;
           } else if (Array.isArray(a)) {
             if (Array.isArray(b)) {
               stack[stack_index] = a.concat(b);
@@ -455,40 +445,222 @@ this.Processor = (function() {
               a.push(b);
               stack[stack_index] = a;
             }
-          } else if (typeof a === "string" || typeof b === "string") {
-            stack[stack_index] = a + b;
+          } else if (typeof a === "object") {
+            obj = a;
+            f = obj["+"];
+            while ((f == null) && (obj["class"] != null)) {
+              obj = obj["class"];
+              f = obj["+"];
+            }
+            if ((f != null) && f instanceof Routine) {
+              if (f.as_function == null) {
+                f.as_function = this.routineAsApplicableFunction(f, context);
+              }
+              f = f.as_function;
+              obj = object;
+              object = a;
+              stack[stack_index] = f.call(a, b);
+              object = obj;
+            } else {
+              stack[stack_index] = 0;
+            }
           } else {
-            stack[++stack_index] = a;
-            stack[++stack_index] = "+";
-            this.applyFunction(2);
+            stack[stack_index] = 0;
           }
           op_index++;
           break;
         case 31:
-          stack[stack_index - 1] -= stack[stack_index--];
+          b = stack[stack_index--];
+          a = stack[stack_index];
+          if (typeof a === "number" && typeof b === "number") {
+            a -= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          } else if (typeof a === "string" || typeof b === "string") {
+            a -= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          } else if (Array.isArray(a)) {
+            index = a.indexOf(b);
+            if (index >= 0) {
+              a.splice(index, 1);
+            }
+            stack[stack_index] = a;
+          } else if (typeof a === "object") {
+            obj = a;
+            f = obj["-"];
+            while ((f == null) && (obj["class"] != null)) {
+              obj = obj["class"];
+              f = obj["-"];
+            }
+            if ((f != null) && f instanceof Routine) {
+              if (f.as_function == null) {
+                f.as_function = this.routineAsApplicableFunction(f, context);
+              }
+              f = f.as_function;
+              obj = object;
+              object = a;
+              stack[stack_index] = f.call(a, b);
+              object = obj;
+            } else {
+              stack[stack_index] = 0;
+            }
+          } else {
+            stack[stack_index] = 0;
+          }
           op_index++;
           break;
         case 32:
-          stack[stack_index - 1] *= stack[stack_index--];
+          b = stack[stack_index--];
+          a = stack[stack_index];
+          if (typeof a === "number" && typeof b === "number") {
+            a *= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          } else if (typeof a === "object") {
+            obj = a;
+            f = obj["*"];
+            while ((f == null) && (obj["class"] != null)) {
+              obj = obj["class"];
+              f = obj["*"];
+            }
+            if ((f != null) && f instanceof Routine) {
+              if (f.as_function == null) {
+                f.as_function = this.routineAsApplicableFunction(f, context);
+              }
+              f = f.as_function;
+              obj = object;
+              object = a;
+              stack[stack_index] = f.call(a, b);
+              object = obj;
+            } else {
+              stack[stack_index] = 0;
+            }
+          } else {
+            a *= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          }
           op_index++;
           break;
         case 33:
-          v = stack[stack_index - 1] / stack[stack_index];
-          stack[--stack_index] = isFinite(v) ? v : 0;
+          b = stack[stack_index--];
+          a = stack[stack_index];
+          if (typeof a === "number" && typeof b === "number") {
+            a /= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          } else if (typeof a === "object") {
+            obj = a;
+            f = obj["/"];
+            while ((f == null) && (obj["class"] != null)) {
+              obj = obj["class"];
+              f = obj["/"];
+            }
+            if ((f != null) && f instanceof Routine) {
+              if (f.as_function == null) {
+                f.as_function = this.routineAsApplicableFunction(f, context);
+              }
+              f = f.as_function;
+              obj = object;
+              object = a;
+              stack[stack_index] = f.call(a, b);
+              object = obj;
+            } else {
+              stack[stack_index] = 0;
+            }
+          } else {
+            a /= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          }
           op_index++;
           break;
         case 34:
-          stack[stack_index - 1] %= stack[stack_index--];
+          b = stack[stack_index--];
+          a = stack[stack_index];
+          if (typeof a === "number" && typeof b === "number") {
+            a %= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          } else if (typeof a === "object") {
+            obj = a;
+            f = obj["%"];
+            while ((f == null) && (obj["class"] != null)) {
+              obj = obj["class"];
+              f = obj["%"];
+            }
+            if ((f != null) && f instanceof Routine) {
+              if (f.as_function == null) {
+                f.as_function = this.routineAsApplicableFunction(f, context);
+              }
+              f = f.as_function;
+              obj = object;
+              object = a;
+              stack[stack_index] = f.call(a, b);
+              object = obj;
+            } else {
+              stack[stack_index] = 0;
+            }
+          } else {
+            a %= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          }
           op_index++;
           break;
         case 35:
-          v = stack[stack_index - 1] & stack[stack_index];
-          stack[--stack_index] = isFinite(v) ? v : 0;
+          b = stack[stack_index--];
+          a = stack[stack_index];
+          if (typeof a === "number" && typeof b === "number") {
+            a &= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          } else if (typeof a === "object") {
+            obj = a;
+            f = obj["&"];
+            while ((f == null) && (obj["class"] != null)) {
+              obj = obj["class"];
+              f = obj["&"];
+            }
+            if ((f != null) && f instanceof Routine) {
+              if (f.as_function == null) {
+                f.as_function = this.routineAsApplicableFunction(f, context);
+              }
+              f = f.as_function;
+              obj = object;
+              object = a;
+              stack[stack_index] = f.call(a, b);
+              object = obj;
+            } else {
+              stack[stack_index] = 0;
+            }
+          } else {
+            a &= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          }
           op_index++;
           break;
         case 36:
-          v = stack[stack_index - 1] | stack[stack_index];
-          stack[--stack_index] = isFinite(v) ? v : 0;
+          b = stack[stack_index--];
+          a = stack[stack_index];
+          if (typeof a === "number" && typeof b === "number") {
+            a |= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          } else if (typeof a === "object") {
+            obj = a;
+            f = obj["|"];
+            while ((f == null) && (obj["class"] != null)) {
+              obj = obj["class"];
+              f = obj["|"];
+            }
+            if ((f != null) && f instanceof Routine) {
+              if (f.as_function == null) {
+                f.as_function = this.routineAsApplicableFunction(f, context);
+              }
+              f = f.as_function;
+              obj = object;
+              object = a;
+              stack[stack_index] = f.call(a, b);
+              object = obj;
+            } else {
+              stack[stack_index] = 0;
+            }
+          } else {
+            a |= b;
+            stack[stack_index] = isFinite(a) ? a : 0;
+          }
           op_index++;
           break;
         case 37:
@@ -510,63 +682,14 @@ this.Processor = (function() {
           op_index++;
           break;
         case 68:
-          obj = stack[stack_index - 2];
-          field = stack[stack_index - 1];
-          v1 = obj[field];
-          v2 = stack[stack_index];
-          if (v1 == null) {
-            v1 = 0;
+          obj = stack[stack_index - 1];
+          name = stack[stack_index];
+          v = obj[name];
+          while ((v == null) && (obj["class"] != null)) {
+            obj = obj["class"];
+            v = obj[name];
           }
-          if (typeof v1 === "number" && typeof v2 === "number") {
-            v1 += v2;
-            stack[stack_index - 2] = obj[field] = isFinite(v1) ? v1 : 0;
-          }
-          stack_index -= 2;
-          op_index++;
-          break;
-        case 69:
-          obj = stack[stack_index - 2];
-          field = stack[stack_index - 1];
-          v1 = obj[field];
-          v2 = stack[stack_index];
-          if (v1 == null) {
-            v1 = 0;
-          }
-          if (typeof v1 === "number" && typeof v2 === "number") {
-            v1 -= v2;
-            stack[stack_index - 2] = obj[field] = isFinite(v1) ? v1 : 0;
-          }
-          stack_index -= 2;
-          op_index++;
-          break;
-        case 70:
-          obj = stack[stack_index - 2];
-          field = stack[stack_index - 1];
-          v1 = obj[field];
-          v2 = stack[stack_index];
-          if (v1 == null) {
-            v1 = 0;
-          }
-          if (typeof v1 === "number" && typeof v2 === "number") {
-            v1 *= v2;
-            stack[stack_index - 2] = obj[field] = isFinite(v1) ? v1 : 0;
-          }
-          stack_index -= 2;
-          op_index++;
-          break;
-        case 71:
-          obj = stack[stack_index - 2];
-          field = stack[stack_index - 1];
-          v1 = obj[field];
-          v2 = stack[stack_index];
-          if (v1 == null) {
-            v1 = 0;
-          }
-          if (typeof v1 === "number" && typeof v2 === "number") {
-            v1 /= v2;
-            stack[stack_index - 2] = obj[field] = isFinite(v1) ? v1 : 0;
-          }
-          stack_index -= 2;
+          stack[++stack_index] = v != null ? v : 0;
           op_index++;
           break;
         case 40:
@@ -1045,7 +1168,7 @@ this.Processor = (function() {
           op_index = length;
           break;
         case 200:
-          stack_index = arg1[op_index](stack, stack_index, locals, locals_offset, object);
+          stack_index = arg1[op_index](stack, stack_index, locals, locals_offset, object, global);
           op_index++;
           break;
         default:

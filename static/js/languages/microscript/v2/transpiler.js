@@ -32,7 +32,7 @@ Transpiler = (function() {
     this.stack = new Stack();
     this.locals = {};
     this.variables = {};
-    s = "f = function(stack,stack_index,locals,locals_offset,object) {\n";
+    s = "f = function(stack,stack_index,locals,locals_offset,object,global) {\n";
     for (k = l = ref = i, ref1 = j; l <= ref1; k = l += 1) {
       comp = this[OPCODES[r.opcodes[k]]](r.arg1[k]);
       if (comp) {
@@ -62,6 +62,7 @@ Transpiler = (function() {
       eval(s);
     } catch (error) {
       err = error;
+      console.error(s);
       console.error(err);
     }
     r.opcodes[i] = 200;
@@ -196,6 +197,14 @@ Transpiler = (function() {
     return res;
   };
 
+  Transpiler.prototype.LOAD_PROPERTY_ATOP = function(arg) {
+    var res, v;
+    v = this.createVariable();
+    res = "let " + v + " = " + (this.stack.get(-1)) + "[" + (this.stack.get()) + "] ; // LOAD_PROPERTY_ATOP\nif (" + v + " == null) { " + v + " = 0 ; }";
+    this.stack.push(v);
+    return res;
+  };
+
   Transpiler.prototype.ADD_PROPERTY = function(arg) {
     var res, v1, v2;
     v1 = this.createVariable();
@@ -289,6 +298,17 @@ Transpiler = (function() {
     } else {
       return "object[\"" + arg + "\"] = " + (this.stack.get()) + " ; // STORE_VARIABLE";
     }
+  };
+
+  Transpiler.prototype.STORE_PROPERTY = function(arg) {
+    var res, v;
+    v = this.createVariable();
+    res = "let " + v + " = " + (this.stack.get(-2)) + "[" + (this.stack.get(-1)) + "] = " + (this.stack.get(0)) + " ; // STORE_PROPERTY";
+    this.stack.pop();
+    this.stack.pop();
+    this.stack.pop();
+    this.stack.push(v);
+    return res;
   };
 
   return Transpiler;

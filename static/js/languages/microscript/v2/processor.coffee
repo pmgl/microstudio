@@ -49,6 +49,22 @@ class @Processor
 
     f
 
+  routineAsApplicableFunction:(routine,context)->
+    proc = new Processor(@runner)
+
+    f = ()->
+      count = Math.min(routine.num_args,arguments.length)
+      proc.load routine
+      proc.object = this
+
+      for i in [0..count-1] by 1
+        proc.stack[++proc.stack_index] = arguments[i] or 0
+
+      proc.run context
+      res = proc.stack[0]
+
+    f
+
   argToNative:(arg,context)->
     if arg instanceof Routine
       @routineAsFunction arg,context
@@ -152,29 +168,6 @@ class @Processor
 
         when 6 # OPCODE_LOAD_GLOBAL
           stack[++stack_index] = global
-          op_index++
-
-        when 8 # OPCODE_LOAD_CONTEXT_VARIABLE
-          name = arg1[op_index]
-          v = object[name]
-          obj = object
-          while not v? and obj.class?
-            obj = obj.class
-            v = obj[name]
-          if v?
-            stack[++stack_index] = object
-            stack[++stack_index] = v
-          else
-            v = global[name]
-            if not v? then v = 0
-            stack[++stack_index] = global
-            stack[++stack_index] = v
-          op_index++
-
-        when 9 # OPCODE_LOAD_CONTEXT_PROPERTY
-          obj = stack[stack_index-1]
-          v = obj[stack[stack_index]]
-          stack[stack_index] = if v? then v else 0
           op_index++
 
         when 10 # CODE_LOAD_VALUE
@@ -403,50 +396,225 @@ class @Processor
           b = stack[stack_index--]
           a = stack[stack_index]
           if typeof a == "number" and typeof b == "number"
-            if isFinite(a+b)
-              stack[stack_index] = a+b
-            else
-              stack[stack_index] = 0
+            a += b
+            stack[stack_index] = if isFinite(a) then a else 0
+          else if typeof a == "string" or typeof b == "string"
+            a += b
+            stack[stack_index] = if a? then a else 0
           else if Array.isArray(a)
             if Array.isArray(b)
               stack[stack_index] = a.concat(b)
             else
               a.push(b)
               stack[stack_index] = a
-          else if typeof a == "string" or typeof b == "string"
-            stack[stack_index] = a+b
+          else if typeof a == "object"
+            obj = a
+            f = obj["+"]
+            while not f? and obj.class?
+              obj = obj.class
+              f = obj["+"]
+
+            if f? and f instanceof Routine
+              if not f.as_function?
+                f.as_function = @routineAsApplicableFunction(f,context)
+
+              f = f.as_function
+              obj = object
+              object = a
+              stack[stack_index] = f.call(a,b)
+              object = obj
+            else
+              stack[stack_index] = 0
           else
-            stack[++stack_index] = a
-            stack[++stack_index] = "+"
-            @applyFunction 2
+            stack[stack_index] = 0
 
           op_index++
 
         when 31 # OPCODE_SUB
-          stack[stack_index-1] -= stack[stack_index--]
+          b = stack[stack_index--]
+          a = stack[stack_index]
+          if typeof a == "number" and typeof b == "number"
+            a -= b
+            stack[stack_index] = if isFinite(a) then a else 0
+          else if typeof a == "string" or typeof b == "string"
+            a -= b
+            stack[stack_index] = if isFinite(a) then a else 0
+          else if Array.isArray(a)
+            index = a.indexOf(b)
+            if index >= 0
+              a.splice(index,1)
+            stack[stack_index] = a
+          else if typeof a == "object"
+            obj = a
+            f = obj["-"]
+            while not f? and obj.class?
+              obj = obj.class
+              f = obj["-"]
+
+            if f? and f instanceof Routine
+              if not f.as_function?
+                f.as_function = @routineAsApplicableFunction(f,context)
+
+              f = f.as_function
+              obj = object
+              object = a
+              stack[stack_index] = f.call(a,b)
+              object = obj
+            else
+              stack[stack_index] = 0
+          else
+            stack[stack_index] = 0
+
           op_index++
 
         when 32 # OPCODE_MUL
-          stack[stack_index-1] *= stack[stack_index--]
+          b = stack[stack_index--]
+          a = stack[stack_index]
+          if typeof a == "number" and typeof b == "number"
+            a *= b
+            stack[stack_index] = if isFinite(a) then a else 0
+          else if typeof a == "object"
+            obj = a
+            f = obj["*"]
+            while not f? and obj.class?
+              obj = obj.class
+              f = obj["*"]
+
+            if f? and f instanceof Routine
+              if not f.as_function?
+                f.as_function = @routineAsApplicableFunction(f,context)
+
+              f = f.as_function
+              obj = object
+              object = a
+              stack[stack_index] = f.call(a,b)
+              object = obj
+            else
+              stack[stack_index] = 0
+          else
+            a *= b
+            stack[stack_index] = if isFinite(a) then a else 0
+
           op_index++
 
         when 33 # OPCODE_DIV
-          v = stack[stack_index-1] / stack[stack_index]
-          stack[--stack_index] = if isFinite(v) then v else 0
+          b = stack[stack_index--]
+          a = stack[stack_index]
+          if typeof a == "number" and typeof b == "number"
+            a /= b
+            stack[stack_index] = if isFinite(a) then a else 0
+          else if typeof a == "object"
+            obj = a
+            f = obj["/"]
+            while not f? and obj.class?
+              obj = obj.class
+              f = obj["/"]
+
+            if f? and f instanceof Routine
+              if not f.as_function?
+                f.as_function = @routineAsApplicableFunction(f,context)
+
+              f = f.as_function
+              obj = object
+              object = a
+              stack[stack_index] = f.call(a,b)
+              object = obj
+            else
+              stack[stack_index] = 0
+          else
+            a /= b
+            stack[stack_index] = if isFinite(a) then a else 0
+
           op_index++
 
         when 34 # OPCODE_MODULO
-          stack[stack_index-1] %= stack[stack_index--]
+          b = stack[stack_index--]
+          a = stack[stack_index]
+          if typeof a == "number" and typeof b == "number"
+            a %= b
+            stack[stack_index] = if isFinite(a) then a else 0
+          else if typeof a == "object"
+            obj = a
+            f = obj["%"]
+            while not f? and obj.class?
+              obj = obj.class
+              f = obj["%"]
+
+            if f? and f instanceof Routine
+              if not f.as_function?
+                f.as_function = @routineAsApplicableFunction(f,context)
+
+              f = f.as_function
+              obj = object
+              object = a
+              stack[stack_index] = f.call(a,b)
+              object = obj
+            else
+              stack[stack_index] = 0
+          else
+            a %= b
+            stack[stack_index] = if isFinite(a) then a else 0
+
           op_index++
 
         when 35 # OPCODE_BINARY_AND
-          v = stack[stack_index-1] & stack[stack_index]
-          stack[--stack_index] = if isFinite(v) then v else 0
+          b = stack[stack_index--]
+          a = stack[stack_index]
+          if typeof a == "number" and typeof b == "number"
+            a &= b
+            stack[stack_index] = if isFinite(a) then a else 0
+          else if typeof a == "object"
+            obj = a
+            f = obj["&"]
+            while not f? and obj.class?
+              obj = obj.class
+              f = obj["&"]
+
+            if f? and f instanceof Routine
+              if not f.as_function?
+                f.as_function = @routineAsApplicableFunction(f,context)
+
+              f = f.as_function
+              obj = object
+              object = a
+              stack[stack_index] = f.call(a,b)
+              object = obj
+            else
+              stack[stack_index] = 0
+          else
+            a &= b
+            stack[stack_index] = if isFinite(a) then a else 0
+
           op_index++
 
         when 36 # OPCODE_BINARY_OR
-          v = stack[stack_index-1] | stack[stack_index]
-          stack[--stack_index] = if isFinite(v) then v else 0
+          b = stack[stack_index--]
+          a = stack[stack_index]
+          if typeof a == "number" and typeof b == "number"
+            a |= b
+            stack[stack_index] = if isFinite(a) then a else 0
+          else if typeof a == "object"
+            obj = a
+            f = obj["|"]
+            while not f? and obj.class?
+              obj = obj.class
+              f = obj["|"]
+
+            if f? and f instanceof Routine
+              if not f.as_function?
+                f.as_function = @routineAsApplicableFunction(f,context)
+
+              f = f.as_function
+              obj = object
+              object = a
+              stack[stack_index] = f.call(a,b)
+              object = obj
+            else
+              stack[stack_index] = 0
+          else
+            a |= b
+            stack[stack_index] = if isFinite(a) then a else 0
+
           op_index++
 
         when 37 # OPCODE_SHIFT_LEFT
@@ -467,56 +635,16 @@ class @Processor
           stack[stack_index] = if stack[stack_index] then 0 else 1
           op_index++
 
-        when 68 # OPCODE_ADD_PROPERTY
-          obj = stack[stack_index-2]
-          field = stack[stack_index-1]
-          v1 = obj[field]
-          v2 = stack[stack_index]
-          v1 = 0 if not v1?
-          if typeof v1 == "number" and typeof v2 == "number"
-            v1 += v2
-            stack[stack_index-2] = obj[field] = if isFinite(v1) then v1 else 0
+        when 68 # OPCODE_LOAD_PROPERTY_ATOP
+          obj = stack[stack_index-1]
+          name = stack[stack_index]
 
-          stack_index -= 2
-          op_index++
+          v = obj[name]
+          while not v? and obj.class?
+            obj = obj.class
+            v = obj[name]
 
-        when 69 # OPCODE_SUB_PROPERTY
-          obj = stack[stack_index-2]
-          field = stack[stack_index-1]
-          v1 = obj[field]
-          v2 = stack[stack_index]
-          v1 = 0 if not v1?
-          if typeof v1 == "number" and typeof v2 == "number"
-            v1 -= v2
-            stack[stack_index-2] = obj[field] = if isFinite(v1) then v1 else 0
-
-          stack_index -= 2
-          op_index++
-
-        when 70 # OPCODE_MUL_PROPERTY
-          obj = stack[stack_index-2]
-          field = stack[stack_index-1]
-          v1 = obj[field]
-          v2 = stack[stack_index]
-          v1 = 0 if not v1?
-          if typeof v1 == "number" and typeof v2 == "number"
-            v1 *= v2
-            stack[stack_index-2] = obj[field] = if isFinite(v1) then v1 else 0
-
-          stack_index -= 2
-          op_index++
-
-        when 71 # OPCODE_DIV_PROPERTY
-          obj = stack[stack_index-2]
-          field = stack[stack_index-1]
-          v1 = obj[field]
-          v2 = stack[stack_index]
-          v1 = 0 if not v1?
-          if typeof v1 == "number" and typeof v2 == "number"
-            v1 /= v2
-            stack[stack_index-2] = obj[field] = if isFinite(v1) then v1 else 0
-
-          stack_index -= 2
+          stack[++stack_index] = if v? then v else 0
           op_index++
 
         when 40 # OPCODE_EQ
@@ -991,7 +1119,7 @@ class @Processor
           op_index = length # stop the thread
 
         when 200 # COMPILED
-          stack_index = arg1[op_index](stack,stack_index,locals,locals_offset,object)
+          stack_index = arg1[op_index](stack,stack_index,locals,locals_offset,object,global)
           op_index++
 
         else

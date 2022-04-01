@@ -126,61 +126,27 @@ class Compiler
 
   compileSelfAssignment:(statement)->
     switch statement.operation
-      when Token.TYPE_PLUS_EQUALS then op = "+"
-      when Token.TYPE_MINUS_EQUALS then op = "-"
-      when Token.TYPE_MULTIPLY_EQUALS then op = "*"
-      when Token.TYPE_DIVIDE_EQUALS then op = "/"
+      when Token.TYPE_PLUS_EQUALS then op = "ADD"
+      when Token.TYPE_MINUS_EQUALS then op = "SUB"
+      when Token.TYPE_MULTIPLY_EQUALS then op = "MUL"
+      when Token.TYPE_DIVIDE_EQUALS then op = "DIV"
+      when Token.TYPE_MODULO_EQUALS then op = "MODULO"
+      when Token.TYPE_AND_EQUALS then op = "BINARY_AND"
+      when Token.TYPE_OR_EQUALS then op = "BINARY_OR"
 
     if statement.field instanceof Program.Variable
       if @locals.get(statement.field.identifier)?
         index = @locals.get(statement.field.identifier)
-
-        switch op
-          when "+"
-            @routine.LOAD_LOCAL index,statement
-            @compile(statement.expression)
-            @routine.ADD statement
-            @routine.STORE_LOCAL index,statement
-          when "-"
-            @routine.LOAD_LOCAL index,statement
-            @compile(statement.expression)
-            @routine.SUB statement
-            @routine.STORE_LOCAL index,statement
-          when "*"
-            @routine.LOAD_LOCAL index,statement
-            @compile(statement.expression)
-            @routine.MUL statement
-            @routine.STORE_LOCAL index,statement
-          when "/"
-            @routine.LOAD_LOCAL index,statement
-            @compile(statement.expression)
-            @routine.DIV statement
-            @routine.STORE_LOCAL index,statement
-
+        @routine.LOAD_LOCAL index,statement
+        @compile(statement.expression)
+        @routine[op] statement
+        @routine.STORE_LOCAL index,statement
         return
       else
-        switch op
-          when "+"
-            @routine.LOAD_VARIABLE statement.field.identifier,statement
-            @compile(statement.expression)
-            @routine.ADD statement
-            @routine.STORE_VARIABLE statement.field.identifier,statement
-          when "-"
-            @routine.LOAD_VARIABLE statement.field.identifier,statement
-            @compile(statement.expression)
-            @routine.SUB statement
-            @routine.STORE_VARIABLE statement.field.identifier,statement
-          when "*"
-            @routine.LOAD_VARIABLE statement.field.identifier,statement
-            @compile(statement.expression)
-            @routine.MUL statement
-            @routine.STORE_VARIABLE statement.field.identifier,statement
-          when "/"
-            @routine.LOAD_VARIABLE statement.field.identifier,statement
-            @compile(statement.expression)
-            @routine.DIV statement
-            @routine.STORE_VARIABLE statement.field.identifier,statement
-
+        @routine.LOAD_VARIABLE statement.field.identifier,statement
+        @compile(statement.expression)
+        @routine[op] statement
+        @routine.STORE_VARIABLE statement.field.identifier,statement
         return
     else
       f = statement.field
@@ -204,12 +170,10 @@ class Compiler
 
       c = f.chain[f.chain.length-1]
       @compile f.chain[f.chain.length-1]
+      @routine.LOAD_PROPERTY_ATOP statement
       @compile statement.expression
-      switch op
-        when "+" then @routine.ADD_PROPERTY statement
-        when "-" then @routine.SUB_PROPERTY statement
-        when "*" then @routine.MUL_PROPERTY statement
-        when "/" then @routine.DIV_PROPERTY statement
+      @routine[op] statement
+      @routine.STORE_PROPERTY statement
 
   compileOperation:(op)->
     if op.operation in ["+","-","*","/","%","&","|","<<",">>"]

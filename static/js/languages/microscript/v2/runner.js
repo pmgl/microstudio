@@ -61,7 +61,7 @@ this.Runner = (function() {
     this.fps = 60;
     this.fps_max = 60;
     this.cpu_load = 0;
-    return this.microvm.context.meta.print("microScript 2.0 - alpha");
+    return this.microvm.context.meta.print("microScript 2.0 - beta");
   };
 
   Runner.prototype.run = function(src, filename) {

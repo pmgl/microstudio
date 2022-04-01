@@ -17,9 +17,6 @@ class @Tokenizer
     @chars["^"] = Token.TYPE_POWER
     @chars[","] = Token.TYPE_COMMA
     @chars["."] = Token.TYPE_DOT
-    @chars["%"] = Token.TYPE_MODULO
-    @chars["&"] = Token.TYPE_BINARY_AND
-    @chars["|"] = Token.TYPE_BINARY_OR
 
     @doubles = {}
     @doubles[">"] = [Token.TYPE_GREATER,Token.TYPE_GREATER_OR_EQUALS]
@@ -29,6 +26,9 @@ class @Tokenizer
     @doubles["-"] = [Token.TYPE_MINUS,Token.TYPE_MINUS_EQUALS]
     @doubles["*"] = [Token.TYPE_MULTIPLY,Token.TYPE_MULTIPLY_EQUALS]
     @doubles["/"] = [Token.TYPE_DIVIDE,Token.TYPE_DIVIDE_EQUALS]
+    @doubles["%"] = [Token.TYPE_MODULO,Token.TYPE_MODULO_EQUALS]
+    @doubles["&"] = [Token.TYPE_BINARY_AND,Token.TYPE_AND_EQUALS]
+    @doubles["|"] = [Token.TYPE_BINARY_OR,Token.TYPE_OR_EQUALS]
 
     @shifts =
       "<": Token.TYPE_SHIFT_LEFT
@@ -95,7 +95,7 @@ class @Tokenizer
       return null if @index>=@input.length
       c = @nextChar()
       code = c.charCodeAt(0)
-      break if code > 32
+      break if code > 32 and code != 160
 
     @token_start = @index-1
 
