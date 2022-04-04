@@ -1,5 +1,15 @@
 ## Changelog
 
+### Update 2022-04-04
+* microScript 2.0 beta
+  * fixed local.type
+  * Prototype for core types
+  * function.bind
+  * operator overloading
+* random.clone() (to be documented)
+* Fixed #97 and #98
+* Fixed asset_manager interface
+
 ### Update 2022-03-23
 * microScript v2: variable.type
 * microScript v2: multi-line comments
