@@ -359,7 +359,7 @@ this.Editor = (function() {
         var element;
         event.stopPropagation();
         _this.app.appui.setMainSection("help", true);
-        _this.app.documentation.setSection(section || "api");
+        _this.app.documentation.setSection(section || "API");
         element = document.getElementById(pointer);
         if (element != null) {
           return element.scrollIntoView();

@@ -20,7 +20,9 @@ Using the standalone, offline app ; download it in the Releases section of this 
 You can clone this repository and start your own microStudio server, for a team or a classroom for example. See instructions below:
 
 * Install Node JS (downloads and instructions: https://nodejs.org/en/download/)
-* clone this repository
+* `git clone https://github.com/pmgl/microstudio.git`
+* `cd microstudio`
+* `git clone https://github.com/pmgl/microstudio.wiki.git`
 * `cd microstudio/server`
 * `npm install`
 * `npm start`

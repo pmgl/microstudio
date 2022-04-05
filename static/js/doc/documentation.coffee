@@ -5,10 +5,10 @@ class @Documentation
     @suggest = {}
     @title_elements = []
 
-    setTimeout (()=>@load "api",(src)=>
-      @buildLiveHelp src,"api"
-      setTimeout (()=>@setSection "quickstart",()=>
-        @buildLiveHelp @doc,"quickstart"
+    setTimeout (()=>@load "API",(src)=>
+      @buildLiveHelp src,"API"
+      setTimeout (()=>@setSection "Quickstart",()=>
+        @buildLiveHelp @doc,"Quickstart"
       ),1000
     ),1000
 
@@ -50,7 +50,7 @@ class @Documentation
 
     return
 
-  load:(id="quickstart",callback=(->),lang=@app.translator.lang)->
+  load:(id="Quickstart",callback=(->),lang=@app.translator.lang)->
     if @sections[id]?
       return callback @sections[id]
 
@@ -66,7 +66,7 @@ class @Documentation
         else if lang != "en"
           @load(id,callback,"en")
 
-    req.open "GET","/doc/#{lang}/#{id}.md"
+    req.open "GET","/microstudio.wiki/#{lang}/#{lang}:#{id}.md"
     req.send()
 
   updateViewPos:()->
@@ -78,6 +78,7 @@ class @Documentation
     return if not @doc?
     element = document.getElementById("documentation")
     marked.setOptions
+      baseUrl: "/microstudio.wiki/"
       headerPrefix: "documentation_"
     element.innerHTML = DOMPurify.sanitize marked @doc
 

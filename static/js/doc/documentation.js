@@ -8,11 +8,11 @@ this.Documentation = (function() {
     this.title_elements = [];
     setTimeout(((function(_this) {
       return function() {
-        return _this.load("api", function(src) {
-          _this.buildLiveHelp(src, "api");
+        return _this.load("API", function(src) {
+          _this.buildLiveHelp(src, "API");
           return setTimeout((function() {
-            return _this.setSection("quickstart", function() {
-              return _this.buildLiveHelp(_this.doc, "quickstart");
+            return _this.setSection("Quickstart", function() {
+              return _this.buildLiveHelp(_this.doc, "Quickstart");
             });
           }), 1000);
         });
@@ -90,7 +90,7 @@ this.Documentation = (function() {
   Documentation.prototype.load = function(id, callback, lang) {
     var ref1, req;
     if (id == null) {
-      id = "quickstart";
+      id = "Quickstart";
     }
     if (callback == null) {
       callback = (function() {});
@@ -117,7 +117,7 @@ this.Documentation = (function() {
         }
       };
     })(this);
-    req.open("GET", "/doc/" + lang + "/" + id + ".md");
+    req.open("GET", "/microstudio.wiki/" + lang + "/" + lang + ":" + id + ".md");
     return req.send();
   };
 
@@ -135,6 +135,7 @@ this.Documentation = (function() {
     }
     element = document.getElementById("documentation");
     marked.setOptions({
+      baseUrl: "/microstudio.wiki/",
       headerPrefix: "documentation_"
     });
     element.innerHTML = DOMPurify.sanitize(marked(this.doc));

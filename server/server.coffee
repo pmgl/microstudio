@@ -72,6 +72,7 @@ class @Server
         app.use(express.static(folder))
 
     app.use(express.static(static_files))
+    app.use("/microstudio.wiki",express.static("../microstudio.wiki",{dotfiles:"ignore"}))
     app.use("/lib/fontlib/ubuntu",express.static("node_modules/@fontsource/ubuntu"))
     app.use("/lib/fontlib/ubuntu-mono",express.static("node_modules/@fontsource/ubuntu-mono"))
     app.use("/lib/fontlib/source-sans-pro",express.static("node_modules/@fontsource/source-sans-pro"))

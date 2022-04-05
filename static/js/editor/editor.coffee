@@ -250,7 +250,7 @@ class @Editor
     button.addEventListener "mousedown",(event)=>
       event.stopPropagation()
       @app.appui.setMainSection "help",true
-      @app.documentation.setSection section or "api"
+      @app.documentation.setSection section or "API"
       element = document.getElementById pointer
       if element?
         element.scrollIntoView()
