@@ -46,3 +46,6 @@ class @Runner
       @microvm.context.global[name].source
     else
       null
+
+  toString:(obj)->
+    Program.toString obj

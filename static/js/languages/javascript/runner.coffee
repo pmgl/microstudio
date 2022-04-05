@@ -60,3 +60,9 @@ class @Runner
               file: file
               column: 0
       throw err.message
+
+  toString:(obj)->
+    if obj?
+      obj.toString()
+    else
+      "null"

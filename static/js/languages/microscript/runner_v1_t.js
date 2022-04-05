@@ -31,6 +31,10 @@ this.Runner = (function() {
     }
   };
 
+  Runner.prototype.toString = function(obj) {
+    return Program.toString(obj);
+  };
+
   return Runner;
 
 })();

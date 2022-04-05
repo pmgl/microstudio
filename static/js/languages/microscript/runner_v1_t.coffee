@@ -24,3 +24,6 @@ class @Runner
       return f.apply(null,args)
     else
       return 0
+
+  toString:(obj)->
+    Program.toString obj

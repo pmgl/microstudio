@@ -65,7 +65,7 @@ class @Runner
         callback(Program.toString res)
       else
         result = res
-        
+
     @main_thread.addCall compiler.routine
     @tick()
     result
@@ -92,6 +92,8 @@ class @Runner
     else
       return 0
 
+  toString:(obj)->
+    Program.toString obj
 
   process:(thread,time_limit)->
     processor = thread.processor

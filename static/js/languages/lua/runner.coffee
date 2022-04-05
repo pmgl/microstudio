@@ -55,3 +55,9 @@ class @Runner
           column: 0
           file: file
       throw err.toString()
+
+  toString:(obj)->
+    if obj?
+      obj.toString()
+    else
+      "nil"

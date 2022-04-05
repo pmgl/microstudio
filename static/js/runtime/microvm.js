@@ -10,12 +10,14 @@ this.MicroVM = (function() {
     this.namespace = namespace1 != null ? namespace1 : "/microstudio";
     this.preserve_ls = preserve_ls != null ? preserve_ls : false;
     if (meta.print == null) {
-      meta.print = function(text) {
-        if (typeof text === "object") {
-          text = Program.toString(text);
-        }
-        return console.info(text);
-      };
+      meta.print = (function(_this) {
+        return function(text) {
+          if (typeof text === "object" && (_this.runner != null)) {
+            text = _this.runner.toString(text);
+          }
+          return console.info(text);
+        };
+      })(this);
     }
     Array.prototype.insert = function(e) {
       this.splice(0, 0, e);
@@ -234,7 +236,7 @@ this.MicroVM = (function() {
       res = this.runner.run(this.program, filename, callback);
       this.storage_service.check();
       if (res != null) {
-        return Program.toString(res);
+        return this.runner.toString(res);
       } else {
         return null;
       }

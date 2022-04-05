@@ -171,8 +171,8 @@ this.Runtime = (function() {
     meta = {
       print: (function(_this) {
         return function(text) {
-          if (typeof text === "object" || typeof text === "function") {
-            text = Program.toString(text);
+          if ((typeof text === "object" || typeof text === "function") && (_this.vm != null)) {
+            text = _this.vm.runner.toString(text);
           }
           return _this.listener.log(text);
         };

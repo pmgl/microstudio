@@ -117,6 +117,10 @@ this.Runner = (function() {
     }
   };
 
+  Runner.prototype.toString = function(obj) {
+    return Program.toString(obj);
+  };
+
   Runner.prototype.process = function(thread, time_limit) {
     var processor;
     processor = thread.processor;

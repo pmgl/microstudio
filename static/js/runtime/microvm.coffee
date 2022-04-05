@@ -1,9 +1,9 @@
 class @MicroVM
   constructor:(meta={},global = {},@namespace = "/microstudio",@preserve_ls = false)->
     if not meta.print?
-      meta.print = (text)->
-        if typeof text == "object"
-          text = Program.toString text
+      meta.print = (text)=>
+        if typeof text == "object" and @runner?
+          text = @runner.toString text
         console.info(text)
 
 
@@ -152,7 +152,7 @@ class @MicroVM
       res = @runner.run @program,filename,callback
       @storage_service.check()
       if res?
-        return Program.toString res
+        return @runner.toString res
       else
         return null
     catch err

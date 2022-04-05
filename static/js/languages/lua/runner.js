@@ -75,6 +75,14 @@ this.Runner = (function() {
     }
   };
 
+  Runner.prototype.toString = function(obj) {
+    if (obj != null) {
+      return obj.toString();
+    } else {
+      return "nil";
+    }
+  };
+
   return Runner;
 
 })();

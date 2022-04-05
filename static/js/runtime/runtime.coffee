@@ -123,8 +123,8 @@ class @Runtime
   startReady:()->
     meta =
       print: (text)=>
-        if typeof text == "object" or typeof text == "function"
-          text = Program.toString(text)
+        if (typeof text == "object" or typeof text == "function") and @vm?
+          text = @vm.runner.toString(text)
         @listener.log(text)
 
     global =

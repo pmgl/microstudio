@@ -113,3 +113,9 @@ if "init" in globals():
         throw err.toString()
     else
       return
+
+  toString:(obj)->
+    if obj?
+      obj.toString()
+    else
+      "none"

@@ -26,11 +26,6 @@ class @Concatenator
       '/js/util/canvas2d.js'
       "/js/languages/microscript/random.js"
       "/js/runtime/microvm.js"
-      "/js/languages/microscript/tokenizer.js"
-      "/js/languages/microscript/token.js"
-      "/js/languages/microscript/parser.js"
-      "/js/languages/microscript/program.js"
-      "/js/languages/microscript/jstranspiler.js"
       '/js/runtime/runtime.js'
       '/js/runtime/timemachine.js'
       '/js/runtime/assetmanager.js'
@@ -80,12 +75,21 @@ class @Concatenator
     @language_engines =
       microscript_v1_i:
         title: "microScript v1 - interpreted"
-        scripts: ["/js/languages/microscript/runner_v1_i.js"]
+        scripts: [ "/js/languages/microscript/parser.js",
+          "/js/languages/microscript/program.js",
+          "/js/languages/microscript/token.js",
+          "/js/languages/microscript/tokenizer.js",
+          "/js/languages/microscript/runner_v1_i.js"]
         lib: []
 
       microscript_v1_t:
         title: "microScript v1 - transpiled"
-        scripts: [ "/js/languages/microscript/jstranspiler.js" , "/js/languages/microscript/runner_v1_t.js" ]
+        scripts: [ "/js/languages/microscript/parser.js",
+          "/js/languages/microscript/program.js",
+          "/js/languages/microscript/token.js",
+          "/js/languages/microscript/tokenizer.js",
+          "/js/languages/microscript/jstranspiler.js" ,
+          "/js/languages/microscript/runner_v1_t.js" ]
         lib: []
 
       python:
@@ -261,12 +265,6 @@ class @Concatenator
 
       "/js/languages/microscript/random.js"
       "/js/runtime/microvm.js"
-      "/js/languages/microscript/tokenizer.js"
-      "/js/languages/microscript/token.js"
-      "/js/languages/microscript/parser.js"
-      "/js/languages/microscript/program.js"
-      "/js/languages/microscript/jstranspiler.js"
-
       '/js/runtime/runtime.js'
       '/js/runtime/timemachine.js'
       '/js/runtime/screen.js'
