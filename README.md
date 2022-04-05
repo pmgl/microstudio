@@ -23,7 +23,7 @@ You can clone this repository and start your own microStudio server, for a team 
 * `git clone https://github.com/pmgl/microstudio.git`
 * `cd microstudio`
 * `git clone https://github.com/pmgl/microstudio.wiki.git`
-* `cd microstudio/server`
+* `cd server`
 * `npm install`
 * `npm start`
 * Open browser on `http://localhost:8080`
