@@ -46,7 +46,7 @@ class @Runner
     @cpu_load = 0
     @microvm.context.meta.print("microScript 2.0 - beta")
 
-  run:(src,filename)->
+  run:(src,filename,callback)->
     @init() if not @initialized
 
     parser = new Parser(src,filename)
@@ -61,7 +61,11 @@ class @Runner
     compiler = new Compiler(program)
     result = null
     compiler.routine.callback = (res)->
-      result = res
+      if callback?
+        callback(Program.toString res)
+      else
+        result = res
+        
     @main_thread.addCall compiler.routine
     @tick()
     result

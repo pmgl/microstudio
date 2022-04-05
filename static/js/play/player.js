@@ -136,21 +136,23 @@ this.Player = (function() {
   };
 
   Player.prototype.messageReceived = function(msg) {
-    var code, data, err, file, res;
+    var code, data, err, file;
     data = msg.data;
     try {
       data = JSON.parse(data);
       switch (data.name) {
         case "command":
-          res = this.runtime.runCommand(data.line);
-          if (!data.line.trim().startsWith("print")) {
-            return this.postMessage({
-              name: "output",
-              data: res,
-              id: data.id
-            });
-          }
-          break;
+          return this.runtime.runCommand(data.line, (function(_this) {
+            return function(res) {
+              if (!data.line.trim().startsWith("print")) {
+                return _this.postMessage({
+                  name: "output",
+                  data: res,
+                  id: data.id
+                });
+              }
+            };
+          })(this));
         case "pause":
           return this.runtime.stop();
         case "step_forward":

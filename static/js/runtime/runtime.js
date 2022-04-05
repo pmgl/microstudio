@@ -277,12 +277,12 @@ this.Runtime = (function() {
     }
   };
 
-  Runtime.prototype.runCommand = function(command) {
+  Runtime.prototype.runCommand = function(command, callback) {
     var err, res, warnings;
     try {
       warnings = this.vm.context.warnings;
       this.vm.clearWarnings();
-      res = this.vm.run(command);
+      res = this.vm.run(command, void 0, void 0, callback);
       this.reportWarnings();
       this.vm.context.warnings = warnings;
       if (this.vm.error_info != null) {
@@ -293,7 +293,12 @@ this.Runtime = (function() {
       if (this.watching_variables) {
         this.watchStep();
       }
-      return res;
+      if (callback == null) {
+        return res;
+      } else if (res != null) {
+        callback(res);
+      }
+      return null;
     } catch (error) {
       err = error;
       return this.listener.reportError(err);

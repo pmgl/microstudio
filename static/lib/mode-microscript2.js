@@ -337,7 +337,7 @@ var Microscript2HighlightRules = function() {
           regex: "'(?:[^\\\\]|\\\\.)*?'"
       }, {
           token: "keyword.operator",
-          regex: "\\+|\\-|\\*|\\/|%|\\^|<|>|<=|=>|==|="
+          regex: "\\+|\\-|\\*|\\/|%|&|\\||\\^|<|>|<=|=>|==|=|&=|\\|="
       }, {
           token: "paren.lparen",
           regex: "[\\[\\(]"

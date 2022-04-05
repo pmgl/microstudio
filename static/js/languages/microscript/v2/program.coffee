@@ -89,7 +89,7 @@ class @Program.ForIn
 Program.toString = (value,nesting=0)->
   if value instanceof Routine
     if nesting == 0
-      return value.source
+      return value.source or "[function]"
     else
       return "[function]"
   else if typeof value == "function"

@@ -221,7 +221,7 @@ Program.toString = function(value, nesting) {
   }
   if (value instanceof Routine) {
     if (nesting === 0) {
-      return value.source;
+      return value.source || "[function]";
     } else {
       return "[function]";
     }

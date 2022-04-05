@@ -108,12 +108,12 @@ class @Player
       data = JSON.parse data
       switch data.name
         when "command"
-          res = @runtime.runCommand data.line
-          if not data.line.trim().startsWith("print")
-            @postMessage
-              name: "output"
-              data: res
-              id: data.id
+          @runtime.runCommand data.line,(res)=>
+            if not data.line.trim().startsWith("print")
+              @postMessage
+                name: "output"
+                data: res
+                id: data.id
 
         when "pause"
           @runtime.stop()

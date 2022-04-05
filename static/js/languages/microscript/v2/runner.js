@@ -64,7 +64,7 @@ this.Runner = (function() {
     return this.microvm.context.meta.print("microScript 2.0 - beta");
   };
 
-  Runner.prototype.run = function(src, filename) {
+  Runner.prototype.run = function(src, filename, callback) {
     var compiler, err, parser, program, result;
     if (!this.initialized) {
       this.init();
@@ -80,7 +80,11 @@ this.Runner = (function() {
     compiler = new Compiler(program);
     result = null;
     compiler.routine.callback = function(res) {
-      return result = res;
+      if (callback != null) {
+        return callback(Program.toString(res));
+      } else {
+        return result = res;
+      }
     };
     this.main_thread.addCall(compiler.routine);
     this.tick();

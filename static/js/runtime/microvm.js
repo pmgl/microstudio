@@ -218,7 +218,7 @@ this.MicroVM = (function() {
     return this.context.global[key] = value;
   };
 
-  MicroVM.prototype.run = function(program, timeout, filename) {
+  MicroVM.prototype.run = function(program, timeout, filename, callback) {
     var err, res;
     this.program = program;
     if (timeout == null) {
@@ -231,9 +231,13 @@ this.MicroVM = (function() {
     this.context.timeout = Date.now() + timeout;
     this.context.stack_size = 0;
     try {
-      res = this.runner.run(this.program, filename);
+      res = this.runner.run(this.program, filename, callback);
       this.storage_service.check();
-      return Program.toString(res);
+      if (res != null) {
+        return Program.toString(res);
+      } else {
+        return null;
+      }
     } catch (error1) {
       err = error1;
       if ((err.type != null) && (err.line != null) && (err.error != null)) {

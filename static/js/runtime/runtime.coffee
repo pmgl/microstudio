@@ -201,11 +201,11 @@ class @Runtime
       map.needs_update = true
     return
 
-  runCommand:(command)->
+  runCommand:(command,callback)->
     try
       warnings = @vm.context.warnings
       @vm.clearWarnings()
-      res = @vm.run(command)
+      res = @vm.run(command,undefined,undefined,callback)
       @reportWarnings()
       @vm.context.warnings = warnings
       if @vm.error_info?
@@ -214,7 +214,11 @@ class @Runtime
         @listener.reportError err
       if @watching_variables
         @watchStep()
-      res
+      if not callback?
+        return res
+      else if res?
+        callback(res)
+      return null
     catch err
       @listener.reportError err
 

@@ -143,15 +143,18 @@ class @MicroVM
   setGlobal:(key,value)->
     @context.global[key] = value
 
-  run:(@program,timeout=3000,filename="")->
+  run:(@program,timeout=3000,filename="",callback)->
     @error_info = null
     @context.timeout = Date.now()+timeout
     @context.stack_size = 0
 
     try
-      res = @runner.run @program,filename
+      res = @runner.run @program,filename,callback
       @storage_service.check()
-      return Program.toString res
+      if res?
+        return Program.toString res
+      else
+        return null
     catch err
       if err.type? and err.line? and err.error?
          @error_info = err
