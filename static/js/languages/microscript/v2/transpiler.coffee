@@ -23,24 +23,40 @@ class Transpiler
 
     s = "f = function(stack,stack_index,locals,locals_offset,object,global) {\n"
     for k in [i..j] by 1
+      console.info OPCODES[r.opcodes[k]]+" "+r.arg1[k]
       comp = @[OPCODES[r.opcodes[k]]](r.arg1[k])
       if comp
         s += comp+"\n" ;
 
 
-    if @stack.index > 0
-      if @stack.touched[0]
-        s += "stack[stack_index] = #{@stack.get(-@stack.index)} ;\n"
+    # if @stack.index > 0
+    #   if @stack.touched[0]
+    #     s += "stack[stack_index] = #{@stack.get(-@stack.index)} ;\n"
+    #
+    #   for k in [1..@stack.index] by 1
+    #     s += "stack[++stack_index] = #{@stack.get(-@stack.index+k)} ;\n"
+    # else if @stack.index < 0
+    #   s += "stack_index -= #{-@stack.index} ;\n"
+    #   if @stack.touched[@stack.index]
+    #     s += "stack[stack_index] = #{@stack.stack[@stack.index]} ;\n"
+    # else
+    #   if @stack.touched[0]
+    #     s += "stack[stack_index] = #{@stack.get()} ;\n"
 
-      for k in [1..@stack.index] by 1
-        s += "stack[++stack_index] = #{@stack.get(-@stack.index+k)} ;\n"
-    else if @stack.index < 0
-      s += "stack_index -= #{-@stack.index} ;\n"
-      if @stack.touched[@stack.index]
-        s += "stack[stack_index] = #{@stack.stack[@stack.index]} ;\n"
-    else
-      if @stack.touched[0]
-        s += "stack[stack_index] = #{@stack.get()} ;\n"
+    for index of @stack.touched
+      if @stack.touched[index]
+        if index < 0
+          s += "stack[stack_index-#{Math.abs(index)}] = #{@stack.stack[index]} ;\n"
+        else if index > 0
+          s += "stack[stack_index+#{index}] = #{@stack.stack[index]} ;\n"
+        else
+          s += "stack[stack_index] = #{@stack.stack[index]} ;\n"
+
+    if @stack.index < 0
+      s += "stack_index -= #{Math.abs(@stack.index)} ;\n"
+    else if @stack.index > 0
+      s += "stack_index += #{@stack.index} ;\n"
+
     s += """return stack_index ;\n}"""
 
     console.info s
@@ -68,20 +84,17 @@ class Transpiler
 
   LOAD_VALUE:(arg)->
     if typeof arg == "string"
-      @stack.push(""" "#{arg}" """)
+      @stack.push(""" "#{arg.replace(/"/g,"\\\"")}" """)
     else if typeof arg == "number"
       @stack.push(arg+"")
     ""
 
   LOAD_LOCAL:(arg)->
-    if @locals[arg]?
-      @stack.push @locals[arg]
-      ""
-    else
-      v = @createVariable()
-      @locals[arg] = v
-      @stack.push v
-      """ let #{v} = locals[locals_offset+#{arg}] """
+    v = @createVariable()
+    @stack.push v
+    """
+    let #{v} = locals[locals_offset+#{arg}] ; // LOAD_LOCAL
+    """
 
   LOAD_LOCAL_OBJECT:(arg)->
     if @locals[arg]?
@@ -101,22 +114,14 @@ class Transpiler
       res
 
   STORE_LOCAL:(arg)->
-    if @locals[arg]?
-      """
-      #{@locals[arg]} = locals[locals_offset+#{arg}] = #{@stack.get()} ;
-      """
-    else
-      """
-      locals[locals_offset+#{arg}] = #{@stack.get()} ;
-      """
+    v = @stack.get()
+    """
+    locals[locals_offset+#{arg}] = #{v} ; // STORE_LOCAL
+    """
 
   POP:()->
     @stack.pop()
     ""
-
-  STORE_LOCAL_POP:(arg)-> """
-    locals[locals_offset+#{arg}] = #{@stack.pop()} ;
-  """
 
   DIV:()->
     v = @createVariable()
@@ -190,51 +195,6 @@ class Transpiler
     @stack.push(v)
     res
 
-  ADD_PROPERTY:(arg)->
-    v1 = @createVariable()
-    v2 = @createVariable()
-    res = """
-      let #{v1} = #{@stack.get(-2)}[#{@stack.get(-1)}] ; // ADD_PROPERTY
-      let #{v2} = #{@stack.get()} ;
-      if (typeof #{v1} == "number" && typeof #{v2} == "number") {
-        #{v1} += #{v2} ;
-        #{v1} = isFinite(#{v1}) ? #{v1} : 0 ;
-        #{@stack.get(-2)}[#{@stack.get(-1)}] = #{v1} ;
-      }
-  """
-    @stack.pop()
-    @stack.pop()
-    @stack.pop()
-    @stack.push(v1)
-    res
-
-  SUB_PROPERTY:(arg)->
-    v1 = @createVariable()
-    v2 = @createVariable()
-    res = """
-      let #{v1} = #{@stack.get(-2)}[#{@stack.get(-1)}] ; // SUB_PROPERTY
-      let #{v2} = #{@stack.get()} ;
-      if (typeof #{v1} == "number" && typeof #{v2} == "number") {
-        #{v1} -= #{v2} ;
-        #{v1} = isFinite(#{v1}) ? #{v1} : 0 ;
-        #{@stack.get(-2)}[#{@stack.get(-1)}] = #{v1} ;
-      }
-  """
-    @stack.pop()
-    @stack.pop()
-    @stack.pop()
-    @stack.push(v1)
-    res
-
-  ADD_LOCAL:(arg)->
-    v = @createVariable()
-    res = """
-    let #{v} = locals[locals_offset+#{arg}] += #{@stack.get()} ; // ADD_LOCAL
-    """
-    @stack.pop()
-    @stack.push v
-    res
-
   NEW_OBJECT:()->
     v = @createVariable()
     @stack.push(v)
@@ -247,51 +207,43 @@ class Transpiler
 
   MAKE_OBJECT:()->
     v = @createVariable()
+    res = """
+let #{v} = #{@stack.get()} ;
+if (typeof #{v} != "object") #{v} = {} ; """
+
     @stack.pop()
     @stack.push v
-    """
-let #{v} = #{@stack.get()} ;
-#{v} = typeof v == "object" ? #{v} : {}"""
-
+    res
 
   NEGATE:()->
     v = @createVariable()
     res = """
     let #{v} = - #{@stack.get()} ; // NEGATE
-    if (#{v} == null) { #{v} = 0 ;};
+    if (!isFinite(#{v})) { #{v} = 0 ;};
     """
     @stack.pop()
     @stack.push v
     res
 
-  SQRT:()->
-    v = @createVariable()
-    res = """
-    let #{v} = Math.sqrt(#{@stack.get()}) ;
-  """
-    @stack.pop()
-    @stack.push v
-    res
-
-  LOAD_VARIABLE:(arg)->
-    if @variables[arg]?
-      @stack.push @variables[arg]
-      ""
-    else
-      v = @createVariable()
-      res = """
-      let #{v} = object["#{arg}"] ; // LOAD_VARIABLE
-      if (#{v} == null) {
-        let obj = object ;
-        while ((#{v} == null) && (obj["class"] != null)) { obj = obj["class"] ; #{v} = obj["#{arg}"] }
-        if (#{v} == null) v = global["#{arg}"] ;
-        if (#{v} == null) { #{v} = 0 ; }
-      }
-    """
-      @stack.push v
-      @variables[arg] = v
-
-      res
+  # LOAD_VARIABLE:(arg)->
+  #   if @variables[arg]?
+  #     @stack.push @variables[arg]
+  #     ""
+  #   else
+  #     v = @createVariable()
+  #     res = """
+  #     let #{v} = object["#{arg}"] ; // LOAD_VARIABLE
+  #     if (#{v} == null) {
+  #       let obj = object ;
+  #       while ((#{v} == null) && (obj["class"] != null)) { obj = obj["class"] ; #{v} = obj["#{arg}"] }
+  #       if (#{v} == null) v = global["#{arg}"] ;
+  #       if (#{v} == null) { #{v} = 0 ; }
+  #     }
+  #   """
+  #     @stack.push v
+  #     @variables[arg] = v
+  #
+  #     res
 
   STORE_VARIABLE:(arg)->
     if @variables[arg]?

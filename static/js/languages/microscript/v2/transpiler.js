@@ -27,34 +27,34 @@ Transpiler = (function() {
   };
 
   Transpiler.prototype.transpileSegment = function(r, i, j) {
-    var comp, err, k, l, m, n, ref, ref1, ref2, ref3, ref4, s;
+    var comp, err, index, k, l, m, ref, ref1, ref2, ref3, s;
     this.vcount = 0;
     this.stack = new Stack();
     this.locals = {};
     this.variables = {};
     s = "f = function(stack,stack_index,locals,locals_offset,object,global) {\n";
     for (k = l = ref = i, ref1 = j; l <= ref1; k = l += 1) {
+      console.info(OPCODES[r.opcodes[k]] + " " + r.arg1[k]);
       comp = this[OPCODES[r.opcodes[k]]](r.arg1[k]);
       if (comp) {
         s += comp + "\n";
       }
     }
-    if (this.stack.index > 0) {
-      if (this.stack.touched[0]) {
-        s += "stack[stack_index] = " + (this.stack.get(-this.stack.index)) + " ;\n";
+    for (index in this.stack.touched) {
+      if (this.stack.touched[index]) {
+        if (index < 0) {
+          s += "stack[stack_index-" + (Math.abs(index)) + "] = " + this.stack.stack[index] + " ;\n";
+        } else if (index > 0) {
+          s += "stack[stack_index+" + index + "] = " + this.stack.stack[index] + " ;\n";
+        } else {
+          s += "stack[stack_index] = " + this.stack.stack[index] + " ;\n";
+        }
       }
-      for (k = m = 1, ref2 = this.stack.index; m <= ref2; k = m += 1) {
-        s += "stack[++stack_index] = " + (this.stack.get(-this.stack.index + k)) + " ;\n";
-      }
-    } else if (this.stack.index < 0) {
-      s += "stack_index -= " + (-this.stack.index) + " ;\n";
-      if (this.stack.touched[this.stack.index]) {
-        s += "stack[stack_index] = " + this.stack.stack[this.stack.index] + " ;\n";
-      }
-    } else {
-      if (this.stack.touched[0]) {
-        s += "stack[stack_index] = " + (this.stack.get()) + " ;\n";
-      }
+    }
+    if (this.stack.index < 0) {
+      s += "stack_index -= " + (Math.abs(this.stack.index)) + " ;\n";
+    } else if (this.stack.index > 0) {
+      s += "stack_index += " + this.stack.index + " ;\n";
     }
     s += "return stack_index ;\n}";
     console.info(s);
@@ -67,7 +67,7 @@ Transpiler = (function() {
     }
     r.opcodes[i] = 200;
     r.arg1[i] = f;
-    for (k = n = ref3 = i + 1, ref4 = j; n <= ref4; k = n += 1) {
+    for (k = m = ref2 = i + 1, ref3 = j; m <= ref3; k = m += 1) {
       r.remove(i + 1);
     }
   };
@@ -87,7 +87,7 @@ Transpiler = (function() {
 
   Transpiler.prototype.LOAD_VALUE = function(arg) {
     if (typeof arg === "string") {
-      this.stack.push(" \"" + arg + "\" ");
+      this.stack.push(" \"" + (arg.replace(/"/g, "\\\"")) + "\" ");
     } else if (typeof arg === "number") {
       this.stack.push(arg + "");
     }
@@ -96,15 +96,9 @@ Transpiler = (function() {
 
   Transpiler.prototype.LOAD_LOCAL = function(arg) {
     var v;
-    if (this.locals[arg] != null) {
-      this.stack.push(this.locals[arg]);
-      return "";
-    } else {
-      v = this.createVariable();
-      this.locals[arg] = v;
-      this.stack.push(v);
-      return " let " + v + " = locals[locals_offset+" + arg + "] ";
-    }
+    v = this.createVariable();
+    this.stack.push(v);
+    return "let " + v + " = locals[locals_offset+" + arg + "] ; // LOAD_LOCAL";
   };
 
   Transpiler.prototype.LOAD_LOCAL_OBJECT = function(arg) {
@@ -123,20 +117,14 @@ Transpiler = (function() {
   };
 
   Transpiler.prototype.STORE_LOCAL = function(arg) {
-    if (this.locals[arg] != null) {
-      return this.locals[arg] + " = locals[locals_offset+" + arg + "] = " + (this.stack.get()) + " ;";
-    } else {
-      return "locals[locals_offset+" + arg + "] = " + (this.stack.get()) + " ;";
-    }
+    var v;
+    v = this.stack.get();
+    return "locals[locals_offset+" + arg + "] = " + v + " ; // STORE_LOCAL";
   };
 
   Transpiler.prototype.POP = function() {
     this.stack.pop();
     return "";
-  };
-
-  Transpiler.prototype.STORE_LOCAL_POP = function(arg) {
-    return "locals[locals_offset+" + arg + "] = " + (this.stack.pop()) + " ;";
   };
 
   Transpiler.prototype.DIV = function() {
@@ -205,39 +193,6 @@ Transpiler = (function() {
     return res;
   };
 
-  Transpiler.prototype.ADD_PROPERTY = function(arg) {
-    var res, v1, v2;
-    v1 = this.createVariable();
-    v2 = this.createVariable();
-    res = "let " + v1 + " = " + (this.stack.get(-2)) + "[" + (this.stack.get(-1)) + "] ; // ADD_PROPERTY\nlet " + v2 + " = " + (this.stack.get()) + " ;\nif (typeof " + v1 + " == \"number\" && typeof " + v2 + " == \"number\") {\n  " + v1 + " += " + v2 + " ;\n  " + v1 + " = isFinite(" + v1 + ") ? " + v1 + " : 0 ;\n  " + (this.stack.get(-2)) + "[" + (this.stack.get(-1)) + "] = " + v1 + " ;\n}";
-    this.stack.pop();
-    this.stack.pop();
-    this.stack.pop();
-    this.stack.push(v1);
-    return res;
-  };
-
-  Transpiler.prototype.SUB_PROPERTY = function(arg) {
-    var res, v1, v2;
-    v1 = this.createVariable();
-    v2 = this.createVariable();
-    res = "let " + v1 + " = " + (this.stack.get(-2)) + "[" + (this.stack.get(-1)) + "] ; // SUB_PROPERTY\nlet " + v2 + " = " + (this.stack.get()) + " ;\nif (typeof " + v1 + " == \"number\" && typeof " + v2 + " == \"number\") {\n  " + v1 + " -= " + v2 + " ;\n  " + v1 + " = isFinite(" + v1 + ") ? " + v1 + " : 0 ;\n  " + (this.stack.get(-2)) + "[" + (this.stack.get(-1)) + "] = " + v1 + " ;\n}";
-    this.stack.pop();
-    this.stack.pop();
-    this.stack.pop();
-    this.stack.push(v1);
-    return res;
-  };
-
-  Transpiler.prototype.ADD_LOCAL = function(arg) {
-    var res, v;
-    v = this.createVariable();
-    res = "let " + v + " = locals[locals_offset+" + arg + "] += " + (this.stack.get()) + " ; // ADD_LOCAL";
-    this.stack.pop();
-    this.stack.push(v);
-    return res;
-  };
-
   Transpiler.prototype.NEW_OBJECT = function() {
     var v;
     v = this.createVariable();
@@ -253,43 +208,21 @@ Transpiler = (function() {
   };
 
   Transpiler.prototype.MAKE_OBJECT = function() {
-    var v;
+    var res, v;
     v = this.createVariable();
+    res = "let " + v + " = " + (this.stack.get()) + " ;\nif (typeof " + v + " != \"object\") " + v + " = {} ; ";
     this.stack.pop();
     this.stack.push(v);
-    return "let " + v + " = " + (this.stack.get()) + " ;\n" + v + " = typeof v == \"object\" ? " + v + " : {}";
+    return res;
   };
 
   Transpiler.prototype.NEGATE = function() {
     var res, v;
     v = this.createVariable();
-    res = "let " + v + " = - " + (this.stack.get()) + " ; // NEGATE\nif (" + v + " == null) { " + v + " = 0 ;};";
+    res = "let " + v + " = - " + (this.stack.get()) + " ; // NEGATE\nif (!isFinite(" + v + ")) { " + v + " = 0 ;};";
     this.stack.pop();
     this.stack.push(v);
     return res;
-  };
-
-  Transpiler.prototype.SQRT = function() {
-    var res, v;
-    v = this.createVariable();
-    res = "let " + v + " = Math.sqrt(" + (this.stack.get()) + ") ;";
-    this.stack.pop();
-    this.stack.push(v);
-    return res;
-  };
-
-  Transpiler.prototype.LOAD_VARIABLE = function(arg) {
-    var res, v;
-    if (this.variables[arg] != null) {
-      this.stack.push(this.variables[arg]);
-      return "";
-    } else {
-      v = this.createVariable();
-      res = "let " + v + " = object[\"" + arg + "\"] ; // LOAD_VARIABLE\nif (" + v + " == null) {\n  let obj = object ;\n  while ((" + v + " == null) && (obj[\"class\"] != null)) { obj = obj[\"class\"] ; " + v + " = obj[\"" + arg + "\"] }\n  if (" + v + " == null) v = global[\"" + arg + "\"] ;\n  if (" + v + " == null) { " + v + " = 0 ; }\n}";
-      this.stack.push(v);
-      this.variables[arg] = v;
-      return res;
-    }
   };
 
   Transpiler.prototype.STORE_VARIABLE = function(arg) {
