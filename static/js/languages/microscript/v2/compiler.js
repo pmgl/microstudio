@@ -22,7 +22,6 @@ Compiler = (function() {
     this.routine.resolveLabels();
     this.count += this.routine.opcodes.length;
     this.routine.locals_size = this.locals.max_index;
-    console.info(this.routine.toString());
   }
 
   Compiler.prototype.compile = function(statement) {
