@@ -298,8 +298,7 @@ var Microscript2HighlightRules = function() {
   var mapper = this.createKeywordMapper({
       keyword: "do|after|every|sleep|else|elsif|end|function|if|in|to|local|then|or|and|not|object|class|extends|new|constructor",
       "keyword.control": "for|by|return|while|break|continue",
-      "support.function": "print|time|type|log|max|PI|pow|random|ceil|round|floor|abs|sqrt|min|exp|sin|atan|concat|sortList|cos|sin|tan|acos|asin|atan|atan2|sind|cosd|tand|acosd|asind|atand|atan2d",
-      "support.function": "screen|system|audio|gamepad|keyboard|touch|mouse|storage|asset_manager",
+      "support.function": "screen|system|audio|gamepad|keyboard|touch|mouse|storage|asset_manager|print|time|type|log|max|PI|pow|random|ceil|round|floor|abs|sqrt|min|exp|sin|atan|concat|sortList|cos|sin|tan|acos|asin|atan|atan2|sind|cosd|tand|acosd|asind|atand|atan2d",
       "support.constant": "true|false|PI",
       "variable.language": "this|type|super"
     },"identifier") ;
