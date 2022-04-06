@@ -72,14 +72,9 @@ this.Concatenator = (function() {
       }
     };
     this.language_engines = {
-      microscript_v1_i: {
-        title: "microScript v1 - interpreted",
-        scripts: ["/js/languages/microscript/parser.js", "/js/languages/microscript/program.js", "/js/languages/microscript/token.js", "/js/languages/microscript/tokenizer.js", "/js/languages/microscript/runner_v1_i.js"],
-        lib: []
-      },
-      microscript_v1_t: {
-        title: "microScript v1 - transpiled",
-        scripts: ["/js/languages/microscript/parser.js", "/js/languages/microscript/program.js", "/js/languages/microscript/token.js", "/js/languages/microscript/tokenizer.js", "/js/languages/microscript/jstranspiler.js", "/js/languages/microscript/runner_v1_t.js"],
+      microscript_v2: {
+        title: "microScript 2.0",
+        scripts: ["/js/languages/microscript/v2/compiler.js", "/js/languages/microscript/v2/parser.js", "/js/languages/microscript/v2/processor.js", "/js/languages/microscript/v2/program.js", "/js/languages/microscript/v2/routine.js", "/js/languages/microscript/v2/runner.js", "/js/languages/microscript/v2/token.js", "/js/languages/microscript/v2/tokenizer.js", "/js/languages/microscript/v2/transpiler.js"],
         lib: []
       },
       python: {
@@ -99,9 +94,14 @@ this.Concatenator = (function() {
         scripts: ["/js/languages/javascript/runner.js"],
         lib: []
       },
-      microscript_v2: {
-        title: "microScript v2 - alpha",
-        scripts: ["/js/languages/microscript/v2/compiler.js", "/js/languages/microscript/v2/parser.js", "/js/languages/microscript/v2/processor.js", "/js/languages/microscript/v2/program.js", "/js/languages/microscript/v2/routine.js", "/js/languages/microscript/v2/runner.js", "/js/languages/microscript/v2/token.js", "/js/languages/microscript/v2/tokenizer.js", "/js/languages/microscript/v2/transpiler.js"],
+      microscript_v1_i: {
+        title: "microScript 1.0 - interpreted",
+        scripts: ["/js/languages/microscript/parser.js", "/js/languages/microscript/program.js", "/js/languages/microscript/token.js", "/js/languages/microscript/tokenizer.js", "/js/languages/microscript/runner_v1_i.js"],
+        lib: []
+      },
+      microscript_v1_t: {
+        title: "microScript 1.0 - transpiled",
+        scripts: ["/js/languages/microscript/parser.js", "/js/languages/microscript/program.js", "/js/languages/microscript/token.js", "/js/languages/microscript/tokenizer.js", "/js/languages/microscript/jstranspiler.js", "/js/languages/microscript/runner_v1_t.js"],
         lib: []
       }
     };

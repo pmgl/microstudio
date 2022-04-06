@@ -79,7 +79,7 @@ class AppUI
       @show "create-project-overlay"
       @focus "create-project-title"
       document.getElementById("createprojectoption-type").value = "app"
-      document.getElementById("createprojectoption-language").value = "microscript_v1_i"
+      document.getElementById("createprojectoption-language").value = "microscript_v2"
       document.getElementById("createprojectoption-graphics").value = "M1"
       document.getElementById("create-project-option-lib-matterjs").checked = false
       document.getElementById("create-project-option-lib-cannonjs").checked = false
