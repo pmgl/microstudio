@@ -789,8 +789,10 @@ class @Processor
           r = arg1[op_index++]
           rc = r.clone()
           for ir in r.import_refs
-            # console.info "importing ref: "+ir
-            rc.import_values.push locals[locals_offset+ir]
+            if ir == r.import_self
+              rc.import_values.push rc
+            else
+              rc.import_values.push locals[locals_offset+ir]
 
           rc.object = object
 

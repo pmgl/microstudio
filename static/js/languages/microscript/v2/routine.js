@@ -11,6 +11,7 @@ this.Routine = (function() {
     this.transpile = false;
     this.import_refs = [];
     this.import_values = [];
+    this.import_self = -1;
   }
 
   Routine.prototype.clone = function() {

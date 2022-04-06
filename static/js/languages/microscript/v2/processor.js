@@ -845,7 +845,11 @@ this.Processor = (function() {
           ref3 = r.import_refs;
           for (l = 0, len = ref3.length; l < len; l++) {
             ir = ref3[l];
-            rc.import_values.push(locals[locals_offset + ir]);
+            if (ir === r.import_self) {
+              rc.import_values.push(rc);
+            } else {
+              rc.import_values.push(locals[locals_offset + ir]);
+            }
           }
           rc.object = object;
           stack[++stack_index] = rc;

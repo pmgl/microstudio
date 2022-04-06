@@ -12,6 +12,7 @@ class @Routine
     @transpile = false
     @import_refs = []
     @import_values = []
+    @import_self = -1
 
   clone:()->
     r = new Routine @num_args

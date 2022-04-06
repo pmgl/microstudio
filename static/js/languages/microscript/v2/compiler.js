@@ -22,6 +22,7 @@ Compiler = (function() {
     this.routine.resolveLabels();
     this.count += this.routine.opcodes.length;
     this.routine.locals_size = this.locals.max_index;
+    console.info(this.routine.toString());
   }
 
   Compiler.prototype.compile = function(statement) {
@@ -86,9 +87,16 @@ Compiler = (function() {
     var f, i, index, j, ref;
     if (statement.local) {
       if (statement.field instanceof Program.Variable) {
-        this.compile(statement.expression);
-        index = this.locals.register(statement.field.identifier);
-        return this.routine.STORE_LOCAL(index, statement);
+        if (statement.expression instanceof Program.Function) {
+          index = this.locals.register(statement.field.identifier);
+          this.compile(statement.expression);
+          this.routine.arg1[this.routine.arg1.length - 1].import_self = index;
+          return this.routine.STORE_LOCAL(index, statement);
+        } else {
+          this.compile(statement.expression);
+          index = this.locals.register(statement.field.identifier);
+          return this.routine.STORE_LOCAL(index, statement);
+        }
       } else {
         throw "illegal";
       }

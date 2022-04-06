@@ -20,7 +20,7 @@ class Compiler
     @routine.resolveLabels()
     @count += @routine.opcodes.length
     @routine.locals_size = @locals.max_index
-    # console.info(@routine.toString())
+    console.info(@routine.toString())
     # console.info("total length: "+@count)
 
   compile:(statement)->
@@ -82,9 +82,15 @@ class Compiler
   compileAssignment:(statement)->
     if statement.local
       if statement.field instanceof Program.Variable
-        @compile(statement.expression) ## first compile expression which may refer to another local with same name
-        index = @locals.register(statement.field.identifier) ## then register a local for that name
-        @routine.STORE_LOCAL index,statement
+        if statement.expression instanceof Program.Function
+          index = @locals.register(statement.field.identifier) ## register function locally first
+          @compile(statement.expression) ## then compile function which may refer to itself
+          @routine.arg1[@routine.arg1.length-1].import_self = index
+          @routine.STORE_LOCAL index,statement
+        else
+          @compile(statement.expression) ## first compile expression which may refer to another local with same name
+          index = @locals.register(statement.field.identifier) ## then register a local for that name
+          @routine.STORE_LOCAL index,statement
       else
         throw "illegal"
     else
