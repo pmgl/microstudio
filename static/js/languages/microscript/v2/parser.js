@@ -96,8 +96,11 @@ this.Parser = (function() {
     }
   };
 
-  Parser.prototype.parseExpression = function(filter) {
+  Parser.prototype.parseExpression = function(filter, first_function_call) {
     var access, expression;
+    if (first_function_call == null) {
+      first_function_call = false;
+    }
     expression = this.parseExpressionStart();
     if (expression == null) {
       return null;
@@ -107,13 +110,19 @@ this.Parser = (function() {
       if (access == null) {
         return expression;
       }
+      if (first_function_call && access instanceof Program.FunctionCall) {
+        return access;
+      }
       expression = access;
     }
   };
 
-  Parser.prototype.assertExpression = function(filter) {
+  Parser.prototype.assertExpression = function(filter, first_function_call) {
     var exp;
-    exp = this.parseExpression(filter);
+    if (first_function_call == null) {
+      first_function_call = false;
+    }
+    exp = this.parseExpression(filter, first_function_call);
     if (exp == null) {
       throw "Expression expected";
     }
@@ -597,7 +606,7 @@ this.Parser = (function() {
 
   Parser.prototype.parseNew = function(token) {
     var exp;
-    exp = this.assertExpression();
+    exp = this.assertExpression(null, true);
     return new Program.NewCall(token, exp);
   };
 

@@ -73,16 +73,17 @@ class @Parser
         @parseExpression()
 
 
-  parseExpression:(filter)->
+  parseExpression:(filter,first_function_call=false)->
     expression = @parseExpressionStart()
     return null if not expression?
     loop
       access = @parseExpressionSuffix(expression,filter)
       return expression if not access?
+      return access if first_function_call and access instanceof Program.FunctionCall
       expression = access
 
-  assertExpression:(filter)->
-    exp = @parseExpression(filter)
+  assertExpression:(filter,first_function_call=false)->
+    exp = @parseExpression(filter,first_function_call)
     if not exp?
       throw "Expression expected"
     exp
@@ -488,7 +489,7 @@ class @Parser
 
 
   parseNew:(token)->
-    exp = @assertExpression()
+    exp = @assertExpression(null,true)
     return new Program.NewCall(token,exp)
 
   multipliers:
