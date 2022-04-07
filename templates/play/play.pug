@@ -84,6 +84,13 @@ html
   script(id="code" type="text/x-project-code").
     !{game.code}
 
+
+  script(type="text/javascript").
+    window.addEventListener("load",function() {
+      window.player = new Player() ;
+      document.body.focus() ;
+    }) ;
+
   if language == "python"
     script(type="text/python").
       from browser import window

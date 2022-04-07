@@ -92,7 +92,7 @@ this.Runner = (function() {
   };
 
   Runner.prototype.call = function(name, args) {
-    var compiler, parser, processor, program, src;
+    var f, routine;
     if (name === "draw" || name === "update") {
       if (this.microvm.context.global[name] != null) {
         this.main_thread.addCall(name + "()");
@@ -103,15 +103,17 @@ this.Runner = (function() {
       return;
     }
     if (this.microvm.context.global[name] != null) {
-      src = name + "()";
-      parser = new Parser(src, "");
-      parser.parse();
-      program = parser.program;
-      compiler = new Compiler(program);
-      processor = this.main_thread.processor;
-      processor.time_limit = Date.now() + 16;
-      processor.load(compiler.routine);
-      return processor.run(this.microvm.context);
+      if ((args == null) || !args.length) {
+        return this.main_thread.addCall(name + "()");
+      } else {
+        routine = this.microvm.context.global[name];
+        if (routine instanceof Routine) {
+          f = this.main_thread.processor.routineAsFunction(routine, this.microvm.context);
+          return f(...args);
+        } else if (typeof routine === "function") {
+          return routine(...args);
+        }
+      }
     } else {
       return 0;
     }

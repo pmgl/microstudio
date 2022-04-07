@@ -1,5 +1,5 @@
 class @Player
-  constructor:()->
+  constructor:(@listener)->
     #src = document.getElementById("code").innerText
     @source_count = 0
     @sources = {}
@@ -160,13 +160,27 @@ class @Player
     catch err
       console.error err
 
+
+  call:(name,args)->
+    if @runtime? and @runtime.vm?
+      @runtime.vm.call(name,args)
+
+  setGlobal:(name,value)->
+    if @runtime? and @runtime.vm?
+      @runtime.vm.context.global[name] = value
+
+  exec:(command,callback)->
+    if @runtime?
+      @runtime.runCommand command,callback
+
   postMessage:(data)->
     if window != window.parent
       window.parent.postMessage JSON.stringify(data),"*"
-
-window.addEventListener "load",()->
-  window.player = new Player()
-  document.body.focus()
+    if @listener?
+      try
+        @listener(data)
+      catch err
+        console.error err
 
 if navigator.serviceWorker? and not window.skip_service_worker
   navigator.serviceWorker.register('sw.js', { scope: location.pathname }).then((reg)->

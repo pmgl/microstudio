@@ -1,6 +1,7 @@
 this.Player = (function() {
-  function Player() {
+  function Player(listener) {
     var i, len, ref, source;
+    this.listener = listener;
     this.source_count = 0;
     this.sources = {};
     this.resources = resources;
@@ -198,20 +199,42 @@ this.Player = (function() {
     }
   };
 
+  Player.prototype.call = function(name, args) {
+    if ((this.runtime != null) && (this.runtime.vm != null)) {
+      return this.runtime.vm.call(name, args);
+    }
+  };
+
+  Player.prototype.setGlobal = function(name, value) {
+    if ((this.runtime != null) && (this.runtime.vm != null)) {
+      return this.runtime.vm.context.global[name] = value;
+    }
+  };
+
+  Player.prototype.exec = function(command, callback) {
+    if (this.runtime != null) {
+      return this.runtime.runCommand(command, callback);
+    }
+  };
+
   Player.prototype.postMessage = function(data) {
+    var err;
     if (window !== window.parent) {
-      return window.parent.postMessage(JSON.stringify(data), "*");
+      window.parent.postMessage(JSON.stringify(data), "*");
+    }
+    if (this.listener != null) {
+      try {
+        return this.listener(data);
+      } catch (error1) {
+        err = error1;
+        return console.error(err);
+      }
     }
   };
 
   return Player;
 
 })();
-
-window.addEventListener("load", function() {
-  window.player = new Player();
-  return document.body.focus();
-});
 
 if ((navigator.serviceWorker != null) && !window.skip_service_worker) {
   navigator.serviceWorker.register('sw.js', {

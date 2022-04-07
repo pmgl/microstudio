@@ -67,6 +67,7 @@ class @Runner
         result = res
 
     @main_thread.addCall compiler.routine
+
     @tick()
     result
 
@@ -79,16 +80,15 @@ class @Runner
       return
 
     if @microvm.context.global[name]?
-      src = "#{name}()"
-      parser = new Parser(src,"")
-      parser.parse()
-      program = parser.program
-      compiler = new Compiler(program)
-
-      processor = @main_thread.processor
-      processor.time_limit = Date.now()+16
-      processor.load compiler.routine
-      processor.run(@microvm.context)
+      if not args? or not args.length
+        @main_thread.addCall "#{name}()"
+      else
+        routine = @microvm.context.global[name]
+        if routine instanceof Routine
+          f = @main_thread.processor.routineAsFunction(routine,@microvm.context)
+          `f(...args)`
+        else if typeof routine == "function"
+          `routine(...args)`
     else
       return 0
 

@@ -8,13 +8,13 @@ html
     meta(name='mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='description', content='')
-            
+
     link(rel="manifest" href="manifest.json")
     link(rel='icon', type='image/png', href="icon64.png")
     link(rel="apple-touch-icon" sizes="180x180" href="icon180.png")
     link(rel="icon" type="image/png" sizes="32x32" href="icon32.png")
     link(rel="icon" type="image/png" sizes="16x16" href="icon16.png")
-      
+
     style.
       html,body {
         margin: 0;
@@ -34,10 +34,10 @@ html
       #canvaswrapper {
         text-align: center ;
       }
-      
+
     each font in fonts
       style @font-face { font-family: "#{font}" ; src: url("fonts/#{font}.ttf") format("truetype"); }
-      
+
     script window.fonts = !{JSON.stringify(fonts)}
 
   body.noselect.custom-cursor(oncontextmenu='return false;')
@@ -45,20 +45,57 @@ html
 
     script(type="text/javascript").
       !{game.resources}
-      
+
     script(type="text/javascript").
       var orientation = '!{game.orientation}' ;
       var aspect = '!{game.aspect}' ;
       var ms_libs = !{game.libs} ;
       window.skip_service_worker = true;
       window.exported_project = true;
-      
+
+    script(type="text/javascript").
+      //
+                //
+                // The game is started with the code below.
+                // Once you have received the "started" signal (see below),
+                // you can do the following:
+                // 1) Inject functions or objects into the global context of the microStudio engine, example:
+                //
+                //   window.player.setGlobal("special_callback",function(x) { console.info(x) }) ;
+                //   // Your microScript code can now call the "special_callback" function
+                //
+                // 2) Call microScript global functions from your JavaScript code, example:
+                //
+                //   window.player.call("call_me_from_javascript",[10,1000]) ;
+                //   // arguments to the function call are provided as an array
+                //
+                // 3) Run a microScript code snippet from your JavaScript code, example:
+                //
+                //   window.player.exec("player.position_x = 50",function(result) { console.log(result) ; }) ;
+                //
+
+                window.addEventListener("load",function() {
+                  window.player = new Player(function(event) {
+                    if (event.name == "started") {
+                      // signal that the game is started
+                    }
+                    else if (event.name == "log") {
+                      // console.info(event.data) ;
+                    }
+                  }) ;
+                  document.body.focus() ;
+                }) ;
+
+
+
+
+
     each file in javascript_files
       script(src=file)
 
   script(id="code" type="text/x-microscript").
     !{game.code}
-    
+
   if game.language == "python"
     script(type="text/python").
       from browser import window
@@ -73,6 +110,6 @@ html
 
       window.python = execute
       window.glob = globals()
-      
+
     script.
       brython()
