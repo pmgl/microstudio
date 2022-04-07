@@ -57,6 +57,7 @@ class @Terminal
         v = document.getElementById("terminal-input").value
         document.getElementById("terminal-input").value = ""
         @validateLine v
+        @force_scroll = true
 
       else if event.key == "ArrowUp"
         if not @history_index?
@@ -118,6 +119,13 @@ class @Terminal
 
   update:()->
     if @buffer.length>0
+      if @force_scroll
+        @scroll = true
+        @force_scroll = false
+      else
+        e = document.getElementById("terminal-view")
+        @scroll = Math.abs(e.getBoundingClientRect().height+e.scrollTop-e.scrollHeight) < 10
+
       div = document.createDocumentFragment()
       container = document.createElement "div"
       div.appendChild container
@@ -130,15 +138,6 @@ class @Terminal
       @buffer = []
 
   echo:(text,scroll=false,classname)->
-    if not scroll
-      e = document.getElementById("terminal-view")
-      if Math.abs(e.getBoundingClientRect().height+e.scrollTop-e.scrollHeight) < 10
-        @scroll = true
-      else
-        @scroll = false
-    else
-      @scroll = true
-
     @buffer.push
       text: text
       classname: classname
@@ -176,4 +175,5 @@ class @Terminal
     document.getElementById("terminal-lines").innerHTML = ""
     @buffer = []
     @length = 0
+    document.querySelector("#terminal-input-gt i").classList.remove("fa-ellipsis-v")
     delete @runwindow.multiline

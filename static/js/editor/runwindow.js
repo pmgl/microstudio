@@ -164,16 +164,8 @@ this.RunWindow = (function() {
   };
 
   RunWindow.prototype.run = function() {
-    var code, device, i, image, len, ref, resource, src, url;
+    var code, device, src, url;
     src = this.app.editor.editor.getValue();
-    resource = {
-      images: []
-    };
-    ref = this.app.project.sprite_list;
-    for (i = 0, len = ref.length; i < len; i++) {
-      image = ref[i];
-      resource.images.push(image.file);
-    }
     device = document.getElementById("device");
     code = this.app.project["public"] ? "" : this.app.project.code + "/";
     url = (location.origin.replace(".dev", ".io")) + "/" + this.app.project.owner.nick + "/" + this.app.project.slug + "/" + code;
@@ -456,7 +448,7 @@ this.RunWindow = (function() {
   };
 
   RunWindow.prototype.messageReceived = function(msg) {
-    var c, e, err, source;
+    var c, e, err, iframe, source;
     try {
       msg = JSON.parse(msg);
       switch (msg.name) {
@@ -515,7 +507,22 @@ this.RunWindow = (function() {
         case "exit":
           return this.exit();
         case "started":
-          return this.propagate("started");
+          this.propagate("started");
+          if (this.pending_command != null) {
+            iframe = document.getElementById("runiframe");
+            if (iframe != null) {
+              if (this.pending_command.output_callback != null) {
+                this.command_table[this.command_id] = this.pending_command.output_callback;
+              }
+              iframe.contentWindow.postMessage(JSON.stringify({
+                name: "command",
+                line: this.pending_command.command,
+                id: this.pending_command.output_callback != null ? this.command_id++ : void 0
+              }), "*");
+            }
+            return this.pending_command = null;
+          }
+          break;
         case "time_machine":
           return this.app.debug.time_machine.messageReceived(msg);
         default:
@@ -529,10 +536,31 @@ this.RunWindow = (function() {
   };
 
   RunWindow.prototype.runCommand = function(command, output_callback) {
-    var global, iframe, meta, parser, res;
+    var iframe, parser;
     this.nesting = 0;
     if (command.trim().length === 0) {
       return;
+    }
+    if ((this.app.project != null) && this.app.project.language.startsWith("microscript")) {
+      if (this.multiline != null) {
+        this.multiline += "\n" + command;
+        command = this.multiline;
+      }
+      parser = new Parser(command);
+      parser.parse();
+      if (parser.error_info) {
+        this.nesting = parser.nesting;
+        if (parser.unexpected_eof) {
+          this.multiline = command;
+        } else {
+          this.multiline = null;
+          this.logError(parser.error_info);
+        }
+        return;
+      } else {
+        this.nesting = 0;
+        this.multiline = null;
+      }
     }
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -545,50 +573,11 @@ this.RunWindow = (function() {
         id: output_callback != null ? this.command_id++ : void 0
       }), "*");
     } else {
-      if (this.local_vm == null) {
-        meta = {
-          print: (function(_this) {
-            return function(text) {
-              if (typeof text === "object") {
-                text = Program.toString(text);
-              }
-              _this.terminal.echo(text);
-            };
-          })(this)
-        };
-        global = {};
-        this.local_vm = new MicroVM(meta, global, null, true);
-      }
-      if (this.multiline != null) {
-        this.multiline += "\n" + command;
-        command = this.multiline;
-      }
-      parser = new Parser(command);
-      parser.parse();
-      if (parser.error_info) {
-        this.nesting = parser.nesting;
-        if (parser.unexpected_eof) {
-          return this.multiline = command;
-        } else {
-          this.multiline = null;
-          return this.logError(parser.error_info);
-        }
-      } else {
-        this.nesting = 0;
-        this.multiline = null;
-        this.local_vm.clearWarnings();
-        res = this.local_vm.run(command);
-        this.reportWarnings();
-        if (output_callback != null) {
-          return output_callback(res);
-        } else if (this.local_vm.error_info) {
-          return this.logError(this.local_vm.error_info);
-        } else {
-          if (!command.trim().startsWith("print") && !parser.program.isAssignment()) {
-            return this.local_vm.context.meta.print(res);
-          }
-        }
-      }
+      this.pending_command = {
+        command: command,
+        output_callback: output_callback
+      };
+      return this.play();
     }
   };
 

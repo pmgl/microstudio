@@ -104,15 +104,6 @@ class @RunWindow
   run:()->
     src = @app.editor.editor.getValue()
 
-    resource =
-      images: []
-
-    for image in @app.project.sprite_list
-      resource.images.push image.file
-    #if @runtime?
-    #  @runtime.stop()
-    #@runtime = new Runtime(location.origin+"/#{@app.appui.nick}/#{@app.appui.project.slug}/",src,resource)
-
     device = document.getElementById("device")
     code = if @app.project.public then "" else "#{@app.project.code}/"
     url = "#{location.origin.replace(".dev",".io")}/#{@app.project.owner.nick}/#{@app.project.slug}/#{code}"
@@ -406,6 +397,17 @@ class @RunWindow
         when "started"
           @propagate "started"
 
+          if @pending_command?
+            iframe = document.getElementById("runiframe")
+            if iframe?
+              @command_table[@command_id] = @pending_command.output_callback if @pending_command.output_callback?
+              iframe.contentWindow.postMessage(JSON.stringify(
+                name: "command"
+                line: @pending_command.command
+                id: if @pending_command.output_callback? then @command_id++ else undefined
+              ),"*")
+            @pending_command = null
+
         when "time_machine"
           @app.debug.time_machine.messageReceived msg
 
@@ -418,26 +420,8 @@ class @RunWindow
   runCommand:(command,output_callback)->
     @nesting = 0
     return if command.trim().length==0
-    iframe = document.getElementById("runiframe")
-    if iframe?
-      @command_table[@command_id] = output_callback if output_callback?
-      iframe.contentWindow.postMessage(JSON.stringify(
-        name: "command"
-        line: command
-        id: if output_callback? then @command_id++ else undefined
-      ),"*")
-    else
-      if not @local_vm?
-        meta =
-          print: (text)=>
-            if typeof text == "object"
-              text = Program.toString(text)
-            @terminal.echo(text)
-            return
 
-        global = {}
-        @local_vm = new MicroVM(meta,global,null,true)
-
+    if @app.project? and @app.project.language.startsWith "microscript"
       if @multiline?
         @multiline += "\n"+command
         command = @multiline
@@ -451,19 +435,25 @@ class @RunWindow
         else
           @multiline = null
           @logError parser.error_info
+        return
       else
         @nesting = 0
         @multiline = null
-        @local_vm.clearWarnings()
-        res = @local_vm.run(command)
-        @reportWarnings()
-        if output_callback?
-          output_callback(res)
-        else if @local_vm.error_info
-          @logError(@local_vm.error_info)
-        else
-          if not command.trim().startsWith("print") and not parser.program.isAssignment()
-            @local_vm.context.meta.print(res)
+
+    iframe = document.getElementById("runiframe")
+    if iframe?
+      @command_table[@command_id] = output_callback if output_callback?
+      iframe.contentWindow.postMessage(JSON.stringify(
+        name: "command"
+        line: command
+        id: if output_callback? then @command_id++ else undefined
+      ),"*")
+    else
+      @pending_command =
+        command: command
+        output_callback: output_callback
+
+      @play()
 
   reportWarnings:()->
     if @local_vm?

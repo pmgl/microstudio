@@ -82,7 +82,8 @@ this.Terminal = (function() {
         if (event.key === "Enter") {
           v = document.getElementById("terminal-input").value;
           document.getElementById("terminal-input").value = "";
-          return _this.validateLine(v);
+          _this.validateLine(v);
+          return _this.force_scroll = true;
         } else if (event.key === "ArrowUp") {
           if (_this.history_index == null) {
             _this.history_index = _this.history.length - 1;
@@ -161,8 +162,15 @@ this.Terminal = (function() {
   };
 
   Terminal.prototype.update = function() {
-    var container, div, element, j, len, ref, t;
+    var container, div, e, element, j, len, ref, t;
     if (this.buffer.length > 0) {
+      if (this.force_scroll) {
+        this.scroll = true;
+        this.force_scroll = false;
+      } else {
+        e = document.getElementById("terminal-view");
+        this.scroll = Math.abs(e.getBoundingClientRect().height + e.scrollTop - e.scrollHeight) < 10;
+      }
       div = document.createDocumentFragment();
       container = document.createElement("div");
       div.appendChild(container);
@@ -181,19 +189,8 @@ this.Terminal = (function() {
   };
 
   Terminal.prototype.echo = function(text, scroll, classname) {
-    var e;
     if (scroll == null) {
       scroll = false;
-    }
-    if (!scroll) {
-      e = document.getElementById("terminal-view");
-      if (Math.abs(e.getBoundingClientRect().height + e.scrollTop - e.scrollHeight) < 10) {
-        this.scroll = true;
-      } else {
-        this.scroll = false;
-      }
-    } else {
-      this.scroll = true;
     }
     this.buffer.push({
       text: text,
@@ -242,6 +239,7 @@ this.Terminal = (function() {
     document.getElementById("terminal-lines").innerHTML = "";
     this.buffer = [];
     this.length = 0;
+    document.querySelector("#terminal-input-gt i").classList.remove("fa-ellipsis-v");
     return delete this.runwindow.multiline;
   };
 

@@ -157,11 +157,11 @@ class @Concatenator
 
     @webapp_js = [
       "/js/languages/microscript/random.js"
-      "/js/languages/microscript/tokenizer.js"
-      "/js/languages/microscript/token.js"
-      "/js/languages/microscript/parser.js"
-      "/js/languages/microscript/program.js"
-      "/js/languages/microscript/runner_v1_i.js"
+
+      "/js/languages/microscript/v2/parser.js",
+      "/js/languages/microscript/v2/program.js",
+      "/js/languages/microscript/v2/token.js",
+      "/js/languages/microscript/v2/tokenizer.js",
 
       "/js/languages/microscript/microscript.js"
       "/js/languages/python/python.js"
