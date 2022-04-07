@@ -117,7 +117,7 @@ this.Documentation = (function() {
         }
       };
     })(this);
-    req.open("GET", "/microstudio.wiki/" + lang + "/" + lang + ":" + id + ".md");
+    req.open("GET", "/microstudio.wiki/" + lang + "/" + lang + "-" + id + ".md");
     return req.send();
   };
 

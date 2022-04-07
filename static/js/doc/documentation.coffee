@@ -66,7 +66,7 @@ class @Documentation
         else if lang != "en"
           @load(id,callback,"en")
 
-    req.open "GET","/microstudio.wiki/#{lang}/#{lang}:#{id}.md"
+    req.open "GET","/microstudio.wiki/#{lang}/#{lang}-#{id}.md"
     req.send()
 
   updateViewPos:()->

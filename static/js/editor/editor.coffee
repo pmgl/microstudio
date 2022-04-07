@@ -405,26 +405,32 @@ class @Editor
       @app.runwindow.rulercanvas.hide()
       @editor.focus()
 
+  evalArg:(arg,callback)->
+    if document.getElementById("runiframe")?
+      @app.runwindow.runCommand arg,callback
+    else
+      callback(if isFinite(arg) then arg*1 else 0)
+
   drawHelper:(row,column)->
     try
       res = @analyzeLine(row,column)
       if res?
         if @app.project.language.startsWith("microscript")
-          if res.function.indexOf("Polygon")>0 or res.function == "drawLine"
+          if res.function.indexOf("Polygon") > 0 or res.function == "drawLine"
             args = []
             funk = (i)=>
-              @app.runwindow.runCommand res.args[i],(v)=>
+              @evalArg res.args[i],(v)=>
                 args[i] = v
-                if i<res.args.length-1
+                if i < res.args.length-1
                   funk(i+1)
                 else
                   @app.runwindow.rulercanvas.showPolygon(args,res.arg)
             funk(0)
           else
-            @app.runwindow.runCommand res.args[0],(v1)=>
-              @app.runwindow.runCommand res.args[1],(v2)=>
-                @app.runwindow.runCommand res.args[2],(v3)=>
-                  @app.runwindow.runCommand res.args[3],(v4)=>
+            @evalArg res.args[0],(v1)=>
+              @evalArg res.args[1],(v2)=>
+                @evalArg res.args[2],(v3)=>
+                  @evalArg res.args[3],(v4)=>
                     switch res.arg
                       when 0 then @app.runwindow.rulercanvas.showX(v1,v2,v3,v4)
                       when 1 then @app.runwindow.rulercanvas.showY(v1,v2,v3,v4)

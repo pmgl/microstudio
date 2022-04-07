@@ -574,6 +574,14 @@ this.Editor = (function() {
     }
   };
 
+  Editor.prototype.evalArg = function(arg, callback) {
+    if (document.getElementById("runiframe") != null) {
+      return this.app.runwindow.runCommand(arg, callback);
+    } else {
+      return callback(isFinite(arg) ? arg * 1 : 0);
+    }
+  };
+
   Editor.prototype.drawHelper = function(row, column) {
     var args, err, funk, i, j, ref, res;
     try {
@@ -584,7 +592,7 @@ this.Editor = (function() {
             args = [];
             funk = (function(_this) {
               return function(i) {
-                return _this.app.runwindow.runCommand(res.args[i], function(v) {
+                return _this.evalArg(res.args[i], function(v) {
                   args[i] = v;
                   if (i < res.args.length - 1) {
                     return funk(i + 1);
@@ -596,11 +604,11 @@ this.Editor = (function() {
             })(this);
             return funk(0);
           } else {
-            return this.app.runwindow.runCommand(res.args[0], (function(_this) {
+            return this.evalArg(res.args[0], (function(_this) {
               return function(v1) {
-                return _this.app.runwindow.runCommand(res.args[1], function(v2) {
-                  return _this.app.runwindow.runCommand(res.args[2], function(v3) {
-                    return _this.app.runwindow.runCommand(res.args[3], function(v4) {
+                return _this.evalArg(res.args[1], function(v2) {
+                  return _this.evalArg(res.args[2], function(v3) {
+                    return _this.evalArg(res.args[3], function(v4) {
                       switch (res.arg) {
                         case 0:
                           return _this.app.runwindow.rulercanvas.showX(v1, v2, v3, v4);
