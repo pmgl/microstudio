@@ -53,7 +53,7 @@ class @Processor
     proc = new Processor(@runner)
 
     f = ()->
-      count = Math.min(routine.num_args,arguments.length)
+      count = routine.num_args
       proc.load routine
       proc.object = this
 
@@ -628,7 +628,30 @@ class @Processor
           op_index++
 
         when 39 # OPCODE_NEGATE
-          stack[stack_index] = -stack[stack_index]
+          a = stack[stack_index]
+          if typeof a == "number"
+            stack[stack_index] = -a
+          else if typeof a == "object"
+            obj = a
+            f = obj["-"]
+            while not f? and obj.class?
+              obj = obj.class
+              f = obj["-"]
+
+            if f? and f instanceof Routine
+              if not f.as_function?
+                f.as_function = @routineAsApplicableFunction(f,context)
+
+              f = f.as_function
+              obj = object
+              object = a
+              stack[stack_index] = f.call(a)
+              object = obj
+            else
+              stack[stack_index] = 0
+          else
+            stack[stack_index] = 0
+
           op_index++
 
         when 50 # OPCODE_NOT

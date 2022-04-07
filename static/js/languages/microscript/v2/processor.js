@@ -61,7 +61,7 @@ this.Processor = (function() {
     proc = new Processor(this.runner);
     f = function() {
       var count, i, j, ref, res;
-      count = Math.min(routine.num_args, arguments.length);
+      count = routine.num_args;
       proc.load(routine);
       proc.object = this;
       for (i = j = 0, ref = count - 1; j <= ref; i = j += 1) {
@@ -674,7 +674,31 @@ this.Processor = (function() {
           op_index++;
           break;
         case 39:
-          stack[stack_index] = -stack[stack_index];
+          a = stack[stack_index];
+          if (typeof a === "number") {
+            stack[stack_index] = -a;
+          } else if (typeof a === "object") {
+            obj = a;
+            f = obj["-"];
+            while ((f == null) && (obj["class"] != null)) {
+              obj = obj["class"];
+              f = obj["-"];
+            }
+            if ((f != null) && f instanceof Routine) {
+              if (f.as_function == null) {
+                f.as_function = this.routineAsApplicableFunction(f, context);
+              }
+              f = f.as_function;
+              obj = object;
+              object = a;
+              stack[stack_index] = f.call(a);
+              object = obj;
+            } else {
+              stack[stack_index] = 0;
+            }
+          } else {
+            stack[stack_index] = 0;
+          }
           op_index++;
           break;
         case 50:
