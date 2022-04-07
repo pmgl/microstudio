@@ -9,6 +9,8 @@ this.Terminal = (function() {
       })(this)
     };
     this.loadHistory();
+    this.buffer = [];
+    this.length = 0;
   }
 
   Terminal.prototype.loadHistory = function() {
@@ -74,7 +76,7 @@ this.Terminal = (function() {
         }
       };
     })(this));
-    return document.getElementById("terminal-input").addEventListener("keydown", (function(_this) {
+    document.getElementById("terminal-input").addEventListener("keydown", (function(_this) {
       return function(event) {
         var v;
         if (event.key === "Enter") {
@@ -114,6 +116,11 @@ this.Terminal = (function() {
         }
       };
     })(this));
+    return setInterval(((function(_this) {
+      return function() {
+        return _this.update();
+      };
+    })(this)), 16);
   };
 
   Terminal.prototype.validateLine = function(v) {
@@ -153,17 +160,49 @@ this.Terminal = (function() {
     })(this)), 0);
   };
 
+  Terminal.prototype.update = function() {
+    var container, div, element, j, len, ref, t;
+    if (this.buffer.length > 0) {
+      div = document.createDocumentFragment();
+      container = document.createElement("div");
+      div.appendChild(container);
+      ref = this.buffer;
+      for (j = 0, len = ref.length; j < len; j++) {
+        t = ref[j];
+        container.appendChild(element = this.echoReal(t.text, t.classname));
+      }
+      document.getElementById("terminal-lines").appendChild(div);
+      if (this.scroll) {
+        element.scrollIntoView();
+      }
+      this.length += this.buffer.length;
+      return this.buffer = [];
+    }
+  };
+
   Terminal.prototype.echo = function(text, scroll, classname) {
-    var d, div, e, i;
+    var e;
     if (scroll == null) {
       scroll = false;
     }
     if (!scroll) {
       e = document.getElementById("terminal-view");
       if (Math.abs(e.getBoundingClientRect().height + e.scrollTop - e.scrollHeight) < 10) {
-        scroll = true;
+        this.scroll = true;
+      } else {
+        this.scroll = false;
       }
+    } else {
+      this.scroll = true;
     }
+    this.buffer.push({
+      text: text,
+      classname: classname
+    });
+  };
+
+  Terminal.prototype.echoReal = function(text, classname) {
+    var d, div, i;
     div = document.createElement("div");
     if (classname === "input") {
       d = document.createTextNode(" " + text);
@@ -178,11 +217,8 @@ this.Terminal = (function() {
     if (classname != null) {
       div.classList.add(classname);
     }
-    document.getElementById("terminal-lines").appendChild(div);
-    if (scroll) {
-      div.scrollIntoView();
-    }
-    return this.truncate();
+    this.truncate();
+    return div;
   };
 
   Terminal.prototype.error = function(text, scroll) {
@@ -193,15 +229,19 @@ this.Terminal = (function() {
   };
 
   Terminal.prototype.truncate = function() {
-    var e;
+    var c, e;
     e = document.getElementById("terminal-lines");
-    while (e.childElementCount > 1000) {
+    while (this.length > 10000 && (e.firstChild != null)) {
+      c = e.firstChild.children.length;
       e.removeChild(e.firstChild);
+      this.length -= c;
     }
   };
 
   Terminal.prototype.clear = function() {
     document.getElementById("terminal-lines").innerHTML = "";
+    this.buffer = [];
+    this.length = 0;
     return delete this.runwindow.multiline;
   };
 

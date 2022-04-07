@@ -4,6 +4,8 @@ class @Terminal
       clear: ()=>@clear()
 
     @loadHistory()
+    @buffer = []
+    @length = 0
 
   loadHistory:()->
     @history = []
@@ -84,6 +86,8 @@ class @Terminal
           document.getElementById("terminal-input").value = @current_input
           @setTrailingCaret()
 
+    setInterval (()=>@update()),16
+
   validateLine:(v)->
     @history_index = null
 
@@ -112,12 +116,35 @@ class @Terminal
       document.getElementById("terminal-input").setSelectionRange(val.length,val.length)
     ),0
 
+  update:()->
+    if @buffer.length>0
+      div = document.createDocumentFragment()
+      container = document.createElement "div"
+      div.appendChild container
+      for t in @buffer
+        container.appendChild element = @echoReal t.text,t.classname
+      document.getElementById("terminal-lines").appendChild div
+      if @scroll
+        element.scrollIntoView()
+      @length += @buffer.length
+      @buffer = []
+
   echo:(text,scroll=false,classname)->
     if not scroll
       e = document.getElementById("terminal-view")
-      if Math.abs(e.getBoundingClientRect().height+e.scrollTop-e.scrollHeight)<10
-        scroll = true
+      if Math.abs(e.getBoundingClientRect().height+e.scrollTop-e.scrollHeight) < 10
+        @scroll = true
+      else
+        @scroll = false
+    else
+      @scroll = true
 
+    @buffer.push
+      text: text
+      classname: classname
+    return
+
+  echoReal:(text,classname)->
     div = document.createElement("div")
     if classname == "input"
       d = document.createTextNode(" "+text)
@@ -131,20 +158,22 @@ class @Terminal
 
     if classname?
       div.classList.add classname
-    document.getElementById("terminal-lines").appendChild div
-    if scroll
-      div.scrollIntoView()
     @truncate()
+    div
 
   error:(text,scroll=false)->
     @echo(text,scroll,"error")
 
   truncate:()->
     e = document.getElementById("terminal-lines")
-    while e.childElementCount>1000
+    while @length>10000 and e.firstChild?
+      c = e.firstChild.children.length
       e.removeChild e.firstChild
+      @length -= c
     return
 
   clear:()->
     document.getElementById("terminal-lines").innerHTML = ""
+    @buffer = []
+    @length = 0
     delete @runwindow.multiline

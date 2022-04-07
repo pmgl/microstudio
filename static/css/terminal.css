@@ -124,7 +124,7 @@
   left: 0 ;
   right: 0 ;
   bottom: 40px ;
-  background: hsl(200,50%,12%) ;
+  background: hsl(200,50%,8%) ;
   font-family: "Ubuntu Mono";
   font-size: 16px;
   overflow: auto ;
@@ -180,23 +180,23 @@
   padding: 5px ;
   font-family: "Ubuntu Mono";
   font-size: 16px;
-  color: hsl(200,100%,80%);
+  color: hsl(200,80%,70%);
   user-select: text ;
 }
-#terminal-lines div {
+#terminal-lines div div {
   padding: 0 4px 0 18px ;
   white-space: pre-wrap ;
   line-height: 22px ;
 }
-#terminal-lines div.error {
-  color: hsl(20,100%,70%);
+#terminal-lines div div.error {
+  color: hsl(10,80%,70%);
 }
-#terminal-lines div.input {
+#terminal-lines div div.input {
   background: rgba(255,255,255,.05) ;
   border-radius: 3px ;
   padding: 0 4px ;
 }
-#terminal-lines div.input i {
+#terminal-lines div div.input i {
   opacity: .25 ;
 }
 .fa-ellipsis-v {
