@@ -107,6 +107,9 @@ this.Processor = (function() {
       obj = obj["class"];
       f = obj["%"];
     }
+    if (f == null) {
+      f = context.global.Object["%"];
+    }
     if ((f != null) && f instanceof Routine) {
       if (f.as_function == null) {
         f.as_function = this.routineAsApplicableFunction(f, context);
