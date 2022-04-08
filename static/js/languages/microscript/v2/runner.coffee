@@ -49,6 +49,8 @@ class @Runner
           a.splice(index,1)
         return a
 
+    @microvm.context.global.Object = {}
+
     @microvm.context.global.String =
       fromCharCode:`function(...args) { return String.fromCharCode(...args) }`
 

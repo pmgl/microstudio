@@ -1065,6 +1065,9 @@ this.Processor = (function() {
               f = sup[name];
             }
             if (f == null) {
+              f = global.Object[name];
+            }
+            if (f == null) {
               f = global[name];
               sup = global;
               obj = global;
@@ -1154,6 +1157,8 @@ this.Processor = (function() {
               f = global.Number[name];
             } else if (Array.isArray(obj)) {
               f = global.List[name];
+            } else if (typeof obj === "object") {
+              f = global.Object[name];
             }
           }
           if (f instanceof Routine) {

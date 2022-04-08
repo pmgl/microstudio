@@ -63,6 +63,7 @@ this.Runner = (function() {
         return a;
       }
     };
+    this.microvm.context.global.Object = {};
     this.microvm.context.global.String = {
       fromCharCode: function(...args) { return String.fromCharCode(...args) },
       "+": function(a, b) {
