@@ -439,6 +439,9 @@ this.Processor = (function() {
             a += b;
             stack[stack_index] = a != null ? a : 0;
           } else if (Array.isArray(a)) {
+            if (!arg1[op_index]) {
+              a = [...a];
+            }
             if (Array.isArray(b)) {
               stack[stack_index] = a.concat(b);
             } else {

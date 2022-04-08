@@ -402,6 +402,8 @@ class @Processor
             a += b
             stack[stack_index] = if a? then a else 0
           else if Array.isArray(a)
+            if not arg1[op_index] # not +=, clone array a
+              `a = [...a]`
             if Array.isArray(b)
               stack[stack_index] = a.concat(b)
             else

@@ -168,12 +168,12 @@ Compiler = (function() {
         index = this.locals.get(statement.field.identifier);
         this.routine.LOAD_LOCAL(index, statement);
         this.compile(statement.expression);
-        this.routine[op](statement);
+        this.routine[op](statement, 1);
         this.routine.STORE_LOCAL(index, statement);
       } else {
         this.routine.LOAD_VARIABLE(statement.field.identifier, statement);
         this.compile(statement.expression);
-        this.routine[op](statement);
+        this.routine[op](statement, 1);
         this.routine.STORE_VARIABLE(statement.field.identifier, statement);
       }
     } else {
@@ -201,7 +201,7 @@ Compiler = (function() {
       this.compile(f.chain[f.chain.length - 1]);
       this.routine.LOAD_PROPERTY_ATOP(statement);
       this.compile(statement.expression);
-      this.routine[op](statement);
+      this.routine[op](statement, 1);
       return this.routine.STORE_PROPERTY(statement);
     }
   };

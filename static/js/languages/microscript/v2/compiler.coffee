@@ -145,13 +145,13 @@ class Compiler
         index = @locals.get(statement.field.identifier)
         @routine.LOAD_LOCAL index,statement
         @compile(statement.expression)
-        @routine[op] statement
+        @routine[op] statement,1
         @routine.STORE_LOCAL index,statement
         return
       else
         @routine.LOAD_VARIABLE statement.field.identifier,statement
         @compile(statement.expression)
-        @routine[op] statement
+        @routine[op] statement,1
         @routine.STORE_VARIABLE statement.field.identifier,statement
         return
     else
@@ -178,7 +178,7 @@ class Compiler
       @compile f.chain[f.chain.length-1]
       @routine.LOAD_PROPERTY_ATOP statement
       @compile statement.expression
-      @routine[op] statement
+      @routine[op] statement,1
       @routine.STORE_PROPERTY statement
 
   compileOperation:(op)->

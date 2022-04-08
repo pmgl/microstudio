@@ -196,8 +196,11 @@ this.Routine = (function() {
     return this.OP(OPCODES.NEW_CALL, ref, args);
   };
 
-  Routine.prototype.ADD = function(ref) {
-    return this.OP(OPCODES.ADD, ref);
+  Routine.prototype.ADD = function(ref, self) {
+    if (self == null) {
+      self = 0;
+    }
+    return this.OP(OPCODES.ADD, ref, self);
   };
 
   Routine.prototype.SUB = function(ref) {

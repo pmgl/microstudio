@@ -98,7 +98,7 @@ class @Routine
   UPDATE_CLASS:(variable,ref)-> @OP OPCODES.UPDATE_CLASS,ref,variable
   NEW_CALL:(args,ref)-> @OP OPCODES.NEW_CALL,ref,args
 
-  ADD:(ref)-> @OP OPCODES.ADD,ref
+  ADD:(ref,self=0)-> @OP OPCODES.ADD,ref,self
   SUB:(ref)-> @OP OPCODES.SUB,ref
   MUL:(ref)-> @OP OPCODES.MUL,ref
   DIV:(ref)-> @OP OPCODES.DIV,ref
