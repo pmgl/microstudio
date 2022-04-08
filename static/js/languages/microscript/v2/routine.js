@@ -203,8 +203,11 @@ this.Routine = (function() {
     return this.OP(OPCODES.ADD, ref, self);
   };
 
-  Routine.prototype.SUB = function(ref) {
-    return this.OP(OPCODES.SUB, ref);
+  Routine.prototype.SUB = function(ref, self) {
+    if (self == null) {
+      self = 0;
+    }
+    return this.OP(OPCODES.SUB, ref, self);
   };
 
   Routine.prototype.MUL = function(ref) {

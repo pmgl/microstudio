@@ -30,8 +30,29 @@ class @Runner
           funk = f
         this.sort(funk)
 
+      "+":(a,b,self)->
+        if not self # not +=, clone array a
+          a = `[...a]`
+
+        if Array.isArray(b)
+          return a.concat(b)
+        else
+          a.push(b)
+          return a
+
+      "-":(a,b,self)->
+        if not self # not -=, clone array a
+          a = `[...a]`
+
+        index = a.indexOf(b)
+        if index>=0
+          a.splice(index,1)
+        return a
+
     @microvm.context.global.String =
       fromCharCode:`function(...args) { return String.fromCharCode(...args) }`
+
+      "+":(a,b)-> a+b
 
     @microvm.context.global.Number =
       parse:(s)->

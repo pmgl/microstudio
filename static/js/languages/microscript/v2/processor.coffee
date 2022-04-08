@@ -45,7 +45,7 @@ class @Processor
         proc.stack[++proc.stack_index] = arguments[i] or 0
 
       proc.run context
-      res = proc.stack[0]
+      #res = proc.stack[0]
 
     f
 
@@ -70,6 +70,225 @@ class @Processor
       @routineAsFunction arg,context
     else
       if arg? then arg else 0
+
+
+  modulo:(context,a,b)->
+    if Array.isArray(a)
+      obj = context.global.List
+    else if typeof a == "string"
+      if isFinite(a)
+        a %= b
+        return if isFinite(a) then a else 0
+      else
+        obj = context.global.String
+    else
+      obj = a
+
+    f = obj["%"]
+    while not f? and obj.class?
+      obj = obj.class
+      f = obj["%"]
+
+    if f? and f instanceof Routine
+      if not f.as_function?
+        f.as_function = @routineAsApplicableFunction(f,context)
+
+      f = f.as_function
+      return f.call(context.global,a,b)
+    else
+      return 0
+
+  add:(context,a,b,self)->
+    if Array.isArray(a)
+      obj = context.global.List
+    else if typeof a == "string"
+      obj = context.global.String
+    else
+      obj = a
+
+    f = obj["+"]
+    while not f? and obj.class?
+      obj = obj.class
+      f = obj["+"]
+
+    if f?
+      if f instanceof Routine
+        if not f.as_function?
+          f.as_function = @routineAsApplicableFunction(f,context)
+        f = f.as_function
+        return f.call(context.global,a,b,self)
+      else if typeof f == "function"
+        return f.call(context.global,a,b,self)
+    else
+      return 0
+
+  sub:(context,a,b,self)->
+    if Array.isArray(a)
+      obj = context.global.List
+    else if typeof a == "string"
+      if isFinite(a)
+        a -= b
+        return if isFinite(a) then a else 0
+      else
+        obj = context.global.String
+    else
+      obj = a
+
+    f = obj["-"]
+    while not f? and obj.class?
+      obj = obj.class
+      f = obj["-"]
+
+    if f?
+      if f instanceof Routine
+        if not f.as_function?
+          f.as_function = @routineAsApplicableFunction(f,context)
+        f = f.as_function
+        return f.call(context.global,a,b,self)
+      else if typeof f == "function"
+        return f.call(context.global,a,b,self)
+    else
+      return 0
+
+  negate:(context,a)->
+    if Array.isArray(a)
+      obj = context.global.List
+    else if typeof a == "string"
+      if isFinite(a)
+        return -a
+      else
+        obj = context.global.String
+    else
+      obj = a
+
+    f = obj["-"]
+    while not f? and obj.class?
+      obj = obj.class
+      f = obj["-"]
+
+    if f?
+      if f instanceof Routine
+        if not f.as_function?
+          f.as_function = @routineAsApplicableFunction(f,context)
+        f = f.as_function
+        return f.call(context.global,0,a)
+      else if typeof f == "function"
+        return f.call(context.global,0,a)
+    else
+      return 0
+
+
+  mul:(context,a,b,self)->
+    if Array.isArray(a)
+      obj = context.global.List
+    else if typeof a == "string"
+      if isFinite(a)
+        a *= b
+        return if isFinite(a) then a else 0
+      else
+        obj = context.global.String
+    else
+      obj = a
+
+    f = obj["*"]
+    while not f? and obj.class?
+      obj = obj.class
+      f = obj["*"]
+
+    if f?
+      if f instanceof Routine
+        if not f.as_function?
+          f.as_function = @routineAsApplicableFunction(f,context)
+        f = f.as_function
+        return f.call(context.global,a,b,self)
+      else if typeof f == "function"
+        return f.call(context.global,a,b,self)
+    else
+      return 0
+
+  div:(context,a,b,self)->
+    if Array.isArray(a)
+      obj = context.global.List
+    else if typeof a == "string"
+      if isFinite(a)
+        a /= b
+        return if isFinite(a) then a else 0
+      else
+        obj = context.global.String
+    else
+      obj = a
+
+    f = obj["/"]
+    while not f? and obj.class?
+      obj = obj.class
+      f = obj["/"]
+
+    if f?
+      if f instanceof Routine
+        if not f.as_function?
+          f.as_function = @routineAsApplicableFunction(f,context)
+        f = f.as_function
+        return f.call(context.global,a,b,self)
+      else if typeof f == "function"
+        return f.call(context.global,a,b,self)
+    else
+      return 0
+
+  band:(context,a,b,self)->
+    if Array.isArray(a)
+      obj = context.global.List
+    else if typeof a == "string"
+      if isFinite(a)
+        a &= b
+        return if isFinite(a) then a else 0
+      else
+        obj = context.global.String
+    else
+      obj = a
+
+    f = obj["&"]
+    while not f? and obj.class?
+      obj = obj.class
+      f = obj["&"]
+
+    if f?
+      if f instanceof Routine
+        if not f.as_function?
+          f.as_function = @routineAsApplicableFunction(f,context)
+        f = f.as_function
+        return f.call(context.global,a,b,self)
+      else if typeof f == "function"
+        return f.call(context.global,a,b,self)
+    else
+      return 0
+
+  bor:(context,a,b,self)->
+    if Array.isArray(a)
+      obj = context.global.List
+    else if typeof a == "string"
+      if isFinite(a)
+        a |= b
+        return if isFinite(a) then a else 0
+      else
+        obj = context.global.String
+    else
+      obj = a
+
+    f = obj["|"]
+    while not f? and obj.class?
+      obj = obj.class
+      f = obj["|"]
+
+    if f?
+      if f instanceof Routine
+        if not f.as_function?
+          f.as_function = @routineAsApplicableFunction(f,context)
+        f = f.as_function
+        return f.call(context.global,a,b,self)
+      else if typeof f == "function"
+        return f.call(context.global,a,b,self)
+    else
+      return 0
 
   run:(context)->
     routine = @routine
@@ -395,137 +614,44 @@ class @Processor
         when 30 # OPCODE_ADD
           b = stack[stack_index--]
           a = stack[stack_index]
-          if typeof a == "number" and typeof b == "number"
+          if typeof a == "number"
             a += b
-            stack[stack_index] = if isFinite(a) then a else 0
-          else if typeof a == "string" or typeof b == "string"
-            a += b
-            stack[stack_index] = if a? then a else 0
-          else if Array.isArray(a)
-            if not arg1[op_index] # not +=, clone array a
-              `a = [...a]`
-            if Array.isArray(b)
-              stack[stack_index] = a.concat(b)
-            else
-              a.push(b)
-              stack[stack_index] = a
-          else if typeof a == "object"
-            obj = a
-            f = obj["+"]
-            while not f? and obj.class?
-              obj = obj.class
-              f = obj["+"]
-
-            if f? and f instanceof Routine
-              if not f.as_function?
-                f.as_function = @routineAsApplicableFunction(f,context)
-
-              f = f.as_function
-              obj = object
-              object = a
-              stack[stack_index] = f.call(a,b)
-              object = obj
-            else
-              stack[stack_index] = 0
+            stack[stack_index] = if isFinite(a) or typeof b == "string" then a else 0
           else
-            stack[stack_index] = 0
+            stack[stack_index] = @add context,a,b,arg1[op_index]
 
           op_index++
 
         when 31 # OPCODE_SUB
           b = stack[stack_index--]
           a = stack[stack_index]
-          if typeof a == "number" and typeof b == "number"
+          if typeof a == "number"
             a -= b
             stack[stack_index] = if isFinite(a) then a else 0
-          else if typeof a == "string" or typeof b == "string"
-            a -= b
-            stack[stack_index] = if isFinite(a) then a else 0
-          else if Array.isArray(a)
-            index = a.indexOf(b)
-            if index >= 0
-              a.splice(index,1)
-            stack[stack_index] = a
-          else if typeof a == "object"
-            obj = a
-            f = obj["-"]
-            while not f? and obj.class?
-              obj = obj.class
-              f = obj["-"]
-
-            if f? and f instanceof Routine
-              if not f.as_function?
-                f.as_function = @routineAsApplicableFunction(f,context)
-
-              f = f.as_function
-              obj = object
-              object = a
-              stack[stack_index] = f.call(a,b)
-              object = obj
-            else
-              stack[stack_index] = 0
           else
-            stack[stack_index] = 0
+            stack[stack_index] = @sub context,a,b,arg1[op_index]
 
           op_index++
 
         when 32 # OPCODE_MUL
           b = stack[stack_index--]
           a = stack[stack_index]
-          if typeof a == "number" and typeof b == "number"
+          if typeof a == "number"
             a *= b
             stack[stack_index] = if isFinite(a) then a else 0
-          else if typeof a == "object"
-            obj = a
-            f = obj["*"]
-            while not f? and obj.class?
-              obj = obj.class
-              f = obj["*"]
-
-            if f? and f instanceof Routine
-              if not f.as_function?
-                f.as_function = @routineAsApplicableFunction(f,context)
-
-              f = f.as_function
-              obj = object
-              object = a
-              stack[stack_index] = f.call(a,b)
-              object = obj
-            else
-              stack[stack_index] = 0
           else
-            a *= b
-            stack[stack_index] = if isFinite(a) then a else 0
+            stack[stack_index] = @mul context,a,b
 
           op_index++
 
         when 33 # OPCODE_DIV
           b = stack[stack_index--]
           a = stack[stack_index]
-          if typeof a == "number" and typeof b == "number"
+          if typeof a == "number"
             a /= b
             stack[stack_index] = if isFinite(a) then a else 0
-          else if typeof a == "object"
-            obj = a
-            f = obj["/"]
-            while not f? and obj.class?
-              obj = obj.class
-              f = obj["/"]
-
-            if f? and f instanceof Routine
-              if not f.as_function?
-                f.as_function = @routineAsApplicableFunction(f,context)
-
-              f = f.as_function
-              obj = object
-              object = a
-              stack[stack_index] = f.call(a,b)
-              object = obj
-            else
-              stack[stack_index] = 0
           else
-            a /= b
-            stack[stack_index] = if isFinite(a) then a else 0
+            stack[stack_index] = @div context,a,b
 
           op_index++
 
@@ -535,87 +661,30 @@ class @Processor
           if typeof a == "number" and typeof b == "number"
             a %= b
             stack[stack_index] = if isFinite(a) then a else 0
-          else if typeof a == "object"
-            obj = a
-            f = obj["%"]
-            while not f? and obj.class?
-              obj = obj.class
-              f = obj["%"]
-
-            if f? and f instanceof Routine
-              if not f.as_function?
-                f.as_function = @routineAsApplicableFunction(f,context)
-
-              f = f.as_function
-              obj = object
-              object = a
-              stack[stack_index] = f.call(a,b)
-              object = obj
-            else
-              stack[stack_index] = 0
           else
-            a %= b
-            stack[stack_index] = if isFinite(a) then a else 0
+            stack[stack_index] = @modulo context,a,b
 
           op_index++
 
         when 35 # OPCODE_BINARY_AND
           b = stack[stack_index--]
           a = stack[stack_index]
-          if typeof a == "number" and typeof b == "number"
+          if typeof a == "number"
             a &= b
             stack[stack_index] = if isFinite(a) then a else 0
-          else if typeof a == "object"
-            obj = a
-            f = obj["&"]
-            while not f? and obj.class?
-              obj = obj.class
-              f = obj["&"]
-
-            if f? and f instanceof Routine
-              if not f.as_function?
-                f.as_function = @routineAsApplicableFunction(f,context)
-
-              f = f.as_function
-              obj = object
-              object = a
-              stack[stack_index] = f.call(a,b)
-              object = obj
-            else
-              stack[stack_index] = 0
           else
-            a &= b
-            stack[stack_index] = if isFinite(a) then a else 0
+            stack[stack_index] = @band context,a,b
 
           op_index++
 
         when 36 # OPCODE_BINARY_OR
           b = stack[stack_index--]
           a = stack[stack_index]
-          if typeof a == "number" and typeof b == "number"
+          if typeof a == "number"
             a |= b
             stack[stack_index] = if isFinite(a) then a else 0
-          else if typeof a == "object"
-            obj = a
-            f = obj["|"]
-            while not f? and obj.class?
-              obj = obj.class
-              f = obj["|"]
-
-            if f? and f instanceof Routine
-              if not f.as_function?
-                f.as_function = @routineAsApplicableFunction(f,context)
-
-              f = f.as_function
-              obj = object
-              object = a
-              stack[stack_index] = f.call(a,b)
-              object = obj
-            else
-              stack[stack_index] = 0
           else
-            a |= b
-            stack[stack_index] = if isFinite(a) then a else 0
+            stack[stack_index] = @bor context,a,b
 
           op_index++
 
@@ -633,26 +702,8 @@ class @Processor
           a = stack[stack_index]
           if typeof a == "number"
             stack[stack_index] = -a
-          else if typeof a == "object"
-            obj = a
-            f = obj["-"]
-            while not f? and obj.class?
-              obj = obj.class
-              f = obj["-"]
-
-            if f? and f instanceof Routine
-              if not f.as_function?
-                f.as_function = @routineAsApplicableFunction(f,context)
-
-              f = f.as_function
-              obj = object
-              object = a
-              stack[stack_index] = f.call(a)
-              object = obj
-            else
-              stack[stack_index] = 0
           else
-            stack[stack_index] = 0
+            stack[stack_index] = @negate context,a
 
           op_index++
 

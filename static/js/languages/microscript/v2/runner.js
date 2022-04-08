@@ -39,10 +39,35 @@ this.Runner = (function() {
           }
           return _this.sort(funk);
         };
-      })(this)
+      })(this),
+      "+": function(a, b, self) {
+        if (!self) {
+          a = [...a];
+        }
+        if (Array.isArray(b)) {
+          return a.concat(b);
+        } else {
+          a.push(b);
+          return a;
+        }
+      },
+      "-": function(a, b, self) {
+        var index;
+        if (!self) {
+          a = [...a];
+        }
+        index = a.indexOf(b);
+        if (index >= 0) {
+          a.splice(index, 1);
+        }
+        return a;
+      }
     };
     this.microvm.context.global.String = {
-      fromCharCode: function(...args) { return String.fromCharCode(...args) }
+      fromCharCode: function(...args) { return String.fromCharCode(...args) },
+      "+": function(a, b) {
+        return a + b;
+      }
     };
     this.microvm.context.global.Number = {
       parse: function(s) {

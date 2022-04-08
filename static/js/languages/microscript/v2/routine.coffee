@@ -99,7 +99,7 @@ class @Routine
   NEW_CALL:(args,ref)-> @OP OPCODES.NEW_CALL,ref,args
 
   ADD:(ref,self=0)-> @OP OPCODES.ADD,ref,self
-  SUB:(ref)-> @OP OPCODES.SUB,ref
+  SUB:(ref,self=0)-> @OP OPCODES.SUB,ref,self
   MUL:(ref)-> @OP OPCODES.MUL,ref
   DIV:(ref)-> @OP OPCODES.DIV,ref
   MODULO:(ref)-> @OP OPCODES.MODULO,ref
