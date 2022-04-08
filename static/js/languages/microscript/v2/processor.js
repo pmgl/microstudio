@@ -132,6 +132,9 @@ this.Processor = (function() {
       obj = obj["class"];
       f = obj["+"];
     }
+    if (f == null) {
+      f = context.global.Object["+"];
+    }
     if (f != null) {
       if (f instanceof Routine) {
         if (f.as_function == null) {
@@ -170,6 +173,9 @@ this.Processor = (function() {
       obj = obj["class"];
       f = obj["-"];
     }
+    if (f == null) {
+      f = context.global.Object["-"];
+    }
     if (f != null) {
       if (f instanceof Routine) {
         if (f.as_function == null) {
@@ -202,6 +208,9 @@ this.Processor = (function() {
     while ((f == null) && (obj["class"] != null)) {
       obj = obj["class"];
       f = obj["-"];
+    }
+    if (f == null) {
+      f = context.global.Object["-"];
     }
     if (f != null) {
       if (f instanceof Routine) {
@@ -241,6 +250,9 @@ this.Processor = (function() {
       obj = obj["class"];
       f = obj["*"];
     }
+    if (f == null) {
+      f = context.global.Object["*"];
+    }
     if (f != null) {
       if (f instanceof Routine) {
         if (f.as_function == null) {
@@ -278,6 +290,9 @@ this.Processor = (function() {
     while ((f == null) && (obj["class"] != null)) {
       obj = obj["class"];
       f = obj["/"];
+    }
+    if (f == null) {
+      f = context.global.Object["/"];
     }
     if (f != null) {
       if (f instanceof Routine) {
@@ -317,6 +332,9 @@ this.Processor = (function() {
       obj = obj["class"];
       f = obj["&"];
     }
+    if (f == null) {
+      f = context.global.Object["&"];
+    }
     if (f != null) {
       if (f instanceof Routine) {
         if (f.as_function == null) {
@@ -354,6 +372,9 @@ this.Processor = (function() {
     while ((f == null) && (obj["class"] != null)) {
       obj = obj["class"];
       f = obj["|"];
+    }
+    if (f == null) {
+      f = context.global.Object["|"];
     }
     if (f != null) {
       if (f instanceof Routine) {

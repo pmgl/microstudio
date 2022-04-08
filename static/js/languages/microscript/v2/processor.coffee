@@ -111,6 +111,8 @@ class @Processor
       obj = obj.class
       f = obj["+"]
 
+    if not f? then f = context.global.Object["+"]
+
     if f?
       if f instanceof Routine
         if not f.as_function?
@@ -139,6 +141,8 @@ class @Processor
       obj = obj.class
       f = obj["-"]
 
+    if not f? then f = context.global.Object["-"]
+
     if f?
       if f instanceof Routine
         if not f.as_function?
@@ -165,6 +169,8 @@ class @Processor
     while not f? and obj.class?
       obj = obj.class
       f = obj["-"]
+
+    if not f? then f = context.global.Object["-"]
 
     if f?
       if f instanceof Routine
@@ -195,6 +201,8 @@ class @Processor
       obj = obj.class
       f = obj["*"]
 
+    if not f? then f = context.global.Object["*"]
+
     if f?
       if f instanceof Routine
         if not f.as_function?
@@ -222,6 +230,8 @@ class @Processor
     while not f? and obj.class?
       obj = obj.class
       f = obj["/"]
+
+    if not f? then f = context.global.Object["/"]
 
     if f?
       if f instanceof Routine
@@ -251,6 +261,8 @@ class @Processor
       obj = obj.class
       f = obj["&"]
 
+    if not f? then f = context.global.Object["&"]
+
     if f?
       if f instanceof Routine
         if not f.as_function?
@@ -278,6 +290,8 @@ class @Processor
     while not f? and obj.class?
       obj = obj.class
       f = obj["|"]
+
+    if not f? then f = context.global.Object["|"]
 
     if f?
       if f instanceof Routine
