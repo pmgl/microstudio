@@ -17,7 +17,6 @@
     "cookie-parser": "^1.4.5",
     "crypto-js": "^3.3.0",
     "dompurify": "^2.2.8",
-    "engine.io": "^3.5.0",
     "express": "^4.17.1",
     "express-force-https": "^1.0.0",
     "fengari-web": "^0.1.4",
