@@ -4,6 +4,7 @@ class @ProjectSource
     @filename = @file
     @file = "ms/#{@file}"
     @content = ""
+    @fetched = false
     @reload()
 
   reload:(callback)->
@@ -13,6 +14,7 @@ class @ProjectSource
       file: @file
     },(msg)=>
       @content = msg.content
+      @fetched = true
       @loaded()
       callback() if callback?
 

@@ -241,6 +241,7 @@ class @Editor
     @editor.setValue(code,-1)
     @editor.getSession().setUndoManager(new ace.UndoManager())
     @ignore_changes = false
+    @updateCurrentFileLock()
 
   addDocButton:(pointer,section)->
     content = document.querySelector("#help-window .content")
@@ -538,6 +539,7 @@ class @Editor
       source = @app.project.getSource(@selected_source)
       @setCode(source.content)
       @updateCurrentFileLock()
+
       @updateAnnotations()
       if @sessions[@selected_source] and different
         @editor.selection.setRange(@sessions[@selected_source].range)
@@ -577,16 +579,41 @@ class @Editor
         @editor.session.setAnnotations source.annotations or []
 
   updateCurrentFileLock:()->
-    if @selected_source?
-      @editor.setReadOnly @app.project.isLocked("ms/#{@selected_source}.ms")
-
     lock = document.getElementById("editor-locked")
-    if @selected_source? and @app.project.isLocked("ms/#{@selected_source}.ms")
-      user = @app.project.isLocked("ms/#{@selected_source}.ms").user
-      lock.style = "display: block; background: #{@app.appui.createFriendColor(user)}"
-      lock.innerHTML = "<i class='fa fa-user'></i> Locked by #{user}"
+
+    if @selected_source?
+      if @app.project.isLocked("ms/#{@selected_source}.ms")
+        @editor.setReadOnly true
+        user = @app.project.isLocked("ms/#{@selected_source}.ms").user
+        @showLock "<i class='fa fa-user'></i> Locked by #{user}",@app.appui.createFriendColor(user)
+      else
+        source = @app.project.getSource(@selected_source)
+        if source? and not source.fetched
+          @editor.setReadOnly true
+          @showLock """<i class="fas fa-spinner fa-spin"></i> """+@app.translator.get("Loading..."),"hsl(200,50%,50%)"
+        else
+          @hideLock()
+          @editor.setReadOnly false
     else
-      lock.style = "display: none"
+      @hideLock()
+      @editor.setReadOnly true
+
+  showLock:(html,color)->
+    lock = document.getElementById("editor-locked")
+    @lock_shown = true
+    lock.style = "display: block; background: #{color}; opacity: 1"
+    lock.innerHTML = html
+    document.getElementById("editor-view").style.opacity = .5
+
+  hideLock:()->
+    lock = document.getElementById("editor-locked")
+    @lock_shown = false
+    lock.style.opacity = 0
+    document.getElementById("editor-view").style.opacity = 1
+    setTimeout (()=>
+        if not @lock_shown
+          lock.style.display = "none"
+      ),1000
 
   rebuildSourceList:()->
     list = document.getElementById "source-list"

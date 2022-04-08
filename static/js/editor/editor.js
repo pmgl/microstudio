@@ -345,7 +345,8 @@ this.Editor = (function() {
     this.ignore_changes = true;
     this.editor.setValue(code, -1);
     this.editor.getSession().setUndoManager(new ace.UndoManager());
-    return this.ignore_changes = false;
+    this.ignore_changes = false;
+    return this.updateCurrentFileLock();
   };
 
   Editor.prototype.addDocButton = function(pointer, section) {
@@ -806,18 +807,51 @@ this.Editor = (function() {
   };
 
   Editor.prototype.updateCurrentFileLock = function() {
-    var lock, user;
-    if (this.selected_source != null) {
-      this.editor.setReadOnly(this.app.project.isLocked("ms/" + this.selected_source + ".ms"));
-    }
+    var lock, source, user;
     lock = document.getElementById("editor-locked");
-    if ((this.selected_source != null) && this.app.project.isLocked("ms/" + this.selected_source + ".ms")) {
-      user = this.app.project.isLocked("ms/" + this.selected_source + ".ms").user;
-      lock.style = "display: block; background: " + (this.app.appui.createFriendColor(user));
-      return lock.innerHTML = "<i class='fa fa-user'></i> Locked by " + user;
+    if (this.selected_source != null) {
+      if (this.app.project.isLocked("ms/" + this.selected_source + ".ms")) {
+        this.editor.setReadOnly(true);
+        user = this.app.project.isLocked("ms/" + this.selected_source + ".ms").user;
+        return this.showLock("<i class='fa fa-user'></i> Locked by " + user, this.app.appui.createFriendColor(user));
+      } else {
+        source = this.app.project.getSource(this.selected_source);
+        if ((source != null) && !source.fetched) {
+          this.editor.setReadOnly(true);
+          return this.showLock("<i class=\"fas fa-spinner fa-spin\"></i> " + this.app.translator.get("Loading..."), "hsl(200,50%,50%)");
+        } else {
+          this.hideLock();
+          return this.editor.setReadOnly(false);
+        }
+      }
     } else {
-      return lock.style = "display: none";
+      this.hideLock();
+      return this.editor.setReadOnly(true);
     }
+  };
+
+  Editor.prototype.showLock = function(html, color) {
+    var lock;
+    lock = document.getElementById("editor-locked");
+    this.lock_shown = true;
+    lock.style = "display: block; background: " + color + "; opacity: 1";
+    lock.innerHTML = html;
+    return document.getElementById("editor-view").style.opacity = .5;
+  };
+
+  Editor.prototype.hideLock = function() {
+    var lock;
+    lock = document.getElementById("editor-locked");
+    this.lock_shown = false;
+    lock.style.opacity = 0;
+    document.getElementById("editor-view").style.opacity = 1;
+    return setTimeout(((function(_this) {
+      return function() {
+        if (!_this.lock_shown) {
+          return lock.style.display = "none";
+        }
+      };
+    })(this)), 1000);
   };
 
   Editor.prototype.rebuildSourceList = function() {

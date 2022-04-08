@@ -7,6 +7,7 @@ this.ProjectSource = (function() {
     this.filename = this.file;
     this.file = "ms/" + this.file;
     this.content = "";
+    this.fetched = false;
     this.reload();
   }
 
@@ -18,6 +19,7 @@ this.ProjectSource = (function() {
     }, (function(_this) {
       return function(msg) {
         _this.content = msg.content;
+        _this.fetched = true;
         _this.loaded();
         if (callback != null) {
           return callback();
