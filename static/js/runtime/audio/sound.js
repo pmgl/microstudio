@@ -70,12 +70,15 @@ this.Sound = (function() {
       this.audio.addPlaying(playing);
     }
     res = {
-      stop: function() {
-        source.stop();
-        if (playing) {
-          return this.audio.removePlaying(playing);
-        }
-      },
+      stop: (function(_this) {
+        return function() {
+          source.stop();
+          if (playing) {
+            _this.audio.removePlaying(playing);
+          }
+          return 1;
+        };
+      })(this),
       setVolume: function(volume) {
         return gain.gain.value = Math.max(0, Math.min(1, volume));
       },

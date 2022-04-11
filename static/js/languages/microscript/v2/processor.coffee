@@ -89,6 +89,8 @@ class @Processor
       obj = obj.class
       f = obj["%"]
 
+    if not f? then f = context.global.Object["%"]
+
     if f? and f instanceof Routine
       if not f.as_function?
         f.as_function = @routineAsApplicableFunction(f,context)
