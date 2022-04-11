@@ -1,5 +1,13 @@
 ## Changelog
 
+### Update 2022-04-11
+* microScript 2.0 is now the default language for new projects!
+* documentation is now hosted on the Github wiki
+* HTML5 export: JavaScript - microScript interoperability
+* Fix: lock code editor when loading project
+* Fixed sound.stop()
+* many fixes related to microScript 2.0
+
 ### Update 2022-04-04
 * microScript 2.0 beta
   * fixed local.type
