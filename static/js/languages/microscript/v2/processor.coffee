@@ -923,10 +923,18 @@ class @Processor
           else if typeof f == "function"
               switch args
                 when 0
-                  v = f()
+                  try
+                    v = f()
+                  catch err
+                    console.error err
+                    v = 0
                   stack[stack_index] = if v? then v else 0
                 when 1
-                  v = f(@argToNative(stack[stack_index-1],context))
+                  try
+                    v = f(@argToNative(stack[stack_index-1],context))
+                  catch err
+                    console.error err
+                    v = 0
                   stack[stack_index-1] = if v? then v else 0
                   stack_index -= 1
                 else
@@ -934,7 +942,11 @@ class @Processor
                   stack_index -= args
                   for i in [0..args-1] by 1
                     argv[i] = @argToNative stack[stack_index+i],context
-                  v = f.apply(null, argv)
+                  try
+                    v = f.apply(null, argv)
+                  catch err
+                    console.error err
+                    v = 0
                   stack[stack_index] = if v? then v else 0
               op_index++
           else
@@ -1008,17 +1020,30 @@ class @Processor
           else if typeof f == "function"
             switch args
               when 0
-                v = f.call(obj)
+                try
+                  v = f.call(obj)
+                catch err
+                  console.error err
+                  v = 0
                 stack[stack_index] = if v? then v else 0
+
               when 1
-                v = f.call(obj,@argToNative(stack[stack_index-1],context))
+                try
+                  v = f.call(obj,@argToNative(stack[stack_index-1],context))
+                catch err
+                  console.error err
+                  v = 0
                 stack[--stack_index] = if v? then v else 0
               else
                 argv = []
                 stack_index -= args
                 for i in [0..args-1] by 1
                   argv[i] = @argToNative stack[stack_index+i],context
-                v = f.apply(obj, argv)
+                try
+                  v = f.apply(obj, argv)
+                catch err
+                  console.error err
+                  v = 0
                 stack[stack_index] = if v? then v else 0
             op_index++
           else
@@ -1093,10 +1118,19 @@ class @Processor
           else if typeof f == "function"
             switch args
               when 0
-                v = f.call(obj)
+                try
+                  v = f.call(obj)
+                catch err
+                  console.error err
+                  v = 0
                 stack[--stack_index] = if v? then v else 0
+
               when 1
-                v = f.call(obj,@argToNative(stack[stack_index-2],context))
+                try
+                  v = f.call(obj,@argToNative(stack[stack_index-2],context))
+                catch err
+                  console.error err
+                  v = 0
                 stack[stack_index-2] = if v? then v else 0
                 stack_index -= 2
               else
@@ -1104,7 +1138,12 @@ class @Processor
                 stack_index -= args+1
                 for i in [0..args-1] by 1
                   argv[i] = @argToNative stack[stack_index+i],context
-                v = f.apply(obj, argv)
+                try
+                  v = f.apply(obj, argv)
+                catch err
+                  console.error err
+                  v = 0
+
                 stack[stack_index] = if v? then v else 0
             op_index++
           else

@@ -392,7 +392,7 @@ this.Processor = (function() {
   };
 
   Processor.prototype.run = function(context) {
-    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, f, fc, field, global, i, i1, i2, id, index, ir, iter, iterator, j, k, key, l, len, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, rc, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, u, v, value, w;
+    var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, err, f, fc, field, global, i, i1, i2, id, index, ir, iter, iterator, j, k, key, l, len, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, rc, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, u, v, value, w;
     routine = this.routine;
     opcodes = this.routine.opcodes;
     arg1 = this.routine.arg1;
@@ -1039,11 +1039,23 @@ this.Processor = (function() {
           } else if (typeof f === "function") {
             switch (args) {
               case 0:
-                v = f();
+                try {
+                  v = f();
+                } catch (error) {
+                  err = error;
+                  console.error(err);
+                  v = 0;
+                }
                 stack[stack_index] = v != null ? v : 0;
                 break;
               case 1:
-                v = f(this.argToNative(stack[stack_index - 1], context));
+                try {
+                  v = f(this.argToNative(stack[stack_index - 1], context));
+                } catch (error) {
+                  err = error;
+                  console.error(err);
+                  v = 0;
+                }
                 stack[stack_index - 1] = v != null ? v : 0;
                 stack_index -= 1;
                 break;
@@ -1053,7 +1065,13 @@ this.Processor = (function() {
                 for (i = n = 0, ref6 = args - 1; n <= ref6; i = n += 1) {
                   argv[i] = this.argToNative(stack[stack_index + i], context);
                 }
-                v = f.apply(null, argv);
+                try {
+                  v = f.apply(null, argv);
+                } catch (error) {
+                  err = error;
+                  console.error(err);
+                  v = 0;
+                }
                 stack[stack_index] = v != null ? v : 0;
             }
             op_index++;
@@ -1123,11 +1141,23 @@ this.Processor = (function() {
           } else if (typeof f === "function") {
             switch (args) {
               case 0:
-                v = f.call(obj);
+                try {
+                  v = f.call(obj);
+                } catch (error) {
+                  err = error;
+                  console.error(err);
+                  v = 0;
+                }
                 stack[stack_index] = v != null ? v : 0;
                 break;
               case 1:
-                v = f.call(obj, this.argToNative(stack[stack_index - 1], context));
+                try {
+                  v = f.call(obj, this.argToNative(stack[stack_index - 1], context));
+                } catch (error) {
+                  err = error;
+                  console.error(err);
+                  v = 0;
+                }
                 stack[--stack_index] = v != null ? v : 0;
                 break;
               default:
@@ -1136,7 +1166,13 @@ this.Processor = (function() {
                 for (i = q = 0, ref9 = args - 1; q <= ref9; i = q += 1) {
                   argv[i] = this.argToNative(stack[stack_index + i], context);
                 }
-                v = f.apply(obj, argv);
+                try {
+                  v = f.apply(obj, argv);
+                } catch (error) {
+                  err = error;
+                  console.error(err);
+                  v = 0;
+                }
                 stack[stack_index] = v != null ? v : 0;
             }
             op_index++;
@@ -1210,11 +1246,23 @@ this.Processor = (function() {
           } else if (typeof f === "function") {
             switch (args) {
               case 0:
-                v = f.call(obj);
+                try {
+                  v = f.call(obj);
+                } catch (error) {
+                  err = error;
+                  console.error(err);
+                  v = 0;
+                }
                 stack[--stack_index] = v != null ? v : 0;
                 break;
               case 1:
-                v = f.call(obj, this.argToNative(stack[stack_index - 2], context));
+                try {
+                  v = f.call(obj, this.argToNative(stack[stack_index - 2], context));
+                } catch (error) {
+                  err = error;
+                  console.error(err);
+                  v = 0;
+                }
                 stack[stack_index - 2] = v != null ? v : 0;
                 stack_index -= 2;
                 break;
@@ -1224,7 +1272,13 @@ this.Processor = (function() {
                 for (i = u = 0, ref12 = args - 1; u <= ref12; i = u += 1) {
                   argv[i] = this.argToNative(stack[stack_index + i], context);
                 }
-                v = f.apply(obj, argv);
+                try {
+                  v = f.apply(obj, argv);
+                } catch (error) {
+                  err = error;
+                  console.error(err);
+                  v = 0;
+                }
                 stack[stack_index] = v != null ? v : 0;
             }
             op_index++;
