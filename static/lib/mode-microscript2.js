@@ -162,6 +162,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 var Mode = function() {
     this.HighlightRules = Microscript2HighlightRules;
     this.foldingRules = new FoldMode() ;
+    this.$behaviour = this.$defaultBehaviour ;
 };
 oop.inherits(Mode, TextMode);
 
