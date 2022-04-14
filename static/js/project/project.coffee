@@ -252,6 +252,7 @@ class @Project
       break if not @getSource(filename)?
 
     source = new ProjectSource @,filename+".ms"
+    source.fetched = true
     @source_table[source.name] = source
     @source_list.push source
     @notifyListeners "sourcelist"

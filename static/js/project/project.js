@@ -362,6 +362,7 @@ this.Project = (function() {
       }
     }
     source = new ProjectSource(this, filename + ".ms");
+    source.fetched = true;
     this.source_table[source.name] = source;
     this.source_list.push(source);
     this.notifyListeners("sourcelist");
