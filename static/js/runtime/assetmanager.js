@@ -12,6 +12,11 @@ this.AssetManager = (function() {
           return _this.loadModel(path, scene, callback);
         };
       })(this),
+      loadImage: (function(_this) {
+        return function(path, callback) {
+          return _this.loadImage(path, callback);
+        };
+      })(this),
       loadJSON: (function(_this) {
         return function(path, callback) {
           return _this.loadJSON(path, callback);
@@ -73,9 +78,35 @@ this.AssetManager = (function() {
       return function(container) {
         loader.container = container;
         loader.ready = 1;
-        return callback(container);
+        if (callback) {
+          return callback(container);
+        }
       };
     })(this));
+  };
+
+  AssetManager.prototype.loadImage = function(path, callback) {
+    var img, loader;
+    loader = {
+      ready: 0
+    };
+    if (this.runtime.assets[path] != null) {
+      path = this.runtime.assets[path].file;
+    }
+    img = new Image;
+    img.src = "assets/" + path;
+    img.onload = (function(_this) {
+      return function() {
+        var i;
+        i = new msImage(img);
+        loader.image = i;
+        loader.ready = 1;
+        if (callback) {
+          return callback(i);
+        }
+      };
+    })(this);
+    return loader;
   };
 
   AssetManager.prototype.loadJSON = function(path, callback) {
@@ -90,7 +121,9 @@ this.AssetManager = (function() {
         return result.json().then(function(data) {
           loader.data = data;
           loader.ready = 1;
-          return callback(data);
+          if (callback) {
+            return callback(data);
+          }
         });
       };
     })(this));
@@ -112,7 +145,9 @@ this.AssetManager = (function() {
         return result.text().then(function(text) {
           loader.text = text;
           loader.ready = 1;
-          return callback(text);
+          if (callback) {
+            return callback(text);
+          }
         });
       };
     })(this));

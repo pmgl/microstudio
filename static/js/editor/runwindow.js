@@ -525,6 +525,9 @@ this.RunWindow = (function() {
           break;
         case "time_machine":
           return this.app.debug.time_machine.messageReceived(msg);
+        case "write_project_file":
+          this.app.project.writeFile(msg.filename, msg.content, msg.thumbnail);
+          return console.info(msg);
         default:
           if ((msg.name != null) && (this.message_listeners[msg.name] != null)) {
             return this.message_listeners[msg.name](msg);

@@ -2,7 +2,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 
 this.Project = (function() {
   function Project(app, data) {
-    var f, k, len, ref;
+    var f, k, len1, ref;
     this.app = app;
     this.setAssetList = bind(this.setAssetList, this);
     this.setMusicList = bind(this.setMusicList, this);
@@ -32,7 +32,7 @@ this.Project = (function() {
     this.tabs = data.tabs;
     this.file_types = ["source", "sprite", "map", "asset", "sound", "music"];
     ref = this.file_types;
-    for (k = 0, len = ref.length; k < len; k++) {
+    for (k = 0, len1 = ref.length; k < len1; k++) {
       f = ref[k];
       this[f + "_list"] = [];
       this[f + "_table"] = {};
@@ -65,9 +65,9 @@ this.Project = (function() {
   };
 
   Project.prototype.notifyListeners = function(change) {
-    var k, len, lis, ref;
+    var k, len1, lis, ref;
     ref = this.listeners;
-    for (k = 0, len = ref.length; k < len; k++) {
+    for (k = 0, len1 = ref.length; k < len1; k++) {
       lis = ref[k];
       lis.projectUpdate(change);
     }
@@ -189,11 +189,11 @@ this.Project = (function() {
   };
 
   Project.prototype.changeSpriteName = function(old, name) {
-    var changed, i, j, k, l, len, map, n, ref, ref1, ref2, s;
+    var changed, i, j, k, l, len1, map, n, ref, ref1, ref2, s;
     this.sprite_table[name] = this.sprite_table[old];
     delete this.sprite_table[old];
     ref = this.map_list;
-    for (k = 0, len = ref.length; k < len; k++) {
+    for (k = 0, len1 = ref.length; k < len1; k++) {
       map = ref[k];
       changed = false;
       for (i = l = 0, ref1 = map.width - 1; l <= ref1; i = l += 1) {
@@ -369,10 +369,10 @@ this.Project = (function() {
   };
 
   Project.prototype.getFullSource = function() {
-    var k, len, ref, res, s;
+    var k, len1, ref, res, s;
     res = "";
     ref = this.source_list;
-    for (k = 0, len = ref.length; k < len; k++) {
+    for (k = 0, len1 = ref.length; k < len1; k++) {
       s = ref[k];
       res += s + "\n";
     }
@@ -380,10 +380,10 @@ this.Project = (function() {
   };
 
   Project.prototype.setFileList = function(list, target_list, target_table, get, add, item_id) {
-    var f, folder, i, k, l, len, len1, li, n, notification, ref, s;
+    var f, folder, i, k, l, len1, len2, li, n, notification, ref, s;
     notification = item_id + "list";
     li = [];
-    for (k = 0, len = list.length; k < len; k++) {
+    for (k = 0, len1 = list.length; k < len1; k++) {
       f = list[k];
       li.push(f.file);
     }
@@ -396,7 +396,7 @@ this.Project = (function() {
         delete target_table[s.name];
       }
     }
-    for (n = 0, len1 = list.length; n < len1; n++) {
+    for (n = 0, len2 = list.length; n < len2; n++) {
       s = list[n];
       if (!this[get](s.file.split(".")[0])) {
         this[add](s);
@@ -663,18 +663,85 @@ this.Project = (function() {
   };
 
   Project.prototype.getSize = function() {
-    var k, l, len, len1, ref, s, size, t, type;
+    var k, l, len1, len2, ref, s, size, t, type;
     size = 0;
     ref = this.file_types;
-    for (k = 0, len = ref.length; k < len; k++) {
+    for (k = 0, len1 = ref.length; k < len1; k++) {
       type = ref[k];
       t = this[type + "_list"];
-      for (l = 0, len1 = t.length; l < len1; l++) {
+      for (l = 0, len2 = t.length; l < len2; l++) {
         s = t[l];
         size += s.size;
       }
     }
     return size;
+  };
+
+  Project.prototype.writeFile = function(name, content, thumbnail) {
+    var i, k, ref;
+    name = name.split("/");
+    for (i = k = 0, ref = name.length - 1; 0 <= ref ? k <= ref : k >= ref; i = 0 <= ref ? ++k : --k) {
+      name[i] = RegexLib.fixFilename(name[i]);
+    }
+    name = name[0] + "/" + name.slice(1).join("-");
+    if (name.startsWith("sounds/")) {
+      name = name.substring(name.indexOf("/") + 1);
+      return this.writeSoundFile(name, content, thumbnail);
+    } else if (name.startsWith("sprites/")) {
+      name = name.substring(name.indexOf("/") + 1);
+      return this.writeSpriteFile(name, content);
+    }
+  };
+
+  Project.prototype.writeSoundFile = function(name, content, thumbnail) {
+    var audioContext, base64ToArrayBuffer;
+    base64ToArrayBuffer = function(base64) {
+      var binary_string, bytes, i, k, len, ref;
+      binary_string = window.atob(base64);
+      len = binary_string.length;
+      bytes = new Uint8Array(len);
+      for (i = k = 0, ref = len - 1; k <= ref; i = k += 1) {
+        bytes[i] = binary_string.charCodeAt(i);
+      }
+      return bytes.buffer;
+    };
+    audioContext = new AudioContext();
+    return audioContext.decodeAudioData(base64ToArrayBuffer(content), (function(_this) {
+      return function(decoded) {
+        var thumbnailer;
+        console.info(decoded);
+        thumbnailer = new SoundThumbnailer(decoded, 96, 64);
+        return _this.app.client.sendRequest({
+          name: "write_project_file",
+          project: _this.id,
+          file: "sounds/" + name + ".wav",
+          properties: {},
+          content: content,
+          thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
+        }, function(msg) {
+          console.info(msg);
+          return _this.updateSoundList();
+        });
+      };
+    })(this));
+  };
+
+  Project.prototype.writeSpriteFile = function(name, content) {
+    return this.app.client.sendRequest({
+      name: "write_project_file",
+      project: this.id,
+      file: "sprites/" + name + ".png",
+      properties: {
+        frames: 1,
+        fps: 5
+      },
+      content: content
+    }, (function(_this) {
+      return function(msg) {
+        console.info(msg);
+        return _this.updateSpriteList();
+      };
+    })(this));
   };
 
   return Project;

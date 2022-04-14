@@ -37,7 +37,7 @@ class @Project
     @orientation = data.orientation or "any"
     @aspect = data.aspect or "free"
     @graphics = data.graphics or "M1"
-    @language = data.language or "microscript_v1_i"
+    @language = data.language or "microscript_v2"
     @platforms = data.platforms or ["computer","phone","tablet"]
     @controls = data.controls or ["touch","mouse"]
     @libs = data.libs or []

@@ -23,7 +23,7 @@ this.FolderView = (function() {
       })(this));
       this.panel.addEventListener("drop", (function(_this) {
         return function(event) {
-          var err, ext, file, i, j, len, list, ref, results;
+          var err, ext, file, i, j, len, list, ref, results, split;
           event.preventDefault();
           _this.panel.classList.remove("dragover");
           try {
@@ -35,7 +35,8 @@ this.FolderView = (function() {
               list.push(i.getAsFile());
               if (i.kind === "file") {
                 file = i.getAsFile();
-                ext = file.name.split(".")[1].toLowerCase();
+                split = file.name.split(".");
+                ext = split[split.length - 1].toLowerCase();
                 if (indexOf.call(_this.manager.extensions, ext) >= 0) {
                   results.push(_this.manager.fileDropped(file));
                 } else {

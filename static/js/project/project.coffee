@@ -461,3 +461,54 @@ class @Project
         size += s.size
 
     size
+
+  writeFile:(name,content,thumbnail)->
+    name = name.split("/")
+    for i in [0..name.length-1]
+      name[i] = RegexLib.fixFilename name[i]
+    name = name[0]+"/"+name.slice(1).join("-")
+
+    if name.startsWith "sounds/"
+      name = name.substring(name.indexOf("/")+1)
+      @writeSoundFile name,content,thumbnail
+    else if name.startsWith "sprites/"
+      name = name.substring(name.indexOf("/")+1)
+      @writeSpriteFile name,content
+
+
+
+  writeSoundFile:(name,content,thumbnail)->
+    base64ToArrayBuffer = (base64)->
+      binary_string = window.atob(base64)
+      len = binary_string.length
+      bytes = new Uint8Array(len)
+      for i in [0..len-1] by 1
+        bytes[i] = binary_string.charCodeAt(i)
+      bytes.buffer
+
+    audioContext = new AudioContext()
+    audioContext.decodeAudioData base64ToArrayBuffer(content),(decoded)=>
+      console.info decoded
+      thumbnailer = new SoundThumbnailer(decoded,96,64)
+
+      @app.client.sendRequest {
+        name: "write_project_file"
+        project: @id
+        file: "sounds/#{name}.wav"
+        properties: {}
+        content: content
+        thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
+      },(msg)=>
+        console.info msg
+        @updateSoundList()
+
+  writeSpriteFile:(name,content)->
+    @app.client.sendRequest {
+      name: "write_project_file"
+      project: @id
+      file: "sprites/#{name}.png"
+      properties: { frames: 1 , fps: 5 }
+      content: content
+    },(msg)=>
+      console.info msg
+      @updateSpriteList()

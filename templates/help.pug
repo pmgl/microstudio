@@ -1,5 +1,5 @@
 div.help-sections#help-sections
-  div.help-section-category#help-fundamentals
+  div.help-section-category.bg-blue#help-fundamentals
     div.help-section-title
       i.fa
       span #{translator.get("Fundamentals")}
@@ -8,25 +8,27 @@ div.help-sections#help-sections
       div.help-section-button#documentation-Programming #{translator.get("microScript programming")}
       div.help-section-button#documentation-API #{translator.get("API reference")}
 
-  div.help-section-category#help-graphics.collapsed
+  div.help-section-category.bg-red#help-quick.collapsed
     div.help-section-title
       i.fa
-      span #{translator.get("Advanced graphics")}
+      span #{translator.get("Quick reference")}
+    div.help-section-content
+      div.help-section-button#documentation-microScript-cheatsheet #{translator.get("microScript cheatsheet")}
+      div.help-section-button#documentation-API-cheatsheet #{translator.get("API cheatsheet")}
+
+  div.help-section-category.bg-green#help-libs.collapsed
+    div.help-section-title
+      i.fa
+      span #{translator.get("Optional graphics and libs")}
     div.help-section-content
       div.help-section-button#documentation-Pixi PIXI.js
       div.help-section-button#documentation-Babylon Babylon.js
       div.help-section-button#documentation-M2D micro 2D
       div.help-section-button#documentation-M3D micro 3D
-
-  div.help-section-category#help-libs.collapsed
-    div.help-section-title
-      i.fa
-      span #{translator.get("Optional libs")}
-    div.help-section-content
       div.help-section-button#documentation-Matter Matter.js
       div.help-section-button#documentation-Cannon Cannon.js
 
-  div.help-section-category#help-languages.collapsed
+  div.help-section-category.bg-orange#help-languages.collapsed
     div.help-section-title
       i.fa
       span #{translator.get("More programming languages")}
@@ -34,6 +36,16 @@ div.help-sections#help-sections
       div.help-section-button#documentation-Python Python
       div.help-section-button#documentation-JavaScript JavaScript
       div.help-section-button#documentation-Lua Lua
+
+  div.help-section-category.bg-purple#help-advanced.collapsed
+    div.help-section-title
+      i.fa
+      span #{translator.get("Advanced topics")}
+    div.help-section-content
+      div.help-section-button#documentation-Advanced-microScript #{translator.get("Advanced microScript programming")}
+      div.help-section-button#documentation-Extending-Exported-Game #{translator.get("Extending your exported game")}
+      div.help-section-button#documentation-Creating-Tutorials #{translator.get("Creating Tutorials")}
+
 
 div.help-document#help-document
   div.helplist#helplist

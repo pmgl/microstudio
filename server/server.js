@@ -118,6 +118,7 @@ this.Server = (function() {
     app.use("/lib/brython", express["static"]("node_modules/brython"));
     app.use("/lib/fengari", express["static"]("node_modules/fengari-web/dist"));
     app.use("/lib/qrcode", express["static"]("node_modules/qrcode/build"));
+    app.use("/lib/wavefile", express["static"]("node_modules/wavefile/dist"));
     return this.db = new DB(this.app_data + "/data", (function(_this) {
       return function(db) {
         var j, len1, ref1;

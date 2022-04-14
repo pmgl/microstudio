@@ -82,6 +82,7 @@ this.Screen = (function() {
     this.width = this.canvas.width / ratio;
     this.height = this.canvas.height / ratio;
     this.alpha = 1;
+    this.pixelated = 1;
     this.line_width = 1;
     this.object_rotation = 0;
     this.object_scale_x = 1;
@@ -115,6 +116,9 @@ this.Screen = (function() {
       },
       setAlpha: function(alpha) {
         return screen.setAlpha(alpha);
+      },
+      setPixelated: function(pixelated) {
+        return screen.setPixelated(pixelated);
       },
       setBlending: function(blending) {
         return screen.setBlending(blending);
@@ -167,7 +171,13 @@ this.Screen = (function() {
       drawSprite: function(sprite, x, y, w, h) {
         return screen.drawSprite(sprite, x, y, w, h);
       },
+      drawImage: function(sprite, x, y, w, h) {
+        return screen.drawSprite(sprite, x, y, w, h);
+      },
       drawSpritePart: function(sprite, sx, sy, sw, sh, x, y, w, h) {
+        return screen.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h);
+      },
+      drawImagePart: function(sprite, sx, sy, sw, sh, x, y, w, h) {
         return screen.drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h);
       },
       drawMap: function(map, x, y, w, h) {
@@ -268,6 +278,10 @@ this.Screen = (function() {
 
   Screen.prototype.setAlpha = function(alpha1) {
     this.alpha = alpha1;
+  };
+
+  Screen.prototype.setPixelated = function(pixelated1) {
+    this.pixelated = pixelated1;
   };
 
   Screen.prototype.setBlending = function(blending) {
@@ -685,6 +699,8 @@ this.Screen = (function() {
           frame = s[1] | 0;
         }
       }
+    } else if (sprite instanceof msImage) {
+      return sprite.canvas || sprite.image;
     }
     if ((sprite == null) || !sprite.ready) {
       return null;
@@ -716,7 +732,7 @@ this.Screen = (function() {
       h = w / canvas.width * canvas.height;
     }
     this.context.globalAlpha = this.alpha;
-    this.context.imageSmoothingEnabled = false;
+    this.context.imageSmoothingEnabled = !this.pixelated;
     if (this.initDrawOp(x, -y)) {
       this.context.drawImage(canvas, -w / 2 - this.anchor_x * w / 2, -h / 2 + this.anchor_y * h / 2, w, h);
       return this.closeDrawOp(x, -y);
@@ -735,7 +751,7 @@ this.Screen = (function() {
       h = w / sw * sh;
     }
     this.context.globalAlpha = this.alpha;
-    this.context.imageSmoothingEnabled = false;
+    this.context.imageSmoothingEnabled = !this.pixelated;
     if (this.initDrawOp(x, -y)) {
       this.context.drawImage(canvas, sx, sy, sw, sh, -w / 2 - this.anchor_x * w / 2, -h / 2 + this.anchor_y * h / 2, w, h);
       return this.closeDrawOp(x, -y);
@@ -752,7 +768,7 @@ this.Screen = (function() {
       return;
     }
     this.context.globalAlpha = this.alpha;
-    this.context.imageSmoothingEnabled = false;
+    this.context.imageSmoothingEnabled = !this.pixelated;
     if (this.initDrawOp(x, -y)) {
       this.context.drawImage(map.getCanvas(), -w / 2 - this.anchor_x * w / 2, -h / 2 + this.anchor_y * h / 2, w, h);
       return this.closeDrawOp(x, -y);

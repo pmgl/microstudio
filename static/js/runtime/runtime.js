@@ -1,3 +1,5 @@
+var arrayBufferToBase64, loadWaveFileLib, saveFile, writeProjectFile;
+
 this.Runtime = (function() {
   function Runtime(url1, sources, resources, listener) {
     this.url = url1;
@@ -83,24 +85,23 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.start = function() {
-    var a, i, j, k, key, l, len, len1, len2, len3, len4, m, n, name, o, ref, ref1, ref2, ref3, ref4, ref5, s, value;
+    var a, i, j, k, key, l, len1, len2, len3, len4, len5, m, n, name, o, ref, ref1, ref2, ref3, ref4, ref5, s, value;
     ref = this.resources.images;
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len1 = ref.length; j < len1; j++) {
       i = ref[j];
-      s = new Sprite(this.url + "sprites/" + i.file + "?v=" + i.version, null, i.properties);
-      name = i.file.split(".")[0];
-      s.name = name;
-      this.sprites[name] = s;
-      s.loaded = (function(_this) {
+      s = LoadSprite(this.url + "sprites/" + i.file + "?v=" + i.version, i.properties, (function(_this) {
         return function() {
           _this.updateMaps();
           return _this.checkStartReady();
         };
-      })(this);
+      })(this));
+      name = i.file.split(".")[0];
+      s.name = name;
+      this.sprites[name] = s;
     }
     if (Array.isArray(this.resources.maps)) {
       ref1 = this.resources.maps;
-      for (k = 0, len1 = ref1.length; k < len1; k++) {
+      for (k = 0, len2 = ref1.length; k < len2; k++) {
         m = ref1[k];
         name = m.file.split(".")[0];
         this.maps[name] = new MicroMap(this.url + ("maps/" + m.file + "?v=" + m.version), 0, 0, 0, this.sprites);
@@ -119,7 +120,7 @@ this.Runtime = (function() {
       }
     }
     ref3 = this.resources.sounds;
-    for (l = 0, len2 = ref3.length; l < len2; l++) {
+    for (l = 0, len3 = ref3.length; l < len3; l++) {
       s = ref3[l];
       name = s.file.split(".")[0];
       s = new Sound(this.audio, this.url + "sounds/" + s.file + "?v=" + s.version);
@@ -127,7 +128,7 @@ this.Runtime = (function() {
       this.sounds[name] = s;
     }
     ref4 = this.resources.music;
-    for (n = 0, len3 = ref4.length; n < len3; n++) {
+    for (n = 0, len4 = ref4.length; n < len4; n++) {
       m = ref4[n];
       name = m.file.split(".")[0];
       m = new Music(this.audio, this.url + "music/" + m.file + "?v=" + m.version);
@@ -135,7 +136,7 @@ this.Runtime = (function() {
       this.music[name] = m;
     }
     ref5 = this.resources.assets;
-    for (o = 0, len4 = ref5.length; o < len4; o++) {
+    for (o = 0, len5 = ref5.length; o < len5; o++) {
       a = ref5[o];
       name = a.file.split(".")[0];
       name = name.replace(/-/g, "/");
@@ -167,7 +168,7 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.startReady = function() {
-    var err, file, global, init, j, len, lib, meta, namespace, ref, ref1, src;
+    var err, file, global, init, j, len1, lib, meta, namespace, ref, ref1, src;
     meta = {
       print: (function(_this) {
         return function(text) {
@@ -191,7 +192,10 @@ this.Runtime = (function() {
       maps: this.maps,
       touch: this.touch,
       mouse: this.mouse,
-      fonts: window.fonts
+      fonts: window.fonts,
+      Sound: Sound.createSoundClass(this.audio),
+      Image: msImage,
+      Sprite: Sprite
     };
     if (window.graphics === "M3D") {
       global.M3D = M3D;
@@ -207,7 +211,7 @@ this.Runtime = (function() {
       BABYLON.runtime = this;
     }
     ref = window.ms_libs;
-    for (j = 0, len = ref.length; j < len; j++) {
+    for (j = 0, len1 = ref.length; j < len1; j++) {
       lib = ref[j];
       switch (lib) {
         case "matterjs":
@@ -229,6 +233,8 @@ this.Runtime = (function() {
         return _this.exit();
       };
     })(this);
+    this.vm.context.global.system.file = System.file;
+    System.runtime = this;
     ref1 = this.sources;
     for (file in ref1) {
       src = ref1[file];
@@ -341,18 +347,17 @@ this.Runtime = (function() {
         img.src = data;
         return img.onload = (function(_this) {
           return function() {
-            _this.sprites[name].load(img, properties);
+            UpdateSprite(_this.sprites[name], img, properties);
             return _this.updateMaps();
           };
         })(this);
       } else {
-        this.sprites[name] = new Sprite(data, null, properties);
-        this.sprites[name].name = name;
-        return this.sprites[name].loaded = (function(_this) {
+        this.sprites[name] = LoadSprite(data, properties, (function(_this) {
           return function() {
             return _this.updateMaps();
           };
-        })(this);
+        })(this));
+        return this.sprites[name].name = name;
       }
     } else {
       if (this.sprites[name] != null) {
@@ -361,18 +366,17 @@ this.Runtime = (function() {
         img.src = this.url + "sprites/" + name + (".png?v=" + version);
         return img.onload = (function(_this) {
           return function() {
-            _this.sprites[name].load(img, properties);
+            UpdateSprite(_this.sprites[name], img, properties);
             return _this.updateMaps();
           };
         })(this);
       } else {
-        this.sprites[name] = new Sprite(this.url + "sprites/" + name + (".png?v=" + version), null, properties);
-        this.sprites[name].name = name;
-        return this.sprites[name].loaded = (function(_this) {
+        this.sprites[name] = LoadSprite(this.url + "sprites/" + name + (".png?v=" + version), properties, (function(_this) {
           return function() {
             return _this.updateMaps();
           };
-        })(this);
+        })(this));
+        return this.sprites[name].name = name;
       }
     }
   };
@@ -584,11 +588,11 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.updateControls = function() {
-    var err, j, key, len, t, touches;
+    var err, j, key, len1, t, touches;
     touches = Object.keys(this.screen.touches);
     this.touch.touching = touches.length > 0 ? 1 : 0;
     this.touch.touches = [];
-    for (j = 0, len = touches.length; j < len; j++) {
+    for (j = 0, len1 = touches.length; j < len1; j++) {
       key = touches[j];
       t = this.screen.touches[key];
       this.touch.x = t.x;
@@ -652,6 +656,18 @@ this.Runtime = (function() {
     if (this.vm.context.global.Number != null) {
       this.exclusion_list.push(this.vm.context.global.Number);
     }
+    if (this.vm.context.global.Object != null) {
+      this.exclusion_list.push(this.vm.context.global.Object);
+    }
+    if (this.vm.context.global.Image != null) {
+      this.exclusion_list.push(this.vm.context.global.Image);
+    }
+    if (this.vm.context.global.Sound != null) {
+      this.exclusion_list.push(this.vm.context.global.Sound);
+    }
+    if (this.vm.context.global.Sprite != null) {
+      this.exclusion_list.push(this.vm.context.global.Sprite);
+    }
     if (this.vm.context.global.random != null) {
       this.exclusion_list.push(this.vm.context.global.random);
     }
@@ -666,12 +682,12 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.watchStep = function(variables) {
-    var index, j, len, res, v, value, vs;
+    var index, j, len1, res, v, value, vs;
     if (variables == null) {
       variables = this.watching_variables;
     }
     res = {};
-    for (j = 0, len = variables.length; j < len; j++) {
+    for (j = 0, len1 = variables.length; j < len1; j++) {
       v = variables[j];
       if (v === "global") {
         value = this.vm.context.global;
@@ -694,7 +710,7 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.exploreValue = function(value, depth, array_max) {
-    var i, j, key, len, res, v;
+    var i, j, key, len1, res, v;
     if (depth == null) {
       depth = 1;
     }
@@ -722,7 +738,7 @@ this.Runtime = (function() {
           };
         }
         res = [];
-        for (i = j = 0, len = value.length; j < len; i = ++j) {
+        for (i = j = 0, len1 = value.length; j < len1; i = ++j) {
           v = value[i];
           if (i >= 100) {
             break;
@@ -810,3 +826,164 @@ this.Runtime = (function() {
   return Runtime;
 
 })();
+
+saveFile = function(data, name, type) {
+  var a, blob, url;
+  a = document.createElement("a");
+  document.body.appendChild(a);
+  a.style = "display: none";
+  blob = new Blob([data], {
+    type: type
+  });
+  url = window.URL.createObjectURL(blob);
+  a.href = url;
+  a.download = name;
+  a.click();
+  return window.URL.revokeObjectURL(url);
+};
+
+loadWaveFileLib = function(callback) {
+  var s;
+  if (typeof wavefile !== "undefined" && wavefile !== null) {
+    return callback();
+  } else {
+    s = document.createElement("script");
+    s.src = location.origin + "/lib/wavefile/wavefile.js";
+    document.head.appendChild(s);
+    return s.onload = function() {
+      return callback();
+    };
+  }
+};
+
+writeProjectFile = function(name, data, thumb) {
+  return window.player.postMessage({
+    name: "write_project_file",
+    filename: name,
+    content: data,
+    thumbnail: thumb
+  });
+};
+
+arrayBufferToBase64 = function(buffer) {
+  var binary, bytes, i, j, len, ref;
+  binary = '';
+  bytes = new Uint8Array(buffer);
+  len = bytes.byteLength;
+  for (i = j = 0, ref = len - 1; j <= ref; i = j += 1) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+};
+
+this.System = {
+  project: {
+    writeFile: function(obj, name, thumbnail, format, options) {
+      if (obj instanceof MicroSound) {
+        return loadWaveFileLib(function() {
+          var buffer, ch, ch1, ch2, encoded, i, j, k, ref, ref1, wav;
+          wav = new wavefile.WaveFile;
+          ch1 = [];
+          for (i = j = 0, ref = obj.length - 1; j <= ref; i = j += 1) {
+            ch1[i] = Math.round(Math.min(1, Math.max(-1, obj.read(0, i))) * 32767);
+          }
+          if (obj.channels === 2) {
+            ch2 = [];
+            for (i = k = 0, ref1 = obj.length - 1; k <= ref1; i = k += 1) {
+              ch2[i] = Math.round(Math.min(1, Math.max(-1, obj.read(1, i))) * 32767);
+            }
+            ch = [ch1, ch2];
+          } else {
+            ch = [ch1];
+          }
+          wav.fromScratch(ch.length, obj.sampleRate, '16', ch);
+          buffer = wav.toBuffer();
+          encoded = arrayBufferToBase64(buffer);
+          if (typeof name !== "string") {
+            name = "sounds/sound";
+          }
+          if (!name.startsWith("sounds/")) {
+            name = "sounds/" + name;
+          }
+          if (thumbnail instanceof msImage) {
+            return writeProjectFile(name, encoded, thumbnail.canvas.toDataURL().split(",")[1]);
+          } else {
+            return writeProjectFile(name, encoded);
+          }
+        });
+      } else if (obj instanceof msImage) {
+        if (typeof name !== "string") {
+          name = "sprites/sprite";
+        }
+        if (!name.startsWith("sprites/")) {
+          name = "sprites/" + name;
+        }
+        return writeProjectFile(name, obj.canvas.toDataURL().split(",")[1]);
+      }
+    }
+  },
+  file: {
+    save: function(obj, name, format, options) {
+      var a, c;
+      if (obj instanceof MicroSound) {
+        return loadWaveFileLib(function() {
+          var buffer, ch, ch1, ch2, i, j, k, ref, ref1, wav;
+          wav = new wavefile.WaveFile;
+          ch1 = [];
+          for (i = j = 0, ref = obj.length - 1; j <= ref; i = j += 1) {
+            ch1[i] = Math.round(Math.min(1, Math.max(-1, obj.read(0, i))) * 32767);
+          }
+          if (obj.channels === 2) {
+            ch2 = [];
+            for (i = k = 0, ref1 = obj.length - 1; k <= ref1; i = k += 1) {
+              ch2[i] = Math.round(Math.min(1, Math.max(-1, obj.read(1, i))) * 32767);
+            }
+            ch = [ch1, ch2];
+          } else {
+            ch = [ch1];
+          }
+          wav.fromScratch(ch.length, obj.sampleRate, '16', ch);
+          buffer = wav.toBuffer();
+          if (typeof name !== "string") {
+            name = "sound.wav";
+          } else if (!name.endsWith(".wav")) {
+            name += ".wav";
+          }
+          return saveFile(buffer, name, "octet/stream");
+        });
+      } else if (obj instanceof msImage) {
+        c = obj.canvas;
+        if (typeof name !== "string") {
+          name = "image";
+        }
+        format = typeof format === "string" && format.toLowerCase() === "jpg" ? "jpg" : "png";
+        if (!name.endsWith("." + format)) {
+          name += "." + format;
+        }
+        a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        return c.toBlob(((function(_this) {
+          return function(blob) {
+            var url;
+            url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = name;
+            a.click();
+            return window.URL.revokeObjectURL(url);
+          };
+        })(this)), (format === "png" ? "image/png" : "image/jpeg"), options);
+      } else if (typeof obj === "object") {
+        obj = System.runtime.vm.storableObject(obj);
+        obj = JSON.stringify(obj, null, 2);
+        if (typeof name !== "string") {
+          name = "data";
+        }
+        if (!name.endsWith(".json")) {
+          name += ".json";
+        }
+        return saveFile(obj, name, "text/json");
+      }
+    }
+  }
+};

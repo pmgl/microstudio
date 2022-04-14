@@ -3,6 +3,7 @@ class @AssetManager
     @interface =
       loadFont: (font) => @loadFont font
       loadModel: (path,scene,callback) => @loadModel path,scene,callback
+      loadImage: (path,callback) => @loadImage path,callback
       loadJSON: (path,callback) => @loadJSON path,callback
       loadText: (path,callback) => @loadText path,callback
       loadCSV: (path,callback) => @loadCSV path,callback
@@ -37,7 +38,24 @@ class @AssetManager
     BABYLON.SceneLoader.LoadAssetContainer "","assets/#{path}",scene,(container)=>
       loader.container = container
       loader.ready = 1
-      callback(container)
+      callback(container) if callback
+
+  loadImage:(path,callback)->
+    loader =
+      ready: 0
+
+    if @runtime.assets[path]?
+      path = @runtime.assets[path].file
+
+    img = new Image
+    img.src = "assets/#{path}"
+    img.onload = ()=>
+      i = new msImage img
+      loader.image = i
+      loader.ready = 1
+      callback(i) if callback
+
+    loader
 
   loadJSON:(path,callback)->
     path = path.replace /\//g,"-"
@@ -49,7 +67,7 @@ class @AssetManager
       result.json().then (data)=>
         loader.data = data
         loader.ready = 1
-        callback data
+        callback(data) if callback
 
     loader
 
@@ -63,7 +81,7 @@ class @AssetManager
       result.text().then (text)=>
         loader.text = text
         loader.ready = 1
-        callback text
+        callback(text) if callback
 
     loader
 

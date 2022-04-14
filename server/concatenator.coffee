@@ -32,7 +32,7 @@ class @Concatenator
       '/js/runtime/keyboard.js'
       '/js/runtime/gamepad.js'
       '/js/runtime/sprite.js'
-      '/js/runtime/spriteframe.js'
+      '/js/runtime/msimage.js'
       '/js/runtime/map.js'
       "/js/runtime/audio/audio.js"
       "/js/runtime/audio/beeper.js"
@@ -204,6 +204,8 @@ class @Concatenator
       "/js/spriteeditor/spriteview.js"
       "/js/spriteeditor/animationpanel.js"
       "/js/spriteeditor/autopalette.js"
+      "/js/spriteeditor/sprite.js"
+      "/js/spriteeditor/spriteframe.js"
 
       "/js/mapeditor/mapview.js"
       "/js/mapeditor/mapeditor.js"
@@ -232,8 +234,6 @@ class @Concatenator
       "/js/util/pixelartscaler.js"
 
       "/js/runtime/microvm.js"
-      "/js/runtime/sprite.js"
-      "/js/runtime/spriteframe.js"
       "/js/runtime/map.js"
 
       "/js/debug/debug.js"
@@ -273,7 +273,7 @@ class @Concatenator
       '/js/runtime/keyboard.js'
       '/js/runtime/gamepad.js'
       '/js/runtime/sprite.js'
-      '/js/runtime/spriteframe.js'
+      '/js/runtime/msimage.js'
       '/js/runtime/map.js'
       "/js/runtime/audio/audio.js"
       "/js/runtime/audio/beeper.js"

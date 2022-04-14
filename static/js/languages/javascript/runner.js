@@ -4,7 +4,7 @@ this.Runner = (function() {
   }
 
   Runner.prototype.init = function() {
-    var key, src;
+    var kd, key, src;
     this.initialized = true;
     window.ctx = this.microvm.context.global;
     window.ctx.print = (function(_this) {
@@ -14,7 +14,11 @@ this.Runner = (function() {
     })(this);
     src = "";
     for (key in this.microvm.context.global) {
-      src += key + " =  window.ctx." + key + ";\n";
+      kd = key;
+      if (key === "Image") {
+        kd = "msImage";
+      }
+      src += kd + " =  window.ctx." + key + ";\n";
     }
     return this.run(src);
   };

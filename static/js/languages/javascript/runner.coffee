@@ -7,7 +7,9 @@ class @Runner
     window.ctx.print = (text)=>@microvm.context.meta.print(text)
     src = ""
     for key of @microvm.context.global
-      src += """#{key} =  window.ctx.#{key};\n"""
+      kd = key
+      if key == "Image" then kd = "msImage"
+      src += """#{kd} =  window.ctx.#{key};\n"""
 
     @run(src)
 

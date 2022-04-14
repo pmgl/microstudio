@@ -411,6 +411,10 @@ class @RunWindow
         when "time_machine"
           @app.debug.time_machine.messageReceived msg
 
+        when "write_project_file"
+          @app.project.writeFile msg.filename,msg.content,msg.thumbnail
+          console.info msg
+
         else
           if msg.name? and @message_listeners[msg.name]?
             @message_listeners[msg.name](msg)

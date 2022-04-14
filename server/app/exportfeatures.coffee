@@ -176,7 +176,7 @@ class @ExportFeatures
       # manifest.json
       maps_dict = {}
       images = []
-      assets = []
+      assets_list = []
       fonts = []
       sounds_list = []
       music_list = []
@@ -209,10 +209,11 @@ class @ExportFeatures
       queue = new JobQueue ()=>
         resources = JSON.stringify
           images: images
-          assets: assets
+          assets: assets_list
           maps: maps_dict
           sounds: sounds_list
           music: music_list
+
 
         resources = "var resources = #{resources};\n"
         resources += "var graphics = \"#{project.graphics}\";\n"
@@ -328,7 +329,7 @@ class @ExportFeatures
                 @webapp.server.content.files.read "#{user.id}/#{project.id}/assets/#{asset.file}","binary",(content)=>
                   if content?
                     zip.file("assets/#{asset.file}",content)
-                    assets.push asset
+                    assets_list.push asset
                   queue.next()
           queue.next()
 

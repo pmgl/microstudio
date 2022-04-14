@@ -14,10 +14,10 @@ this.Documentation = (function() {
             return _this.setSection("Quickstart", function() {
               return _this.buildLiveHelp(_this.doc, "Quickstart");
             });
-          }), 1000);
+          }), 100);
         });
       };
-    })(this)), 1000);
+    })(this)), 100);
     this.sections = {};
     list = document.getElementsByClassName("help-section-category");
     fn = (function(_this) {
@@ -42,8 +42,10 @@ this.Documentation = (function() {
     fn1 = (function(_this) {
       return function(e) {
         return e.addEventListener("click", function() {
-          var id;
-          id = e.id.split("-")[1];
+          var id, split;
+          split = e.id.split("-");
+          split.splice(0, 1);
+          id = split.join("-");
           return _this.setSection(id);
         });
       };

@@ -67,6 +67,7 @@ class @Screen
     @width = @canvas.width/ratio
     @height = @canvas.height/ratio
     @alpha = 1
+    @pixelated = 1
     @line_width = 1
     @object_rotation = 0
     @object_scale_x = 1
@@ -97,6 +98,7 @@ class @Screen
       clear: (color)->screen.clear(color)
       setColor: (color)->screen.setColor(color)
       setAlpha: (alpha)->screen.setAlpha(alpha)
+      setPixelated:(pixelated)->screen.setPixelated(pixelated)
       setBlending: (blending)->screen.setBlending(blending)
       setLinearGradient: (x1,y1,x2,y2,c1,c2)->screen.setLinearGradient(x1,y1,x2,y2,c1,c2)
       setRadialGradient: (x,y,radius,c1,c2)->screen.setRadialGradient(x,y,radius,c1,c2)
@@ -114,7 +116,9 @@ class @Screen
       drawRoundRect: (x,y,w,h,r,c)->screen.drawRoundRect(x,y,w,h,r,c)
       drawRound: (x,y,w,h,c)->screen.drawRound(x,y,w,h,c)
       drawSprite: (sprite,x,y,w,h)->screen.drawSprite(sprite,x,y,w,h)
+      drawImage: (sprite,x,y,w,h)->screen.drawSprite(sprite,x,y,w,h)
       drawSpritePart: (sprite,sx,sy,sw,sh,x,y,w,h)->screen.drawSpritePart(sprite,sx,sy,sw,sh,x,y,w,h)
+      drawImagePart: (sprite,sx,sy,sw,sh,x,y,w,h)->screen.drawSpritePart(sprite,sx,sy,sw,sh,x,y,w,h)
       drawMap: (map,x,y,w,h)->screen.drawMap(map,x,y,w,h)
       drawText: (text,x,y,size,color)->screen.drawText(text,x,y,size,color)
       drawTextOutline: (text,x,y,size,color)->screen.drawTextOutline(text,x,y,size,color)
@@ -175,6 +179,8 @@ class @Screen
       @context.strokeStyle = color
 
   setAlpha:(@alpha)->
+
+  setPixelated:(@pixelated)->
 
   setBlending:(blending)->
     blending = @blending[blending or "normal"] or "source-over"
@@ -486,6 +492,8 @@ class @Screen
         if s.length>1
           sprite = @runtime.sprites[s[0]]
           frame = s[1]|0
+    else if sprite instanceof msImage
+      return sprite.canvas or sprite.image
 
     return null if not sprite? or not sprite.ready
 
@@ -510,7 +518,7 @@ class @Screen
       h = w/canvas.width*canvas.height
 
     @context.globalAlpha = @alpha
-    @context.imageSmoothingEnabled = false
+    @context.imageSmoothingEnabled = not @pixelated
     if @initDrawOp(x,-y)
       @context.drawImage canvas,-w/2-@anchor_x*w/2,-h/2+@anchor_y*h/2,w,h
       @closeDrawOp(x,-y)
@@ -525,7 +533,7 @@ class @Screen
       h = w/sw*sh
 
     @context.globalAlpha = @alpha
-    @context.imageSmoothingEnabled = false
+    @context.imageSmoothingEnabled = not @pixelated
     if @initDrawOp(x,-y)
       @context.drawImage canvas,sx,sy,sw,sh,-w/2-@anchor_x*w/2,-h/2+@anchor_y*h/2,w,h
       @closeDrawOp(x,-y)
@@ -536,7 +544,7 @@ class @Screen
     map = @runtime.maps[map] if typeof map == "string"
     return if not map? or not map.ready or not map.canvas?
     @context.globalAlpha = @alpha
-    @context.imageSmoothingEnabled = false
+    @context.imageSmoothingEnabled = not @pixelated
     if @initDrawOp(x,-y)
       @context.drawImage map.getCanvas(),-w/2-@anchor_x*w/2,-h/2+@anchor_y*h/2,w,h
       @closeDrawOp(x,-y)

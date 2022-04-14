@@ -218,7 +218,7 @@ this.ExportFeatures = (function() {
   ExportFeatures.prototype.addPublishHTML = function() {
     return this.webapp.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?publish\/html\/$/, (function(_this) {
       return function(req, res) {
-        var access, assets, fn, fonts, fullsource, g, i, images, j, k, l, len, len1, len2, len3, lib, libs, manager, maps_dict, music_list, n, optlib, proglang, project, queue, ref, ref1, ref2, s, sounds_list, user, wrapsource, zip;
+        var access, assets_list, fn, fonts, fullsource, g, i, images, j, k, l, len, len1, len2, len3, lib, libs, manager, maps_dict, music_list, n, optlib, proglang, project, queue, ref, ref1, ref2, s, sounds_list, user, wrapsource, zip;
         access = _this.webapp.getProjectAccess(req, res);
         if (access == null) {
           return;
@@ -229,7 +229,7 @@ this.ExportFeatures = (function() {
         zip = new JSZip;
         maps_dict = {};
         images = [];
-        assets = [];
+        assets_list = [];
         fonts = [];
         sounds_list = [];
         music_list = [];
@@ -276,7 +276,7 @@ this.ExportFeatures = (function() {
           var export_funk, html, mani, resources;
           resources = JSON.stringify({
             images: images,
-            assets: assets,
+            assets: assets_list,
             maps: maps_dict,
             sounds: sounds_list,
             music: music_list
@@ -429,7 +429,7 @@ this.ExportFeatures = (function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/assets/" + asset.file, "binary", function(content) {
                   if (content != null) {
                     zip.file("assets/" + asset.file, content);
-                    assets.push(asset);
+                    assets_list.push(asset);
                   }
                   return queue.next();
                 });

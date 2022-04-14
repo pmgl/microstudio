@@ -83,6 +83,11 @@ class @AssetsManager extends Manager
           @text_viewer.view @asset
           @viewer = @text_viewer
 
+        when "png","jpg"
+          @image_viewer.view @asset
+          @viewer = @image_viewer
+
+
   createAsset:(folder)->
     input = document.createElement "input"
     input.type = "file"
@@ -103,7 +108,7 @@ class @AssetsManager extends Manager
 
     split = file.name.split(".")
     name = split[0]
-    ext = split[1]
+    ext = split[split.length-1]
     return if not ext in @extensions
 
     reader.addEventListener "load",()=>

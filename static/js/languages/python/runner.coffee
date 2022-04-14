@@ -5,8 +5,10 @@ class @Runner
     @initialized = true
     window.ctx = @microvm.context.global
     src = ""
+
     for key of @microvm.context.global
-      src += """#{key} =  window.ctx.#{key}\n"""
+      kd = key
+      src += """#{kd} =  window.ctx.#{key}\n"""
 
     window.stdout =
       write:(text)=>

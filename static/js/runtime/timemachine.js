@@ -238,6 +238,24 @@ this.TimeMachine = (function() {
     if (global.CANNON != null) {
       this.excluded.push(global.CANNON);
     }
+    if (global.Object != null) {
+      this.excluded.push(global.Object);
+    }
+    if (global.List != null) {
+      this.excluded.push(global.List);
+    }
+    if (global.String != null) {
+      this.excluded.push(global.String);
+    }
+    if (global.Number != null) {
+      this.excluded.push(global.Number);
+    }
+    if (global.Function != null) {
+      this.excluded.push(global.Function);
+    }
+    if (global.random != null) {
+      this.excluded.push(global.random);
+    }
     refs = [];
     clones = [];
     return this.makeStorableObject(value, refs, clones);
@@ -254,7 +272,7 @@ this.TimeMachine = (function() {
       if (this.excluded.indexOf(value) >= 0) {
         return value;
       }
-      if (value instanceof Sprite || value instanceof MicroMap) {
+      if (value instanceof Sprite || value instanceof MicroMap || value instanceof msImage || value instanceof MicroSound) {
         return value;
       }
       if (value.classname != null) {

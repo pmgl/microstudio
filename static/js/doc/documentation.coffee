@@ -9,8 +9,8 @@ class @Documentation
       @buildLiveHelp src,"API"
       setTimeout (()=>@setSection "Quickstart",()=>
         @buildLiveHelp @doc,"Quickstart"
-      ),1000
-    ),1000
+      ),100
+    ),100
 
     @sections = {}
 
@@ -29,7 +29,9 @@ class @Documentation
     for e in list
       do (e)=>
         e.addEventListener "click",()=>
-          id = e.id.split("-")[1]
+          split = e.id.split("-")
+          split.splice(0,1)
+          id = split.join("-")
           @setSection id
 
     window.addEventListener "resize",()=>@updateViewPos()

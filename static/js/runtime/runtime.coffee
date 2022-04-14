@@ -69,13 +69,13 @@ class @Runtime
 
   start:()->
     for i in @resources.images
-      s = new Sprite(@url+"sprites/"+i.file+"?v="+i.version,null,i.properties)
+      s = LoadSprite @url+"sprites/"+i.file+"?v="+i.version,i.properties,()=>
+        @updateMaps()
+        @checkStartReady()
+
       name = i.file.split(".")[0]
       s.name = name
       @sprites[name] = s
-      s.loaded = ()=>
-        @updateMaps()
-        @checkStartReady()
 
     if Array.isArray(@resources.maps)
       for m in @resources.maps
@@ -141,6 +141,9 @@ class @Runtime
       touch: @touch
       mouse: @mouse
       fonts: window.fonts
+      Sound: Sound.createSoundClass @audio
+      Image: msImage
+      Sprite: Sprite
 
     if window.graphics == "M3D"
       global.M3D = M3D
@@ -167,6 +170,10 @@ class @Runtime
 
     @vm.context.global.system.exit = ()=>
       @exit()
+
+    @vm.context.global.system.file = System.file
+    #@vm.context.global.system.project = System.project
+    System.runtime = @
 
     for file,src of @sources
       @updateSource(file,src,false)
@@ -251,26 +258,22 @@ class @Runtime
         img.crossOrigin = "Anonymous"
         img.src = data
         img.onload = ()=>
-          @sprites[name].load(img,properties)
+          UpdateSprite @sprites[name],img,properties
           @updateMaps()
       else
-        @sprites[name] = new Sprite(data,null,properties)
+        @sprites[name] = LoadSprite data,properties,()=>@updateMaps()
         @sprites[name].name = name
-        @sprites[name].loaded = ()=>
-          @updateMaps()
     else
       if @sprites[name]?
         img = new Image
         img.crossOrigin = "Anonymous"
         img.src = @url+"sprites/"+name+".png?v=#{version}"
         img.onload = ()=>
-          @sprites[name].load(img,properties)
+          UpdateSprite @sprites[name],img,properties
           @updateMaps()
       else
-        @sprites[name] = new Sprite(@url+"sprites/"+name+".png?v=#{version}",null,properties)
+        @sprites[name] = LoadSprite @url+"sprites/"+name+".png?v=#{version}",properties,()=>@updateMaps()
         @sprites[name].name = name
-        @sprites[name].loaded = ()=>
-          @updateMaps()
 
   updateMap:(name,version,data)->
     if data?
@@ -499,6 +502,10 @@ class @Runtime
     @exclusion_list.push(@vm.context.global.String) if @vm.context.global.String?
     @exclusion_list.push(@vm.context.global.List) if @vm.context.global.List?
     @exclusion_list.push(@vm.context.global.Number) if @vm.context.global.Number?
+    @exclusion_list.push(@vm.context.global.Object) if @vm.context.global.Object?
+    @exclusion_list.push(@vm.context.global.Image) if @vm.context.global.Image?
+    @exclusion_list.push(@vm.context.global.Sound) if @vm.context.global.Sound?
+    @exclusion_list.push(@vm.context.global.Sprite) if @vm.context.global.Sprite?
     @exclusion_list.push(@vm.context.global.random) if @vm.context.global.random?
     @exclusion_list.push(@vm.context.global.print) if @vm.context.global.print?
     @watchStep()
@@ -600,3 +607,132 @@ class @Runtime
     try
       window.close()
     catch err
+
+
+saveFile = (data,name,type)->
+  a = document.createElement("a")
+  document.body.appendChild(a)
+  a.style = "display: none"
+  blob = new Blob([data], {type: type })
+  url = window.URL.createObjectURL(blob)
+  a.href = url
+  a.download = name
+  a.click()
+  window.URL.revokeObjectURL(url)
+
+loadWaveFileLib = (callback)->
+  if wavefile?
+    callback()
+  else
+    s = document.createElement "script"
+    s.src = location.origin+"/lib/wavefile/wavefile.js"
+    document.head.appendChild s
+    s.onload = ()->
+      callback()
+
+writeProjectFile = (name,data,thumb)->
+  window.player.postMessage
+    name: "write_project_file"
+    filename: name
+    content: data
+    thumbnail: thumb
+
+arrayBufferToBase64 = ( buffer )->
+  binary = ''
+  bytes = new Uint8Array( buffer )
+  len = bytes.byteLength
+  for i in [0..len-1] by 1
+    binary += String.fromCharCode( bytes[ i ] )
+  window.btoa( binary )
+
+@System =
+  project:
+    writeFile:(obj,name,thumbnail,format,options)->
+      if obj instanceof MicroSound
+        loadWaveFileLib ()->
+          wav = new wavefile.WaveFile
+          ch1 = []
+          for i in [0..obj.length-1] by 1
+            ch1[i] = Math.round(Math.min(1,Math.max(-1,obj.read(0,i)))*32767)
+          if obj.channels == 2
+            ch2 = []
+            for i in [0..obj.length-1] by 1
+              ch2[i] = Math.round(Math.min(1,Math.max(-1,obj.read(1,i)))*32767)
+
+            ch = [ch1,ch2]
+          else
+            ch = [ch1]
+
+          wav.fromScratch ch.length,obj.sampleRate,'16',ch
+          buffer = wav.toBuffer()
+          encoded = arrayBufferToBase64(buffer)
+
+          if typeof name != "string"
+            name = "sounds/sound"
+
+          if not name.startsWith("sounds/") then name = "sounds/#{name}"
+
+          if thumbnail instanceof msImage
+            writeProjectFile(name,encoded,thumbnail.canvas.toDataURL().split(",")[1])
+          else
+            writeProjectFile(name,encoded)
+      else if obj instanceof msImage
+        if typeof name != "string"
+          name = "sprites/sprite"
+
+        if not name.startsWith("sprites/") then name = "sprites/#{name}"
+        writeProjectFile(name,obj.canvas.toDataURL().split(",")[1])
+
+
+  file:
+    save:(obj,name,format,options)->
+      if obj instanceof MicroSound
+        loadWaveFileLib ()->
+          wav = new wavefile.WaveFile
+          ch1 = []
+          for i in [0..obj.length-1] by 1
+            ch1[i] = Math.round(Math.min(1,Math.max(-1,obj.read(0,i)))*32767)
+          if obj.channels == 2
+            ch2 = []
+            for i in [0..obj.length-1] by 1
+              ch2[i] = Math.round(Math.min(1,Math.max(-1,obj.read(1,i)))*32767)
+
+            ch = [ch1,ch2]
+          else
+            ch = [ch1]
+
+          wav.fromScratch ch.length,obj.sampleRate,'16',ch
+          buffer = wav.toBuffer()
+          if typeof name != "string"
+            name = "sound.wav"
+          else if not name.endsWith(".wav")
+            name += ".wav"
+          saveFile buffer, name, "octet/stream"
+      else if obj instanceof msImage
+        c = obj.canvas
+        if typeof name != "string"
+          name = "image"
+
+        format = if typeof format == "string" and format.toLowerCase() == "jpg" then "jpg" else "png"
+
+        if not name.endsWith(".#{format}")
+          name += ".#{format}"
+
+        a = document.createElement("a")
+        document.body.appendChild(a)
+        a.style = "display: none"
+        c.toBlob ((blob)=>
+          url = window.URL.createObjectURL(blob)
+          a.href = url
+          a.download = name
+          a.click()
+          window.URL.revokeObjectURL(url)
+          ),(if format == "png" then "image/png" else "image/jpeg"),options
+      else if typeof obj == "object"
+        obj = System.runtime.vm.storableObject obj
+        obj = JSON.stringify obj,null,2
+        if typeof name != "string"
+          name = "data"
+        if not name.endsWith(".json") then name += ".json"
+
+        saveFile obj,name,"text/json"

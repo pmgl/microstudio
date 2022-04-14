@@ -201,6 +201,13 @@ class @TimeMachine
     @excluded.push global.Matter if global.Matter?
     @excluded.push global.CANNON if global.CANNON?
 
+    @excluded.push global.Object if global.Object?
+    @excluded.push global.List if global.List?
+    @excluded.push global.String if global.String?
+    @excluded.push global.Number if global.Number?
+    @excluded.push global.Function if global.Function?
+    @excluded.push global.random if global.random?
+
     refs = []
     clones = []
     @makeStorableObject(value,refs,clones)
@@ -211,7 +218,7 @@ class @TimeMachine
       value
     else if typeof value == "object"
       return value if @excluded.indexOf(value)>=0
-      return value if value instanceof Sprite or value instanceof MicroMap
+      return value if value instanceof Sprite or value instanceof MicroMap or value instanceof msImage or value instanceof MicroSound
       return value if value.classname?
       index = refs.indexOf(value)
       if index>=0

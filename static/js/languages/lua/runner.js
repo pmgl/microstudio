@@ -4,7 +4,7 @@ this.Runner = (function() {
   }
 
   Runner.prototype.init = function() {
-    var key, src;
+    var kd, key, src;
     this.initialized = true;
     window.ctx = this.microvm.context.global;
     window.ctx.print = (function(_this) {
@@ -14,7 +14,8 @@ this.Runner = (function() {
     })(this);
     src = "js = require 'js'";
     for (key in this.microvm.context.global) {
-      src += key + " =  js.global.ctx." + key + "\n";
+      kd = key;
+      src += kd + " =  js.global.ctx." + key + "\n";
     }
     src += "print = function(text) js.global.ctx:print(text) end\n";
     src += "new = js.new\n";

@@ -21,7 +21,8 @@ class @FolderView
             list.push i.getAsFile()
             if i.kind == "file"
               file = i.getAsFile()
-              ext = file.name.split(".")[1].toLowerCase()
+              split = file.name.split(".")
+              ext = split[split.length-1].toLowerCase()
               if ext in @manager.extensions
                 @manager.fileDropped(file)
             else if i.kind == "string"

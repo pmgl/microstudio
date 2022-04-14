@@ -405,6 +405,16 @@
   bottom: 0px ;
   overflow: hidden ;
 }
+#image-asset-viewer {
+  position: absolute ;
+  top: 2px ;
+  left: 2px ;
+  right: 0px ;
+  bottom: 0px ;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
 
 
 #asset-load-code {

@@ -111,6 +111,10 @@ this.AssetsManager = (function(superClass) {
         case "csv":
           this.text_viewer.view(this.asset);
           return this.viewer = this.text_viewer;
+        case "png":
+        case "jpg":
+          this.image_viewer.view(this.asset);
+          return this.viewer = this.image_viewer;
       }
     }
   };
@@ -141,7 +145,7 @@ this.AssetsManager = (function(superClass) {
     reader = new FileReader();
     split = file.name.split(".");
     name = split[0];
-    ext = split[1];
+    ext = split[split.length - 1];
     if (ref = !ext, indexOf.call(this.extensions, ref) >= 0) {
       return;
     }

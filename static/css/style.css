@@ -39,6 +39,12 @@ h1 {
   color: hsla(30,100%,100%,.7);
 }
 
+.bg-red { background: hsl(0,40%,45%) ;}
+.bg-orange { background: hsl(30,60%,45%) ;}
+.bg-green { background: hsl(160,40%,40%) ;}
+.bg-blue { background: hsl(200,40%,40%) ;}
+.bg-purple { background: hsl(300,30%,40%) ;}
+
 header {
   position: fixed;
   top: 0 ;
@@ -1146,17 +1152,12 @@ padding-left: 2px ;
   right: 0 ;
 }
 .help-section-category {
-  display: inline-block ;
-  background: rgba(0,0,0,.5) ;
+  float: left ;
   border-radius: 5px ;
   padding: 0 10px 10px 0 ;
   margin: 10px 0 0 10px ;
   vertical-align: top ;
 }
-.help-section-category#help-fundamentals { background: hsl(200,40%,40%) ;}
-.help-section-category#help-graphics { background: hsl(0,40%,40%) ;}
-.help-section-category#help-libs { background: hsl(160,40%,40%) ;}
-.help-section-category#help-languages { background: hsl(60,40%,40%) ;}
 .help-section-title {
   padding: 10px 0 0 10px ;
   cursor: pointer ;
@@ -1176,7 +1177,7 @@ padding-left: 2px ;
   color: rgba(0,0,0,.7);
   border-radius: 5px ;
   padding: 8px 16px ;
-  margin: 10px 0 0 10px ;
+  margin: 14px 0 0 10px ;
   cursor: pointer ;
 }
 .help-section-category.collapsed .help-section-content {
