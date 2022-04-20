@@ -36,52 +36,61 @@ this.Project = (function() {
     this.content = content;
     this.record = record;
     data = this.record.get();
-    this.id = data.id;
-    this.title = data.title;
-    this.slug = data.slug;
-    this.code = data.code || this.createCode();
-    this.tags = data.tags || [];
-    this.description = data.description || "";
-    this.likes = 0;
-    this["public"] = data["public"];
-    this.unlisted = data.unlisted;
-    this.date_created = data.date_created;
-    this.last_modified = data.last_modified;
-    this.first_published = data.first_published || 0;
-    this.orientation = data.orientation || "any";
-    this.aspect = data.aspect || "free";
-    this.graphics = data.graphics || "M1";
-    this.language = data.language || "microscript_v2";
-    this.platforms = data.platforms || ["computer", "phone", "tablet"];
-    this.controls = data.controls || ["touch", "mouse"];
-    this.libs = data.libs || [];
-    this.tabs = data.tabs;
-    this.type = data.type || "app";
     this.deleted = data.deleted;
-    this.users = [];
-    this.comments = new Comments(this, data.comments);
-    if (!this.deleted) {
-      this.owner = this.content.users[data.owner];
-      if (this.owner != null) {
-        this.owner.addProject(this);
+    if (this.deleted) {
+      if (data.slug != null) {
+        this.record.set({
+          deleted: true
+        });
       }
-      if (data.users != null) {
-        ref = data.users;
-        for (j = 0, len = ref.length; j < len; j++) {
-          u = ref[j];
-          link = new ProjectLink(this, u);
-          if (link.user != null) {
-            this.users.push(link);
+    }
+    if (!this.deleted) {
+      this.id = data.id;
+      this.title = data.title;
+      this.slug = data.slug;
+      this.code = data.code || this.createCode();
+      this.tags = data.tags || [];
+      this.description = data.description || "";
+      this.likes = 0;
+      this["public"] = data["public"];
+      this.unlisted = data.unlisted;
+      this.date_created = data.date_created;
+      this.last_modified = data.last_modified;
+      this.first_published = data.first_published || 0;
+      this.orientation = data.orientation || "any";
+      this.aspect = data.aspect || "free";
+      this.graphics = data.graphics || "M1";
+      this.language = data.language || "microscript_v2";
+      this.platforms = data.platforms || ["computer", "phone", "tablet"];
+      this.controls = data.controls || ["touch", "mouse"];
+      this.libs = data.libs || [];
+      this.tabs = data.tabs;
+      this.type = data.type || "app";
+      this.users = [];
+      this.comments = new Comments(this, data.comments);
+      if (!this.deleted) {
+        this.owner = this.content.users[data.owner];
+        if (this.owner != null) {
+          this.owner.addProject(this);
+        }
+        if (data.users != null) {
+          ref = data.users;
+          for (j = 0, len = ref.length; j < len; j++) {
+            u = ref[j];
+            link = new ProjectLink(this, u);
+            if (link.user != null) {
+              this.users.push(link);
+            }
           }
         }
       }
+      if ((data.files != null) && !this.deleted) {
+        this.files = data.files;
+      } else {
+        this.files = {};
+      }
+      this.update_project_size = true;
     }
-    if ((data.files != null) && !this.deleted) {
-      this.files = data.files;
-    } else {
-      this.files = {};
-    }
-    this.update_project_size = true;
   }
 
   Project.prototype.createCode = function() {
@@ -223,11 +232,11 @@ this.Project = (function() {
   };
 
   Project.prototype["delete"] = function() {
-    var data, folder, i, j, link, ref;
+    var folder, i, j, link, ref;
     this.deleted = true;
-    data = this.record.get();
-    data.deleted = this.deleted;
-    this.record.set(data);
+    this.record.set({
+      deleted: true
+    });
     this.content.projectDeleted(this);
     for (i = j = ref = this.users.length - 1; j >= 0; i = j += -1) {
       link = this.users[i];

@@ -689,7 +689,7 @@ this.Session = (function() {
       this.logActiveUser();
     }
     token = this.content.findToken(data.token);
-    if (token != null) {
+    if ((token != null) && (token.user != null) && !token.user.flags.deleted) {
       this.user = token.user;
       this.user.addListener(this);
       this.send({

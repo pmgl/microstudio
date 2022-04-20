@@ -5,6 +5,7 @@ Tag = require __dirname+"/tag.js"
 Token = require __dirname+"/token.js"
 Translator = require __dirname+"/translator.js"
 Forum = require __dirname+"/../forum/forum.js"
+Cleaner = require __dirname+"/cleaner.js"
 
 class @Content
   constructor:(@server,@db,@files)->
@@ -34,13 +35,14 @@ class @Content
 
     @translator = new Translator @
     @forum = new Forum @
-    #@test_data = new TestData @
+
+    @cleaner = new Cleaner @
 
   close:()->
     clearInterval @top_interval
     clearInterval @log_interval
     @forum.close()
-    @test_data.close() if @test_data?
+    @cleaner.stop() if @cleaner?
 
   statusLog:()->
     usage process.pid,(err,result)=>
@@ -121,7 +123,8 @@ class @Content
   loadToken:(record)->
     data = record.get()
     token = new Token @,record
-    @tokens[token.value] = token
+    if token.user?
+      @tokens[token.value] = token
     token
 
   initLikes:()->

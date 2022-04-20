@@ -3,22 +3,30 @@ UserProgress = require __dirname+"/../gamify/userprogress.js"
 class @User
   constructor:(@content,@record)->
     data = @record.get()
-    @id = data.id
-    @nick = data.nick
-    @email = data.email
-    @language = data.language or "en"
     @flags = data.flags or {}
-    @settings = data.settings or {}
-    @hash = data.hash
-    @patches = []
-    @likes = data.likes or []
-    @projects = {}
-    @project_links = []
-    @listeners = []
-    @notifications = []
-    @description = data.description or ""
-    @updateTier()
-    @progress = new UserProgress @,data
+    if @flags.deleted
+      if data.nick?
+        @record.set
+          flags:
+            deleted: true
+
+    if not @flags.deleted
+      @id = data.id
+      @nick = data.nick
+      @email = data.email
+      @language = data.language or "en"
+      @settings = data.settings or {}
+      @hash = data.hash
+      @patches = []
+      @likes = data.likes or []
+      @projects = {}
+      @project_links = []
+      @listeners = []
+      @notifications = []
+      @description = data.description or ""
+      @last_active = data.last_active or 0
+      @updateTier()
+      @progress = new UserProgress @,data
 
   updateTier:()->
     switch @flags.tier
@@ -170,7 +178,11 @@ class @User
     @notifications.push text
 
   delete:()->
-    @setFlag "deleted",true
+    @flags.deleted = true
+    @record.set
+      flags:
+        deleted: true
+
     @content.userDeleted @
     for key,project of @projects
       project.delete()

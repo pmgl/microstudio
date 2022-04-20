@@ -22,47 +22,53 @@ class ProjectLink
 class @Project
   constructor:(@content,@record)->
     data = @record.get()
-    @id = data.id
-    @title = data.title
-    @slug = data.slug
-    @code = data.code or @createCode()
-    @tags = data.tags or []
-    @description = data.description or ""
-    @likes = 0
-    @public = data.public
-    @unlisted = data.unlisted
-    @date_created = data.date_created
-    @last_modified = data.last_modified
-    @first_published = data.first_published or 0
-    @orientation = data.orientation or "any"
-    @aspect = data.aspect or "free"
-    @graphics = data.graphics or "M1"
-    @language = data.language or "microscript_v2"
-    @platforms = data.platforms or ["computer","phone","tablet"]
-    @controls = data.controls or ["touch","mouse"]
-    @libs = data.libs or []
-    @tabs = data.tabs
-    @type = data.type or "app"
     @deleted = data.deleted
-    @users = []
-    @comments = new Comments @,data.comments
+    if @deleted
+      if data.slug?
+        @record.set
+          deleted: true
+
     if not @deleted
-      @owner = @content.users[data.owner]
-      if @owner?
-        @owner.addProject @
+      @id = data.id
+      @title = data.title
+      @slug = data.slug
+      @code = data.code or @createCode()
+      @tags = data.tags or []
+      @description = data.description or ""
+      @likes = 0
+      @public = data.public
+      @unlisted = data.unlisted
+      @date_created = data.date_created
+      @last_modified = data.last_modified
+      @first_published = data.first_published or 0
+      @orientation = data.orientation or "any"
+      @aspect = data.aspect or "free"
+      @graphics = data.graphics or "M1"
+      @language = data.language or "microscript_v2"
+      @platforms = data.platforms or ["computer","phone","tablet"]
+      @controls = data.controls or ["touch","mouse"]
+      @libs = data.libs or []
+      @tabs = data.tabs
+      @type = data.type or "app"
+      @users = []
+      @comments = new Comments @,data.comments
+      if not @deleted
+        @owner = @content.users[data.owner]
+        if @owner?
+          @owner.addProject @
 
-      if data.users?
-        for u in data.users
-          link = new ProjectLink @,u
-          if link.user?
-            @users.push link
+        if data.users?
+          for u in data.users
+            link = new ProjectLink @,u
+            if link.user?
+              @users.push link
 
-    if data.files? and not @deleted
-      @files = data.files
-    else
-      @files = {}
+      if data.files? and not @deleted
+        @files = data.files
+      else
+        @files = {}
 
-    @update_project_size = true
+      @update_project_size = true
 
   createCode:()->
     letters = "ABCDEFGHJKMNPRSTUVWXYZ23456789"
@@ -155,9 +161,8 @@ class @Project
 
   delete:()->
     @deleted = true
-    data = @record.get()
-    data.deleted = @deleted
-    @record.set data
+    @record.set
+      deleted: true
     @content.projectDeleted @
     for i in [@users.length-1..0] by -1
       link = @users[i]

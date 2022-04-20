@@ -8,22 +8,34 @@ this.User = (function() {
     this.content = content;
     this.record = record;
     data = this.record.get();
-    this.id = data.id;
-    this.nick = data.nick;
-    this.email = data.email;
-    this.language = data.language || "en";
     this.flags = data.flags || {};
-    this.settings = data.settings || {};
-    this.hash = data.hash;
-    this.patches = [];
-    this.likes = data.likes || [];
-    this.projects = {};
-    this.project_links = [];
-    this.listeners = [];
-    this.notifications = [];
-    this.description = data.description || "";
-    this.updateTier();
-    this.progress = new UserProgress(this, data);
+    if (this.flags.deleted) {
+      if (data.nick != null) {
+        this.record.set({
+          flags: {
+            deleted: true
+          }
+        });
+      }
+    }
+    if (!this.flags.deleted) {
+      this.id = data.id;
+      this.nick = data.nick;
+      this.email = data.email;
+      this.language = data.language || "en";
+      this.settings = data.settings || {};
+      this.hash = data.hash;
+      this.patches = [];
+      this.likes = data.likes || [];
+      this.projects = {};
+      this.project_links = [];
+      this.listeners = [];
+      this.notifications = [];
+      this.description = data.description || "";
+      this.last_active = data.last_active || 0;
+      this.updateTier();
+      this.progress = new UserProgress(this, data);
+    }
   }
 
   User.prototype.updateTier = function() {
@@ -229,7 +241,12 @@ this.User = (function() {
 
   User.prototype["delete"] = function() {
     var folder, key, project, ref;
-    this.setFlag("deleted", true);
+    this.flags.deleted = true;
+    this.record.set({
+      flags: {
+        deleted: true
+      }
+    });
     this.content.userDeleted(this);
     ref = this.projects;
     for (key in ref) {

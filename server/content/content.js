@@ -1,4 +1,4 @@
-var DEFAULT_CODE, Forum, Project, Tag, Token, Translator, User, usage;
+var Cleaner, DEFAULT_CODE, Forum, Project, Tag, Token, Translator, User, usage;
 
 usage = require("pidusage");
 
@@ -13,6 +13,8 @@ Token = require(__dirname + "/token.js");
 Translator = require(__dirname + "/translator.js");
 
 Forum = require(__dirname + "/../forum/forum.js");
+
+Cleaner = require(__dirname + "/cleaner.js");
 
 this.Content = (function() {
   function Content(server, db, files) {
@@ -46,14 +48,15 @@ this.Content = (function() {
     })(this)), 6000);
     this.translator = new Translator(this);
     this.forum = new Forum(this);
+    this.cleaner = new Cleaner(this);
   }
 
   Content.prototype.close = function() {
     clearInterval(this.top_interval);
     clearInterval(this.log_interval);
     this.forum.close();
-    if (this.test_data != null) {
-      return this.test_data.close();
+    if (this.cleaner != null) {
+      return this.cleaner.stop();
     }
   };
 
@@ -162,7 +165,9 @@ this.Content = (function() {
     var data, token;
     data = record.get();
     token = new Token(this, record);
-    this.tokens[token.value] = token;
+    if (token.user != null) {
+      this.tokens[token.value] = token;
+    }
     return token;
   };
 

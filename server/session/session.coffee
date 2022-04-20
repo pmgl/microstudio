@@ -382,7 +382,7 @@ class @Session
       @logActiveUser()
 
     token = @content.findToken data.token
-    if token?
+    if token? and token.user? and not token.user.flags.deleted
       @user = token.user
       @user.addListener @
       @send
