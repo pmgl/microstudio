@@ -3,12 +3,18 @@ this.Tag = (function() {
     this.tag = tag;
     this.targets = {};
     this.uses = 0;
+    this.users = {};
+    this.num_users = 0;
   }
 
   Tag.prototype.add = function(target) {
     if (this.targets[target.id] == null) {
       this.targets[target.id] = target;
-      return this.uses++;
+      this.uses++;
+      if ((target.owner != null) && (target.owner.id != null) && !this.users[target.owner.id]) {
+        this.users[target.owner.id] = true;
+        return this.num_users += 1;
+      }
     }
   };
 

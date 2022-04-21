@@ -1377,7 +1377,7 @@ this.Session = (function() {
   };
 
   Session.prototype.getPublicProjects = function(data) {
-    var i, j, len1, list, p, source;
+    var found, i, j, k, l, len1, len2, len3, list, m, offset, p, ref, ref1, ref2, ref3, search, source, t, tags;
     switch (data.ranking) {
       case "new":
         source = this.content.new_projects;
@@ -1389,12 +1389,44 @@ this.Session = (function() {
         source = this.content.hot_projects;
     }
     list = [];
-    for (i = j = 0, len1 = source.length; j < len1; i = ++j) {
+    tags = Array.isArray(data.tags) ? data.tags : [];
+    search = typeof data.search === "string" ? data.search : "";
+    search = search.trim();
+    offset = data.offset || 0;
+    for (i = j = ref = offset, ref1 = source.length - 1; j <= ref1; i = j += 1) {
       p = source[i];
-      if (list.length >= 300) {
+      if (list.length >= 25) {
         break;
       }
+      offset = i + 1;
       if (p["public"] && !p.deleted && !p.owner.flags.censored) {
+        if (search) {
+          found = false;
+          found |= p.title.toLowerCase().includes(search);
+          found |= p.description.toLowerCase().includes(search);
+          found |= p.owner.nick.toLowerCase().includes(search);
+          ref2 = p.tags;
+          for (k = 0, len1 = ref2.length; k < len1; k++) {
+            t = ref2[k];
+            found |= t.includes(search);
+          }
+          if (!found) {
+            continue;
+          }
+        }
+        if (tags.length > 0) {
+          found = false;
+          for (l = 0, len2 = tags.length; l < len2; l++) {
+            t = tags[l];
+            if (p.tags.indexOf(t) >= 0) {
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            continue;
+          }
+        }
         list.push({
           id: p.id,
           title: p.title,
@@ -1419,9 +1451,20 @@ this.Session = (function() {
         });
       }
     }
+    tags = [];
+    ref3 = this.content.sorted_tags;
+    for (m = 0, len3 = ref3.length; m < len3; m++) {
+      t = ref3[m];
+      tags.push(t.tag);
+      if (tags.length > 50) {
+        break;
+      }
+    }
     return this.send({
       name: "public_projects",
       list: list,
+      tags: tags,
+      offset: offset,
       request_id: data.request_id
     });
   };

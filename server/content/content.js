@@ -27,6 +27,7 @@ this.Content = (function() {
     this.tokens = {};
     this.projects = {};
     this.tags = {};
+    this.sorted_tags = [];
     this.project_count = 0;
     this.user_count = 0;
     this.guest_count = 0;
@@ -156,6 +157,7 @@ this.Content = (function() {
       if (tag == null) {
         tag = new Tag(t);
         this.tags[t] = tag;
+        this.sorted_tags.push(tag);
       }
       tag.add(project);
     }
@@ -204,7 +206,7 @@ this.Content = (function() {
   };
 
   Content.prototype.sortPublicProjects = function() {
-    var maxAge, maxLikes, note, now, time;
+    var fade, maxLikes, note, now, time;
     time = Date.now();
     this.top_projects.sort(function(a, b) {
       return b.likes - a.likes;
@@ -212,17 +214,22 @@ this.Content = (function() {
     this.new_projects.sort(function(a, b) {
       return b.first_published - a.first_published;
     });
-    if (this.top_projects.length < 2 || this.new_projects.length < 2) {
+    this.sorted_tags.sort(function(a, b) {
+      return b.uses + b.num_users * 10 - a.uses - a.num_users * 10;
+    });
+    if (this.top_projects.length < 5) {
       return;
     }
     now = Date.now();
-    maxLikes = Math.max(1, this.top_projects[0].likes);
-    maxAge = now - this.new_projects[this.new_projects.length - 1].first_published;
+    maxLikes = Math.max(1, this.top_projects[4].likes);
+    fade = function(x) {
+      return 1 - Math.max(0, Math.min(1, x));
+    };
     note = function(p) {
-      var agemark, hours;
-      hours = Math.max(0, now - p.first_published) / 1000 / 3600;
-      agemark = Math.exp(-hours / 24 / 7);
-      return p.likes / maxLikes * 50 + 50 * agemark;
+      var rating, recent;
+      recent = fade((now - p.first_published) / 1000 / 3600 / 24 / 4);
+      rating = p.likes / maxLikes * (.15 + 2 * fade((now - p.first_published) / 1000 / 3600 / 24 / 180));
+      return recent + rating;
     };
     this.hot_projects.sort(function(a, b) {
       return note(b) - note(a);
@@ -285,6 +292,7 @@ this.Content = (function() {
     if (tag == null) {
       tag = new Tag(t);
       this.tags[t] = tag;
+      this.sorted_tags.push(tag);
     }
     return tag.add(project);
   };

@@ -5,6 +5,12 @@ class @Explore
       @app.appui.setMainSection "explore",true
 
     @sort = "hot"
+    @active_tags = []
+    @search = ""
+
+    @tags = []
+
+    @visited_projects = {}
 
     @sort_types = ["hot","new","top"]
 
@@ -24,16 +30,25 @@ class @Explore
         else
           e.classList.remove s
       document.querySelector("#explore-sort-button span").innerText = @app.translator.get @sort.substring(0,1).toUpperCase()+@sort.substring(1)
-      @loadProjects()
+      @query()
 
     document.getElementById("explore-search-input").addEventListener "input",()=>
-      @loadProjects()
+      @search = document.getElementById("explore-search-input").value
+      if @search_timeout?
+        clearTimeout @search_timeout
+      @search_timeout = setTimeout (()=>@query()),1500
 
     document.getElementById("explore-contents").addEventListener "scroll",()=>
       contents = document.getElementById "explore-box-list"
       scrollzone = document.getElementById "explore-contents"
-      while @remaining? and @remaining.length>0 and contents.getBoundingClientRect().height<scrollzone.scrollTop+window.innerHeight*2
-        contents.appendChild @createProjectBox @remaining.splice(0,1)[0]
+      h1 = contents.getBoundingClientRect().height
+      h2 = scrollzone.getBoundingClientRect().height
+      if scrollzone.scrollTop > h1-h2-100 #contents.getBoundingClientRect().height < scrollzone.scrollTop+window.innerHeight*2
+        if not @completed
+          pos = @projects.length
+          if pos != @query_position
+            @query pos
+
       return
 
     @cloned = {}
@@ -79,21 +94,21 @@ class @Explore
 
   findBestTag:(p)->
     tag = p.tags[0]
-    score = 0
+    score = @tags.indexOf(tag)
+    if score < 0 then score = 1000
     for t in p.tags
-      if @tag_scores[t]>score
-        score = @tag_scores[t]
+      index = @tags.indexOf t
+      if index >= 0 and index < score
+        score = index
         tag = t
 
     tag
 
   createProjectBox:(p)->
-    if @boxes[p.owner+"/"+p.slug]
-      return @boxes[p.owner+"/"+p.slug]
     element = document.createElement "div"
     element.classList.add "explore-project-box"
 
-    if p.tags.length>0 and @tag_scores?
+    if p.tags.length>0
       tag = document.createElement "div"
       tag.innerText = @findBestTag p
       tag.classList.add "project-tag"
@@ -188,19 +203,25 @@ class @Explore
         @openProject(p)
         @canBack = true
 
-    @boxes[p.owner+"/"+p.slug] = element
+    element
 
   get:(id)->
     document.getElementById(id)
 
   findProject:(owner,slug)->
+    id = "#{owner}.#{slug}"
+    if @visited_projects[id]?
+      return @visited_projects[id]
+
     if @projects?
       for p in @projects
         if p.owner == owner and p.slug == slug
           return p
+
     return null
 
   openProject:(p)->
+    @visited_projects["#{p.owner}.#{p.slug}"] = p
     @project = p
     if @cloned[@project.id]
       @get("project-details-clonebutton").style.display = "none"
@@ -319,129 +340,44 @@ class @Explore
     @project = null
     @closed()
 
-  createTags:()->
-    @active_tags = []
-    tags = {}
-    count = {}
-
-    for p in @projects
-      for t in p.tags
-        if not tags[t]?
-          tags[t] = {}
-          count[t] = 1
-
-        tags[t][p.owner] = true
-        count[t] += 1
-
-    for t of tags
-      tags[t] = Object.keys(tags[t]).length+count[t]*.001
-
-    list = []
-    for tag,count of tags
-      list.push
-        tag: tag
-        count: count
-
-    @tag_scores = tags
-
-    list.sort (a,b)->b.count-a.count
-
+  createTags:(@tags)->
     document.getElementById("explore-tags").innerHTML = ""
-    for t in list
+    for t in @tags
       div = document.createElement "div"
-      div.innerText = t.tag
+      div.innerText = t
+      if @active_tags.includes t
+        div.classList.add "active"
       #span = document.createElement "span"
       #span.innerText = t.count
       #div.appendChild span
       document.getElementById("explore-tags").appendChild div
       do (t,div)=>
         div.addEventListener "click",()=>
-          index = @active_tags.indexOf(t.tag)
+          index = @active_tags.indexOf(t)
           if index>=0
             @active_tags.splice index,1
             div.classList.remove "active"
           else
-            @active_tags.push t.tag
+            @active_tags.push t
             div.classList.add "active"
-          @loadProjects()
+          @query()
 
     return
 
-  loadProjects:()->
+  loadProjects:(pos=0)->
     return if not @projects?
     contents = document.getElementById "explore-box-list"
     scrollzone = document.getElementById "explore-contents"
-    contents.innerHTML = ""
-    @remaining = []
+    if pos == 0 then contents.innerHTML = ""
 
-    if @sort == "hot" and @projects.length>4
-      now = Date.now()
-      @projects.sort @sort_functions.top
-      maxLikes = Math.max(1,@projects[4].likes)
-      @projects.sort @sort_functions.new
-      maxAge = now-@projects[@projects.length-1].date_published
-
-      h = 1/24/7
-      h = Math.max(0,(now-@projects[4].date_published))/1000/3600
-
-      # note = (p)->
-      #   hours = Math.max(0,(now-p.date_published))/1000/3600
-      #   agemark = Math.min(1,Math.exp(-hours/h)/Math.exp(-1))
-      #   p.likes/maxLikes*50+50*agemark
-
-      # note = (p)->
-      #   bump = Math.min(1,(now-p.date_published)/1000/3600/24/30)
-      #   bump = .5+.5*Math.cos(bump*Math.PI)
-      #   p.likes + maxLikes*(bump*1+.4*Math.exp(Math.log(.5)*(now-p.date_published)/1000/3600/24/4))
-
-      fade = (x)->
-        1-Math.max(0,Math.min(1,x))
-
-      note = (p)->
-        recent = fade (now-p.date_published)/1000/3600/24/4
-        rating = p.likes/maxLikes*(.15+2*fade((now-p.date_published)/1000/3600/24/180))
-        recent+rating
-
-      @sort_functions.hot = (a,b)->
-        note(b)-note(a)
-
-    @projects.sort @sort_functions[@sort]
-    search = document.getElementById("explore-search-input").value.toLowerCase()
-    for p in @projects
-      if @active_tags.length>0
-        found = false
-        for t in @active_tags
-          if p.tags.indexOf(t)>=0
-            found = true
-        continue if not found
-
-      if search.length>0
-        found = p.title.toLowerCase().indexOf(search)>=0
-        found |= p.description.toLowerCase().indexOf(search)>=0
-        found |= p.owner.toLowerCase().indexOf(search)>=0
-        if found
-          console.info "found: "+p.owner
-        for t in p.tags
-          found |= t.toLowerCase().indexOf(search)>=0
-
-        continue if not found
-
-      if contents.getBoundingClientRect().height<scrollzone.scrollTop+window.innerHeight*2
-        contents.appendChild @createProjectBox p
-      else
-        @remaining.push p
+    for i in [pos..@projects.length-1] by 1
+      p = @projects[i]
+      contents.appendChild @createProjectBox p
     return
 
-  update:(callback)->
-    if @list_received
-      callback() if callback?
-      return
-
+  update:()->
     if not @initialized and location.pathname.startsWith "/i/"
       document.getElementById("explore-section").style.opacity = 0
-
-    contents = document.getElementById "explore-box-list"
-    contents.innerHTML = ""
 
     if not @initialized and location.pathname.startsWith "/i/"
       @initialized = true
@@ -458,22 +394,45 @@ class @Explore
           document.getElementById("explore-section").style.opacity = 1
           return
     else
-      @app.client.sendRequest {
-        name:"get_public_projects"
-        ranking: "hot"
-        tags: []
-      },(msg)=>
+      if not @projects? or @projects.length == 0
+        @query()
+
+  query:(position=0)->
+    @query_position = position
+
+    if position == 0 or not @current_offset?
+      @current_offset = 0
+
+    f = ()=>
+    @app.client.sendRequest {
+      name:"get_public_projects"
+      ranking: @sort
+      tags: @active_tags
+      search: @search.toLowerCase()
+      position: position
+      offset: @current_offset
+    },(msg)=>
+      if position == 0
+        @current_position = position
+        @current_offset = msg.offset
+        @completed = false
         @projects = msg.list
-        @list_received = true
-        #console.info "PUBLIC PROJECTS SIZE: "+(JSON.stringify(@projects)).length
-        @boxes = {}
-        @createTags()
+        @createTags(msg.tags)
         @loadProjects()
+        document.getElementById("explore-contents").scrollTop = 0
+      else
+        if msg.list.length == 0
+          @completed = true
 
-        if not @initialized
-          @initialized = true
-          document.getElementById("explore-section").style.opacity = 1
+        @current_position = position
+        @current_offset = msg.offset
+        pos = @projects.length
+        @projects = @projects.concat msg.list
+        @loadProjects(pos)
 
-          #@app.setHomeState()
-      callback() if callback?
-      return
+      if not @initialized
+        @initialized = true
+        document.getElementById("explore-section").style.opacity = 1
+
+        #@app.setHomeState()
+    return

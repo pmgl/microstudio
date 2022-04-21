@@ -17,6 +17,7 @@ class @Content
 
     @projects = {}
     @tags = {}
+    @sorted_tags = []
 
     @project_count = 0
     @user_count = 0
@@ -116,6 +117,7 @@ class @Content
       if not tag?
         tag = new Tag(t)
         @tags[t] = tag
+        @sorted_tags.push tag
       tag.add project
 
     return
@@ -151,17 +153,20 @@ class @Content
     time = Date.now()
     @top_projects.sort (a,b)-> b.likes-a.likes
     @new_projects.sort (a,b)-> b.first_published-a.first_published
+    @sorted_tags.sort (a,b)-> b.uses+b.num_users*10-a.uses-a.num_users*10
 
-    return if @top_projects.length<2 or @new_projects.length<2
+    return if @top_projects.length<5
 
     now = Date.now()
-    maxLikes = Math.max(1,@top_projects[0].likes)
-    maxAge = now-@new_projects[@new_projects.length-1].first_published
+    maxLikes = Math.max(1,@top_projects[4].likes)
+
+    fade = (x)->
+      1-Math.max(0,Math.min(1,x))
 
     note = (p)->
-      hours = Math.max(0,(now-p.first_published))/1000/3600
-      agemark = Math.exp(-hours/24/7)
-      p.likes/maxLikes*50+50*agemark
+      recent = fade (now-p.first_published)/1000/3600/24/4
+      rating = p.likes/maxLikes*(.15+2*fade((now-p.first_published)/1000/3600/24/180))
+      recent+rating
 
     @hot_projects.sort (a,b)->
       note(b)-note(a)
@@ -207,6 +212,7 @@ class @Content
     if not tag?
       tag = new Tag(t)
       @tags[t] = tag
+      @sorted_tags.push tag
     tag.add project
 
   removeProjectTag:(project,t)->

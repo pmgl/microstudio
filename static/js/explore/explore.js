@@ -9,6 +9,10 @@ this.Explore = (function() {
       };
     })(this));
     this.sort = "hot";
+    this.active_tags = [];
+    this.search = "";
+    this.tags = [];
+    this.visited_projects = {};
     this.sort_types = ["hot", "new", "top"];
     this.sort_functions = {
       hot: function(a, b) {
@@ -23,14 +27,14 @@ this.Explore = (function() {
     };
     document.getElementById("explore-sort-button").addEventListener("click", (function(_this) {
       return function() {
-        var e, i, len, ref, s;
+        var e, j, len, ref, s;
         s = _this.sort_types.indexOf(_this.sort);
         s = (s + 1) % _this.sort_types.length;
         _this.sort = _this.sort_types[s];
         e = document.getElementById("explore-sort-button");
         ref = _this.sort_types;
-        for (i = 0, len = ref.length; i < len; i++) {
-          s = ref[i];
+        for (j = 0, len = ref.length; j < len; j++) {
+          s = ref[j];
           if (s === _this.sort) {
             e.classList.add(s);
           } else {
@@ -38,21 +42,34 @@ this.Explore = (function() {
           }
         }
         document.querySelector("#explore-sort-button span").innerText = _this.app.translator.get(_this.sort.substring(0, 1).toUpperCase() + _this.sort.substring(1));
-        return _this.loadProjects();
+        return _this.query();
       };
     })(this));
     document.getElementById("explore-search-input").addEventListener("input", (function(_this) {
       return function() {
-        return _this.loadProjects();
+        _this.search = document.getElementById("explore-search-input").value;
+        if (_this.search_timeout != null) {
+          clearTimeout(_this.search_timeout);
+        }
+        return _this.search_timeout = setTimeout((function() {
+          return _this.query();
+        }), 1500);
       };
     })(this));
     document.getElementById("explore-contents").addEventListener("scroll", (function(_this) {
       return function() {
-        var contents, scrollzone;
+        var contents, h1, h2, pos, scrollzone;
         contents = document.getElementById("explore-box-list");
         scrollzone = document.getElementById("explore-contents");
-        while ((_this.remaining != null) && _this.remaining.length > 0 && contents.getBoundingClientRect().height < scrollzone.scrollTop + window.innerHeight * 2) {
-          contents.appendChild(_this.createProjectBox(_this.remaining.splice(0, 1)[0]));
+        h1 = contents.getBoundingClientRect().height;
+        h2 = scrollzone.getBoundingClientRect().height;
+        if (scrollzone.scrollTop > h1 - h2 - 100) {
+          if (!_this.completed) {
+            pos = _this.projects.length;
+            if (pos !== _this.query_position) {
+              _this.query(pos);
+            }
+          }
         }
       };
     })(this));
@@ -111,14 +128,18 @@ this.Explore = (function() {
   };
 
   Explore.prototype.findBestTag = function(p) {
-    var i, len, ref, score, t, tag;
+    var index, j, len, ref, score, t, tag;
     tag = p.tags[0];
-    score = 0;
+    score = this.tags.indexOf(tag);
+    if (score < 0) {
+      score = 1000;
+    }
     ref = p.tags;
-    for (i = 0, len = ref.length; i < len; i++) {
-      t = ref[i];
-      if (this.tag_scores[t] > score) {
-        score = this.tag_scores[t];
+    for (j = 0, len = ref.length; j < len; j++) {
+      t = ref[j];
+      index = this.tags.indexOf(t);
+      if (index >= 0 && index < score) {
+        score = index;
         tag = t;
       }
     }
@@ -127,12 +148,9 @@ this.Explore = (function() {
 
   Explore.prototype.createProjectBox = function(p) {
     var author, element, icon, infobox, likes, runbutton, smallicon, tag, title;
-    if (this.boxes[p.owner + "/" + p.slug]) {
-      return this.boxes[p.owner + "/" + p.slug];
-    }
     element = document.createElement("div");
     element.classList.add("explore-project-box");
-    if (p.tags.length > 0 && (this.tag_scores != null)) {
+    if (p.tags.length > 0) {
       tag = document.createElement("div");
       tag.innerText = this.findBestTag(p);
       tag.classList.add("project-tag");
@@ -236,7 +254,7 @@ this.Explore = (function() {
         }
       };
     })(this));
-    return this.boxes[p.owner + "/" + p.slug] = element;
+    return element;
   };
 
   Explore.prototype.get = function(id) {
@@ -244,11 +262,15 @@ this.Explore = (function() {
   };
 
   Explore.prototype.findProject = function(owner, slug) {
-    var i, len, p, ref;
+    var id, j, len, p, ref;
+    id = owner + "." + slug;
+    if (this.visited_projects[id] != null) {
+      return this.visited_projects[id];
+    }
     if (this.projects != null) {
       ref = this.projects;
-      for (i = 0, len = ref.length; i < len; i++) {
-        p = ref[i];
+      for (j = 0, len = ref.length; j < len; j++) {
+        p = ref[j];
         if (p.owner === owner && p.slug === slug) {
           return p;
         }
@@ -258,7 +280,8 @@ this.Explore = (function() {
   };
 
   Explore.prototype.openProject = function(p) {
-    var desc, div, i, j, len, len1, lib, likes, list, ref, ref1, t;
+    var desc, div, j, k, len, len1, lib, likes, list, ref, ref1, t;
+    this.visited_projects[p.owner + "." + p.slug] = p;
     this.project = p;
     if (this.cloned[this.project.id]) {
       this.get("project-details-clonebutton").style.display = "none";
@@ -281,8 +304,8 @@ this.Explore = (function() {
       this.get("project-details-info").style.background = "none";
     }
     ref = p.libs;
-    for (i = 0, len = ref.length; i < len; i++) {
-      lib = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      lib = ref[j];
       desc = ("<p><i class=\"fas fa-exclamation-triangle\" style=\"color:hsl(20,100%,70%)\"></i> " + (this.app.translator.get("This project uses an experimental integration of this library:")) + " " + lib + "</p>") + desc;
     }
     if (p.graphics !== "M1") {
@@ -309,8 +332,8 @@ this.Explore = (function() {
     list = this.get("project-details-tags");
     list.innerHTML = "";
     ref1 = p.tags;
-    for (j = 0, len1 = ref1.length; j < len1; j++) {
-      t = ref1[j];
+    for (k = 0, len1 = ref1.length; k < len1; k++) {
+      t = ref1[k];
       div = document.createElement("div");
       div.classList.add("tag");
       div.innerText = t;
@@ -398,151 +421,63 @@ this.Explore = (function() {
     return this.closed();
   };
 
-  Explore.prototype.createTags = function() {
-    var count, div, fn, i, j, k, len, len1, len2, list, p, ref, ref1, t, tag, tags;
-    this.active_tags = [];
-    tags = {};
-    count = {};
-    ref = this.projects;
-    for (i = 0, len = ref.length; i < len; i++) {
-      p = ref[i];
-      ref1 = p.tags;
-      for (j = 0, len1 = ref1.length; j < len1; j++) {
-        t = ref1[j];
-        if (tags[t] == null) {
-          tags[t] = {};
-          count[t] = 1;
-        }
-        tags[t][p.owner] = true;
-        count[t] += 1;
-      }
-    }
-    for (t in tags) {
-      tags[t] = Object.keys(tags[t]).length + count[t] * .001;
-    }
-    list = [];
-    for (tag in tags) {
-      count = tags[tag];
-      list.push({
-        tag: tag,
-        count: count
-      });
-    }
-    this.tag_scores = tags;
-    list.sort(function(a, b) {
-      return b.count - a.count;
-    });
+  Explore.prototype.createTags = function(tags) {
+    var div, fn, j, len, ref, t;
+    this.tags = tags;
     document.getElementById("explore-tags").innerHTML = "";
+    ref = this.tags;
     fn = (function(_this) {
       return function(t, div) {
         return div.addEventListener("click", function() {
           var index;
-          index = _this.active_tags.indexOf(t.tag);
+          index = _this.active_tags.indexOf(t);
           if (index >= 0) {
             _this.active_tags.splice(index, 1);
             div.classList.remove("active");
           } else {
-            _this.active_tags.push(t.tag);
+            _this.active_tags.push(t);
             div.classList.add("active");
           }
-          return _this.loadProjects();
+          return _this.query();
         });
       };
     })(this);
-    for (k = 0, len2 = list.length; k < len2; k++) {
-      t = list[k];
+    for (j = 0, len = ref.length; j < len; j++) {
+      t = ref[j];
       div = document.createElement("div");
-      div.innerText = t.tag;
+      div.innerText = t;
+      if (this.active_tags.includes(t)) {
+        div.classList.add("active");
+      }
       document.getElementById("explore-tags").appendChild(div);
       fn(t, div);
     }
   };
 
-  Explore.prototype.loadProjects = function() {
-    var contents, fade, found, h, i, j, k, len, len1, len2, maxAge, maxLikes, note, now, p, ref, ref1, ref2, scrollzone, search, t;
+  Explore.prototype.loadProjects = function(pos) {
+    var contents, i, j, p, ref, ref1, scrollzone;
+    if (pos == null) {
+      pos = 0;
+    }
     if (this.projects == null) {
       return;
     }
     contents = document.getElementById("explore-box-list");
     scrollzone = document.getElementById("explore-contents");
-    contents.innerHTML = "";
-    this.remaining = [];
-    if (this.sort === "hot" && this.projects.length > 4) {
-      now = Date.now();
-      this.projects.sort(this.sort_functions.top);
-      maxLikes = Math.max(1, this.projects[4].likes);
-      this.projects.sort(this.sort_functions["new"]);
-      maxAge = now - this.projects[this.projects.length - 1].date_published;
-      h = 1 / 24 / 7;
-      h = Math.max(0, now - this.projects[4].date_published) / 1000 / 3600;
-      fade = function(x) {
-        return 1 - Math.max(0, Math.min(1, x));
-      };
-      note = function(p) {
-        var rating, recent;
-        recent = fade((now - p.date_published) / 1000 / 3600 / 24 / 4);
-        rating = p.likes / maxLikes * (.15 + 2 * fade((now - p.date_published) / 1000 / 3600 / 24 / 180));
-        return recent + rating;
-      };
-      this.sort_functions.hot = function(a, b) {
-        return note(b) - note(a);
-      };
+    if (pos === 0) {
+      contents.innerHTML = "";
     }
-    this.projects.sort(this.sort_functions[this.sort]);
-    search = document.getElementById("explore-search-input").value.toLowerCase();
-    ref = this.projects;
-    for (i = 0, len = ref.length; i < len; i++) {
-      p = ref[i];
-      if (this.active_tags.length > 0) {
-        found = false;
-        ref1 = this.active_tags;
-        for (j = 0, len1 = ref1.length; j < len1; j++) {
-          t = ref1[j];
-          if (p.tags.indexOf(t) >= 0) {
-            found = true;
-          }
-        }
-        if (!found) {
-          continue;
-        }
-      }
-      if (search.length > 0) {
-        found = p.title.toLowerCase().indexOf(search) >= 0;
-        found |= p.description.toLowerCase().indexOf(search) >= 0;
-        found |= p.owner.toLowerCase().indexOf(search) >= 0;
-        if (found) {
-          console.info("found: " + p.owner);
-        }
-        ref2 = p.tags;
-        for (k = 0, len2 = ref2.length; k < len2; k++) {
-          t = ref2[k];
-          found |= t.toLowerCase().indexOf(search) >= 0;
-        }
-        if (!found) {
-          continue;
-        }
-      }
-      if (contents.getBoundingClientRect().height < scrollzone.scrollTop + window.innerHeight * 2) {
-        contents.appendChild(this.createProjectBox(p));
-      } else {
-        this.remaining.push(p);
-      }
+    for (i = j = ref = pos, ref1 = this.projects.length - 1; j <= ref1; i = j += 1) {
+      p = this.projects[i];
+      contents.appendChild(this.createProjectBox(p));
     }
   };
 
-  Explore.prototype.update = function(callback) {
-    var contents, owner, project;
-    if (this.list_received) {
-      if (callback != null) {
-        callback();
-      }
-      return;
-    }
+  Explore.prototype.update = function() {
+    var owner, project;
     if (!this.initialized && location.pathname.startsWith("/i/")) {
       document.getElementById("explore-section").style.opacity = 0;
     }
-    contents = document.getElementById("explore-box-list");
-    contents.innerHTML = "";
     if (!this.initialized && location.pathname.startsWith("/i/")) {
       this.initialized = true;
       owner = location.pathname.split("/")[2];
@@ -561,27 +496,58 @@ this.Explore = (function() {
         };
       })(this));
     } else {
-      this.app.client.sendRequest({
-        name: "get_public_projects",
-        ranking: "hot",
-        tags: []
-      }, (function(_this) {
-        return function(msg) {
-          _this.projects = msg.list;
-          _this.list_received = true;
-          _this.boxes = {};
-          _this.createTags();
-          _this.loadProjects();
-          if (!_this.initialized) {
-            _this.initialized = true;
-            return document.getElementById("explore-section").style.opacity = 1;
-          }
-        };
-      })(this));
-      if (callback != null) {
-        callback();
+      if ((this.projects == null) || this.projects.length === 0) {
+        return this.query();
       }
     }
+  };
+
+  Explore.prototype.query = function(position) {
+    var f;
+    if (position == null) {
+      position = 0;
+    }
+    this.query_position = position;
+    if (position === 0 || (this.current_offset == null)) {
+      this.current_offset = 0;
+    }
+    f = (function(_this) {
+      return function() {};
+    })(this);
+    this.app.client.sendRequest({
+      name: "get_public_projects",
+      ranking: this.sort,
+      tags: this.active_tags,
+      search: this.search.toLowerCase(),
+      position: position,
+      offset: this.current_offset
+    }, (function(_this) {
+      return function(msg) {
+        var pos;
+        if (position === 0) {
+          _this.current_position = position;
+          _this.current_offset = msg.offset;
+          _this.completed = false;
+          _this.projects = msg.list;
+          _this.createTags(msg.tags);
+          _this.loadProjects();
+          document.getElementById("explore-contents").scrollTop = 0;
+        } else {
+          if (msg.list.length === 0) {
+            _this.completed = true;
+          }
+          _this.current_position = position;
+          _this.current_offset = msg.offset;
+          pos = _this.projects.length;
+          _this.projects = _this.projects.concat(msg.list);
+          _this.loadProjects(pos);
+        }
+        if (!_this.initialized) {
+          _this.initialized = true;
+          return document.getElementById("explore-section").style.opacity = 1;
+        }
+      };
+    })(this));
   };
 
   return Explore;

@@ -875,9 +875,36 @@ class @Session
         source = @content.hot_projects
 
     list = []
-    for p,i in source
-      break if list.length>=300
+    tags = if Array.isArray(data.tags) then data.tags else []
+    search = if typeof data.search == "string" then data.search else ""
+    search = search.trim()
+    offset = data.offset or 0
+
+    for i in [offset..source.length-1] by 1
+      p = source[i]
+
+      break if list.length >= 25
+      offset = i+1
+
       if p.public and not p.deleted and not p.owner.flags.censored
+        if search
+          found = false
+          found |= p.title.toLowerCase().includes(search)
+          found |= p.description.toLowerCase().includes(search)
+          found |= p.owner.nick.toLowerCase().includes(search)
+          for t in p.tags
+            found |= t.includes(search)
+
+          continue if not found
+
+        if tags.length > 0
+          found = false
+          for t in tags
+            if p.tags.indexOf(t)>=0
+              found = true
+              break
+          continue if not found
+
         list.push
           id: p.id
           title: p.title
@@ -899,9 +926,16 @@ class @Session
           libs: p.libs
           tabs: p.tabs
 
+    tags = []
+    for t in @content.sorted_tags
+      tags.push t.tag
+      break if tags.length>50
+
     @send
       name: "public_projects"
       list: list
+      tags: tags
+      offset: offset
       request_id: data.request_id
 
   getPublicProject:(msg)->

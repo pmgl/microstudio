@@ -53,18 +53,10 @@ class @AppState
         else
           s = location.pathname.split("/")
           if s[2]? and s[3]?
-            if @app.explore.projects?
-              p = @app.explore.findProject(s[2],s[3])
-              if p
-                @app.explore.openProject(p)
-                @app.appui.setMainSection "explore"
-            else
-              @app.explore.update ()=>
-                p = @app.explore.findProject(s[2],s[3])
-                if p
-                  @app.explore.openProject(p)
-                  @app.appui.setMainSection "explore"
-
+            p = @app.explore.findProject(s[2],s[3])
+            if p
+              @app.explore.openProject(p)
+              @app.appui.setMainSection "explore"
 
   initState:()->
     if location.pathname.startsWith("/login/")
