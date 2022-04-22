@@ -74,6 +74,8 @@ html(lang=language)
       script(src=js)
 
   body.notranslate(translate="no")
+    noscript
+      p #{translator.get("Your browser has JavaScript disabled. Please enable JavaScript in your browser preferences, in order to use microStudio.")}
     header
       div(id="create-account-button" title=translator.get("Create My Account"))
         <i class="login fa fa-user-plus"></i><span>#{translator.get("Create My Account")}</span>
