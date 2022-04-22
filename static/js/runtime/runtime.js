@@ -533,7 +533,7 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.reportWarnings = function() {
-    var key, ref, ref1, ref2, results, value;
+    var key, ref, ref1, ref2, ref3, value;
     if (this.vm != null) {
       ref = this.vm.context.warnings.invoking_non_function;
       for (key in ref) {
@@ -566,24 +566,35 @@ this.Runtime = (function() {
         }
       }
       ref2 = this.vm.context.warnings.assigning_field_to_undefined;
-      results = [];
       for (key in ref2) {
         value = ref2[key];
         if (!value.reported) {
           value.reported = true;
-          results.push(this.listener.reportError({
+          this.listener.reportError({
             error: "",
             type: "assigning_undefined",
             expression: value.expression,
             line: value.line,
             column: value.column,
             file: value.file
-          }));
-        } else {
-          results.push(void 0);
+          });
         }
       }
-      return results;
+      ref3 = this.vm.context.warnings.assigning_api_variable;
+      for (key in ref3) {
+        value = ref3[key];
+        if (!value.reported) {
+          value.reported = true;
+          this.listener.reportError({
+            error: "",
+            type: "assigning_api_variable",
+            expression: value.expression,
+            line: value.line,
+            column: value.column,
+            file: value.file
+          });
+        }
+      }
     }
   };
 

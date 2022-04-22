@@ -179,6 +179,7 @@ this.RunWindow = (function() {
   };
 
   RunWindow.prototype.reload = function() {
+    this.terminal.clear();
     this.run();
     document.getElementById("run-button").classList.add("selected");
     document.getElementById("pause-button").classList.remove("selected");
@@ -413,6 +414,10 @@ this.RunWindow = (function() {
         }
         error = this.app.translator.get("Warning: %EXP% is not defined, will be initialized to an empty object").replace("%EXP%", err.expression);
         this.annotateWarning(error, err);
+        break;
+      case "assigning_api_variable":
+        error = this.app.translator.get("Warning: overwriting global API variable '%EXP%'").replace("%EXP%", err.expression);
+        this.annotateWarning(error, err);
     }
     if (err.line != null) {
       if (err.file) {
@@ -431,19 +436,18 @@ this.RunWindow = (function() {
 
   RunWindow.prototype.annotateWarning = function(warning, info) {
     var source;
-    if (this.app.editor.selected_source === info.file) {
-      source = this.app.project.getSource(info.file);
-      if (source != null) {
-        source.annotations = [
-          {
-            row: info.line - 1,
-            column: info.column - 1,
-            type: "warning",
-            text: warning
-          }
-        ];
-        return this.app.project.notifyListeners("annotations");
+    source = this.app.project.getSource(info.file);
+    if (source != null) {
+      if (source.annotations == null) {
+        source.annotations = [];
       }
+      source.annotations.push({
+        row: info.line - 1,
+        column: info.column - 1,
+        type: "warning",
+        text: warning
+      });
+      return this.app.project.notifyListeners("annotations");
     }
   };
 
@@ -475,7 +479,6 @@ this.RunWindow = (function() {
           source = this.app.project.getSource(msg.file);
           if (source != null) {
             if ((source.annotations != null) && source.annotations.length > 0) {
-              this.terminal.clear();
               source.annotations = [];
               return this.app.project.notifyListeners("annotations");
             }

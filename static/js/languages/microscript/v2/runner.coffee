@@ -79,6 +79,16 @@ class @Runner
       err.type = "compile"
       throw err
 
+    if parser.warnings.length>0
+      for w in parser.warnings
+        id = filename+"-"+w.line+"-"+w.column
+        if not @microvm.context.warnings.assigning_api_variable[id]?
+          @microvm.context.warnings.assigning_api_variable[id] =
+            file: filename
+            line: w.line
+            column: w.column
+            expression: w.identifier
+
     program = parser.program
 
     compiler = new Compiler(program)

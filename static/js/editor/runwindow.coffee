@@ -115,6 +115,7 @@ class @RunWindow
       document.getElementById("take-picture-button").style.display = "inline-block"
 
   reload:()->
+    @terminal.clear()
     @run()
     document.getElementById("run-button").classList.add("selected")
     document.getElementById("pause-button").classList.remove("selected")
@@ -318,6 +319,9 @@ class @RunWindow
         return if not @warning_assign
         error = @app.translator.get("Warning: %EXP% is not defined, will be initialized to an empty object").replace("%EXP%",err.expression)
         @annotateWarning(error,err)
+      when "assigning_api_variable"
+        error = @app.translator.get("Warning: overwriting global API variable '%EXP%'").replace("%EXP%",err.expression)
+        @annotateWarning(error,err)
 
     if err.line?
       if err.file
@@ -332,15 +336,17 @@ class @RunWindow
       @terminal.error "#{error}"
 
   annotateWarning:(warning,info)->
-    if @app.editor.selected_source == info.file
+#    if @app.editor.selected_source == info.file
       source = @app.project.getSource(info.file)
       if source?
-        source.annotations = [{
+        if not source.annotations?
+          source.annotations = []
+        source.annotations.push
           row: info.line-1
           column: info.column-1
           type: "warning"
           text: warning
-        }]
+
         @app.project.notifyListeners "annotations"
 
   messageReceived:(msg)->
@@ -366,7 +372,7 @@ class @RunWindow
           source = @app.project.getSource(msg.file)
           if source?
             if source.annotations? and source.annotations.length>0
-              @terminal.clear()
+              # @terminal.clear()
               source.annotations = []
               @app.project.notifyListeners "annotations"
         when "log"

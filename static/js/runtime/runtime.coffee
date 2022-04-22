@@ -430,6 +430,19 @@ class @Runtime
             column: value.column
             file: value.file
 
+      for key,value of @vm.context.warnings.assigning_api_variable
+        if not value.reported
+          value.reported = true
+          @listener.reportError
+            error: ""
+            type: "assigning_api_variable"
+            expression: value.expression
+            line: value.line
+            column: value.column
+            file: value.file
+            
+      return
+
   updateControls:()->
     touches = Object.keys(@screen.touches)
     @touch.touching = if touches.length>0 then 1 else 0

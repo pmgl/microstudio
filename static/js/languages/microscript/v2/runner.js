@@ -91,7 +91,7 @@ this.Runner = (function() {
   };
 
   Runner.prototype.run = function(src, filename, callback) {
-    var compiler, err, parser, program, result;
+    var compiler, err, id, j, len, parser, program, ref, result, w;
     if (!this.initialized) {
       this.init();
     }
@@ -101,6 +101,21 @@ this.Runner = (function() {
       err = parser.error_info;
       err.type = "compile";
       throw err;
+    }
+    if (parser.warnings.length > 0) {
+      ref = parser.warnings;
+      for (j = 0, len = ref.length; j < len; j++) {
+        w = ref[j];
+        id = filename + "-" + w.line + "-" + w.column;
+        if (this.microvm.context.warnings.assigning_api_variable[id] == null) {
+          this.microvm.context.warnings.assigning_api_variable[id] = {
+            file: filename,
+            line: w.line,
+            column: w.column,
+            expression: w.identifier
+          };
+        }
+      }
     }
     program = parser.program;
     compiler = new Compiler(program);

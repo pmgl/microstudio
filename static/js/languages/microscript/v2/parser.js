@@ -12,6 +12,33 @@ this.Parser = (function() {
     this.verbose = false;
     this.nesting = 0;
     this.not_terminated = [];
+    this.api_reserved = {
+      screen: true,
+      audio: true,
+      keyboard: true,
+      gamepad: true,
+      sprites: true,
+      sounds: true,
+      music: true,
+      assets: true,
+      asset_manager: true,
+      maps: true,
+      touch: true,
+      mouse: true,
+      fonts: true,
+      Sound: true,
+      Image: true,
+      Sprite: true,
+      system: true,
+      storage: true,
+      print: true,
+      random: true,
+      Function: true,
+      List: true,
+      Object: true,
+      String: true,
+      Number: true
+    };
   }
 
   Parser.prototype.nextToken = function() {
@@ -36,6 +63,7 @@ this.Parser = (function() {
   Parser.prototype.parse = function() {
     var err, expression, nt, token;
     try {
+      this.warnings = [];
       while (true) {
         expression = this.parseLine();
         if ((expression == null) && !this.tokenizer.finished()) {
@@ -290,6 +318,14 @@ this.Parser = (function() {
   Parser.prototype.parseAssignment = function(token, expression) {
     if (!(expression instanceof Program.Variable) && !(expression instanceof Program.Field)) {
       throw "Expected variable identifier or property";
+    }
+    if (expression instanceof Program.Variable && this.api_reserved[expression.identifier]) {
+      this.warnings.push({
+        type: "assigning_api_variable",
+        identifier: expression.identifier,
+        line: token.line,
+        column: token.column
+      });
     }
     return new Program.Assignment(token, expression, this.assertExpression());
   };

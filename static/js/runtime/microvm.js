@@ -208,7 +208,8 @@ this.MicroVM = (function() {
     return this.context.warnings = {
       using_undefined_variable: {},
       assigning_field_to_undefined: {},
-      invoking_non_function: {}
+      invoking_non_function: {},
+      assigning_api_variable: {}
     };
   };
 

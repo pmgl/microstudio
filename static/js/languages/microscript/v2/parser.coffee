@@ -9,6 +9,32 @@ class @Parser
     @verbose = false
     @nesting = 0
     @not_terminated = []
+    @api_reserved =
+      screen: true
+      audio: true
+      keyboard: true
+      gamepad: true
+      sprites: true
+      sounds: true
+      music: true
+      assets: true
+      asset_manager: true
+      maps: true
+      touch: true
+      mouse: true
+      fonts: true
+      Sound: true
+      Image: true
+      Sprite: true
+      system: true
+      storage: true
+      print: true
+      random: true
+      Function: true
+      List: true
+      Object: true
+      String: true
+      Number: true
 
   nextToken:()->
     token = @tokenizer.next()
@@ -25,6 +51,7 @@ class @Parser
 
   parse:()->
     try
+      @warnings = []
       loop
         expression = @parseLine()
         if not expression? and not @tokenizer.finished()
@@ -234,6 +261,14 @@ class @Parser
   parseAssignment:(token,expression)->
     if expression not instanceof Program.Variable and expression not instanceof Program.Field
       throw "Expected variable identifier or property"
+
+    if expression instanceof Program.Variable and @api_reserved[expression.identifier]
+      @warnings.push
+        type: "assigning_api_variable"
+        identifier: expression.identifier
+        line: token.line
+        column: token.column
+
     return new Program.Assignment token,expression,@assertExpression()
 
   parseSelfAssignment:(token,expression,operation)->
