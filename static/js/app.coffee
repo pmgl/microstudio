@@ -134,7 +134,8 @@ class App
   createProject:(title,slug,options,callback)->
     if options? and typeof options == "function" and not callback?
       callback = options
-      options = {}
+      options =
+        language: "microscript_v2"
 
     @client.sendRequest {
       name: "create_project"

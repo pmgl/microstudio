@@ -172,7 +172,9 @@ App = (function() {
   App.prototype.createProject = function(title, slug, options, callback) {
     if ((options != null) && typeof options === "function" && (callback == null)) {
       callback = options;
-      options = {};
+      options = {
+        language: "microscript_v2"
+      };
     }
     return this.client.sendRequest({
       name: "create_project",
