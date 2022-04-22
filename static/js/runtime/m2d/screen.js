@@ -178,6 +178,16 @@ this.Screen = (function() {
         return _this.mouseUp(event);
       };
     })(this));
+    document.addEventListener("mousewheel", (function(_this) {
+      return function(event) {
+        return _this.mouseWheel(event);
+      };
+    })(this));
+    document.addEventListener("DOMMouseScroll", (function(_this) {
+      return function(event) {
+        return _this.mouseWheel(event);
+      };
+    })(this));
     return this.ratio = devicePixelRatio;
   };
 
@@ -302,6 +312,15 @@ this.Screen = (function() {
     }
     this.mouse.pressed = Math.min(1, this.mouse.left + this.mouse.right + this.mouse.middle);
     return false;
+  };
+
+  Screen.prototype.mouseWheel = function(e) {
+    e.preventDefault();
+    if (e.wheelDelta < 0 || e.detail > 0) {
+      return this.wheel = -1;
+    } else {
+      return this.wheel = 1;
+    }
   };
 
   Screen.prototype.takePicture = function(take_picture_callback) {

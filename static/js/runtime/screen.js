@@ -11,7 +11,8 @@ this.Screen = (function() {
       pressed: 0,
       left: 0,
       middle: 0,
-      right: 0
+      right: 0,
+      wheel: 0
     };
     this.translation_x = 0;
     this.translation_y = 0;
@@ -886,6 +887,16 @@ this.Screen = (function() {
         return _this.mouseUp(event);
       };
     })(this));
+    document.addEventListener("mousewheel", (function(_this) {
+      return function(event) {
+        return _this.mouseWheel(event);
+      };
+    })(this));
+    document.addEventListener("DOMMouseScroll", (function(_this) {
+      return function(event) {
+        return _this.mouseWheel(event);
+      };
+    })(this));
     devicePixelRatio = window.devicePixelRatio || 1;
     backingStoreRatio = this.context.webkitBackingStorePixelRatio || this.context.mozBackingStorePixelRatio || this.context.msBackingStorePixelRatio || this.context.oBackingStorePixelRatio || this.context.backingStorePixelRatio || 1;
     return this.ratio = devicePixelRatio / backingStoreRatio;
@@ -1012,6 +1023,15 @@ this.Screen = (function() {
     }
     this.mouse.pressed = Math.min(1, this.mouse.left + this.mouse.right + this.mouse.middle);
     return false;
+  };
+
+  Screen.prototype.mouseWheel = function(e) {
+    e.preventDefault();
+    if (e.wheelDelta < 0 || e.detail > 0) {
+      return this.wheel = -1;
+    } else {
+      return this.wheel = 1;
+    }
   };
 
   Screen.prototype.takePicture = function(callback) {

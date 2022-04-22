@@ -11,6 +11,7 @@ class @Screen
       left: 0
       middle: 0
       right: 0
+      wheel: 0
 
     @translation_x = 0
     @translation_y = 0
@@ -638,6 +639,10 @@ class @Screen
     document.addEventListener "mousemove", (event) => @mouseMove(event)
     document.addEventListener "mouseup", (event) => @mouseUp(event)
 
+    document.addEventListener "mousewheel", (event)=>@mouseWheel(event)
+    document.addEventListener "DOMMouseScroll", (event)=>@mouseWheel(event)
+
+
     devicePixelRatio = window.devicePixelRatio || 1
     backingStoreRatio = @context.webkitBackingStorePixelRatio ||
       @context.mozBackingStorePixelRatio ||
@@ -748,6 +753,14 @@ class @Screen
     @mouse.pressed = Math.min(1,@mouse.left+@mouse.right+@mouse.middle)
 
     false
+
+  mouseWheel:(e)->
+    e.preventDefault()
+
+    if e.wheelDelta < 0 or e.detail > 0
+      @wheel = -1
+    else
+      @wheel = 1
 
   takePicture:(callback)->
     callback @canvas.toDataURL()

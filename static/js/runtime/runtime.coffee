@@ -440,7 +440,7 @@ class @Runtime
             line: value.line
             column: value.column
             file: value.file
-            
+
       return
 
   updateControls:()->
@@ -467,6 +467,9 @@ class @Runtime
       @mouse.release = 1
     else
       @mouse.release = 0
+
+    @mouse.wheel = @screen.wheel or 0
+    @screen.wheel = 0
 
     if @touch.touching and not @previous_touch
       @previous_touch = true

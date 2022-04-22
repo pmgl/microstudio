@@ -111,6 +111,9 @@ class @Screen
     document.addEventListener "mousemove", (event) => @mouseMove(event)
     document.addEventListener "mouseup", (event) => @mouseUp(event)
 
+    document.addEventListener "mousewheel", (event)=>@mouseWheel(event)
+    document.addEventListener "DOMMouseScroll", (event)=>@mouseWheel(event)
+
     @ratio = devicePixelRatio
 
   touchStart:(event)->
@@ -214,5 +217,14 @@ class @Screen
     @mouse.pressed = Math.min(1,@mouse.left+@mouse.right+@mouse.middle)
 
     false
+
+  mouseWheel:(e)->
+    e.preventDefault()
+
+    if e.wheelDelta < 0 or e.detail > 0
+      @wheel = -1
+    else
+      @wheel = 1
+
 
   takePicture:(@take_picture_callback)->

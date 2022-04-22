@@ -626,6 +626,8 @@ this.Runtime = (function() {
     } else {
       this.mouse.release = 0;
     }
+    this.mouse.wheel = this.screen.wheel || 0;
+    this.screen.wheel = 0;
     if (this.touch.touching && !this.previous_touch) {
       this.previous_touch = true;
       this.touch.press = 1;
