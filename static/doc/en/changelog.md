@@ -8,6 +8,7 @@
 * mouse wheel events through `mouse.wheel` (-1 O or 1) (#70)
 * fixed default language for all projects prior to october 2021
 * Public project: added First Published date and Last Modified date (#103)
+* fixed coordinate problem with Image.drawPolygon
 
 ### Update 2022-04-14
 * offscreen images, sprites, sounds

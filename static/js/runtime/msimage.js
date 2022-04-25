@@ -436,7 +436,7 @@ this.msImage = (function() {
     len = Math.floor(args.length / 2);
     transform = this.initDrawOp(0, 0);
     this.context.beginPath();
-    this.context.moveTo(args[0], -args[1]);
+    this.context.moveTo(args[0], args[1]);
     for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
       this.context.lineTo(args[i * 2], args[i * 2 + 1]);
     }
@@ -466,7 +466,7 @@ this.msImage = (function() {
     len = Math.floor(args.length / 2);
     transform = this.initDrawOp(0, 0);
     this.context.beginPath();
-    this.context.moveTo(args[0], -args[1]);
+    this.context.moveTo(args[0], args[1]);
     for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
       this.context.lineTo(args[i * 2], args[i * 2 + 1]);
     }
@@ -497,7 +497,7 @@ this.msImage = (function() {
     len = Math.floor(args.length / 2);
     transform = this.initDrawOp(0, 0);
     this.context.beginPath();
-    this.context.moveTo(args[0], -args[1]);
+    this.context.moveTo(args[0], args[1]);
     for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
       this.context.lineTo(args[i * 2], args[i * 2 + 1]);
     }

@@ -344,7 +344,7 @@ class @msImage
     len = Math.floor(args.length/2)
     transform = @initDrawOp 0,0
     @context.beginPath()
-    @context.moveTo args[0],-args[1]
+    @context.moveTo args[0],args[1]
     for i in [1..len-1]
       @context.lineTo args[i*2],args[i*2+1]
 
@@ -368,7 +368,7 @@ class @msImage
     len = Math.floor(args.length/2)
     transform = @initDrawOp 0,0
     @context.beginPath()
-    @context.moveTo args[0],-args[1]
+    @context.moveTo args[0],args[1]
     for i in [1..len-1]
       @context.lineTo args[i*2],args[i*2+1]
 
@@ -392,7 +392,7 @@ class @msImage
     len = Math.floor(args.length/2)
     transform = @initDrawOp 0,0
     @context.beginPath()
-    @context.moveTo args[0],-args[1]
+    @context.moveTo args[0],args[1]
     for i in [1..len-1]
       @context.lineTo args[i*2],args[i*2+1]
 
