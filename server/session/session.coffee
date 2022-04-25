@@ -921,6 +921,7 @@ class @Session
           liked: @user? and @user.isLiked(p.id)
           tags: p.tags
           date_published: p.first_published
+          last_modified: p.last_modified
           graphics: p.graphics
           language: p.language
           libs: p.libs
@@ -962,6 +963,7 @@ class @Session
             liked: @user? and @user.isLiked(p.id)
             tags: p.tags
             date_published: p.first_published
+            last_modified: p.last_modified
             graphics: p.graphics
             language: p.language
             libs: p.libs

@@ -246,11 +246,14 @@ class @Explore
     else
       @get("project-details-info").style.background = "none"
 
+    desc += """<p style="margin-bottom: 5px; font-size: 14px; color: rgba(255,255,255,.5)"><i class="fas fa-calendar-alt" style="color:hsl(160,50%,40%)"></i>#{@app.translator.get("First published on %DATE%").replace("%DATE%",new Date(p.date_published).toLocaleDateString())}</p>"""
+    desc += """<p style="margin-bottom: 5px; font-size: 14px; color: rgba(255,255,255,.5)"><i class="fas fa-calendar-alt" style="color:hsl(160,50%,40%)"></i>#{@app.translator.get("Last modified on %DATE%").replace("%DATE%",new Date(p.last_modified).toLocaleDateString())}</p>"""
+
     for lib in p.libs
-      desc = """<p><i class="fas fa-exclamation-triangle" style="color:hsl(20,100%,70%)"></i> #{@app.translator.get("This project uses an experimental integration of this library:")} #{lib}</p>"""+desc
+      desc = """<p><i class="fas fa-info-circle" style="color:hsl(20,100%,70%)"></i>#{@app.translator.get("This project uses this optional library:")} #{lib}</p>"""+desc
 
     if p.graphics != "M1"
-      desc = """<p><i class="fas fa-exclamation-triangle" style="color:hsl(20,100%,70%)"></i> #{@app.translator.get("This project uses an experimental integration of graphics API:")} #{p.graphics}</p>"""+desc
+      desc = """<p><i class="fas fa-info-circle" style="color:hsl(20,100%,70%)"></i>#{@app.translator.get("This project uses this graphics API:")} #{p.graphics}</p>"""+desc
 
     if p.language?
       desc = """<br /><div class="explore-project-language #{p.language.split("_")[0]}">#{p.language.split("_")[0]}</div><br />"""+desc
