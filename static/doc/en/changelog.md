@@ -1,5 +1,18 @@
 ## Changelog
 
+### Update 2022-04-25
+* reworked Explore section, now correctly shows and queries all public projects (#66)
+* added tip for markdown support in project description (#77)
+* added warning when attempting to overwrite API globals (#101)
+* added noscript message for visitors with JavaScript disabled
+* mouse wheel events through `mouse.wheel` (-1 O or 1) (#70)
+* fixed default language for all projects prior to october 2021
+
+### Update 2022-04-14
+* offscreen images, sprites, sounds
+* save image, sprite, or JSON object to file
+* ms 2.0 fix: auto-close parentheses
+
 ### Update 2022-04-11
 * microScript 2.0 is now the default language for new projects!
 * documentation is now hosted on the Github wiki
