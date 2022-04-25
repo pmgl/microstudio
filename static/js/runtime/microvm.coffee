@@ -280,6 +280,7 @@ class @MicroVM
       else
         res = {}
         for key,v of value
+          continue if key == "class"
           v = @makeStorableObject(v,referenced)
           if v?
             res[key] = v

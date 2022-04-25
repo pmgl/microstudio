@@ -410,6 +410,9 @@ this.MicroVM = (function() {
         res = {};
         for (key in value) {
           v = value[key];
+          if (key === "class") {
+            continue;
+          }
           v = this.makeStorableObject(v, referenced);
           if (v != null) {
             res[key] = v;
