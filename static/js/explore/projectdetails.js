@@ -286,14 +286,12 @@ this.ProjectDetails = (function() {
   };
 
   ProjectDetails.prototype.setSelectedSource = function(file) {
-    var key;
+    var source;
     this.selected_source = file;
-    for (key in this.sources) {
-      if (key === file) {
-        document.getElementById("project-contents-view-source-" + key).classList.add("selected");
-      } else {
-        document.getElementById("project-contents-view-source-" + key).classList.remove("selected");
-      }
+    this.source_folder.setSelectedItem(file);
+    source = this.project_sources[file];
+    if ((source != null) && (source.parent != null)) {
+      source.parent.setOpen(true);
     }
     this.editor.setValue(this.sources[file], -1);
     if (this.app.project == null) {
@@ -313,11 +311,44 @@ this.ProjectDetails = (function() {
   };
 
   ProjectDetails.prototype.setSourceList = function(files) {
-    var f, j, len;
+    var f, folder, j, len, manager, project, s, table, view;
+    table = {};
+    manager = {
+      folder: "ms",
+      item: "source",
+      openItem: (function(_this) {
+        return function(item) {
+          return _this.setSelectedSource(item);
+        };
+      })(this)
+    };
+    this.project_sources = {};
+    project = JSON.parse(JSON.stringify(this.project));
+    project.app = this.app;
+    project.notifyListeners = (function(_this) {
+      return function(source) {
+        _this.sources[source.name] = source.content;
+        if (_this.selected_source == null) {
+          return _this.setSelectedSource(source.name);
+        }
+      };
+    })(this);
+    project.getFullURL = function() {
+      var url;
+      return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
+    };
+    folder = new ProjectFolder(null, "source");
     for (j = 0, len = files.length; j < len; j++) {
       f = files[j];
-      this.createSourceEntry(f.file);
+      s = new ProjectSource(project, f.file);
+      this.project_sources[s.name] = s;
+      folder.push(s);
+      table[s.name] = s;
     }
+    view = new FolderView(manager, document.querySelector("#project-contents-view .code-list"));
+    this.source_folder = view;
+    view.editable = false;
+    view.rebuildList(folder);
   };
 
   ProjectDetails.prototype.createSpriteBox = function(file, prefs) {

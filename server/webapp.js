@@ -445,7 +445,7 @@ this.WebApp = (function() {
         });
       };
     })(this));
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/ms\/[A-Za-z0-9_]+.ms$/, (function(_this) {
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/ms\/[A-Za-z0-9_-]+.ms$/, (function(_this) {
       return function(req, res) {
         var access, ms, project, s, user;
         s = req.path.split("/");

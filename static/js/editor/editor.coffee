@@ -1,6 +1,18 @@
-class @Editor
+class @Editor extends Manager
   constructor:(@app)->
     @language = @app.languages.microscript
+
+    @folder = "ms"
+    @item = "source"
+    @main_splitpanel = "code-editor"
+    @list_change_event = "sourcelist"
+    @get_item = "getSource"
+    @use_thumbnails = false
+    @extensions = ["ms"]
+    @update_list = "updateSourceList"
+    @file_icon = "fa fa-file"
+
+    @init()
 
     @editor = ace.edit "editor-view"
     @editor.$blockScrolling = Infinity
@@ -102,13 +114,6 @@ class @Editor
           @showValueTool()
       return
 
-    document.getElementById("source-list-header").addEventListener "click",(event)=>
-      @toggleFileList()
-
-    @app.appui.setAction "create-source-button",()=>
-      @createSource()
-      @toggleFileList(false)
-
     document.querySelector("#code-search").addEventListener "click",(event)=>
       @editor.execCommand("find")
 
@@ -145,27 +150,7 @@ class @Editor
           @language = @app.languages.microscript
 
     @editor.getSession().setMode(@language.ace_mode)
-
-  toggleFileList:(close)->
-    view = document.getElementById("editor-view")
-    list = document.getElementById("source-list-panel")
-    if not close?
-      close = list.clientWidth>100
-
-    if close
-      list.style.width = "40px"
-      view.style.left = "40px"
-      document.querySelector(".source-list-header i").classList.remove("fa-chevron-circle-left")
-      document.querySelector(".source-list-header i").classList.add("fa-chevron-circle-right")
-      document.getElementById("code-toolbar").style["padding-left"] = "50px"
-      setTimeout (()=>@editor.resize()),600
-    else
-      list.style.width = "180px"
-      view.style.left = "180px"
-      document.querySelector(".source-list-header i").classList.add("fa-chevron-circle-left")
-      document.querySelector(".source-list-header i").classList.remove("fa-chevron-circle-right")
-      document.getElementById("code-toolbar").style["padding-left"] = "190px"
-      setTimeout (()=>@editor.resize()),600
+    @updateSourceLanguage()
 
   editorContentsChanged:()->
     return if @ignore_changes
@@ -507,11 +492,19 @@ class @Editor
 
     null
 
-  setTitleSourceName:()->
-    if @selected_source?
-      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> "+@selected_source
-      lang = @app.project.language.split("_")[0]
-      document.getElementById("code-toolbar").innerHTML += "<span class='language #{lang}'>#{lang}</span>"
+  updateSourceLanguage:()->
+    lang = @app.project.language.split("_")[0]
+    element = document.querySelector("#source-asset-bar .language")
+    element.innerText = lang
+    element.className = ""
+    element.classList.add(lang)
+    element.classList.add("language")
+
+    # document.getElementById("code-toolbar").innerHTML += "<span class='language #{lang}'>#{lang}</span>"
+
+  setSelectedItem:(name)->
+    @setSelectedSource name
+    super(name)
 
   setSelectedSource:(name)->
     @checkSave(true)
@@ -522,18 +515,9 @@ class @Editor
     different = name != @selected_source
 
     @selected_source = name
-    list = document.getElementById("source-list").childNodes
 
     if @selected_source?
-      @setTitleSourceName()
-      for e in list
-        if e.getAttribute("id") == "source-list-item-#{name}"
-          e.classList.add("selected")
-        else
-          e.classList.remove("selected")
-    else
-      for e in list
-        e.classList.remove("selected")
+      @updateSourceLanguage()
 
     if @selected_source?
       source = @app.project.getSource(@selected_source)
@@ -553,14 +537,14 @@ class @Editor
     @app.project.addListener @
     @app.runwindow.resetButtons()
     @app.runwindow.windowResized()
-    @setSelectedSource null
+    @setSelectedItem null
     @updateRunLink()
     @updateLanguage()
+    @update()
 
   projectUpdate:(change)->
-    if change == "sourcelist"
-      @rebuildSourceList()
-    else if change instanceof ProjectSource
+    super(change)
+    if change instanceof ProjectSource
       if @selected_source?
         if change == @app.project.getSource(@selected_source)
           @setCode(change.content)
@@ -615,132 +599,53 @@ class @Editor
           lock.style.display = "none"
       ),1000
 
-  rebuildSourceList:()->
-    list = document.getElementById "source-list"
-    list.innerHTML = ""
 
-    for s in @app.project.source_list
-      element = @createSourceBox s
-      list.appendChild element
+  selectedItemRenamed:()->
+    @selected_source = @selected_item
 
+
+  rebuildList:()->
+    super()
     if not @selected_source? or not @app.project.getSource(@selected_source)?
       if @app.project.source_list.length>0
-        @setSelectedSource @app.project.source_list[0].name
+        @setSelectedItem @app.project.source_list[0].name
 
-    @updateActiveUsers()
+  fileDropped:(file,folder)->
+    console.info "processing #{file.name}"
+    console.info "folder: "+folder
+    reader = new FileReader()
+    reader.addEventListener "load",()=>
+      console.info "file read, size = "+ reader.result.length
+      return if reader.result.length>1000000
 
-    return
+      name = file.name.split(".")[0]
+      name = RegexLib.fixFilename name
 
-  updateActiveUsers:()->
-    list = document.getElementById("source-list").childNodes
-    for e in list
-      file = e.id.split("-")[3]
-      lock = @app.project.isLocked("ms/#{file}.ms")
-      if lock? and Date.now()<lock.time
-        e.querySelector(".active-user").style = "display: block; background: #{@app.appui.createFriendColor(lock.user)};"
-      else
-        e.querySelector(".active-user").style = "display: none;"
-    return
+      console.info(reader.result)
+      @createAsset folder,name,reader.result
 
-  createSourceBox:(source)->
+    reader.readAsText(file)
 
-    #  div.source-list-item.selected(title="main")
-    #    div.source-tools
-    #      i(class="fa fa-edit" title=translator.get("Rename file"))
-    #      i(class="fa fa-trash" title=translator.get("Delete this file"))
-    #    i(class="fa fa-file")
-    #    span main
-
-    element = document.createElement "div"
-    element.classList.add "source-list-item"
-    element.setAttribute "id","source-list-item-#{source.name}"
-    element.title = source.name
-    element.addEventListener "click",()=>
-      @setSelectedSource source.name
-
-    if source.name == @selected_source
-      element.classList.add "selected"
-
-    tools = document.createElement "div"
-    tools.classList.add "source-tools"
-    element.appendChild tools
-
-    i = document.createElement "i"
-    i.classList.add "fa"
-    i.classList.add "fa-file-code"
-    element.appendChild i
-
-    span = document.createElement "div"
-    span.classList.add "filename"
-    span.innerText = source.name
-    #span.contentEditable = true
-    element.appendChild span
-
-    input = document.createElement "input"
-
-    span.addEventListener "dblclick",()=>
-      return if @app.project.isLocked("ms/#{source.name}.ms")
-      @app.project.lockFile "ms/#{source.name}.ms"
-      span.parentNode.replaceChild input,span
-      input.value = source.name
-      input.focus()
-
-    input.addEventListener "blur",()=>
-      input.parentNode.replaceChild span,input
-      value = RegexLib.fixFilename(input.value)
-      if value != source.name
-        if RegexLib.filename.test(value)
-          if not @app.project.getSource(value)?
-            if @selected_source == source.name
-              @app.project.lockFile "ms/#{value}.ms"
-              @selected_source = value
-              old = source.name
-              @saveCode ()=>
-                @app.client.sendRequest {
-                  name: "delete_project_file"
-                  project: @app.project.id
-                  file: "ms/#{old}.ms"
-                },(msg)=>
-                  @app.project.updateSourceList()
-                  #callback() if callback?
-
-    input.addEventListener "keydown",(event)=>
-      @app.project.lockFile "ms/#{source.name}.ms"
-      if event.key == "Enter"
-        event.preventDefault()
-        input.blur()
-        false
-      else
-        true
-
-    trash = document.createElement "i"
-    trash.classList.add("fa")
-    trash.classList.add("fa-trash")
-    trash.title = @app.translator.get("Delete file")
-    tools.appendChild trash
-    trash.addEventListener "click",()=>
-      msg = @app.translator.get("Really delete %ITEM%?").replace("%ITEM%",source.name)
-      ConfirmDialog.confirm msg,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
-        @app.client.sendRequest {
-          name: "delete_project_file"
-          project: @app.project.id
-          file: "ms/#{source.name}.ms"
-        },(msg)=>
-          @app.project.updateSourceList()
-
-    activeuser = document.createElement "i"
-    activeuser.classList.add "active-user"
-    activeuser.classList.add "fa"
-    activeuser.classList.add "fa-user"
-    element.appendChild activeuser
-    element
-
-  createSource:()->
+  createAsset:(folder,name="source",content="")->
     @checkSave(true)
-    source = @app.project.createSource()
-    @rebuildSourceList()
-    @setSelectedSource source.name
-    @saveCode()
+
+    if folder?
+      name = folder.getFullDashPath()+"-#{name}"
+      folder.setOpen true
+
+    source = @app.project.createSource(name)
+    source.content = content
+    name = source.name
+    @app.client.sendRequest {
+      name: "write_project_file"
+      project: @app.project.id
+      file: "ms/#{name}.ms"
+      properties: {}
+      content: content
+    },(msg)=>
+      console.info msg
+      @app.project.updateSourceList()
+      @setSelectedItem name
 
   updateRunLink:()->
     element = document.getElementById("run-link")

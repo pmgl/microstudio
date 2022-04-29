@@ -427,6 +427,7 @@ AppUI = (function() {
       this.runtime_splitbar.update();
       this.app.runwindow.windowResized();
       this.app.editor.editor.resize();
+      this.app.editor.update();
     }
     if (section === "sprites") {
       this.sprites_splitbar.update();

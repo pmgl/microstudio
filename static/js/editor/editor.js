@@ -1,10 +1,24 @@
-var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-this.Editor = (function() {
+this.Editor = (function(superClass) {
+  extend(Editor, superClass);
+
   function Editor(app) {
     var f;
     this.app = app;
     this.language = this.app.languages.microscript;
+    this.folder = "ms";
+    this.item = "source";
+    this.main_splitpanel = "code-editor";
+    this.list_change_event = "sourcelist";
+    this.get_item = "getSource";
+    this.use_thumbnails = false;
+    this.extensions = ["ms"];
+    this.update_list = "updateSourceList";
+    this.file_icon = "fa fa-file";
+    this.init();
     this.editor = ace.edit("editor-view");
     this.editor.$blockScrolling = 2e308;
     this.editor.setTheme("ace/theme/tomorrow_night_bright");
@@ -135,17 +149,6 @@ this.Editor = (function() {
         }
       };
     })(this));
-    document.getElementById("source-list-header").addEventListener("click", (function(_this) {
-      return function(event) {
-        return _this.toggleFileList();
-      };
-    })(this));
-    this.app.appui.setAction("create-source-button", (function(_this) {
-      return function() {
-        _this.createSource();
-        return _this.toggleFileList(false);
-      };
-    })(this));
     document.querySelector("#code-search").addEventListener("click", (function(_this) {
       return function(event) {
         return _this.editor.execCommand("find");
@@ -205,39 +208,8 @@ this.Editor = (function() {
           this.language = this.app.languages.microscript;
       }
     }
-    return this.editor.getSession().setMode(this.language.ace_mode);
-  };
-
-  Editor.prototype.toggleFileList = function(close) {
-    var list, view;
-    view = document.getElementById("editor-view");
-    list = document.getElementById("source-list-panel");
-    if (close == null) {
-      close = list.clientWidth > 100;
-    }
-    if (close) {
-      list.style.width = "40px";
-      view.style.left = "40px";
-      document.querySelector(".source-list-header i").classList.remove("fa-chevron-circle-left");
-      document.querySelector(".source-list-header i").classList.add("fa-chevron-circle-right");
-      document.getElementById("code-toolbar").style["padding-left"] = "50px";
-      return setTimeout(((function(_this) {
-        return function() {
-          return _this.editor.resize();
-        };
-      })(this)), 600);
-    } else {
-      list.style.width = "180px";
-      view.style.left = "180px";
-      document.querySelector(".source-list-header i").classList.add("fa-chevron-circle-left");
-      document.querySelector(".source-list-header i").classList.remove("fa-chevron-circle-right");
-      document.getElementById("code-toolbar").style["padding-left"] = "190px";
-      return setTimeout(((function(_this) {
-        return function() {
-          return _this.editor.resize();
-        };
-      })(this)), 600);
-    }
+    this.editor.getSession().setMode(this.language.ace_mode);
+    return this.updateSourceLanguage();
   };
 
   Editor.prototype.editorContentsChanged = function() {
@@ -716,17 +688,23 @@ this.Editor = (function() {
     return null;
   };
 
-  Editor.prototype.setTitleSourceName = function() {
-    var lang;
-    if (this.selected_source != null) {
-      document.getElementById("code-toolbar").innerHTML = "<i class='fa fa-file-code'></i> " + this.selected_source;
-      lang = this.app.project.language.split("_")[0];
-      return document.getElementById("code-toolbar").innerHTML += "<span class='language " + lang + "'>" + lang + "</span>";
-    }
+  Editor.prototype.updateSourceLanguage = function() {
+    var element, lang;
+    lang = this.app.project.language.split("_")[0];
+    element = document.querySelector("#source-asset-bar .language");
+    element.innerText = lang;
+    element.className = "";
+    element.classList.add(lang);
+    return element.classList.add("language");
+  };
+
+  Editor.prototype.setSelectedItem = function(name) {
+    this.setSelectedSource(name);
+    return Editor.__super__.setSelectedItem.call(this, name);
   };
 
   Editor.prototype.setSelectedSource = function(name) {
-    var different, e, j, k, len, len1, list, source;
+    var different, source;
     this.checkSave(true);
     if (this.selected_source != null) {
       this.sessions[this.selected_source] = {
@@ -735,22 +713,8 @@ this.Editor = (function() {
     }
     different = name !== this.selected_source;
     this.selected_source = name;
-    list = document.getElementById("source-list").childNodes;
     if (this.selected_source != null) {
-      this.setTitleSourceName();
-      for (j = 0, len = list.length; j < len; j++) {
-        e = list[j];
-        if (e.getAttribute("id") === ("source-list-item-" + name)) {
-          e.classList.add("selected");
-        } else {
-          e.classList.remove("selected");
-        }
-      }
-    } else {
-      for (k = 0, len1 = list.length; k < len1; k++) {
-        e = list[k];
-        e.classList.remove("selected");
-      }
+      this.updateSourceLanguage();
     }
     if (this.selected_source != null) {
       source = this.app.project.getSource(this.selected_source);
@@ -772,15 +736,15 @@ this.Editor = (function() {
     this.app.project.addListener(this);
     this.app.runwindow.resetButtons();
     this.app.runwindow.windowResized();
-    this.setSelectedSource(null);
+    this.setSelectedItem(null);
     this.updateRunLink();
-    return this.updateLanguage();
+    this.updateLanguage();
+    return this.update();
   };
 
   Editor.prototype.projectUpdate = function(change) {
-    if (change === "sourcelist") {
-      return this.rebuildSourceList();
-    } else if (change instanceof ProjectSource) {
+    Editor.__super__.projectUpdate.call(this, change);
+    if (change instanceof ProjectSource) {
       if (this.selected_source != null) {
         if (change === this.app.project.getSource(this.selected_source)) {
           return this.setCode(change.content);
@@ -854,150 +818,69 @@ this.Editor = (function() {
     })(this)), 1000);
   };
 
-  Editor.prototype.rebuildSourceList = function() {
-    var element, j, len, list, ref, s;
-    list = document.getElementById("source-list");
-    list.innerHTML = "";
-    ref = this.app.project.source_list;
-    for (j = 0, len = ref.length; j < len; j++) {
-      s = ref[j];
-      element = this.createSourceBox(s);
-      list.appendChild(element);
-    }
+  Editor.prototype.selectedItemRenamed = function() {
+    return this.selected_source = this.selected_item;
+  };
+
+  Editor.prototype.rebuildList = function() {
+    Editor.__super__.rebuildList.call(this);
     if ((this.selected_source == null) || (this.app.project.getSource(this.selected_source) == null)) {
       if (this.app.project.source_list.length > 0) {
-        this.setSelectedSource(this.app.project.source_list[0].name);
-      }
-    }
-    this.updateActiveUsers();
-  };
-
-  Editor.prototype.updateActiveUsers = function() {
-    var e, file, j, len, list, lock;
-    list = document.getElementById("source-list").childNodes;
-    for (j = 0, len = list.length; j < len; j++) {
-      e = list[j];
-      file = e.id.split("-")[3];
-      lock = this.app.project.isLocked("ms/" + file + ".ms");
-      if ((lock != null) && Date.now() < lock.time) {
-        e.querySelector(".active-user").style = "display: block; background: " + (this.app.appui.createFriendColor(lock.user)) + ";";
-      } else {
-        e.querySelector(".active-user").style = "display: none;";
+        return this.setSelectedItem(this.app.project.source_list[0].name);
       }
     }
   };
 
-  Editor.prototype.createSourceBox = function(source) {
-    var activeuser, element, i, input, span, tools, trash;
-    element = document.createElement("div");
-    element.classList.add("source-list-item");
-    element.setAttribute("id", "source-list-item-" + source.name);
-    element.title = source.name;
-    element.addEventListener("click", (function(_this) {
+  Editor.prototype.fileDropped = function(file, folder) {
+    var reader;
+    console.info("processing " + file.name);
+    console.info("folder: " + folder);
+    reader = new FileReader();
+    reader.addEventListener("load", (function(_this) {
       return function() {
-        return _this.setSelectedSource(source.name);
-      };
-    })(this));
-    if (source.name === this.selected_source) {
-      element.classList.add("selected");
-    }
-    tools = document.createElement("div");
-    tools.classList.add("source-tools");
-    element.appendChild(tools);
-    i = document.createElement("i");
-    i.classList.add("fa");
-    i.classList.add("fa-file-code");
-    element.appendChild(i);
-    span = document.createElement("div");
-    span.classList.add("filename");
-    span.innerText = source.name;
-    element.appendChild(span);
-    input = document.createElement("input");
-    span.addEventListener("dblclick", (function(_this) {
-      return function() {
-        if (_this.app.project.isLocked("ms/" + source.name + ".ms")) {
+        var name;
+        console.info("file read, size = " + reader.result.length);
+        if (reader.result.length > 1000000) {
           return;
         }
-        _this.app.project.lockFile("ms/" + source.name + ".ms");
-        span.parentNode.replaceChild(input, span);
-        input.value = source.name;
-        return input.focus();
+        name = file.name.split(".")[0];
+        name = RegexLib.fixFilename(name);
+        console.info(reader.result);
+        return _this.createAsset(folder, name, reader.result);
       };
     })(this));
-    input.addEventListener("blur", (function(_this) {
-      return function() {
-        var old, value;
-        input.parentNode.replaceChild(span, input);
-        value = RegexLib.fixFilename(input.value);
-        if (value !== source.name) {
-          if (RegexLib.filename.test(value)) {
-            if (_this.app.project.getSource(value) == null) {
-              if (_this.selected_source === source.name) {
-                _this.app.project.lockFile("ms/" + value + ".ms");
-                _this.selected_source = value;
-                old = source.name;
-                return _this.saveCode(function() {
-                  return _this.app.client.sendRequest({
-                    name: "delete_project_file",
-                    project: _this.app.project.id,
-                    file: "ms/" + old + ".ms"
-                  }, function(msg) {
-                    return _this.app.project.updateSourceList();
-                  });
-                });
-              }
-            }
-          }
-        }
-      };
-    })(this));
-    input.addEventListener("keydown", (function(_this) {
-      return function(event) {
-        _this.app.project.lockFile("ms/" + source.name + ".ms");
-        if (event.key === "Enter") {
-          event.preventDefault();
-          input.blur();
-          return false;
-        } else {
-          return true;
-        }
-      };
-    })(this));
-    trash = document.createElement("i");
-    trash.classList.add("fa");
-    trash.classList.add("fa-trash");
-    trash.title = this.app.translator.get("Delete file");
-    tools.appendChild(trash);
-    trash.addEventListener("click", (function(_this) {
-      return function() {
-        var msg;
-        msg = _this.app.translator.get("Really delete %ITEM%?").replace("%ITEM%", source.name);
-        return ConfirmDialog.confirm(msg, _this.app.translator.get("Delete"), _this.app.translator.get("Cancel"), function() {
-          return _this.app.client.sendRequest({
-            name: "delete_project_file",
-            project: _this.app.project.id,
-            file: "ms/" + source.name + ".ms"
-          }, function(msg) {
-            return _this.app.project.updateSourceList();
-          });
-        });
-      };
-    })(this));
-    activeuser = document.createElement("i");
-    activeuser.classList.add("active-user");
-    activeuser.classList.add("fa");
-    activeuser.classList.add("fa-user");
-    element.appendChild(activeuser);
-    return element;
+    return reader.readAsText(file);
   };
 
-  Editor.prototype.createSource = function() {
+  Editor.prototype.createAsset = function(folder, name, content) {
     var source;
+    if (name == null) {
+      name = "source";
+    }
+    if (content == null) {
+      content = "";
+    }
     this.checkSave(true);
-    source = this.app.project.createSource();
-    this.rebuildSourceList();
-    this.setSelectedSource(source.name);
-    return this.saveCode();
+    if (folder != null) {
+      name = folder.getFullDashPath() + ("-" + name);
+      folder.setOpen(true);
+    }
+    source = this.app.project.createSource(name);
+    source.content = content;
+    name = source.name;
+    return this.app.client.sendRequest({
+      name: "write_project_file",
+      project: this.app.project.id,
+      file: "ms/" + name + ".ms",
+      properties: {},
+      content: content
+    }, (function(_this) {
+      return function(msg) {
+        console.info(msg);
+        _this.app.project.updateSourceList();
+        return _this.setSelectedItem(name);
+      };
+    })(this));
   };
 
   Editor.prototype.updateRunLink = function() {
@@ -1035,4 +918,4 @@ this.Editor = (function() {
 
   return Editor;
 
-})();
+})(Manager);

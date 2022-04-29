@@ -116,7 +116,7 @@ this.SplitBar = (function() {
       case "horizontal":
         this.total_width = w = this.element.clientWidth - this.splitbar.clientWidth;
         if (!this.closed2) {
-          w1 = Math.round(this.position / 100 * w);
+          w1 = Math.min(Math.max(1, Math.round(this.position / 100 * w)), Math.round(w - 1));
           w2 = w1 + Math.max(this.splitbar.clientWidth, this.splitbar_size);
           w3 = this.element.clientWidth - w2;
           this.side1.style.width = w1 + "px";

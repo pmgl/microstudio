@@ -83,15 +83,20 @@ class @FolderView
     if item.name == @selected_item
       element.classList.add "selected"
 
-    icon = new Image
-    icon.src = item.getThumbnailURL()
-    icon.loading = "lazy"
-    icon.setAttribute "id","asset-image-#{item.name}"
-    element.appendChild icon
+    if item.getThumbnailURL?
+      icon = new Image
+      icon.src = item.getThumbnailURL()
+      icon.loading = "lazy"
+      icon.setAttribute "id","asset-image-#{item.name}"
+      element.appendChild icon
+      icon.draggable = false
 
     text = document.createElement "div"
     text.classList.add "asset-box-name"
-    text.innerHTML = item.shortname
+    if @manager.file_icon?
+      text.innerHTML = """<i class="#{@manager.file_icon}"></i> #{item.shortname}"""
+    else
+      text.innerHTML = item.shortname
 
     element.appendChild text
 
@@ -104,7 +109,6 @@ class @FolderView
     activeuser.classList.add "fa-user"
     element.appendChild activeuser
 
-    icon.draggable = false
     element.draggable = true
     element.addEventListener "dragstart",(event)=>
       @drag_file = item

@@ -68,7 +68,7 @@ class @SplitBar
         @total_width = w = @element.clientWidth-@splitbar.clientWidth
 
         if not @closed2
-          w1 = Math.round(@position/100*w)
+          w1 = Math.min(Math.max(1,Math.round(@position/100*w)),Math.round(w-1))
           w2 = w1+Math.max(@splitbar.clientWidth,@splitbar_size)
           w3 = @element.clientWidth-w2
 

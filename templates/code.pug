@@ -1,34 +1,51 @@
 div.code-editor#code-editor
-  div.code-toolbar#code-toolbar Source Code
-  div.source-list-panel#source-list-panel
-    div.source-list-header#source-list-header
-      div #{translator.get("Files")}
-      i(class="fa fa-chevron-circle-right")
-    div.source-list#source-list
-    div.create-source-button#create-source-button <i class="fa fa-plus-square"></i> #{translator.get("Add File")}
-  div.editor-locked#editor-locked
-  div.editor-view#editor-view
-  div.help-window#help-window
-    div#help-window-content
-      div.left-side
-        i(class="fa fa-question")
-      div.content
+  div.assets-left
+    div.assets-bar#source-asset-bar
+      div.create-asset-button <i class="fa fa-plus-square"></i> #{translator.get("Source")}
+      i.fa.fa-folder-plus.create-folder-button(title=translator.get("New Folder"))
+      span.language.microscript microscript
 
-  div.code-tools
-    div.buttons
-      div#code-font-minus(title="Decrease font size") <i class="fas fa-long-arrow-alt-down"></i> A
-      div#code-font-plus(title="Increase font size") <i class="fas fa-long-arrow-alt-up"></i> A
-      div#code-search.selected(title="Search in code")
-        i.fas.fa-search
+    div.create-asset-button#create-source-button(style="display:none") <i class="fa fa-plus-square"></i> #{translator.get("Add Source")}
 
-    div.value-tool-button#color-value-tool-button
-      span CTRL
-      i.fa.fa-palette
+    div.assetlist#sourcelist
+      div.asset-list#source-list
 
-    div.value-tool-button#number-value-tool-button
-      span CTRL
-      div.slider-track
-      div.slider-cursor
+  div.horizontal-splitbar#code-editor-splitbar
+
+  div.code-right#code-main
+    div.code-toolbar.assetinfo#code-toolbar
+      input(type="text" value="")#source-name
+      div.validate-button-container#source-name-button
+        div.validate-button <i class="fa fa-check"></i> #{translator.get("Apply")}
+
+      div#delete-source.delete(title=translator.get("Delete Source"))
+        i.fa.fa-trash
+
+      div.code-tools
+        div.buttons
+          div#code-font-minus(title="Decrease font size") <i class="fas fa-long-arrow-alt-down"></i> A
+          div#code-font-plus(title="Increase font size") <i class="fas fa-long-arrow-alt-up"></i> A
+          div#code-search.selected(title="Search in code")
+            i.fas.fa-search
+
+        div.value-tool-button#color-value-tool-button
+          span CTRL
+          i.fa.fa-palette
+
+        div.value-tool-button#number-value-tool-button
+          span CTRL
+          div.slider-track
+          div.slider-cursor
+
+    div.editor-locked#editor-locked
+    div.editor-view#editor-view
+    div.help-window#help-window
+      div#help-window-content
+        div.left-side
+          i(class="fa fa-question")
+        div.content
+
+
 
 div.code-splitbar#code-splitbar
 

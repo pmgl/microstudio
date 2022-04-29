@@ -1,8 +1,17 @@
+.code-right {
+  position: absolute ;
+  right: 0px ;
+  width: 400px ;
+  top: 0 ;
+  bottom: 0 ;
+  overflow: hidden ;
+}
+
 .editor-view,#editor-view {
   position: absolute ;
-  top: 40px ;
+  top: 42px ;
   bottom: 0px ;
-  left: 40px ;
+  left: 0px ;
   right: 0 ;
   transition-duration: .5s , 1s ;
   transition-property: left, opacity ;
@@ -304,7 +313,7 @@ a#run-link {
   margin-right: 4px ;
 }
 
-.code-toolbar .language {
+#source-asset-bar .language {
   border-radius: 10px ;
   background-color: rgba(0,0,0,.3) ;
   color: rgba(255,255,255,.7);
@@ -315,24 +324,21 @@ a#run-link {
   position: relative ;
   top: -2px;
 }
-.code-toolbar .language.python {
+#source-asset-bar .language.python {
   background-color: hsl(160,40%,40%) ;
 }
-.code-toolbar .language.lua {
+#source-asset-bar .language.lua {
   background-color: hsl(20,40%,40%) ;
 }
-.code-toolbar .language.javascript {
+#source-asset-bar .language.javascript {
   background-color: hsl(300,40%,40%) ;
 }
-.code-toolbar .language.microscript {
+#source-asset-bar .language.microscript {
   background-color: hsl(200,40%,40%) ;
 }
 
 .code-tools {
-  position: absolute ;
-  right: 2px ;
-  top: 0px ;
-  height: 40px ;
+  display: inline-block ;
 }
 
 .code-tools .buttons {
@@ -632,4 +638,29 @@ a#run-link {
   top: 0 ;
   left: 0 ;
   bottom: 0 ;
+}
+
+.code-toolbar,#code-toolbar {
+  position: absolute ;
+  top: 0px ;
+  left: 0px ;
+  right: 0px ;
+  height: 40px ;
+  padding: 0px 20px ;
+  padding-left: 0px ;
+  transition-property: padding-left ;
+  transition-duration: .5s ;
+  background: hsl(200,30%,30%);
+}
+#code-toolbar i {
+  margin-right: 5px ;
+}
+.code-toolbar .delete {
+  padding: 4px 8px ;
+  border-radius: 4px ;
+  background: hsl(0,50%,50%);
+  cursor: pointer ;
+}
+.code-toolbar #delete-source i {
+  margin: 0 ;
 }

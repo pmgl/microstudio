@@ -240,21 +240,23 @@ class @Project
     s = new ProjectSource @,file.file,file.size
     @source_table[s.name] = s
     @source_list.push s
+    @source_folder.push s
     s
 
   getSource:(name)->
     @source_table[name]
 
-  createSource:()->
-    count = 1
-    loop
-      filename = "source#{count++}"
-      break if not @getSource(filename)?
+  createSource:(basename="source")->
+    count = 2
+    filename = basename
+    while @getSource(filename)?
+      filename = "#{basename}#{count++}"
 
     source = new ProjectSource @,filename+".ms"
     source.fetched = true
     @source_table[source.name] = source
     @source_list.push source
+    @source_folder.push source
     @notifyListeners "sourcelist"
     source
 

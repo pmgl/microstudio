@@ -9,7 +9,7 @@ this.Manager = (function() {
     var create_asset, create_folder;
     this.folder_view = new FolderView(this, document.getElementById(this.item + "list"));
     this.folder_view.init();
-    this.splitbar = new SplitBar(this.folder + "-section", "horizontal");
+    this.splitbar = new SplitBar(this.main_splitpanel || (this.folder + "-section"), "horizontal");
     this.splitbar.setPosition(20);
     create_asset = document.querySelector("#" + this.item + "-asset-bar .create-asset-button");
     create_folder = document.querySelector("#" + this.item + "-asset-bar .create-folder-button");

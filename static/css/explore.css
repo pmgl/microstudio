@@ -543,30 +543,17 @@
 }
 #project-contents-view .code-list {
   position: absolute ;
-  left: 0 ;
-  width: 100px ;
-  top: 0px ;
-  bottom: 0 ;
-}
-#project-contents-view .code-list div {
-  font-size: 14px ;
-  margin: 1px ;
-  padding: 6.5px ;
-  background: rgba(255,255,255,.1);
-  cursor: pointer ;
-}
-#project-contents-view .code-list div.selected {
-  background: rgba(255,255,255,.2);
-}
-#project-contents-view .code-list div i {
-  margin-right: 5px ;
+  left: 2px ;
+  width: 196px ;
+  top: 2px ;
+  bottom: 2px ;
 }
 #project-contents-view-editor {
   position: absolute ;
-  left: 100px ;
-  right: 0 ;
-  top: 0 ;
-  bottom: 0 ;
+  left: 200px ;
+  right: 2px ;
+  top: 2px ;
+  bottom: 2px ;
   overflow: hidden ;
   border-radius: 10px ;
 }

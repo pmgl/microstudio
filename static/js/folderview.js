@@ -130,14 +130,21 @@ this.FolderView = (function() {
     if (item.name === this.selected_item) {
       element.classList.add("selected");
     }
-    icon = new Image;
-    icon.src = item.getThumbnailURL();
-    icon.loading = "lazy";
-    icon.setAttribute("id", "asset-image-" + item.name);
-    element.appendChild(icon);
+    if (item.getThumbnailURL != null) {
+      icon = new Image;
+      icon.src = item.getThumbnailURL();
+      icon.loading = "lazy";
+      icon.setAttribute("id", "asset-image-" + item.name);
+      element.appendChild(icon);
+      icon.draggable = false;
+    }
     text = document.createElement("div");
     text.classList.add("asset-box-name");
-    text.innerHTML = item.shortname;
+    if (this.manager.file_icon != null) {
+      text.innerHTML = "<i class=\"" + this.manager.file_icon + "\"></i> " + item.shortname;
+    } else {
+      text.innerHTML = item.shortname;
+    }
     element.appendChild(text);
     element.addEventListener("click", (function(_this) {
       return function() {
@@ -149,7 +156,6 @@ this.FolderView = (function() {
     activeuser.classList.add("fa");
     activeuser.classList.add("fa-user");
     element.appendChild(activeuser);
-    icon.draggable = false;
     element.draggable = true;
     element.addEventListener("dragstart", (function(_this) {
       return function(event) {

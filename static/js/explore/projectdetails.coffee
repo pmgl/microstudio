@@ -228,11 +228,11 @@ class @ProjectDetails
 
   setSelectedSource:(file)->
     @selected_source = file
-    for key of @sources
-      if key == file
-        document.getElementById("project-contents-view-source-#{key}").classList.add "selected"
-      else
-        document.getElementById("project-contents-view-source-#{key}").classList.remove "selected"
+    @source_folder.setSelectedItem file
+
+    source = @project_sources[file]
+    if source? and source.parent?
+      source.parent.setOpen true
 
     @editor.setValue @sources[file],-1
     return if not @app.project?
@@ -248,8 +248,41 @@ class @ProjectDetails
       document.querySelector("#project-contents-source-import span").innerText = @app.translator.get("Import source file to")+" "+@app.project.title
 
   setSourceList:(files)->
+    # for f in files
+    #   @createSourceEntry(f.file)
+    # return
+
+    table = {}
+    manager =
+      folder: "ms"
+      item: "source"
+      openItem:(item)=>
+        @setSelectedSource item
+        # table[item].play()
+
+    @project_sources = {}
+
+    project = JSON.parse(JSON.stringify(@project)) # create a clone
+    project.app = @app
+    project.notifyListeners = (source)=>
+      @sources[source.name] = source.content
+      if not @selected_source?
+        @setSelectedSource(source.name)
+
+    project.getFullURL = ()->
+      url = location.origin+"/#{project.owner}/#{project.slug}/"
+
+    folder = new ProjectFolder null,"source"
     for f in files
-      @createSourceEntry(f.file)
+      s = new ProjectSource project,f.file
+      @project_sources[s.name] = s
+      folder.push s
+      table[s.name] = s
+
+    view = new FolderView manager,document.querySelector("#project-contents-view .code-list")
+    @source_folder = view
+    view.editable = false
+    view.rebuildList folder
     return
 
   createSpriteBox:(file,prefs)->

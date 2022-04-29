@@ -1,8 +1,13 @@
 class @ProjectSource
   constructor:(@project,@file,@size=0)->
-    @name = @file.substring 0,@file.length-3
+    @name = @file.split(".")[0]
+    @ext = @file.split(".")[1]
     @filename = @file
     @file = "ms/#{@file}"
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""
+
     @content = ""
     @fetched = false
     @reload()
@@ -20,3 +25,14 @@ class @ProjectSource
 
   loaded:()->
     @project.notifyListeners @
+
+  rename:(name)->
+    delete @project.source_table[@name]
+    @name = name
+    @project.source_table[@name] = @
+
+    @filename = @name + "." + @ext
+    @file = "ms/"+@filename
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""

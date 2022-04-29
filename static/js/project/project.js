@@ -345,6 +345,7 @@ this.Project = (function() {
     s = new ProjectSource(this, file.file, file.size);
     this.source_table[s.name] = s;
     this.source_list.push(s);
+    this.source_folder.push(s);
     return s;
   };
 
@@ -352,19 +353,21 @@ this.Project = (function() {
     return this.source_table[name];
   };
 
-  Project.prototype.createSource = function() {
+  Project.prototype.createSource = function(basename) {
     var count, filename, source;
-    count = 1;
-    while (true) {
-      filename = "source" + (count++);
-      if (this.getSource(filename) == null) {
-        break;
-      }
+    if (basename == null) {
+      basename = "source";
+    }
+    count = 2;
+    filename = basename;
+    while (this.getSource(filename) != null) {
+      filename = "" + basename + (count++);
     }
     source = new ProjectSource(this, filename + ".ms");
     source.fetched = true;
     this.source_table[source.name] = source;
     this.source_list.push(source);
+    this.source_folder.push(source);
     this.notifyListeners("sourcelist");
     return source;
   };

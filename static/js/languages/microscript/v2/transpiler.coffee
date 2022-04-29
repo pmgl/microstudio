@@ -123,49 +123,49 @@ class Transpiler
     @stack.pop()
     ""
 
-  DIV:()->
-    v = @createVariable()
-
-    res = """
-    let #{v} = #{@stack.get(-1)} / #{@stack.get()} ;
-    """
-    @stack.pop()
-    @stack.pop()
-    @stack.push(v)
-    res
-
-  MUL:()->
-    v = @createVariable()
-
-    res = """
-    let #{v} = #{@stack.get(-1)} * #{@stack.get()} ;
-    """
-    @stack.pop()
-    @stack.pop()
-    @stack.push(v)
-    res
-
-  ADD:()->
-    v = @createVariable()
-
-    res = """
-    let #{v} = #{@stack.get(-1)} + #{@stack.get()} ;
-    """
-    @stack.pop()
-    @stack.pop()
-    @stack.push(v)
-    res
-
-  SUB:()->
-    v = @createVariable()
-
-    res = """
-    let #{v} = #{@stack.get(-1)}-#{@stack.get()} ;
-    """
-    @stack.pop()
-    @stack.pop()
-    @stack.push(v)
-    res
+  # DIV:()->
+  #   v = @createVariable()
+  #
+  #   res = """
+  #   let #{v} = #{@stack.get(-1)} / #{@stack.get()} ;
+  #   """
+  #   @stack.pop()
+  #   @stack.pop()
+  #   @stack.push(v)
+  #   res
+  #
+  # MUL:()->
+  #   v = @createVariable()
+  #
+  #   res = """
+  #   let #{v} = #{@stack.get(-1)} * #{@stack.get()} ;
+  #   """
+  #   @stack.pop()
+  #   @stack.pop()
+  #   @stack.push(v)
+  #   res
+  #
+  # ADD:()->
+  #   v = @createVariable()
+  #
+  #   res = """
+  #   let #{v} = #{@stack.get(-1)} + #{@stack.get()} ;
+  #   """
+  #   @stack.pop()
+  #   @stack.pop()
+  #   @stack.push(v)
+  #   res
+  #
+  # SUB:()->
+  #   v = @createVariable()
+  #
+  #   res = """
+  #   let #{v} = #{@stack.get(-1)}-#{@stack.get()} ;
+  #   """
+  #   @stack.pop()
+  #   @stack.pop()
+  #   @stack.push(v)
+  #   res
 
   CREATE_PROPERTY:(arg)->
     res = """
@@ -215,15 +215,15 @@ if (typeof #{v} != "object") #{v} = {} ; """
     @stack.push v
     res
 
-  NEGATE:()->
-    v = @createVariable()
-    res = """
-    let #{v} = - #{@stack.get()} ; // NEGATE
-    if (!isFinite(#{v})) { #{v} = 0 ;};
-    """
-    @stack.pop()
-    @stack.push v
-    res
+  # NEGATE:()->
+  #   v = @createVariable()
+  #   res = """
+  #   let #{v} = - #{@stack.get()} ; // NEGATE
+  #   if (!isFinite(#{v})) { #{v} = 0 ;};
+  #   """
+  #   @stack.pop()
+  #   @stack.push v
+  #   res
 
   # LOAD_VARIABLE:(arg)->
   #   if @variables[arg]?

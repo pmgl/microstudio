@@ -127,46 +127,6 @@ Transpiler = (function() {
     return "";
   };
 
-  Transpiler.prototype.DIV = function() {
-    var res, v;
-    v = this.createVariable();
-    res = "let " + v + " = " + (this.stack.get(-1)) + " / " + (this.stack.get()) + " ;";
-    this.stack.pop();
-    this.stack.pop();
-    this.stack.push(v);
-    return res;
-  };
-
-  Transpiler.prototype.MUL = function() {
-    var res, v;
-    v = this.createVariable();
-    res = "let " + v + " = " + (this.stack.get(-1)) + " * " + (this.stack.get()) + " ;";
-    this.stack.pop();
-    this.stack.pop();
-    this.stack.push(v);
-    return res;
-  };
-
-  Transpiler.prototype.ADD = function() {
-    var res, v;
-    v = this.createVariable();
-    res = "let " + v + " = " + (this.stack.get(-1)) + " + " + (this.stack.get()) + " ;";
-    this.stack.pop();
-    this.stack.pop();
-    this.stack.push(v);
-    return res;
-  };
-
-  Transpiler.prototype.SUB = function() {
-    var res, v;
-    v = this.createVariable();
-    res = "let " + v + " = " + (this.stack.get(-1)) + "-" + (this.stack.get()) + " ;";
-    this.stack.pop();
-    this.stack.pop();
-    this.stack.push(v);
-    return res;
-  };
-
   Transpiler.prototype.CREATE_PROPERTY = function(arg) {
     var res;
     res = (this.stack.get(-2)) + "[" + (this.stack.get(-1)) + "] = " + (this.stack.get()) + " ;";
@@ -211,15 +171,6 @@ Transpiler = (function() {
     var res, v;
     v = this.createVariable();
     res = "let " + v + " = " + (this.stack.get()) + " ;\nif (typeof " + v + " != \"object\") " + v + " = {} ; ";
-    this.stack.pop();
-    this.stack.push(v);
-    return res;
-  };
-
-  Transpiler.prototype.NEGATE = function() {
-    var res, v;
-    v = this.createVariable();
-    res = "let " + v + " = - " + (this.stack.get()) + " ; // NEGATE\nif (!isFinite(" + v + ")) { " + v + " = 0 ;};";
     this.stack.pop();
     this.stack.push(v);
     return res;

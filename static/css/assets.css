@@ -159,7 +159,6 @@
   padding: 2px 0px 5px 3px;
   margin-bottom: 10px ;
   margin-top: 2px ;
-  margin-left: 3px ;
   display: none ;
 }
 
@@ -270,6 +269,40 @@
 .asset-box-asset {
   width: 128px ;
   height: 116px ;
+}
+
+.asset-box-source {
+  height: auto;
+  padding: 6px 10px ;
+  text-align: left;
+  display: block;
+  font-size: 14px;
+  width: auto;
+  white-space: nowrap;
+  border-radius: 0 ;
+  background: none ;
+  box-shadow: none ;
+}
+.asset-box-source:hover {
+  background: rgba(255,255,255,.1);
+}
+.asset-box-source.selected {
+  border: none ;
+  background: rgba(255,255,255,.2);
+  margin: 3px 1px 1px 1px ;
+}
+.asset-box-source .asset-box-name {
+  position: static ;
+}
+
+.asset-box-source .asset-box-name i {
+  margin-right: 5px ;
+  font-size: 16px;
+  color: rgba(255,255,255,.5);
+}
+
+.asset-box-source .active-user {
+    bottom: 3px;
 }
 
 .assetbar {
