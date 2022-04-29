@@ -1,7 +1,12 @@
 div.maps-left
-  div.create-map-button#create-map-button <i class="fa fa-plus-square"></i> <span>#{translator.get("Add Map")}</span>
-  div.maplist#maplist
-    div.map-list#map-list
+  div.assets-bar#map-asset-bar
+    div.create-asset-button <i class="fa fa-plus-square"></i> #{translator.get("Map")}
+    i.fa.fa-folder-plus.create-folder-button(title=translator.get("New Folder"))
+
+  div.create-asset-button#create-map-button(style="display:none") <i class="fa fa-plus-square"></i> #{translator.get("Add Map")}
+
+  div.assetlist#maplist
+    div.asset-list#map-list
 
 div.maps-splitbar
 
@@ -43,9 +48,14 @@ div.maps-right
     div.mapeditor#mapeditor
       div#mapeditor-wrapper
       div#mapeditor-bottombar
-        span #{translator.get("Background")}
-        div#map-background-color
+        div#map-background-color(title=translator.get("Background"))
         select#map-underlay-select
+
+        div.asset-code-tip#map-code-tip
+          div
+            input(type="text" spellcheck="false" readonly=true)
+            i.fa.fa-copy(title=translator.get("Copy Code"))
+
         div#map-coordinates
 
     div.mapeditor-splitbar

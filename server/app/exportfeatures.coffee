@@ -294,7 +294,7 @@ class @ExportFeatures
                 #console.info "reading: "+JSON.stringify map
                 @webapp.server.content.files.read "#{user.id}/#{project.id}/maps/#{map.file}","text",(content)=>
                   if content?
-                    maps_dict[map.file.split(".")[0]] = content
+                    maps_dict[map.file.split(".")[0].replace(/-/g,"/")] = content
                   queue.next()
           queue.next()
 

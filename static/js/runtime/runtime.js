@@ -103,7 +103,7 @@ this.Runtime = (function() {
       ref1 = this.resources.maps;
       for (k = 0, len2 = ref1.length; k < len2; k++) {
         m = ref1[k];
-        name = m.file.split(".")[0];
+        name = m.file.split(".")[0].replace(/-/g, "/");
         this.maps[name] = new MicroMap(this.url + ("maps/" + m.file + "?v=" + m.version), 0, 0, 0, this.sprites);
         this.maps[name].name = name;
         this.maps[name].loaded = (function(_this) {
@@ -327,7 +327,7 @@ this.Runtime = (function() {
       case "sprites":
         return delete this.sprites[file.substring(0, file.length - 4)];
       case "maps":
-        return delete this.maps[file.substring(0, file.length - 5)];
+        return delete this.maps[file.substring(0, file.length - 5).replace(/-/g, "/")];
     }
   };
 
@@ -383,6 +383,7 @@ this.Runtime = (function() {
 
   Runtime.prototype.updateMap = function(name, version, data) {
     var m, url;
+    name = name.replace(/-/g, "/");
     if (data != null) {
       m = this.maps[name];
       if (m != null) {

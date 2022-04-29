@@ -4,7 +4,6 @@
   width: 400px ;
   top: 0 ;
   bottom: 0 ;
-  border-top: solid 40px hsl(200,30%,30%);
   overflow: hidden ;
 }
 
@@ -221,11 +220,13 @@
   height: 40px ;
   background: hsl(200,30%,30%);
   text-align: left ;
-  padding: 0 20px ;
+  padding: 0 10px ;
+  white-space: nowrap ;
+  overflow: hidden ;
 }
 #map-background-color {
   display: inline-block ;
-  margin: 7px 20px ;
+  margin: 7px 10px 7px 0 ;
   height: 26px ;
   width: 26px ;
   border-radius: 5px ;

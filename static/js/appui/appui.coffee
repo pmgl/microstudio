@@ -151,10 +151,8 @@ class AppUI
 
     @sprites_splitbar = new SplitBar("sprites-section","horizontal")
     @sprites_splitbar.setPosition(20)
-    @maps_splitbar = new SplitBar("maps-section","horizontal")
-    @maps_splitbar.setPosition(20)
-    @mapeditor_splitbar = new SplitBar("mapeditor-container","horizontal")
-    @mapeditor_splitbar.setPosition(80)
+    #@maps_splitbar = new SplitBar("maps-section","horizontal")
+    #@maps_splitbar.setPosition(20)
 
     @createSideMenuAutoScroll()
 
@@ -334,15 +332,7 @@ class AppUI
         @sprites_splitbar.setPosition 50
 
     if section == "maps"
-      if @mapeditor_splitbar.position>90
-        @mapeditor_splitbar.setPosition 80
-
-      if @maps_splitbar.position/100*@maps_splitbar.total_width<90
-        @maps_splitbar.setPosition 100*210/@maps_splitbar.total_width
-      else if @maps_splitbar.position>90
-        @maps_splitbar.setPosition 50
-      @maps_splitbar.update()
-      @mapeditor_splitbar.update()
+      @app.map_editor.update()
 
     if section == "doc"
       @doc_splitbar.update()

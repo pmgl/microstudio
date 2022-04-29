@@ -325,3 +325,42 @@ this.CodeSnippet = (function() {
   return CodeSnippet;
 
 })();
+
+this.CodeSnippetField = (function() {
+  function CodeSnippetField(app, query) {
+    var copyable;
+    this.app = app;
+    this.element = document.querySelector(query);
+    this.input = this.element.querySelector("input");
+    this.i = this.element.querySelector("i");
+    copyable = true;
+    this.i.addEventListener("click", (function(_this) {
+      return function() {
+        var code;
+        if (!copyable) {
+          return;
+        }
+        code = _this.input.value;
+        navigator.clipboard.writeText(code);
+        _this.input.value = _this.app.translator.get("Copied!");
+        copyable = false;
+        _this.i.classList.remove("fa-copy");
+        _this.i.classList.add("fa-check");
+        return setTimeout((function() {
+          _this.i.classList.remove("fa-check");
+          _this.i.classList.add("fa-copy");
+          _this.input.value = _this.code;
+          return copyable = true;
+        }), 1000);
+      };
+    })(this));
+  }
+
+  CodeSnippetField.prototype.set = function(code1) {
+    this.code = code1;
+    return this.input.value = this.code;
+  };
+
+  return CodeSnippetField;
+
+})();

@@ -369,7 +369,7 @@ this.ExportFeatures = (function() {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/maps/" + map.file, "text", function(content) {
                   if (content != null) {
-                    maps_dict[map.file.split(".")[0]] = content;
+                    maps_dict[map.file.split(".")[0].replace(/-/g, "/")] = content;
                   }
                   return queue.next();
                 });

@@ -226,7 +226,7 @@
   overflow: hidden ;
 }
 .asset-box.selected {
-  margin: 0px;
+  margin: 2px 0 0 0;
   border: solid 1px rgba(255,255,255,.5) ;
   background: hsl(200,30%,30%);
 }
@@ -258,6 +258,10 @@
   border-radius: 8px ;
 }
 
+.asset-box-map {
+  width: 128px ;
+  height: 116px ;
+}
 .asset-box-sound {
   width: 96px ;
   height: 84px ;
@@ -509,5 +513,64 @@
   background: hsla(200,40%,80%,1);
 }
 #asset-load-code input::selection {
+  background: rgba(0,0,0,.3);
+}
+
+
+
+.asset-code-tip {
+  display: inline-block ;
+  white-space: nowrap ;
+  margin-left: 20px ;
+}
+.asset-code-tip div {
+  display: inline-block ;
+  position: relative ;
+}
+.asset-code-tip i {
+  position: absolute ;
+  left: 10px ;
+  top: 4px ;
+  color: rgba(0,0,0,.5);
+  cursor: pointer ;
+}
+
+.asset-code-tip select {
+  font-size: 14px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  border: none;
+  padding: 2px;
+  border-radius: 5px ;
+  margin: 0 10px 0 0;
+  font-family: "Source Sans Pro",Verdana ;
+}
+
+.asset-code-tip select option {
+  background-color: hsl(200,50%,10%);
+  padding: 2px ;
+}
+
+.asset-code-tip select:focus {
+  outline: none ;
+  background: rgba(255,255,255,.4);
+}
+
+.asset-code-tip input {
+  text-align: left;
+  background: hsla(200,40%,80%,.8);
+  box-sizing: border-box;
+  width: 500px ;
+  border-radius: 5px;
+  border: none ;
+  padding: 5px 5px 5px 30px ;
+  font-family: 'Ubuntu Mono';
+}
+.asset-code-tip input:focus {
+  border: none ;
+  outline: none ;
+  background: hsla(200,40%,80%,1);
+}
+.asset-code-tip input::selection {
   background: rgba(0,0,0,.3);
 }

@@ -79,7 +79,7 @@ class @Runtime
 
     if Array.isArray(@resources.maps)
       for m in @resources.maps
-        name = m.file.split(".")[0]
+        name = m.file.split(".")[0].replace(/-/g,"/")
         @maps[name] = new MicroMap(@url+"maps/#{m.file}?v=#{m.version}",0,0,0,@sprites)
         @maps[name].name = name
         @maps[name].loaded = ()=>
@@ -243,7 +243,7 @@ class @Runtime
       when "sprites"
         delete @sprites[file.substring(0,file.length-4)]
       when "maps"
-        delete @maps[file.substring(0,file.length-5)]
+        delete @maps[file.substring(0,file.length-5).replace(/-/g,"/")]
 
   projectOptionsUpdated:(msg)->
     @orientation = msg.orientation
@@ -276,6 +276,7 @@ class @Runtime
         @sprites[name].name = name
 
   updateMap:(name,version,data)->
+    name = name.replace(/-/g,"/")
     if data?
       m = @maps[name]
       if m?

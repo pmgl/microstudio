@@ -180,10 +180,6 @@ AppUI = (function() {
     this.debug_splitbar.splitbar_size = 12;
     this.sprites_splitbar = new SplitBar("sprites-section", "horizontal");
     this.sprites_splitbar.setPosition(20);
-    this.maps_splitbar = new SplitBar("maps-section", "horizontal");
-    this.maps_splitbar.setPosition(20);
-    this.mapeditor_splitbar = new SplitBar("mapeditor-container", "horizontal");
-    this.mapeditor_splitbar.setPosition(80);
     this.createSideMenuAutoScroll();
     this.setAction("backtoprojects", (function(_this) {
       return function() {
@@ -438,16 +434,7 @@ AppUI = (function() {
       }
     }
     if (section === "maps") {
-      if (this.mapeditor_splitbar.position > 90) {
-        this.mapeditor_splitbar.setPosition(80);
-      }
-      if (this.maps_splitbar.position / 100 * this.maps_splitbar.total_width < 90) {
-        this.maps_splitbar.setPosition(100 * 210 / this.maps_splitbar.total_width);
-      } else if (this.maps_splitbar.position > 90) {
-        this.maps_splitbar.setPosition(50);
-      }
-      this.maps_splitbar.update();
-      this.mapeditor_splitbar.update();
+      this.app.map_editor.update();
     }
     if (section === "doc") {
       this.doc_splitbar.update();

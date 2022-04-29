@@ -103,7 +103,7 @@ class @WebApp
           title: translator.get("%PROJECT% - by %USER%").replace("%PROJECT%",project.title).replace("%USER%",user.nick)
           description: project.description
           long_description: project.description
-          poster: if project.files? and project.files["sprites/poster.png"]? then "https://microstudio.io/#{user.nick}/#{project.slug}/sprites/poster.png" else "https://microstudio.dev/img/microstudio.jpg"
+          poster: if project.files? and project.files["sprites/poster.png"]? then "https://microstudio.io/#{user.nick}/#{project.slug}/sprites/poster.png" else "https://microstudio.io/#{user.nick}/#{project.slug}/sprites/icon.png"
 
         return res.send page
       else if not @home_page[lang]? or not @server.use_cache
@@ -437,7 +437,7 @@ class @WebApp
           res.status(404).send("Error 404")
 
     # image files for player and all
-    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sprites\/[A-Za-z0-9_]+.png$/,(req,res)=>
+    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sprites\/[A-Za-z0-9_-]+.png$/,(req,res)=>
       s = req.path.split("/")
       access = @getProjectAccess req,res
       return if not access?
@@ -455,7 +455,7 @@ class @WebApp
           res.status(404).send("Error 404")
 
     # map files for player
-    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/maps\/[A-Za-z0-9_]+.json$/,(req,res)=>
+    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/maps\/[A-Za-z0-9_-]+.json$/,(req,res)=>
       s = req.path.split("/")
       access = @getProjectAccess req,res
       return if not access?

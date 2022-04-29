@@ -423,6 +423,7 @@
   border: none ;
   padding: 5px 5px 5px 10px ;
   font-family: 'Ubuntu Mono';
+  width: 145px ;
 }
 .colortext input:focus {
   border: none ;

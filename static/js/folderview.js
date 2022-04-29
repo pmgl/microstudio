@@ -137,6 +137,10 @@ this.FolderView = (function() {
       icon.setAttribute("id", "asset-image-" + item.name);
       element.appendChild(icon);
       icon.draggable = false;
+    } else if (item.getThumbnailElement != null) {
+      icon = item.getThumbnailElement();
+      element.appendChild(icon);
+      icon.draggable = false;
     }
     text = document.createElement("div");
     text.classList.add("asset-box-name");

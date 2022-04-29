@@ -571,7 +571,7 @@ a#run-link {
   border-radius: 5px ;
   position: fixed ;
 }
-.value-tool input {
+.value-tool input[type="range"] {
   width: 300px ;
 }
 .value-tool .colortext {

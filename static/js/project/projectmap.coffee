@@ -3,8 +3,15 @@ class @ProjectMap extends MicroMap
     super 16,10,16,16,@project.sprite_table
     @url = @project.getFullURL()+@file
     @canvases = []
-    @name = @file.substring 0,@file.length-5
+
+    @name = @file.split(".")[0]
+    @ext = @file.split(".")[1]
     @filename = @file
+    @file = "maps/#{@file}"
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""
+
     @loadFile()
 
   addCanvas:(canvas)->
@@ -17,22 +24,23 @@ class @ProjectMap extends MicroMap
     return
 
   updateCanvas:(c)->
-    r = Math.min(96/@width,96/@height)
+    r1 = Math.max(128/@width,96/@height)
+    r2 = Math.min(128/@width,96/@height)
+    r = (r1+r2)/2
     w = r*@width
     h = r*@height
-    c.width = 96
-    c.height = 96
 
     context = c.getContext "2d"
-    context.clearRect 0,0,c.width,c.height
+    context.fillStyle = "#666"
+    context.fillRect 0,0,c.width,c.height
     context.imageSmoothingEnabled = false
-    context.drawImage @canvas,48-w/2,48-h/2,w,h
+    context.drawImage @canvas,c.width/2-w/2,c.height/2-h/2,w,h
 
   loadFile:()->
     @project.app.client.sendRequest {
       name: "read_project_file"
       project: @project.id
-      file: "maps/#{@file}"
+      file: @file
     },(msg)=>
       @load(msg.content,@project.sprite_table)
       @update()
@@ -40,7 +48,27 @@ class @ProjectMap extends MicroMap
       if @project.app.map_editor.selected_map == @name
         @project.app.map_editor.currentMapUpdated()
 
-  rename:(@name)->
-    @file = @name+".json"
-    @filename = @file
+  getThumbnailElement:()->
+    if not @thumbnail?
+      @thumbnail = document.createElement "canvas"
+      @thumbnail.width = 128
+      @thumbnail.height = 96
+      context = @thumbnail.getContext "2d"
+      context.fillStyle = "#000"
+      context.fillRect(0,0,128,96)
+      @canvases.push(@thumbnail)
+      @update()
+      @updateCanvases()
+    @thumbnail
+
+  rename:(name)->
+    delete @project.map_table[@name]
+    @name = name
+    @project.map_table[@name] = @
+
+    @filename = @name + "." + @ext
+    @file = "maps/"+@filename
     @url = @project.getFullURL()+@file
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""

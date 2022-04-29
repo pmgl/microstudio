@@ -303,6 +303,7 @@ class @Project
     m = new ProjectMap @,file.file,file.size
     @map_table[m.name] = m
     @map_list.push m
+    @map_folder.push m
     m
 
   getMap:(name)->
@@ -318,14 +319,14 @@ class @Project
   getAsset:(name)->
     @asset_table[name]
 
-  createMap:()->
-    count = 1
-    loop
-      filename = "map#{count++}"
-      break if not @getMap(filename)?
+  createMap:(basename="map")->
+    name = basename
+    count = 2
+    while @getMap(name)
+      name = "#{basename}#{count++}"
 
     m = @addMap
-          file: filename+".json"
+          file: name+".json"
           size: 0
 
     @notifyListeners "maplist"

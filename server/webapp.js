@@ -115,7 +115,7 @@ this.WebApp = (function() {
             title: translator.get("%PROJECT% - by %USER%").replace("%PROJECT%", project.title).replace("%USER%", user.nick),
             description: project.description,
             long_description: project.description,
-            poster: (project.files != null) && (project.files["sprites/poster.png"] != null) ? "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/poster.png" : "https://microstudio.dev/img/microstudio.jpg"
+            poster: (project.files != null) && (project.files["sprites/poster.png"] != null) ? "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/poster.png" : "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/icon.png"
           });
           return res.send(page);
         } else if ((_this.home_page[lang] == null) || !_this.server.use_cache) {
@@ -512,7 +512,7 @@ this.WebApp = (function() {
         });
       };
     })(this));
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sprites\/[A-Za-z0-9_]+.png$/, (function(_this) {
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sprites\/[A-Za-z0-9_-]+.png$/, (function(_this) {
       return function(req, res) {
         var access, image, project, s, user;
         s = req.path.split("/");
@@ -534,7 +534,7 @@ this.WebApp = (function() {
         });
       };
     })(this));
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/maps\/[A-Za-z0-9_]+.json$/, (function(_this) {
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/maps\/[A-Za-z0-9_-]+.json$/, (function(_this) {
       return function(req, res) {
         var access, map, project, s, user;
         s = req.path.split("/");

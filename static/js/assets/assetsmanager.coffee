@@ -246,3 +246,30 @@ class @CodeSnippet
   setIndex:(index)->
     if @list? and index<@list.length
       @input.value = @list[index].value
+
+class @CodeSnippetField
+  constructor:(@app,query)->
+    @element = document.querySelector query
+    @input = @element.querySelector "input"
+    @i = @element.querySelector("i")
+
+    copyable = true
+    @i.addEventListener "click",()=>
+      return if not copyable
+
+      code = @input.value
+      navigator.clipboard.writeText code
+      @input.value = @app.translator.get "Copied!"
+      copyable = false
+
+      @i.classList.remove "fa-copy"
+      @i.classList.add "fa-check"
+
+      setTimeout (()=>
+        @i.classList.remove "fa-check"
+        @i.classList.add "fa-copy"
+        @input.value = @code
+        copyable = true),1000
+
+  set:(@code)->
+    @input.value = @code

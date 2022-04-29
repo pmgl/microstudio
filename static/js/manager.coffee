@@ -1,7 +1,5 @@
 class @Manager
   constructor:(@app)->
-    @box_width = 64
-    @box_height = 84
 
   init:()->
     @folder_view = new FolderView @,document.getElementById("#{@item}list")
@@ -24,6 +22,7 @@ class @Manager
       @folder_view.setSelectedFolder f
       @folder_view.editFolderName f
 
+    document.getElementById("#{@item}-name").disabled = true
     @name_validator = new InputValidator document.getElementById("#{@item}-name"),
       document.getElementById("#{@item}-name-button"),
       null,
@@ -52,6 +51,10 @@ class @Manager
             @app.project[@update_list]()
             if @selectedItemRenamed?
               @selectedItemRenamed()
+            else
+              @setSelectedItem item.name
+        else
+          document.getElementById("#{@item}-name").value = item.shortname
 
     @name_validator.regex = RegexLib.filename
 
@@ -116,11 +119,12 @@ class @Manager
     @selected_item = item
     @folder_view.setSelectedItem item
     if @selected_item?
-      @name_validator.update()
       document.getElementById("#{@item}-name").disabled = false
       item = @app.project[@get_item](@selected_item)
 
       document.getElementById("#{@item}-name").value = if item? then item.shortname else ""
+      @name_validator.update()
+
       if item? and item.uploading
         document.getElementById("#{@item}-name").disabled = true
     else

@@ -5,14 +5,20 @@ this.ProjectMap = (function(superClass) {
   extend(ProjectMap, superClass);
 
   function ProjectMap(project, file, size) {
+    var s;
     this.project = project;
     this.file = file;
     this.size = size != null ? size : 0;
     ProjectMap.__super__.constructor.call(this, 16, 10, 16, 16, this.project.sprite_table);
     this.url = this.project.getFullURL() + this.file;
     this.canvases = [];
-    this.name = this.file.substring(0, this.file.length - 5);
+    this.name = this.file.split(".")[0];
+    this.ext = this.file.split(".")[1];
     this.filename = this.file;
+    this.file = "maps/" + this.file;
+    s = this.name.split("-");
+    this.shortname = s[s.length - 1];
+    this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
     this.loadFile();
   }
 
@@ -31,23 +37,24 @@ this.ProjectMap = (function(superClass) {
   };
 
   ProjectMap.prototype.updateCanvas = function(c) {
-    var context, h, r, w;
-    r = Math.min(96 / this.width, 96 / this.height);
+    var context, h, r, r1, r2, w;
+    r1 = Math.max(128 / this.width, 96 / this.height);
+    r2 = Math.min(128 / this.width, 96 / this.height);
+    r = (r1 + r2) / 2;
     w = r * this.width;
     h = r * this.height;
-    c.width = 96;
-    c.height = 96;
     context = c.getContext("2d");
-    context.clearRect(0, 0, c.width, c.height);
+    context.fillStyle = "#666";
+    context.fillRect(0, 0, c.width, c.height);
     context.imageSmoothingEnabled = false;
-    return context.drawImage(this.canvas, 48 - w / 2, 48 - h / 2, w, h);
+    return context.drawImage(this.canvas, c.width / 2 - w / 2, c.height / 2 - h / 2, w, h);
   };
 
   ProjectMap.prototype.loadFile = function() {
     return this.project.app.client.sendRequest({
       name: "read_project_file",
       project: this.project.id,
-      file: "maps/" + this.file
+      file: this.file
     }, (function(_this) {
       return function(msg) {
         _this.load(msg.content, _this.project.sprite_table);
@@ -60,11 +67,33 @@ this.ProjectMap = (function(superClass) {
     })(this));
   };
 
+  ProjectMap.prototype.getThumbnailElement = function() {
+    var context;
+    if (this.thumbnail == null) {
+      this.thumbnail = document.createElement("canvas");
+      this.thumbnail.width = 128;
+      this.thumbnail.height = 96;
+      context = this.thumbnail.getContext("2d");
+      context.fillStyle = "#000";
+      context.fillRect(0, 0, 128, 96);
+      this.canvases.push(this.thumbnail);
+      this.update();
+      this.updateCanvases();
+    }
+    return this.thumbnail;
+  };
+
   ProjectMap.prototype.rename = function(name) {
+    var s;
+    delete this.project.map_table[this.name];
     this.name = name;
-    this.file = this.name + ".json";
-    this.filename = this.file;
-    return this.url = this.project.getFullURL() + this.file;
+    this.project.map_table[this.name] = this;
+    this.filename = this.name + "." + this.ext;
+    this.file = "maps/" + this.filename;
+    this.url = this.project.getFullURL() + this.file;
+    s = this.name.split("-");
+    this.shortname = s[s.length - 1];
+    return this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
   };
 
   return ProjectMap;

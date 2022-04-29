@@ -1,6 +1,21 @@
-this.MapEditor = (function() {
+var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+this.MapEditor = (function(superClass) {
+  extend(MapEditor, superClass);
+
   function MapEditor(app) {
     this.app = app;
+    this.folder = "maps";
+    this.item = "map";
+    this.list_change_event = "maplist";
+    this.get_item = "getMap";
+    this.use_thumbnails = false;
+    this.extensions = ["json"];
+    this.update_list = "updateMapList";
+    this.init();
+    this.mapeditor_splitbar = new SplitBar("mapeditor-container", "horizontal");
+    this.mapeditor_splitbar.setPosition(80);
     this.mapview = new MapView(this);
     this.tilepicker = new TilePicker(this);
     document.getElementById("mapeditor-wrapper").appendChild(this.mapview.canvas);
@@ -80,8 +95,10 @@ this.MapEditor = (function() {
     this.map_underlay_select = document.getElementById("map-underlay-select");
     this.map_underlay_select.addEventListener("change", (function(_this) {
       return function() {
+        var name;
         console.info(_this.map_underlay_select.value);
-        _this.map_underlay = _this.map_underlay_select.value;
+        name = _this.map_underlay_select.value.replace(/\//g, "-");
+        _this.map_underlay = name;
         return _this.mapview.update();
       };
     })(this));
@@ -95,16 +112,6 @@ this.MapEditor = (function() {
         }
       };
     })(this));
-    this.map_name_validator = new InputValidator(document.getElementById("map-name"), document.getElementById("map-name-button"), null, (function(_this) {
-      return function(value) {
-        if (_this.app.project.isLocked("maps/" + _this.selected_map + ".json")) {
-          return;
-        }
-        _this.app.project.lockFile("maps/" + _this.selected_map + ".json");
-        return _this.saveNameChange(value[0]);
-      };
-    })(this));
-    this.map_name_validator.regex = RegexLib.filename;
     this.map_size_validator = new InputValidator([document.getElementById("map-width"), document.getElementById("map-height")], document.getElementById("map-size-button"), null, (function(_this) {
       return function(value) {
         if (_this.app.project.isLocked("maps/" + _this.selected_map + ".json")) {
@@ -123,6 +130,8 @@ this.MapEditor = (function() {
         return _this.saveDimensionChange();
       };
     })(this));
+    this.map_code_tip = new CodeSnippetField(this.app, "#map-code-tip");
+    this.map_code_tip.set("Example");
   }
 
   MapEditor.prototype.mapChanged = function() {
@@ -160,14 +169,20 @@ this.MapEditor = (function() {
     return this.setSelectedMap(null);
   };
 
+  MapEditor.prototype.update = function() {
+    MapEditor.__super__.update.call(this);
+    if (this.mapeditor_splitbar.position > 90) {
+      this.mapeditor_splitbar.setPosition(80);
+    }
+    return this.mapeditor_splitbar.update();
+  };
+
   MapEditor.prototype.projectUpdate = function(change) {
     var c, name;
+    MapEditor.__super__.projectUpdate.call(this, change);
     switch (change) {
       case "spritelist":
         this.rebuildSpriteList();
-        break;
-      case "maplist":
-        this.rebuildMapList();
         break;
       case "locks":
         this.updateCurrentFileLock();
@@ -235,34 +250,45 @@ this.MapEditor = (function() {
     })(this)), 10000);
   };
 
-  MapEditor.prototype.createMap = function() {
+  MapEditor.prototype.createAsset = function(folder, name, content) {
     var map;
+    if (name == null) {
+      name = "map";
+    }
+    if (content == null) {
+      content = "";
+    }
     this.checkSave(true);
-    map = this.app.project.createMap();
-    this.setSelectedMap(map.name);
+    if (folder != null) {
+      name = folder.getFullDashPath() + ("-" + name);
+      folder.setOpen(true);
+    }
+    map = this.app.project.createMap(name);
     map.resize(this.mapview.map.width, this.mapview.map.height, this.mapview.map.block_width, this.mapview.map.block_height);
-    this.mapview.setMap(map);
-    this.setSelectedMap(map.name);
-    this.mapview.editable = true;
-    this.saveMap((function(_this) {
-      return function() {};
+    name = map.name;
+    return this.app.client.sendRequest({
+      name: "write_project_file",
+      project: this.app.project.id,
+      file: "maps/" + name + ".json",
+      properties: {},
+      content: map.save()
+    }, (function(_this) {
+      return function(msg) {
+        _this.app.project.updateMapList();
+        return _this.setSelectedItem(name);
+      };
     })(this));
-    return this.tilepicker.update();
+  };
+
+  MapEditor.prototype.setSelectedItem = function(name) {
+    this.setSelectedMap(name);
+    return MapEditor.__super__.setSelectedItem.call(this, name);
   };
 
   MapEditor.prototype.setSelectedMap = function(map) {
-    var e, i, j, len, len1, list, m;
+    var e, m;
     this.selected_map = map;
-    list = document.getElementById("map-list").childNodes;
     if (this.selected_map != null) {
-      for (i = 0, len = list.length; i < len; i++) {
-        e = list[i];
-        if (e.getAttribute("id") === ("project-map-" + map)) {
-          e.classList.add("selected");
-        } else {
-          e.classList.remove("selected");
-        }
-      }
       m = this.app.project.getMap(map);
       this.mapview.setMap(m);
       this.mapview.editable = true;
@@ -270,8 +296,6 @@ this.MapEditor = (function() {
       document.getElementById("map-height").value = m.height;
       document.getElementById("map-block-width").value = m.block_width;
       document.getElementById("map-block-height").value = m.block_height;
-      document.getElementById("map-name").value = m.name;
-      this.map_name_validator.update();
       this.map_size_validator.update();
       this.map_blocksize_validator.update();
       e = document.getElementById("mapeditor-wrapper");
@@ -279,11 +303,6 @@ this.MapEditor = (function() {
         e.firstChild.style.display = "inline-block";
       }
     } else {
-      for (j = 0, len1 = list.length; j < len1; j++) {
-        e = list[j];
-        e.classList.remove("selected");
-      }
-      document.getElementById("map-name").value = "";
       e = document.getElementById("mapeditor-wrapper");
       if (e.firstChild != null) {
         e.firstChild.style.display = "none";
@@ -291,7 +310,8 @@ this.MapEditor = (function() {
     }
     this.updateCurrentFileLock();
     this.tilepicker.update();
-    return this.setCoordinates(-1, -1);
+    this.setCoordinates(-1, -1);
+    return this.updateCodeTip();
   };
 
   MapEditor.prototype.setMap = function(data) {
@@ -306,18 +326,11 @@ this.MapEditor = (function() {
     return this.tilepicker.update();
   };
 
-  MapEditor.prototype.rebuildMapList = function() {
-    var i, j, len, len1, list, m, option, ref, ref1, select;
-    list = document.getElementById("map-list");
-    list.innerHTML = "";
-    ref = this.app.project.map_list;
-    for (i = 0, len = ref.length; i < len; i++) {
-      m = ref[i];
-      list.appendChild(this.createMapBox(m));
-    }
-    this.updateActiveUsers();
+  MapEditor.prototype.rebuildList = function() {
+    var i, len, m, option, ref, select;
+    MapEditor.__super__.rebuildList.call(this);
     if ((this.selected_map != null) && (this.app.project.getMap(this.selected_map) == null)) {
-      this.setSelectedMap(null);
+      this.setSelectedItem(null);
     }
     select = document.getElementById("map-underlay-select");
     select.innerHTML = "";
@@ -326,13 +339,13 @@ this.MapEditor = (function() {
     option.value = " ";
     option.innerText = " ";
     select.appendChild(option);
-    ref1 = this.app.project.map_list;
-    for (j = 0, len1 = ref1.length; j < len1; j++) {
-      m = ref1[j];
+    ref = this.app.project.map_list;
+    for (i = 0, len = ref.length; i < len; i++) {
+      m = ref[i];
       option = document.createElement("option");
       option.name = m.name;
       option.value = m.name;
-      option.innerText = m.name;
+      option.innerText = m.name.replace(/-/g, "/");
       select.appendChild(option);
     }
     if (this.map_underlay != null) {
@@ -360,87 +373,6 @@ this.MapEditor = (function() {
     }
     this.checkSave(true);
     return this.setSelectedMap(s);
-  };
-
-  MapEditor.prototype.updateActiveUsers = function() {
-    var e, file, i, len, list, lock;
-    list = document.getElementById("map-list").childNodes;
-    for (i = 0, len = list.length; i < len; i++) {
-      e = list[i];
-      file = e.id.split("-")[2];
-      lock = this.app.project.isLocked("maps/" + file + ".json");
-      if ((lock != null) && Date.now() < lock.time) {
-        e.querySelector(".active-user").style = "display: block; background: " + (this.app.appui.createFriendColor(lock.user)) + ";";
-      } else {
-        e.querySelector(".active-user").style = "display: none;";
-      }
-    }
-  };
-
-  MapEditor.prototype.createMapBox = function(map) {
-    var activeuser, element, icon, iconbox, text;
-    element = document.createElement("div");
-    element.classList.add("map-box");
-    element.setAttribute("id", "project-map-" + map.name);
-    element.setAttribute("title", map.name);
-    if (map.name === this.selected_map) {
-      element.classList.add("selected");
-    }
-    iconbox = document.createElement("div");
-    iconbox.classList.add("icon-box");
-    icon = document.createElement("canvas");
-    icon.setAttribute("id", "map-image-" + map.name);
-    iconbox.appendChild(icon);
-    map.addCanvas(icon);
-    element.appendChild(iconbox);
-    element.appendChild(document.createElement("br"));
-    text = document.createElement("span");
-    text.innerHTML = map.name;
-    element.appendChild(text);
-    element.addEventListener("click", (function(_this) {
-      return function() {
-        return _this.openMap(map.name);
-      };
-    })(this));
-    activeuser = document.createElement("i");
-    activeuser.classList.add("active-user");
-    activeuser.classList.add("fa");
-    activeuser.classList.add("fa-user");
-    element.appendChild(activeuser);
-    return element;
-  };
-
-  MapEditor.prototype.saveNameChange = function(name) {
-    var old;
-    this.map_name_change = null;
-    name = name.toLowerCase();
-    name = RegexLib.fixFilename(name);
-    document.getElementById("map-name").value = name;
-    if (name !== this.selected_map && RegexLib.filename.test(name) && (this.app.project.getMap(name) == null)) {
-      old = this.selected_map;
-      this.selected_map = name;
-      this.mapview.map.rename(name);
-      this.app.project.changeMapName(old, name);
-      return this.saveMap((function(_this) {
-        return function() {
-          return _this.app.client.sendRequest({
-            name: "delete_project_file",
-            project: _this.app.project.id,
-            file: "maps/" + old + ".json"
-          }, function(msg) {
-            _this.app.project.updateMapList();
-            if (typeof callback !== "undefined" && callback !== null) {
-              return callback();
-            }
-          });
-        };
-      })(this));
-    } else {
-      document.getElementById("map-name").value = this.selected_map;
-      if (typeof callback !== "undefined" && callback !== null) {
-        return callback();
-      }
-    }
   };
 
   MapEditor.prototype.saveDimensionChange = function() {
@@ -650,9 +582,27 @@ this.MapEditor = (function() {
     }
   };
 
+  MapEditor.prototype.updateCodeTip = function() {
+    var code, h, map, w;
+    if ((this.selected_map != null) && (this.app.project.getMap(this.selected_map) != null)) {
+      map = this.app.project.getMap(this.selected_map);
+      if (map.width > map.height) {
+        h = 200;
+        w = Math.round(map.width / map.height * 200);
+      } else {
+        w = 200;
+        h = Math.round(map.height / map.width * 200);
+      }
+      code = "screen.drawMap( \"" + (this.selected_map.replace(/-/g, "/")) + "\", 0, 0, " + w + ", " + h + " )";
+    } else {
+      code = "";
+    }
+    return this.map_code_tip.set(code);
+  };
+
   return MapEditor;
 
-})();
+})(Manager);
 
 this.BackgroundColorPicker = (function() {
   function BackgroundColorPicker(editor, callback1) {

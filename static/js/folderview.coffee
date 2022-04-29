@@ -90,6 +90,11 @@ class @FolderView
       icon.setAttribute "id","asset-image-#{item.name}"
       element.appendChild icon
       icon.draggable = false
+    else if item.getThumbnailElement?
+      icon = item.getThumbnailElement()
+      #icon.setAttribute "id","asset-image-#{item.name}"
+      element.appendChild icon
+      icon.draggable = false
 
     text = document.createElement "div"
     text.classList.add "asset-box-name"

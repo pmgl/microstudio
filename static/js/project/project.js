@@ -440,6 +440,7 @@ this.Project = (function() {
     m = new ProjectMap(this, file.file, file.size);
     this.map_table[m.name] = m;
     this.map_list.push(m);
+    this.map_folder.push(m);
     return m;
   };
 
@@ -460,17 +461,18 @@ this.Project = (function() {
     return this.asset_table[name];
   };
 
-  Project.prototype.createMap = function() {
-    var count, filename, m;
-    count = 1;
-    while (true) {
-      filename = "map" + (count++);
-      if (this.getMap(filename) == null) {
-        break;
-      }
+  Project.prototype.createMap = function(basename) {
+    var count, m, name;
+    if (basename == null) {
+      basename = "map";
+    }
+    name = basename;
+    count = 2;
+    while (this.getMap(name)) {
+      name = "" + basename + (count++);
     }
     m = this.addMap({
-      file: filename + ".json",
+      file: name + ".json",
       size: 0
     });
     this.notifyListeners("maplist");

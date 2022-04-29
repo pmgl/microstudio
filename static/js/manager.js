@@ -1,8 +1,6 @@
 this.Manager = (function() {
   function Manager(app) {
     this.app = app;
-    this.box_width = 64;
-    this.box_height = 84;
   }
 
   Manager.prototype.init = function() {
@@ -29,6 +27,7 @@ this.Manager = (function() {
         return _this.folder_view.editFolderName(f);
       };
     })(this));
+    document.getElementById(this.item + "-name").disabled = true;
     this.name_validator = new InputValidator(document.getElementById(this.item + "-name"), document.getElementById(this.item + "-name-button"), null, (function(_this) {
       return function(value) {
         var item, name, old;
@@ -61,8 +60,12 @@ this.Manager = (function() {
             _this.app.project[_this.update_list]();
             if (_this.selectedItemRenamed != null) {
               return _this.selectedItemRenamed();
+            } else {
+              return _this.setSelectedItem(item.name);
             }
           });
+        } else {
+          return document.getElementById(_this.item + "-name").value = item.shortname;
         }
       };
     })(this));
@@ -150,10 +153,10 @@ this.Manager = (function() {
     this.selected_item = item;
     this.folder_view.setSelectedItem(item);
     if (this.selected_item != null) {
-      this.name_validator.update();
       document.getElementById(this.item + "-name").disabled = false;
       item = this.app.project[this.get_item](this.selected_item);
       document.getElementById(this.item + "-name").value = item != null ? item.shortname : "";
+      this.name_validator.update();
       if ((item != null) && item.uploading) {
         return document.getElementById(this.item + "-name").disabled = true;
       }
