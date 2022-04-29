@@ -95,6 +95,10 @@ class @ExportFeatures
         {
           name: "assets",
           fileType: "binary"
+        },
+        {
+          name: "assets_th",
+          fileType: "binary"
         }
       ]
 
