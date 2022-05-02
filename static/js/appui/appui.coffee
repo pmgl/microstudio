@@ -149,11 +149,6 @@ class AppUI
     @debug_splitbar.closed2 = true
     @debug_splitbar.splitbar_size = 12
 
-    @sprites_splitbar = new SplitBar("sprites-section","horizontal")
-    @sprites_splitbar.setPosition(20)
-    #@maps_splitbar = new SplitBar("maps-section","horizontal")
-    #@maps_splitbar.setPosition(20)
-
     @createSideMenuAutoScroll()
 
     @setAction "backtoprojects",()=>
@@ -325,11 +320,7 @@ class AppUI
       @app.editor.update()
 
     if section == "sprites"
-      @sprites_splitbar.update()
-      if @sprites_splitbar.position/100*@sprites_splitbar.total_width<64
-        @sprites_splitbar.setPosition 100*150/@sprites_splitbar.total_width
-      else if @sprites_splitbar.position>90
-        @sprites_splitbar.setPosition 50
+      @app.sprite_editor.update()
 
     if section == "maps"
       @app.map_editor.update()

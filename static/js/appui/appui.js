@@ -178,8 +178,6 @@ AppUI = (function() {
     this.debug_splitbar = new SplitBar("terminal-debug-container", "horizontal");
     this.debug_splitbar.closed2 = true;
     this.debug_splitbar.splitbar_size = 12;
-    this.sprites_splitbar = new SplitBar("sprites-section", "horizontal");
-    this.sprites_splitbar.setPosition(20);
     this.createSideMenuAutoScroll();
     this.setAction("backtoprojects", (function(_this) {
       return function() {
@@ -426,12 +424,7 @@ AppUI = (function() {
       this.app.editor.update();
     }
     if (section === "sprites") {
-      this.sprites_splitbar.update();
-      if (this.sprites_splitbar.position / 100 * this.sprites_splitbar.total_width < 64) {
-        this.sprites_splitbar.setPosition(100 * 150 / this.sprites_splitbar.total_width);
-      } else if (this.sprites_splitbar.position > 90) {
-        this.sprites_splitbar.setPosition(50);
-      }
+      this.app.sprite_editor.update();
     }
     if (section === "maps") {
       this.app.map_editor.update();

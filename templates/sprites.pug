@@ -1,11 +1,12 @@
 div.sprites-left
-  div.assets-drop
-    div <i class="fas fa-arrow-circle-down"></i>
-    div #{translator.get("You can drop PNG or JPEG files here")}
+  div.assets-bar#sprite-asset-bar
+    div.create-asset-button <i class="fa fa-plus-square"></i> #{translator.get("Sprite")}
+    i.fa.fa-folder-plus.create-folder-button(title=translator.get("New Folder"))
 
-  div.create-sprite-button#create-sprite-button <i class="fa fa-plus-square"></i> <span>#{translator.get("Add Sprite")}</span>
-  div.spritelist#spritelist
-    div.sprite-list#sprite-list
+  div.create-asset-button#create-sprite-button(style="display:none") <i class="fa fa-plus-square"></i> #{translator.get("Add Sprite")}
+
+  div.assetlist#spritelist
+    div.asset-list#sprite-list
 
 div.sprites-splitbar
 

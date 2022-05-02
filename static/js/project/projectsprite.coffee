@@ -10,8 +10,14 @@ class @ProjectSprite extends Sprite
       @url = @project.getFullURL()+"sprites/"+@file
       super @url,undefined,properties
 
-    @name = @file.substring 0,@file.length-4
+    @name = @file.split(".")[0]
+    @ext = @file.split(".")[1]
     @filename = @file
+    @file = "sounds/#{@file}"
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""
+
     @images = []
     @load_listeners = []
 
@@ -52,7 +58,14 @@ class @ProjectSprite extends Sprite
     @project.notifyListeners @
     return
 
-  rename:(@name)->
-    @file = @name + ".png"
-    @filename = @file
-    @url = @project.getFullURL()+"sprites/"+@file
+  rename:(name)->
+    delete @project.sprite_table[@name]
+    @name = name
+    @project.sprite_table[@name] = @
+
+    @filename = @name + "." + @ext
+    @file = "sprites/"+@filename
+    @url = @project.getFullURL()+@file
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""

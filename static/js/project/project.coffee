@@ -216,6 +216,7 @@ class @Project
     s = new ProjectSprite @,sprite.file,null,null,sprite.properties,sprite.size
     @sprite_table[s.name] = s
     @sprite_list.push s
+    @sprite_folder.push s
     s
 
   getSprite:(name)->
@@ -233,6 +234,7 @@ class @Project
     sprite = new ProjectSprite @,filename+".png",width,height
     @sprite_table[sprite.name] = sprite
     @sprite_list.push sprite
+    @sprite_folder.push sprite
     @notifyListeners "spritelist"
     sprite
 

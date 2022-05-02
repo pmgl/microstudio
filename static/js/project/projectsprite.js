@@ -5,6 +5,7 @@ this.ProjectSprite = (function(superClass) {
   extend(ProjectSprite, superClass);
 
   function ProjectSprite(project, name, width, height, properties, size1) {
+    var s;
     this.project = project;
     this.size = size1 != null ? size1 : 0;
     this.properties = properties;
@@ -17,8 +18,13 @@ this.ProjectSprite = (function(superClass) {
       this.url = this.project.getFullURL() + "sprites/" + this.file;
       ProjectSprite.__super__.constructor.call(this, this.url, void 0, properties);
     }
-    this.name = this.file.substring(0, this.file.length - 4);
+    this.name = this.file.split(".")[0];
+    this.ext = this.file.split(".")[1];
     this.filename = this.file;
+    this.file = "sounds/" + this.file;
+    s = this.name.split("-");
+    this.shortname = s[s.length - 1];
+    this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
     this.images = [];
     this.load_listeners = [];
   }
@@ -86,11 +92,17 @@ this.ProjectSprite = (function(superClass) {
     this.project.notifyListeners(this);
   };
 
-  ProjectSprite.prototype.rename = function(name1) {
-    this.name = name1;
-    this.file = this.name + ".png";
-    this.filename = this.file;
-    return this.url = this.project.getFullURL() + "sprites/" + this.file;
+  ProjectSprite.prototype.rename = function(name) {
+    var s;
+    delete this.project.sprite_table[this.name];
+    this.name = name;
+    this.project.sprite_table[this.name] = this;
+    this.filename = this.name + "." + this.ext;
+    this.file = "sprites/" + this.filename;
+    this.url = this.project.getFullURL() + this.file;
+    s = this.name.split("-");
+    this.shortname = s[s.length - 1];
+    return this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
   };
 
   return ProjectSprite;
