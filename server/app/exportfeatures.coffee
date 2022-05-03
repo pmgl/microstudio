@@ -147,7 +147,7 @@ class @ExportFeatures
                 #console.info "reading: "+JSON.stringify s
                 @webapp.server.content.files.read "#{user.id}/#{project.id}/sprites/#{s.file}","binary",(content)=>
                   if content?
-                    zip.file(s.file,content)
+                    zip.file(s.file.replace(/-/g,"/"),content)
                   queue.next()
           queue.next()
 

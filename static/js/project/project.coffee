@@ -123,9 +123,7 @@ class @Project
     @notifyListeners("locks") if change
 
   changeSpriteName:(old,name)->
-    @sprite_table[name] = @sprite_table[old]
-    delete @sprite_table[old]
-
+    old = old.replace /-/g,"/"
     for map in @map_list
       changed = false
       for i in [0..map.width-1] by 1

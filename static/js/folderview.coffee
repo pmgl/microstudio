@@ -114,7 +114,7 @@ class @FolderView
     activeuser.classList.add "fa-user"
     element.appendChild activeuser
 
-    element.draggable = true
+    element.draggable = if item.canBeRenamed? then item.canBeRenamed() else true
     element.addEventListener "dragstart",(event)=>
       @drag_file = item
       event.dataTransfer.setData "text/plain",JSON.stringify

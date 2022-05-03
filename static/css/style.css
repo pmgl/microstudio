@@ -1656,3 +1656,23 @@ img.pixelated {
   image-rendering: -o-pixelated;
   image-rendering: pixelated;
 }
+
+.pick-color-button {
+  display: inline-block ;
+  margin: 7px 10px 7px 0 ;
+  height: 26px ;
+  width: 26px ;
+  border-radius: 5px ;
+  border: solid 1px rgba(255,255,255,.5);
+  background: rgb(0,0,0) ;
+  vertical-align: middle ;
+  cursor: pointer ;
+}
+
+.editor-coordinates {
+  position: absolute ;
+  right: 0 ;
+  top: 0 ;
+  bottom: 0 ;
+  padding: 10px 20px ;
+}

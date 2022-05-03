@@ -185,6 +185,23 @@ this.SpriteEditor = (function(superClass) {
         return event.preventDefault();
       };
     })(this));
+    this.code_tip = new CodeSnippetField(this.app, "#sprite-code-tip");
+    this.background_color_picker = new BackgroundColorPicker(this, ((function(_this) {
+      return function(color) {
+        _this.spriteview.updateBackgroundColor();
+        return document.getElementById("sprite-background-color").style.background = color;
+      };
+    })(this)), "sprite");
+    document.getElementById("sprite-background-color").addEventListener("mousedown", (function(_this) {
+      return function(event) {
+        if (_this.background_color_picker.shown) {
+          return _this.background_color_picker.hide();
+        } else {
+          _this.background_color_picker.show();
+          return event.stopPropagation();
+        }
+      };
+    })(this));
   }
 
   SpriteEditor.prototype.createToolButton = function(tool) {
@@ -371,6 +388,7 @@ this.SpriteEditor = (function(superClass) {
   };
 
   SpriteEditor.prototype.projectOpened = function() {
+    SpriteEditor.__super__.projectOpened.call(this);
     this.app.project.addListener(this);
     return this.setSelectedSprite(null);
   };
@@ -378,6 +396,11 @@ this.SpriteEditor = (function(superClass) {
   SpriteEditor.prototype.projectUpdate = function(change) {
     var c, name, sprite;
     SpriteEditor.__super__.projectUpdate.call(this, change);
+    switch (change) {
+      case "locks":
+        this.updateCurrentFileLock();
+        this.updateActiveUsers();
+    }
     if (change instanceof ProjectSprite) {
       name = change.name;
       c = document.querySelector("#sprite-image-" + name);
@@ -497,6 +520,15 @@ this.SpriteEditor = (function(superClass) {
   };
 
   SpriteEditor.prototype.setSelectedItem = function(name) {
+    var sprite;
+    this.checkSave(true);
+    sprite = this.app.project.getSprite(name);
+    if (sprite != null) {
+      this.spriteview.setSprite(sprite);
+    }
+    this.spriteview.windowResized();
+    this.spriteview.update();
+    this.spriteview.editable = true;
     this.setSelectedSprite(name);
     return SpriteEditor.__super__.setSelectedItem.call(this, name);
   };
@@ -528,7 +560,9 @@ this.SpriteEditor = (function(superClass) {
     }
     this.updateCurrentFileLock();
     this.updateSelectionHints();
-    return this.auto_palette.update();
+    this.auto_palette.update();
+    this.updateCodeTip();
+    return this.setCoordinates(-1, -1);
   };
 
   SpriteEditor.prototype.setSprite = function(data) {
@@ -553,74 +587,11 @@ this.SpriteEditor = (function(superClass) {
     })(this);
   };
 
-  SpriteEditor.prototype.setColor = function(color) {
-    this.color = color;
+  SpriteEditor.prototype.setColor = function(color1) {
+    this.color = color1;
     this.spriteview.setColor(this.color);
     this.auto_palette.colorPicked(this.color);
     return document.getElementById("colortext").value = this.color;
-  };
-
-  SpriteEditor.prototype.openSprite = function(s) {
-    this.checkSave(true);
-    this.spriteview.setSprite(this.app.project.getSprite(s));
-    this.spriteview.windowResized();
-    this.spriteview.update();
-    this.spriteview.editable = true;
-    return this.setSelectedSprite(s);
-  };
-
-  SpriteEditor.prototype.createSpriteThumb = function(sprite) {
-    var canvas, mouseover, update;
-    canvas = document.createElement("canvas");
-    canvas.width = 64;
-    canvas.height = 64;
-    sprite.addLoadListener((function(_this) {
-      return function() {
-        var context, frame, h, r, w;
-        context = canvas.getContext("2d");
-        frame = sprite.frames[0].getCanvas();
-        r = Math.min(64 / frame.width, 64 / frame.height);
-        context.imageSmoothingEnabled = false;
-        w = r * frame.width;
-        h = r * frame.height;
-        return context.drawImage(frame, 32 - w / 2, 32 - h / 2, w, h);
-      };
-    })(this));
-    mouseover = false;
-    update = (function(_this) {
-      return function() {
-        var context, dt, frame, h, r, t, w;
-        if (mouseover && sprite.frames.length > 1) {
-          requestAnimationFrame(function() {
-            return update();
-          });
-        }
-        dt = 1000 / sprite.fps;
-        t = Date.now();
-        frame = mouseover ? Math.floor(t / dt) % sprite.frames.length : 0;
-        context = canvas.getContext("2d");
-        context.imageSmoothingEnabled = false;
-        context.clearRect(0, 0, 64, 64);
-        frame = sprite.frames[frame].getCanvas();
-        r = Math.min(64 / frame.width, 64 / frame.height);
-        w = r * frame.width;
-        h = r * frame.height;
-        return context.drawImage(frame, 32 - w / 2, 32 - h / 2, w, h);
-      };
-    })(this);
-    canvas.addEventListener("mouseenter", (function(_this) {
-      return function() {
-        mouseover = true;
-        return update();
-      };
-    })(this));
-    canvas.addEventListener("mouseout", (function(_this) {
-      return function() {
-        return mouseover = false;
-      };
-    })(this));
-    canvas.updateSprite = update;
-    return canvas;
   };
 
   SpriteEditor.prototype.spriteDimensionChanged = function(dim) {
@@ -972,6 +943,32 @@ this.SpriteEditor = (function(superClass) {
       };
     })(this));
     return reader.readAsDataURL(file);
+  };
+
+  SpriteEditor.prototype.updateCodeTip = function() {
+    var code, sprite;
+    if ((this.selected_sprite != null) && (this.app.project.getSprite(this.selected_sprite) != null)) {
+      sprite = this.app.project.getSprite(this.selected_sprite);
+      code = "screen.drawSprite( \"" + (this.selected_sprite.replace(/-/g, "/")) + "\", x, y, " + sprite.width + ", " + sprite.height + " )";
+    } else {
+      code = "";
+    }
+    return this.code_tip.set(code);
+  };
+
+  SpriteEditor.prototype.setCoordinates = function(x, y) {
+    var e;
+    e = document.getElementById("sprite-coordinates");
+    if (x < 0 || y < 0) {
+      return e.innerText = "";
+    } else {
+      return e.innerText = x + " , " + y;
+    }
+  };
+
+  SpriteEditor.prototype.renameItem = function(item, name) {
+    this.app.project.changeSpriteName(item.name, name);
+    return SpriteEditor.__super__.renameItem.call(this, item, name);
   };
 
   return SpriteEditor;

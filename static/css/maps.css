@@ -124,8 +124,13 @@
   width: 100% ;
 }
 .map-sprite-list {
+  position: absolute ;
+  top: 300px ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
   text-align: center ;
-  padding: 10px ;
+  padding: 2px ;
 }
 .mapinfo {
   position: absolute;
@@ -224,27 +229,9 @@
   white-space: nowrap ;
   overflow: hidden ;
 }
-#map-background-color {
-  display: inline-block ;
-  margin: 7px 10px 7px 0 ;
-  height: 26px ;
-  width: 26px ;
-  border-radius: 5px ;
-  border: solid 1px rgba(255,255,255,.5);
-  background: rgb(0,0,0) ;
-  vertical-align: middle ;
-  cursor: pointer ;
-}
 #map-underlay-select {
   padding: 3px 6px ;
   border-radius: 5px ;
-}
-#map-coordinates {
-  position: absolute ;
-  right: 0 ;
-  top: 0 ;
-  bottom: 0 ;
-  padding: 10px 20px ;
 }
 .mapeditor-splitbar {
   background: hsl(200,30%,30%);
@@ -321,7 +308,7 @@
   text-align: center ;
 }
 .map-tilepicker canvas {
-  margin: 20px 10px ;
+  margin: 10px 10px ;
   box-shadow: 0 0 3px #FFF ;
   cursor: crosshair ;
 }

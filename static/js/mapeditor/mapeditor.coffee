@@ -90,7 +90,6 @@ class @MapEditor extends Manager
         @saveDimensionChange()
 
     @map_code_tip = new CodeSnippetField(@app,"#map-code-tip")
-    @map_code_tip.set "Example"
 
   mapChanged:()->
     return if @ignore_changes
@@ -113,6 +112,7 @@ class @MapEditor extends Manager
     @checkSave(true,callback)
 
   projectOpened:()->
+    super()
     @app.project.addListener @
     @setSelectedMap null
 
@@ -121,6 +121,7 @@ class @MapEditor extends Manager
     if @mapeditor_splitbar.position>90
       @mapeditor_splitbar.setPosition 80
     @mapeditor_splitbar.update()
+    @mapview.windowResized()
 
   projectUpdate:(change)->
     super(change)
@@ -330,41 +331,34 @@ class @MapEditor extends Manager
           @setSelectedMap null
 
   rebuildSpriteList:()->
-    root = document.getElementById("map-sprite-list")
-    root.innerHTML = ""
+    if not @sprite_folder_view?
+      manager =
+        folder: "sprites"
+        item: "sprite"
+        openItem:(item)=>
+          @mapview.sprite = item
+          @sprite_folder_view.setSelectedItem item
+          @tilepicker.update()
+
+      @sprite_folder_view = new FolderView manager,document.querySelector("#map-sprite-list")
+      @sprite_folder_view.editable = false
+
+    folder = new ProjectFolder(null,"sprites")
+    class ProjectSpriteClone
+      constructor:(@project_sprite)->
+        @name = @project_sprite.name
+        @shortname = @project_sprite.shortname
+
+      getThumbnailElement:()->
+        @project_sprite.getThumbnailElement()
+
+      canBeRenamed:()-> false
 
     for s in @app.project.sprite_list
-      root.appendChild @createSpriteBox s
+      folder.push new ProjectSpriteClone(s),s.name
 
-  updateSpriteSelection:()->
-    root = document.getElementById("map-sprite-list")
-    for c in root.children
-      if c.id == "map-sprite-#{@mapview.sprite}"
-        c.classList.add "selected"
-      else
-        c.classList.remove "selected"
+    @sprite_folder_view.rebuildList folder
     return
-
-  createSpriteBox:(sprite)->
-    element = document.createElement "div"
-    element.classList.add "map-sprite-box"
-    element.setAttribute "id","map-sprite-#{sprite.name}"
-    element.setAttribute "title",sprite.name
-    if sprite.name == @mapview.sprite
-      element.classList.add "selected"
-
-    icon = @app.sprite_editor.createSpriteThumb(sprite)
-    icon.setAttribute "id","map-sprite-image-#{sprite.name}"
-    element.appendChild icon
-
-    sprite.addImage icon,64
-
-    element.addEventListener "click",()=>
-      @mapview.sprite = sprite.name
-      @updateSpriteSelection()
-      @tilepicker.update()
-
-    element
 
   currentMapUpdated:()->
     @mapview.update()
@@ -443,7 +437,7 @@ class @MapEditor extends Manager
 
 
 class @BackgroundColorPicker
-  constructor:(@editor,@callback)->
+  constructor:(@editor,@callback,@editorid="map")->
     @tool = document.createElement "div"
     @tool.classList.add "value-tool"
 
@@ -454,7 +448,7 @@ class @BackgroundColorPicker
 
     @picker.colorPicked [0,0,0]
 
-    document.getElementById("maps-section").appendChild @tool
+    document.getElementById("#{@editorid}s-section").appendChild @tool
 
     @started = true
     @tool.addEventListener "mousedown",(event)->
@@ -473,7 +467,7 @@ class @BackgroundColorPicker
     @shown = false
 
   show:()->
-    e = document.getElementById("map-background-color")
+    e = document.getElementById(@editorid+"-background-color")
     @y = e.getBoundingClientRect().y
     @x = e.getBoundingClientRect().x+e.getBoundingClientRect().width/2
 

@@ -131,7 +131,6 @@ this.MapEditor = (function(superClass) {
       };
     })(this));
     this.map_code_tip = new CodeSnippetField(this.app, "#map-code-tip");
-    this.map_code_tip.set("Example");
   }
 
   MapEditor.prototype.mapChanged = function() {
@@ -165,6 +164,7 @@ this.MapEditor = (function(superClass) {
   };
 
   MapEditor.prototype.projectOpened = function() {
+    MapEditor.__super__.projectOpened.call(this);
     this.app.project.addListener(this);
     return this.setSelectedMap(null);
   };
@@ -174,7 +174,8 @@ this.MapEditor = (function(superClass) {
     if (this.mapeditor_splitbar.position > 90) {
       this.mapeditor_splitbar.setPosition(80);
     }
-    return this.mapeditor_splitbar.update();
+    this.mapeditor_splitbar.update();
+    return this.mapview.windowResized();
   };
 
   MapEditor.prototype.projectUpdate = function(change) {
@@ -439,53 +440,47 @@ this.MapEditor = (function(superClass) {
   };
 
   MapEditor.prototype.rebuildSpriteList = function() {
-    var i, len, ref, results, root, s;
-    root = document.getElementById("map-sprite-list");
-    root.innerHTML = "";
+    var ProjectSpriteClone, folder, i, len, manager, ref, s;
+    if (this.sprite_folder_view == null) {
+      manager = {
+        folder: "sprites",
+        item: "sprite",
+        openItem: (function(_this) {
+          return function(item) {
+            _this.mapview.sprite = item;
+            _this.sprite_folder_view.setSelectedItem(item);
+            return _this.tilepicker.update();
+          };
+        })(this)
+      };
+      this.sprite_folder_view = new FolderView(manager, document.querySelector("#map-sprite-list"));
+      this.sprite_folder_view.editable = false;
+    }
+    folder = new ProjectFolder(null, "sprites");
+    ProjectSpriteClone = (function() {
+      function ProjectSpriteClone(project_sprite) {
+        this.project_sprite = project_sprite;
+        this.name = this.project_sprite.name;
+        this.shortname = this.project_sprite.shortname;
+      }
+
+      ProjectSpriteClone.prototype.getThumbnailElement = function() {
+        return this.project_sprite.getThumbnailElement();
+      };
+
+      ProjectSpriteClone.prototype.canBeRenamed = function() {
+        return false;
+      };
+
+      return ProjectSpriteClone;
+
+    })();
     ref = this.app.project.sprite_list;
-    results = [];
     for (i = 0, len = ref.length; i < len; i++) {
       s = ref[i];
-      results.push(root.appendChild(this.createSpriteBox(s)));
+      folder.push(new ProjectSpriteClone(s), s.name);
     }
-    return results;
-  };
-
-  MapEditor.prototype.updateSpriteSelection = function() {
-    var c, i, len, ref, root;
-    root = document.getElementById("map-sprite-list");
-    ref = root.children;
-    for (i = 0, len = ref.length; i < len; i++) {
-      c = ref[i];
-      if (c.id === ("map-sprite-" + this.mapview.sprite)) {
-        c.classList.add("selected");
-      } else {
-        c.classList.remove("selected");
-      }
-    }
-  };
-
-  MapEditor.prototype.createSpriteBox = function(sprite) {
-    var element, icon;
-    element = document.createElement("div");
-    element.classList.add("map-sprite-box");
-    element.setAttribute("id", "map-sprite-" + sprite.name);
-    element.setAttribute("title", sprite.name);
-    if (sprite.name === this.mapview.sprite) {
-      element.classList.add("selected");
-    }
-    icon = this.app.sprite_editor.createSpriteThumb(sprite);
-    icon.setAttribute("id", "map-sprite-image-" + sprite.name);
-    element.appendChild(icon);
-    sprite.addImage(icon, 64);
-    element.addEventListener("click", (function(_this) {
-      return function() {
-        _this.mapview.sprite = sprite.name;
-        _this.updateSpriteSelection();
-        return _this.tilepicker.update();
-      };
-    })(this));
-    return element;
+    this.sprite_folder_view.rebuildList(folder);
   };
 
   MapEditor.prototype.currentMapUpdated = function() {
@@ -605,16 +600,17 @@ this.MapEditor = (function(superClass) {
 })(Manager);
 
 this.BackgroundColorPicker = (function() {
-  function BackgroundColorPicker(editor, callback1) {
+  function BackgroundColorPicker(editor, callback1, editorid) {
     this.editor = editor;
     this.callback = callback1;
+    this.editorid = editorid != null ? editorid : "map";
     this.tool = document.createElement("div");
     this.tool.classList.add("value-tool");
     this.color = [0, 0, 0];
     this.picker = new ColorPicker(this);
     this.tool.appendChild(this.picker.canvas);
     this.picker.colorPicked([0, 0, 0]);
-    document.getElementById("maps-section").appendChild(this.tool);
+    document.getElementById(this.editorid + "s-section").appendChild(this.tool);
     this.started = true;
     this.tool.addEventListener("mousedown", function(event) {
       return event.stopPropagation();
@@ -639,7 +635,7 @@ this.BackgroundColorPicker = (function() {
 
   BackgroundColorPicker.prototype.show = function() {
     var e;
-    e = document.getElementById("map-background-color");
+    e = document.getElementById(this.editorid + "-background-color");
     this.y = e.getBoundingClientRect().y;
     this.x = e.getBoundingClientRect().x + e.getBoundingClientRect().width / 2;
     this.y = Math.max(0, this.y - 100) + document.querySelector("#editor-view .ace_content").getBoundingClientRect().y;

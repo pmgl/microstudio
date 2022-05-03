@@ -92,6 +92,19 @@ class @SpriteEditor extends Manager
       event.preventDefault()
       #console.info event
 
+    @code_tip = new CodeSnippetField(@app,"#sprite-code-tip")
+
+    @background_color_picker = new BackgroundColorPicker this,((color)=>
+      @spriteview.updateBackgroundColor()
+      document.getElementById("sprite-background-color").style.background = color),"sprite"
+
+    document.getElementById("sprite-background-color").addEventListener "mousedown",(event)=>
+      if @background_color_picker.shown
+        @background_color_picker.hide()
+      else
+        @background_color_picker.show()
+        event.stopPropagation()
+
   createToolButton:(tool)->
     parent = document.getElementById("spritetools")
 
@@ -229,11 +242,18 @@ class @SpriteEditor extends Manager
     @checkSave(true,callback)
 
   projectOpened:()->
+    super()
     @app.project.addListener @
     @setSelectedSprite null
 
   projectUpdate:(change)->
     super(change)
+
+    switch change
+      when "locks"
+        @updateCurrentFileLock()
+        @updateActiveUsers()
+
     if change instanceof ProjectSprite
       name = change.name
       c = document.querySelector "#sprite-image-#{name}"
@@ -318,6 +338,14 @@ class @SpriteEditor extends Manager
         callback() if callback?
 
   setSelectedItem:(name)->
+    @checkSave(true)
+    sprite = @app.project.getSprite name
+    if sprite?
+      @spriteview.setSprite sprite
+
+    @spriteview.windowResized()
+    @spriteview.update()
+    @spriteview.editable = true
     @setSelectedSprite name
     super(name)
 
@@ -348,6 +376,8 @@ class @SpriteEditor extends Manager
     @updateCurrentFileLock()
     @updateSelectionHints()
     @auto_palette.update()
+    @updateCodeTip()
+    @setCoordinates(-1,-1)
 
   setSprite:(data)->
     data = "data:image/png;base64,"+data
@@ -370,55 +400,6 @@ class @SpriteEditor extends Manager
     @spriteview.setColor @color
     @auto_palette.colorPicked @color
     document.getElementById("colortext").value = @color
-
-  openSprite:(s)->
-    @checkSave(true)
-    @spriteview.setSprite @app.project.getSprite s
-    @spriteview.windowResized()
-    @spriteview.update()
-    @spriteview.editable = true
-    @setSelectedSprite(s)
-
-  createSpriteThumb:(sprite)->
-    canvas = document.createElement "canvas"
-    canvas.width = 64
-    canvas.height = 64
-    sprite.addLoadListener ()=>
-      context = canvas.getContext "2d"
-      frame = sprite.frames[0].getCanvas()
-      r = Math.min(64/frame.width,64/frame.height)
-      context.imageSmoothingEnabled = false
-      w = r*frame.width
-      h = r*frame.height
-      context.drawImage frame,32-w/2,32-h/2,w,h
-
-    mouseover = false
-    update = ()=>
-      if mouseover and sprite.frames.length>1
-        requestAnimationFrame ()=>update()
-
-      dt = 1000/sprite.fps
-      t = Date.now()
-      frame = if mouseover then Math.floor(t/dt)%sprite.frames.length else 0
-      context = canvas.getContext "2d"
-      context.imageSmoothingEnabled = false
-      context.clearRect 0,0,64,64
-      frame = sprite.frames[frame].getCanvas()
-      r = Math.min(64/frame.width,64/frame.height)
-      w = r*frame.width
-      h = r*frame.height
-      context.drawImage frame,32-w/2,32-h/2,w,h
-
-    canvas.addEventListener "mouseenter",()=>
-      mouseover = true
-      update()
-
-    canvas.addEventListener "mouseout",()=>
-      mouseover = false
-
-    canvas.updateSprite = update
-
-    canvas
 
   spriteDimensionChanged:(dim)->
     if @selected_sprite == "icon"
@@ -680,3 +661,22 @@ class @SpriteEditor extends Manager
             @checkNameFieldActivation()
 
     reader.readAsDataURL(file)
+
+  updateCodeTip:()->
+    if @selected_sprite? and @app.project.getSprite(@selected_sprite)?
+      sprite = @app.project.getSprite(@selected_sprite)
+      code = """screen.drawSprite( "#{@selected_sprite.replace(/-/g,"/")}", x, y, #{sprite.width}, #{sprite.height} )"""
+    else
+      code = ""
+    @code_tip.set code
+
+  setCoordinates:(x,y)->
+    e = document.getElementById("sprite-coordinates")
+    if x<0 or y<0
+      e.innerText = ""
+    else
+      e.innerText = "#{x} , #{y}"
+
+  renameItem:(item,name)->
+    @app.project.changeSpriteName item.name,name # needed to trigger updating of maps
+    super(item,name)

@@ -48,7 +48,7 @@ div.maps-right
     div.mapeditor#mapeditor
       div#mapeditor-wrapper
       div#mapeditor-bottombar
-        div#map-background-color(title=translator.get("Background"))
+        div.pick-color-button#map-background-color(title=translator.get("Background"))
         select#map-underlay-select
 
         div.asset-code-tip#map-code-tip
@@ -56,10 +56,10 @@ div.maps-right
             input(type="text" spellcheck="false" readonly=true)
             i.fa.fa-copy(title=translator.get("Copy Code"))
 
-        div#map-coordinates
+        div.editor-coordinates#map-coordinates
 
     div.mapeditor-splitbar
 
     div.mapbar#mapbar(tabindex="1")
       div.map-tilepicker#map-tilepicker
-      div.map-sprite-list#map-sprite-list
+      div.assetlist.map-sprite-list#map-sprite-list

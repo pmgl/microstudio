@@ -5,6 +5,10 @@ div.sprites-left
 
   div.create-asset-button#create-sprite-button(style="display:none") <i class="fa fa-plus-square"></i> #{translator.get("Add Sprite")}
 
+  div.assets-drop
+    div <i class="fas fa-arrow-circle-down"></i>
+    div #{translator.get("You can drop PNG or JPEG files here")}
+
   div.assetlist#spritelist
     div.asset-list#sprite-list
 
@@ -63,6 +67,16 @@ div.sprites-right
 
       div.button#add-frame-button(title=translator.get("Add new Frame"))
         i.fa.fa-plus-square
+
+  div#spriteeditor-bottombar
+    div.pick-color-button#sprite-background-color(title=translator.get("Background"))
+
+    div.asset-code-tip#sprite-code-tip
+      div
+        input(type="text" spellcheck="false" readonly=true)
+        i.fa.fa-copy(title=translator.get("Copy Code"))
+
+    div.editor-coordinates#sprite-coordinates
 
   div.spritebar#spritebar
     div.spritetools#spritetools

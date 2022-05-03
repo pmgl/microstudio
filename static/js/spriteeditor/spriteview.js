@@ -229,10 +229,10 @@ this.SpriteView = (function() {
     }
   };
 
-  SpriteView.prototype.getPattern = function() {
+  SpriteView.prototype.addPattern = function() {
     var c, context, data, i, k, l, line, ref, ref1, value;
     if (this.pattern != null) {
-      return this.pattern;
+      return;
     }
     c = document.createElement("canvas");
     c.width = 64;
@@ -241,17 +241,28 @@ this.SpriteView = (function() {
     data = context.getImageData(0, 0, c.width, 1);
     for (line = k = 0, ref = c.height - 1; k <= ref; line = k += 1) {
       for (i = l = 0, ref1 = c.width - 1; l <= ref1; i = l += 1) {
-        value = 32 + Math.random() * 32;
+        value = 128 + Math.random() * 64 - 32;
         data.data[i * 4] = value;
         data.data[i * 4 + 1] = value;
         data.data[i * 4 + 2] = value;
-        data.data[i * 4 + 3] = 255;
+        data.data[i * 4 + 3] = 64;
       }
       context.putImageData(data, 0, line);
     }
-    this.pattern = c;
-    document.querySelector(".spriteeditor canvas").style["background-image"] = "url(" + (c.toDataURL()) + ")";
-    return document.querySelector(".spriteeditor canvas").style["background-repeat"] = "repeat";
+    this.pattern = c.toDataURL();
+    document.querySelector(".spriteeditor canvas").style["background-image"] = "url(" + this.pattern + ")";
+    document.querySelector(".spriteeditor canvas").style["background-repeat"] = "repeat";
+    return this.updateBackgroundColor();
+  };
+
+  SpriteView.prototype.updateBackgroundColor = function() {
+    var c;
+    if (this.editor.background_color_picker != null) {
+      c = this.editor.background_color_picker.color;
+      return document.querySelector(".spriteeditor canvas").style["background-color"] = c;
+    } else {
+      return document.querySelector(".spriteeditor canvas").style["background-color"] = "#000";
+    }
   };
 
   SpriteView.prototype.setColor = function(color) {
@@ -351,12 +362,12 @@ this.SpriteView = (function() {
   };
 
   SpriteView.prototype.update = function() {
-    var bs, context, f, grd, h, hblock, hoffset, i, j, k, l, m, mx, my, n, p, w, wblock, woffset;
+    var bs, context, f, grd, h, hblock, hoffset, i, j, k, l, m, mx, my, n, w, wblock, woffset;
     this.brush_size = this.editor.tool.getSize(this.sprite);
     context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     context.imageSmoothingEnabled = false;
-    p = this.getPattern();
+    this.addPattern();
     if (this.sprite.frames.length > 1) {
       f = this.sprite.frames[(this.sprite.current_frame + this.sprite.frames.length - 1) % this.sprite.frames.length];
       context.globalAlpha = .2;
@@ -641,6 +652,7 @@ this.SpriteView = (function() {
           this.selection.y += y - this.mouse_y;
           this.mouse_x = x;
           this.mouse_y = y;
+          this.editor.setCoordinates(x, y);
           context = this.getFrame().getContext();
           context.clearRect(0, 0, this.getFrame().canvas.width, this.getFrame().canvas.height);
           context.drawImage(this.floating_selection.bg, 0, 0);
@@ -655,6 +667,7 @@ this.SpriteView = (function() {
         this.selection.y = Math.max(0, Math.min(this.sprite.height - this.selection.h, this.selection.y));
         this.mouse_x = x;
         this.mouse_y = y;
+        this.editor.setCoordinates(x, y);
         this.update();
       }
       return;
@@ -666,6 +679,7 @@ this.SpriteView = (function() {
     if (x !== this.mouse_x || y !== this.mouse_y) {
       this.mouse_x = x;
       this.mouse_y = y;
+      this.editor.setCoordinates(x, y);
       if (this.mousepressed) {
         if (this.tile) {
           x = Math.floor((x + this.sprite.width / 2) % this.sprite.width);
@@ -720,7 +734,8 @@ this.SpriteView = (function() {
 
   SpriteView.prototype.mouseOut = function(event) {
     this.mouse_over = false;
-    return this.update();
+    this.update();
+    return this.editor.setCoordinates(-1, -1);
   };
 
   SpriteView.prototype.flipSprite = function(direction) {

@@ -99,6 +99,7 @@ this.TilePicker = (function() {
         }
         this.canvas.width = w;
         this.canvas.height = h;
+        document.getElementById("map-sprite-list").style.top = (h + 20) + "px";
         context = this.canvas.getContext("2d");
         context.save();
         if (this.zoom) {
@@ -152,8 +153,9 @@ this.TilePicker = (function() {
     }
     if (this.canvas != null) {
       this.selection = null;
-      return this.canvas.style.display = "none";
+      this.canvas.style.display = "none";
     }
+    return document.getElementById("map-sprite-list").style.top = "0px";
   };
 
   TilePicker.prototype.mouseDown = function(event) {

@@ -97,7 +97,8 @@ this.Manager = (function() {
 
   Manager.prototype.projectOpened = function() {
     this.app.project.addListener(this);
-    return this.setSelectedItem(null);
+    this.setSelectedItem(null);
+    return this.folder_view.setSelectedFolder(null);
   };
 
   Manager.prototype.projectUpdate = function(change) {
@@ -157,6 +158,9 @@ this.Manager = (function() {
       item = this.app.project[this.get_item](this.selected_item);
       document.getElementById(this.item + "-name").value = item != null ? item.shortname : "";
       this.name_validator.update();
+      if (item != null) {
+        document.getElementById(this.item + "-name").disabled = (item.canBeRenamed != null) && !item.canBeRenamed();
+      }
       if ((item != null) && item.uploading) {
         return document.getElementById(this.item + "-name").disabled = true;
       }

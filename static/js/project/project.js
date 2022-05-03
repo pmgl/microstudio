@@ -190,8 +190,7 @@ this.Project = (function() {
 
   Project.prototype.changeSpriteName = function(old, name) {
     var changed, i, j, k, l, len1, map, n, ref, ref1, ref2, s;
-    this.sprite_table[name] = this.sprite_table[old];
-    delete this.sprite_table[old];
+    old = old.replace(/-/g, "/");
     ref = this.map_list;
     for (k = 0, len1 = ref.length; k < len1; k++) {
       map = ref[k];

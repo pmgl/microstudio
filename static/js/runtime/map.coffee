@@ -35,12 +35,17 @@ class @MicroMap
 
   set:(x,y,ref)->
     if x>=0 and x<@width and y>=0 and y<@height
+      if typeof ref == "string"
+        ref = ref.replace /\//g,"-"
       @map[x+y*@width] = ref
       @needs_update = true
 
   get:(x,y)->
     return 0 if x<0 or y<0 or x>=@width or y>=@height
-    @map[x+y*@width] or 0
+    c = @map[x+y*@width]
+    if typeof c == "string"
+      c = c.replace /-/g,"/"
+    c or 0
 
   getCanvas:()->
     if not @canvas? or @needs_update
@@ -66,6 +71,8 @@ class @MicroMap
         if s? and s.length>0
           s = s.split(":")
           sprite = @sprites[s[0]]
+          if not sprite?
+            sprite = @sprites[s[0].replace(/-/g,"/")]
           if sprite? and sprite.frames[0]?
             if s[1]?
               xy = s[1].split(",")
