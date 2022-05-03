@@ -366,6 +366,7 @@ class @ProjectManager
     @project.content.files.read source,"binary",(content)=>
       if content?
         @project.content.files.write dest,content,()=>
+          @setFileProperties data.dest,@getFileProperties(data.source)
           @project.deleteFileInfo(data.source)
           @setFileSize data.dest,content.length
           @project.touch()

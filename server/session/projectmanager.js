@@ -546,6 +546,7 @@ this.ProjectManager = (function() {
       return function(content) {
         if (content != null) {
           return _this.project.content.files.write(dest, content, function() {
+            _this.setFileProperties(data.dest, _this.getFileProperties(data.source));
             _this.project.deleteFileInfo(data.source);
             _this.setFileSize(data.dest, content.length);
             _this.project.touch();
