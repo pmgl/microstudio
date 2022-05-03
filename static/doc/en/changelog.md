@@ -5,6 +5,7 @@
 * Sprite editor customizable background color
 * Sprite editor displays drawing coordinates
 * Map and sprite editors display a code snippet tip.
+* **Support for animated tiles in your maps!**
 
 ### Update 2022-04-25
 * reworked Explore section, now correctly shows and queries all public projects (#66)

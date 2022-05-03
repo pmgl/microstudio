@@ -547,10 +547,12 @@ class @Screen
     @context.globalAlpha = @alpha
     @context.imageSmoothingEnabled = not @pixelated
     if @initDrawOp(x,-y)
-      @context.drawImage map.getCanvas(),-w/2-@anchor_x*w/2,-h/2+@anchor_y*h/2,w,h
+      map.draw @context,-w/2-@anchor_x*w/2,-h/2+@anchor_y*h/2,w,h
+      #@context.drawImage map.getCanvas(),-w/2-@anchor_x*w/2,-h/2+@anchor_y*h/2,w,h
       @closeDrawOp(x,-y)
     else
-      @context.drawImage map.getCanvas(),x-w/2-@anchor_x*w/2,-y-h/2+@anchor_y*h/2,w,h
+      map.draw @context,x-w/2-@anchor_x*w/2,-y-h/2+@anchor_y*h/2,w,h
+      #@context.drawImage map.getCanvas(),x-w/2-@anchor_x*w/2,-y-h/2+@anchor_y*h/2,w,h
 
   resize:()->
     cw = window.innerWidth

@@ -47,7 +47,7 @@ this.ProjectMap = (function(superClass) {
     context.fillStyle = "#666";
     context.fillRect(0, 0, c.width, c.height);
     context.imageSmoothingEnabled = false;
-    return context.drawImage(this.canvas, c.width / 2 - w / 2, c.height / 2 - h / 2, w, h);
+    return this.draw(context, c.width / 2 - w / 2, c.height / 2 - h / 2, w, h);
   };
 
   ProjectMap.prototype.loadFile = function() {

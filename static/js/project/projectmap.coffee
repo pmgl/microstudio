@@ -34,7 +34,7 @@ class @ProjectMap extends MicroMap
     context.fillStyle = "#666"
     context.fillRect 0,0,c.width,c.height
     context.imageSmoothingEnabled = false
-    context.drawImage @canvas,c.width/2-w/2,c.height/2-h/2,w,h
+    @draw context,c.width/2-w/2,c.height/2-h/2,w,h
 
   loadFile:()->
     @project.app.client.sendRequest {

@@ -143,7 +143,7 @@ this.MapView = (function() {
       if (underlay != null) {
         underlay.update();
         context.globalAlpha = .3;
-        context.drawImage(underlay.getCanvas(), 0, 0, this.canvas.width, this.canvas.height);
+        underlay.draw(context, 0, 0, this.canvas.width, this.canvas.height);
         context.globalAlpha = 1;
       }
     }
@@ -177,7 +177,14 @@ this.MapView = (function() {
       context.stroke();
     }
     this.map.update();
-    context.drawImage(this.map.getCanvas(), 0, 0, this.canvas.width, this.canvas.height);
+    this.map.draw(context, 0, 0, this.canvas.width, this.canvas.height);
+    if ((this.map.animated != null) && this.map.animated.length > 0) {
+      requestAnimationFrame((function(_this) {
+        return function() {
+          return _this.update();
+        };
+      })(this));
+    }
     if (this.mouse_over) {
       tw = 1;
       th = 1;

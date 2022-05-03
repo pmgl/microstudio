@@ -52,6 +52,20 @@ class @MicroMap
       @update()
     @canvas
 
+  draw:(context,x,y,w,h)->
+    context.drawImage @getCanvas(),x,y,w,h
+    if @animated? and @animated.length>0
+      time = Date.now()
+      for a in @animated
+        len = a.sprite.frames.length
+        c = a.sprite.frames[Math.floor(time/1000*a.sprite.fps)%len].canvas
+        if a.tx?
+          context.drawImage c,a.tx,a.ty,@block_width,@block_height,x+w*a.x,y+h*a.y,a.w*w,a.h*h
+        else
+          context.drawImage c,x+w*a.x,y+h*a.y,a.w*w,a.h*h
+
+    return
+
   update:()->
     @needs_update = false
     if not @canvas?
@@ -64,6 +78,8 @@ class @MicroMap
     context = @canvas.getContext "2d"
     context.clearRect 0,0,@canvas.width,@canvas.height
 
+    @animated = []
+
     for j in [0..@height-1] by 1
       for i in [0..@width-1] by 1
         index = i+(@height-1-j)*@width
@@ -74,6 +90,22 @@ class @MicroMap
           if not sprite?
             sprite = @sprites[s[0].replace(/-/g,"/")]
           if sprite? and sprite.frames[0]?
+            if sprite.frames.length>1
+              a =
+                x: @block_width*i/@canvas.width
+                y: @block_height*j/@canvas.height
+                w: @block_width/@canvas.width
+                h: @block_height/@canvas.height
+                sprite: sprite
+
+              if s[1]?
+                xy = s[1].split(",")
+                a.tx = xy[0]*@block_width
+                a.ty = xy[1]*@block_height
+
+              @animated.push a
+              continue
+
             if s[1]?
               xy = s[1].split(",")
               tx = xy[0]*@block_width

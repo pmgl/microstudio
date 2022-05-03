@@ -75,8 +75,27 @@ this.MicroMap = (function() {
     return this.canvas;
   };
 
+  MicroMap.prototype.draw = function(context, x, y, w, h) {
+    var a, c, k, len, len1, ref1, time;
+    context.drawImage(this.getCanvas(), x, y, w, h);
+    if ((this.animated != null) && this.animated.length > 0) {
+      time = Date.now();
+      ref1 = this.animated;
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        a = ref1[k];
+        len = a.sprite.frames.length;
+        c = a.sprite.frames[Math.floor(time / 1000 * a.sprite.fps) % len].canvas;
+        if (a.tx != null) {
+          context.drawImage(c, a.tx, a.ty, this.block_width, this.block_height, x + w * a.x, y + h * a.y, a.w * w, a.h * h);
+        } else {
+          context.drawImage(c, x + w * a.x, y + h * a.y, a.w * w, a.h * h);
+        }
+      }
+    }
+  };
+
   MicroMap.prototype.update = function() {
-    var c, context, i, index, j, k, l, ref1, ref2, s, sprite, tx, ty, xy;
+    var a, c, context, i, index, j, k, l, ref1, ref2, s, sprite, tx, ty, xy;
     this.needs_update = false;
     if (this.canvas == null) {
       this.canvas = document.createElement("canvas");
@@ -87,6 +106,7 @@ this.MicroMap = (function() {
     }
     context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.animated = [];
     for (j = k = 0, ref1 = this.height - 1; k <= ref1; j = k += 1) {
       for (i = l = 0, ref2 = this.width - 1; l <= ref2; i = l += 1) {
         index = i + (this.height - 1 - j) * this.width;
@@ -98,6 +118,22 @@ this.MicroMap = (function() {
             sprite = this.sprites[s[0].replace(/-/g, "/")];
           }
           if ((sprite != null) && (sprite.frames[0] != null)) {
+            if (sprite.frames.length > 1) {
+              a = {
+                x: this.block_width * i / this.canvas.width,
+                y: this.block_height * j / this.canvas.height,
+                w: this.block_width / this.canvas.width,
+                h: this.block_height / this.canvas.height,
+                sprite: sprite
+              };
+              if (s[1] != null) {
+                xy = s[1].split(",");
+                a.tx = xy[0] * this.block_width;
+                a.ty = xy[1] * this.block_height;
+              }
+              this.animated.push(a);
+              continue;
+            }
             if (s[1] != null) {
               xy = s[1].split(",");
               tx = xy[0] * this.block_width;

@@ -94,7 +94,7 @@ class @MapView
       if underlay?
         underlay.update()
         context.globalAlpha = .3
-        context.drawImage underlay.getCanvas(),0,0,@canvas.width,@canvas.height
+        underlay.draw context,0,0,@canvas.width,@canvas.height
         context.globalAlpha = 1
 
     wblock = @canvas.width/@map.width
@@ -127,7 +127,9 @@ class @MapView
       context.stroke()
 
     @map.update()
-    context.drawImage @map.getCanvas(),0,0,@canvas.width,@canvas.height
+    @map.draw context,0,0,@canvas.width,@canvas.height
+    if @map.animated? and @map.animated.length>0
+      requestAnimationFrame ()=>@update()
 
     if @mouse_over
       tw = 1
