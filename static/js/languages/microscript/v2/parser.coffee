@@ -8,6 +8,7 @@ class @Parser
       column: 1
     @verbose = false
     @nesting = 0
+    @object_nesting = 0
     @not_terminated = []
     @api_reserved =
       screen: true
@@ -262,14 +263,20 @@ class @Parser
     if expression not instanceof Program.Variable and expression not instanceof Program.Field
       throw "Expected variable identifier or property"
 
-    if expression instanceof Program.Variable and @api_reserved[expression.identifier]
+    if @object_nesting == 0 and expression instanceof Program.Variable and @api_reserved[expression.identifier]
       @warnings.push
         type: "assigning_api_variable"
         identifier: expression.identifier
         line: token.line
         column: token.column
 
-    return new Program.Assignment token,expression,@assertExpression()
+    if expression instanceof Program.Field
+      @object_nesting += 1
+      res = new Program.Assignment token,expression,@assertExpression()
+      @object_nesting -= 1
+    else
+      res = new Program.Assignment token,expression,@assertExpression()
+    res
 
   parseSelfAssignment:(token,expression,operation)->
     if expression not instanceof Program.Variable and expression not instanceof Program.Field
@@ -467,12 +474,14 @@ class @Parser
 
   parseObject:(object)->
     @nesting += 1
+    @object_nesting += 1
     @addTerminable object
     fields = []
     loop
       token = @nextToken()
       if token.type == Token.TYPE_END
         @nesting -= 1
+        @object_nesting -= 1
         @endTerminable()
         return new Program.CreateObject(object,fields)
       else
@@ -493,6 +502,7 @@ class @Parser
 
   parseClass:(object)->
     @nesting += 1
+    @object_nesting += 1
     @addTerminable object
     fields = []
     token = @nextToken()
@@ -503,6 +513,7 @@ class @Parser
     loop
       if token.type == Token.TYPE_END
         @nesting -= 1
+        @object_nesting -= 1
         @endTerminable()
         return new Program.CreateClass(object,ext,fields)
       else

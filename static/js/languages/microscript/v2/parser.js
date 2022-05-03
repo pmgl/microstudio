@@ -11,6 +11,7 @@ this.Parser = (function() {
     };
     this.verbose = false;
     this.nesting = 0;
+    this.object_nesting = 0;
     this.not_terminated = [];
     this.api_reserved = {
       screen: true,
@@ -316,10 +317,11 @@ this.Parser = (function() {
   };
 
   Parser.prototype.parseAssignment = function(token, expression) {
+    var res;
     if (!(expression instanceof Program.Variable) && !(expression instanceof Program.Field)) {
       throw "Expected variable identifier or property";
     }
-    if (expression instanceof Program.Variable && this.api_reserved[expression.identifier]) {
+    if (this.object_nesting === 0 && expression instanceof Program.Variable && this.api_reserved[expression.identifier]) {
       this.warnings.push({
         type: "assigning_api_variable",
         identifier: expression.identifier,
@@ -327,7 +329,14 @@ this.Parser = (function() {
         column: token.column
       });
     }
-    return new Program.Assignment(token, expression, this.assertExpression());
+    if (expression instanceof Program.Field) {
+      this.object_nesting += 1;
+      res = new Program.Assignment(token, expression, this.assertExpression());
+      this.object_nesting -= 1;
+    } else {
+      res = new Program.Assignment(token, expression, this.assertExpression());
+    }
+    return res;
   };
 
   Parser.prototype.parseSelfAssignment = function(token, expression, operation) {
@@ -574,12 +583,14 @@ this.Parser = (function() {
   Parser.prototype.parseObject = function(object) {
     var exp, fields, token;
     this.nesting += 1;
+    this.object_nesting += 1;
     this.addTerminable(object);
     fields = [];
     while (true) {
       token = this.nextToken();
       if (token.type === Token.TYPE_END) {
         this.nesting -= 1;
+        this.object_nesting -= 1;
         this.endTerminable();
         return new Program.CreateObject(object, fields);
       } else {
@@ -606,6 +617,7 @@ this.Parser = (function() {
   Parser.prototype.parseClass = function(object) {
     var exp, ext, fields, token;
     this.nesting += 1;
+    this.object_nesting += 1;
     this.addTerminable(object);
     fields = [];
     token = this.nextToken();
@@ -616,6 +628,7 @@ this.Parser = (function() {
     while (true) {
       if (token.type === Token.TYPE_END) {
         this.nesting -= 1;
+        this.object_nesting -= 1;
         this.endTerminable();
         return new Program.CreateClass(object, ext, fields);
       } else {
