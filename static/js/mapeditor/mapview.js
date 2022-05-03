@@ -66,6 +66,7 @@ this.MapView = (function() {
     this.editable = false;
     this.sprite = "icon";
     this.cells_drawn = 0;
+    this.updateLoop();
   }
 
   MapView.prototype.setSprite = function(sprite) {
@@ -127,6 +128,18 @@ this.MapView = (function() {
     return this.canvas.style["margin-top"] = h + "px";
   };
 
+  MapView.prototype.updateLoop = function() {
+    requestAnimationFrame((function(_this) {
+      return function() {
+        return _this.updateLoop();
+      };
+    })(this));
+    if (this.needs_update) {
+      this.needs_update = false;
+      return this.update();
+    }
+  };
+
   MapView.prototype.update = function() {
     var c, context, hblock, i, k, l, m, n, ref, ref1, ref2, ref3, th, tw, underlay, wblock;
     context = this.canvas.getContext("2d");
@@ -179,11 +192,7 @@ this.MapView = (function() {
     this.map.update();
     this.map.draw(context, 0, 0, this.canvas.width, this.canvas.height);
     if ((this.map.animated != null) && this.map.animated.length > 0) {
-      requestAnimationFrame((function(_this) {
-        return function() {
-          return _this.update();
-        };
-      })(this));
+      this.needs_update = true;
     }
     if (this.mouse_over) {
       tw = 1;

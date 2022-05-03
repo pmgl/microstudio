@@ -33,6 +33,8 @@ class @MapView
 
     @cells_drawn = 0
 
+    @updateLoop()
+
   setSprite:(@sprite)->
 
   floodFillMap:(clickedSprite,fillSprite,xs,ys)->
@@ -77,6 +79,13 @@ class @MapView
 
     h = (c.clientHeight-h)/2
     @canvas.style["margin-top"] = h+"px"
+
+  updateLoop:()->
+    requestAnimationFrame ()=>@updateLoop()
+
+    if @needs_update
+      @needs_update = false
+      @update()
 
   update:()->
     context = @canvas.getContext "2d"
@@ -129,7 +138,7 @@ class @MapView
     @map.update()
     @map.draw context,0,0,@canvas.width,@canvas.height
     if @map.animated? and @map.animated.length>0
-      requestAnimationFrame ()=>@update()
+      @needs_update = true
 
     if @mouse_over
       tw = 1
