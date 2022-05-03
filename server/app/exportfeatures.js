@@ -180,7 +180,7 @@ this.ExportFeatures = (function() {
               return queue.add(function() {
                 return _this.webapp.server.content.files.read(user.id + "/" + project.id + "/sprites/" + s.file, "binary", function(content) {
                   if (content != null) {
-                    zip.file(s.file, content);
+                    zip.file(s.file.replace(/-/g, "/"), content);
                   }
                   return queue.next();
                 });

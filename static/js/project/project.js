@@ -190,8 +190,7 @@ this.Project = (function() {
 
   Project.prototype.changeSpriteName = function(old, name) {
     var changed, i, j, k, l, len1, map, n, ref, ref1, ref2, s;
-    this.sprite_table[name] = this.sprite_table[old];
-    delete this.sprite_table[old];
+    old = old.replace(/-/g, "/");
     ref = this.map_list;
     for (k = 0, len1 = ref.length; k < len1; k++) {
       map = ref[k];
@@ -310,6 +309,7 @@ this.Project = (function() {
     s = new ProjectSprite(this, sprite.file, null, null, sprite.properties, sprite.size);
     this.sprite_table[s.name] = s;
     this.sprite_list.push(s);
+    this.sprite_folder.push(s);
     return s;
   };
 
@@ -336,6 +336,7 @@ this.Project = (function() {
     sprite = new ProjectSprite(this, filename + ".png", width, height);
     this.sprite_table[sprite.name] = sprite;
     this.sprite_list.push(sprite);
+    this.sprite_folder.push(sprite);
     this.notifyListeners("spritelist");
     return sprite;
   };

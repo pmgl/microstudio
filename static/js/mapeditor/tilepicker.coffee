@@ -61,6 +61,7 @@ class @TilePicker
 
         @canvas.width = w
         @canvas.height = h
+        document.getElementById("map-sprite-list").style.top = "#{h+20}px"
         context = @canvas.getContext "2d"
         context.save()
         if @zoom
@@ -113,6 +114,7 @@ class @TilePicker
     if @canvas?
       @selection = null
       @canvas.style.display = "none"
+    document.getElementById("map-sprite-list").style.top = "0px"
 
   mouseDown:(event)->
     @mousedown = true

@@ -77,6 +77,7 @@ class @Manager
   projectOpened:()->
     @app.project.addListener @
     @setSelectedItem null
+    @folder_view.setSelectedFolder null
 
   projectUpdate:(change)->
     if change == @list_change_event
@@ -124,6 +125,9 @@ class @Manager
 
       document.getElementById("#{@item}-name").value = if item? then item.shortname else ""
       @name_validator.update()
+
+      if item?
+        document.getElementById("#{@item}-name").disabled = item.canBeRenamed? and not item.canBeRenamed()
 
       if item? and item.uploading
         document.getElementById("#{@item}-name").disabled = true

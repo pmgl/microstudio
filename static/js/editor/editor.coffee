@@ -533,6 +533,7 @@ class @Editor extends Manager
       @setCode("")
 
   projectOpened:()->
+    super()
     @sessions = {}
     @app.project.addListener @
     @app.runwindow.resetButtons()

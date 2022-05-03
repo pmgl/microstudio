@@ -59,6 +59,45 @@ this.ProjectDetails = (function() {
         });
       };
     })(this));
+    document.getElementById("project-contents-sprite-import").addEventListener("click", (function(_this) {
+      return function() {
+        var base, count, data, name;
+        if (_this.app.project == null) {
+          return;
+        }
+        if (_this.selected_sprite == null) {
+          return;
+        }
+        name = _this.selected_sprite.name;
+        if (name == null) {
+          return;
+        }
+        if (_this.imported_sprites[name]) {
+          return;
+        }
+        _this.imported_sprites[name] = true;
+        document.getElementById("project-contents-sprite-import").style.display = "none";
+        count = 1;
+        base = name;
+        while (_this.app.project.getSprite(name) != null) {
+          count += 1;
+          name = base + count;
+        }
+        data = _this.selected_sprite.saveData().split(",")[1];
+        return _this.app.client.sendRequest({
+          name: "write_project_file",
+          project: _this.app.project.id,
+          file: "sprites/" + name + ".png",
+          properties: {
+            frames: _this.selected_sprite.frames.length,
+            fps: _this.selected_sprite.fps
+          },
+          content: data
+        }, function(msg) {
+          return _this.app.project.updateSpriteList();
+        });
+      };
+    })(this));
     document.querySelector("#project-contents-doc-import").addEventListener("click", (function(_this) {
       return function() {
         var value;
@@ -121,6 +160,7 @@ this.ProjectDetails = (function() {
     this.music = [];
     this.maps = [];
     this.imported_sources = {};
+    this.imported_sprites = {};
     this.imported_doc = false;
     document.querySelector("#project-contents-doc-import").classList.remove("done");
     document.querySelector("#project-contents-doc-import").style.display = this.app.project != null ? "block" : "none";
@@ -351,181 +391,45 @@ this.ProjectDetails = (function() {
     view.rebuildList(folder);
   };
 
-  ProjectDetails.prototype.createSpriteBox = function(file, prefs) {
-    var button, clicked, div, i, img, span;
-    div = document.createElement("div");
-    div.classList.add("sprite");
-    img = this.createSpriteThumb(new Sprite(location.origin + ("/" + this.project.owner + "/" + this.project.slug + "/" + file), null, prefs));
-    div.appendChild(img);
-    if (this.app.project != null) {
-      button = document.createElement("div");
-      i = document.createElement("i");
-      i.classList.add("fa");
-      i.classList.add("fa-download");
-      button.appendChild(i);
-      span = document.createElement("span");
-      span.innerText = this.app.translator.get("Import to project") + (" " + this.app.project.title);
-      button.appendChild(span);
-      clicked = false;
-      button.addEventListener("click", (function(_this) {
-        return function() {
-          var source;
-          if (clicked) {
-            return;
-          }
-          clicked = true;
-          source = new Image;
-          source.crossOrigin = "Anonymous";
-          source.src = location.origin + ("/" + _this.project.owner + "/" + _this.project.slug + "/" + file);
-          return source.onload = function() {
-            var canvas, count, name;
-            canvas = document.createElement("canvas");
-            canvas.width = source.width;
-            canvas.height = source.height;
-            canvas.getContext("2d").drawImage(source, 0, 0);
-            name = file.split(".")[0];
-            count = 1;
-            while (_this.app.project.getSprite(name) != null) {
-              count += 1;
-              name = file.split(".")[0] + count;
-            }
-            file = name + ".png";
-            return _this.app.client.sendRequest({
-              name: "write_project_file",
-              project: _this.app.project.id,
-              file: "sprites/" + file,
-              content: canvas.toDataURL().split(",")[1],
-              properties: prefs
-            }, function(msg) {
-              _this.app.project.updateSpriteList();
-              div.style.width = "0px";
-              return setTimeout((function() {
-                return div.style.display = "none";
-              }), 1000);
-            });
-          };
-        };
-      })(this));
-      div.appendChild(button);
-    }
-    return document.querySelector("#project-contents-view .sprite-list").appendChild(div);
-  };
-
-  ProjectDetails.prototype.createSpriteThumb = function(sprite) {
-    var canvas, mouseover, update;
-    canvas = document.createElement("canvas");
-    canvas.width = 100;
-    canvas.height = 100;
-    sprite.loaded = (function(_this) {
-      return function() {
-        var context, frame, h, r, w;
-        context = canvas.getContext("2d");
-        frame = sprite.frames[0].getCanvas();
-        r = Math.min(100 / frame.width, 100 / frame.height);
-        context.imageSmoothingEnabled = false;
-        w = r * frame.width;
-        h = r * frame.height;
-        return context.drawImage(frame, 50 - w / 2, 50 - h / 2, w, h);
-      };
-    })(this);
-    mouseover = false;
-    update = (function(_this) {
-      return function() {
-        var context, dt, frame, h, r, t, w;
-        if (mouseover && sprite.frames.length > 1) {
-          requestAnimationFrame(function() {
-            return update();
-          });
-        }
-        if (sprite.frames.length < 1) {
-          return;
-        }
-        dt = 1000 / sprite.fps;
-        t = Date.now();
-        frame = mouseover ? Math.floor(t / dt) % sprite.frames.length : 0;
-        context = canvas.getContext("2d");
-        context.imageSmoothingEnabled = false;
-        context.clearRect(0, 0, 100, 100);
-        frame = sprite.frames[frame].getCanvas();
-        r = Math.min(100 / frame.width, 100 / frame.height);
-        w = r * frame.width;
-        h = r * frame.height;
-        return context.drawImage(frame, 50 - w / 2, 50 - h / 2, w, h);
-      };
-    })(this);
-    canvas.addEventListener("mouseenter", (function(_this) {
-      return function() {
-        mouseover = true;
-        return update();
-      };
-    })(this));
-    canvas.addEventListener("mouseout", (function(_this) {
-      return function() {
-        return mouseover = false;
-      };
-    })(this));
-    canvas.updateSprite = update;
-    return canvas;
-  };
-
   ProjectDetails.prototype.setSpriteList = function(files) {
-    var f, j, len;
+    var f, folder, j, len, manager, project, s, table;
+    table = {};
+    this.sprites = {};
+    manager = {
+      folder: "sprites",
+      item: "sprite",
+      openItem: (function(_this) {
+        return function(item) {
+          _this.sprites_folder_view.setSelectedItem(item);
+          _this.selected_sprite = _this.sprites[item];
+          if ((_this.app.project != null) && !_this.imported_sprites[item]) {
+            document.querySelector("#project-contents-sprite-import span").innerText = _this.app.translator.get("Import %ITEM% to project %PROJECT%").replace("%ITEM%", item.replace(/-/g, "/")).replace("%PROJECT%", _this.app.project.title);
+            return document.getElementById("project-contents-sprite-import").style.display = "block";
+          } else {
+            return document.getElementById("project-contents-sprite-import").style.display = "none";
+          }
+        };
+      })(this)
+    };
+    project = JSON.parse(JSON.stringify(this.project));
+    project.getFullURL = function() {
+      var url;
+      return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
+    };
+    project.map_list = [];
+    project.notifyListeners = function() {};
+    folder = new ProjectFolder(null, "sprites");
     for (j = 0, len = files.length; j < len; j++) {
       f = files[j];
-      this.createSpriteBox(f.file, f.properties);
+      s = new ProjectSprite(project, f.file, null, null, f.properties);
+      folder.push(s);
+      table[s.name] = s;
+      this.sprites[s.name] = s;
     }
-  };
-
-  ProjectDetails.prototype.createImportButton = function(div, file, folder) {
-    var button, clicked, i, span;
-    button = document.createElement("div");
-    i = document.createElement("i");
-    i.classList.add("fa");
-    i.classList.add("fa-download");
-    button.appendChild(i);
-    span = document.createElement("span");
-    span.innerText = this.app.translator.get("Import to project") + (" " + this.app.project.title);
-    button.appendChild(span);
-    clicked = false;
-    return button.addEventListener("click", (function(_this) {
-      return function() {
-        var source;
-        if (clicked) {
-          return;
-        }
-        clicked = true;
-        source = new Image;
-        source.crossOrigin = "Anonymous";
-        source.src = location.origin + ("/" + _this.project.owner + "/" + _this.project.slug + "/" + file);
-        return source.onload = function() {
-          var canvas, count, name;
-          canvas = document.createElement("canvas");
-          canvas.width = source.width;
-          canvas.height = source.height;
-          canvas.getContext("2d").drawImage(source, 0, 0);
-          name = file.split(".")[0];
-          count = 1;
-          while (_this.app.project.getSprite(name) != null) {
-            count += 1;
-            name = file.split(".")[0] + count;
-          }
-          file = name + ".png";
-          return _this.app.client.sendRequest({
-            name: "write_project_file",
-            project: _this.app.project.id,
-            file: "sprites/" + file,
-            content: canvas.toDataURL().split(",")[1],
-            properties: prefs
-          }, function(msg) {
-            _this.app.project.updateSpriteList();
-            div.style.width = "0px";
-            return setTimeout((function() {
-              return div.style.display = "none";
-            }), 1000);
-          });
-        };
-      };
-    })(this));
+    this.sprites_folder_view = new FolderView(manager, document.querySelector("#project-contents-view .sprite-list"));
+    this.sprites_folder_view.editable = false;
+    this.sprites_folder_view.rebuildList(folder);
+    document.getElementById("project-contents-sprite-import").style.display = "none";
   };
 
   ProjectDetails.prototype.setSoundList = function(files) {

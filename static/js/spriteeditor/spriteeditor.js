@@ -1,7 +1,20 @@
-this.SpriteEditor = (function() {
+var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+this.SpriteEditor = (function(superClass) {
+  extend(SpriteEditor, superClass);
+
   function SpriteEditor(app) {
     var i, l, len, ref, tool;
     this.app = app;
+    this.folder = "sprites";
+    this.item = "sprite";
+    this.list_change_event = "spritelist";
+    this.get_item = "getSprite";
+    this.use_thumbnails = false;
+    this.extensions = ["png"];
+    this.update_list = "updateSpriteList";
+    this.init();
     this.spriteview = new SpriteView(this);
     this.auto_palette = new AutoPalette(this);
     this.colorpicker = new ColorPicker(this);
@@ -14,41 +27,6 @@ this.SpriteEditor = (function() {
         return _this.checkSave();
       };
     })(this)), this.save_delay / 2);
-    this.app.appui.setAction("create-sprite-button", (function(_this) {
-      return function() {
-        return _this.createSprite();
-      };
-    })(this));
-    this.sprite_name_validator = new InputValidator(document.getElementById("sprite-name"), document.getElementById("sprite-name-button"), null, (function(_this) {
-      return function(value) {
-        var name, old;
-        if (_this.app.project.isLocked("sprites/" + _this.selected_sprite + ".png")) {
-          return;
-        }
-        _this.app.project.lockFile("sprites/" + _this.selected_sprite + ".png");
-        name = value[0].toLowerCase();
-        name = RegexLib.fixFilename(name);
-        document.getElementById("sprite-name").value = name;
-        _this.sprite_name_validator.update();
-        if (_this.selected_sprite !== "icon" && name !== _this.selected_sprite && RegexLib.filename.test(name) && (_this.app.project.getSprite(name) == null)) {
-          old = _this.selected_sprite;
-          _this.selected_sprite = name;
-          _this.spriteview.sprite.rename(name);
-          _this.app.project.changeSpriteName(old, name);
-          _this.app.project.lockFile("sprites/" + _this.selected_sprite + ".png");
-          return _this.saveSprite(function() {
-            return _this.app.client.sendRequest({
-              name: "delete_project_file",
-              project: _this.app.project.id,
-              file: "sprites/" + old + ".png"
-            }, function(msg) {
-              return _this.app.project.updateSpriteList();
-            });
-          });
-        }
-      };
-    })(this));
-    this.sprite_name_validator.regex = RegexLib.filename;
     document.getElementById("sprite-width").addEventListener("input", (function(_this) {
       return function(event) {
         return _this.spriteDimensionChanged("width");
@@ -207,41 +185,20 @@ this.SpriteEditor = (function() {
         return event.preventDefault();
       };
     })(this));
-    document.getElementById("spritelist").addEventListener("drop", (function(_this) {
+    this.code_tip = new CodeSnippetField(this.app, "#sprite-code-tip");
+    this.background_color_picker = new BackgroundColorPicker(this, ((function(_this) {
+      return function(color) {
+        _this.spriteview.updateBackgroundColor();
+        return document.getElementById("sprite-background-color").style.background = color;
+      };
+    })(this)), "sprite");
+    document.getElementById("sprite-background-color").addEventListener("mousedown", (function(_this) {
       return function(event) {
-        var err, funk, len1, list, o, ref1;
-        event.preventDefault();
-        try {
-          list = [];
-          ref1 = event.dataTransfer.items;
-          for (o = 0, len1 = ref1.length; o < len1; o++) {
-            i = ref1[o];
-            list.push(i.getAsFile());
-          }
-          funk = function() {
-            var file, img, reader;
-            if (list.length > 0) {
-              file = list.splice(0, 1)[0];
-              console.info("processing " + file.name);
-              img = new Image;
-              reader = new FileReader();
-              reader.addEventListener("load", function() {
-                return img.src = reader.result;
-              });
-              reader.readAsDataURL(file);
-              return img.onload = function() {
-                if (img.complete && img.width > 0 && img.height > 0 && img.width <= 2048 && img.height <= 2048) {
-                  return _this.createSprite(RegexLib.fixFilename(file.name.split(".")[0]), img, function() {
-                    return funk();
-                  });
-                }
-              };
-            }
-          };
-          return funk();
-        } catch (error) {
-          err = error;
-          return console.error(err);
+        if (_this.background_color_picker.shown) {
+          return _this.background_color_picker.hide();
+        } else {
+          _this.background_color_picker.show();
+          return event.stopPropagation();
         }
       };
     })(this));
@@ -431,18 +388,20 @@ this.SpriteEditor = (function() {
   };
 
   SpriteEditor.prototype.projectOpened = function() {
+    SpriteEditor.__super__.projectOpened.call(this);
     this.app.project.addListener(this);
     return this.setSelectedSprite(null);
   };
 
   SpriteEditor.prototype.projectUpdate = function(change) {
     var c, name, sprite;
-    if (change === "spritelist") {
-      return this.rebuildSpriteList();
-    } else if (change === "locks") {
-      this.updateCurrentFileLock();
-      return this.updateActiveUsers();
-    } else if (change instanceof ProjectSprite) {
+    SpriteEditor.__super__.projectUpdate.call(this, change);
+    switch (change) {
+      case "locks":
+        this.updateCurrentFileLock();
+        this.updateActiveUsers();
+    }
+    if (change instanceof ProjectSprite) {
       name = change.name;
       c = document.querySelector("#sprite-image-" + name);
       sprite = change;
@@ -509,6 +468,24 @@ this.SpriteEditor = (function() {
     })(this)), 10000);
   };
 
+  SpriteEditor.prototype.createAsset = function(folder, name, content) {
+    if (name == null) {
+      name = "sprite";
+    }
+    if (content == null) {
+      content = "";
+    }
+    return this.checkSave(true, (function(_this) {
+      return function() {
+        if (folder != null) {
+          name = folder.getFullDashPath() + ("-" + name);
+          folder.setOpen(true);
+        }
+        return _this.createSprite(name, null);
+      };
+    })(this));
+  };
+
   SpriteEditor.prototype.createSprite = function(name, img, callback) {
     return this.checkSave(true, (function(_this) {
       return function() {
@@ -530,10 +507,10 @@ this.SpriteEditor = (function() {
           _this.spriteview.getFrame().getContext().drawImage(img, 0, 0);
         }
         _this.spriteview.update();
-        _this.setSelectedSprite(sprite.name);
+        _this.setSelectedItem(sprite.name);
         _this.spriteview.editable = true;
         return _this.saveSprite(function() {
-          _this.rebuildSpriteList();
+          _this.rebuildList();
           if (callback != null) {
             return callback();
           }
@@ -542,23 +519,25 @@ this.SpriteEditor = (function() {
     })(this));
   };
 
+  SpriteEditor.prototype.setSelectedItem = function(name) {
+    var sprite;
+    this.checkSave(true);
+    sprite = this.app.project.getSprite(name);
+    if (sprite != null) {
+      this.spriteview.setSprite(sprite);
+    }
+    this.spriteview.windowResized();
+    this.spriteview.update();
+    this.spriteview.editable = true;
+    this.setSelectedSprite(name);
+    return SpriteEditor.__super__.setSelectedItem.call(this, name);
+  };
+
   SpriteEditor.prototype.setSelectedSprite = function(sprite) {
-    var e, l, len, len1, list, o;
+    var e;
     this.selected_sprite = sprite;
     this.animation_panel.spriteChanged();
-    list = document.getElementById("sprite-list").childNodes;
     if (this.selected_sprite != null) {
-      for (l = 0, len = list.length; l < len; l++) {
-        e = list[l];
-        if (e.getAttribute("id") === ("project-sprite-" + sprite)) {
-          e.classList.add("selected");
-        } else {
-          e.classList.remove("selected");
-        }
-      }
-      document.getElementById("sprite-name").value = sprite;
-      this.sprite_name_validator.update();
-      document.getElementById("sprite-name").disabled = this.selected_sprite === "icon";
       if (this.spriteview.sprite != null) {
         document.getElementById("sprite-width").value = this.spriteview.sprite.width;
         document.getElementById("sprite-height").value = this.spriteview.sprite.height;
@@ -572,12 +551,6 @@ this.SpriteEditor = (function() {
       }
       this.spriteview.windowResized();
     } else {
-      for (o = 0, len1 = list.length; o < len1; o++) {
-        e = list[o];
-        e.classList.remove("selected");
-      }
-      document.getElementById("sprite-name").value = "";
-      document.getElementById("sprite-name").disabled = true;
       document.getElementById("sprite-width").disabled = true;
       document.getElementById("sprite-height").disabled = true;
       e = document.getElementById("spriteeditor");
@@ -587,7 +560,9 @@ this.SpriteEditor = (function() {
     }
     this.updateCurrentFileLock();
     this.updateSelectionHints();
-    return this.auto_palette.update();
+    this.auto_palette.update();
+    this.updateCodeTip();
+    return this.setCoordinates(-1, -1);
   };
 
   SpriteEditor.prototype.setSprite = function(data) {
@@ -612,138 +587,11 @@ this.SpriteEditor = (function() {
     })(this);
   };
 
-  SpriteEditor.prototype.setColor = function(color) {
-    this.color = color;
+  SpriteEditor.prototype.setColor = function(color1) {
+    this.color = color1;
     this.spriteview.setColor(this.color);
     this.auto_palette.colorPicked(this.color);
     return document.getElementById("colortext").value = this.color;
-  };
-
-  SpriteEditor.prototype.rebuildSpriteList = function() {
-    var element, l, len, list, ref, s;
-    list = document.getElementById("sprite-list");
-    list.innerHTML = "";
-    ref = this.app.project.sprite_list;
-    for (l = 0, len = ref.length; l < len; l++) {
-      s = ref[l];
-      element = this.createSpriteBox(s);
-      list.appendChild(element);
-    }
-    this.updateActiveUsers();
-    if ((this.selected_sprite != null) && (this.app.project.getSprite(this.selected_sprite) == null)) {
-      this.setSelectedSprite(null);
-    }
-  };
-
-  SpriteEditor.prototype.openSprite = function(s) {
-    this.checkSave(true);
-    this.spriteview.setSprite(this.app.project.getSprite(s));
-    this.spriteview.windowResized();
-    this.spriteview.update();
-    this.spriteview.editable = true;
-    return this.setSelectedSprite(s);
-  };
-
-  SpriteEditor.prototype.updateActiveUsers = function() {
-    var e, file, l, len, list, lock;
-    list = document.getElementById("sprite-list").childNodes;
-    for (l = 0, len = list.length; l < len; l++) {
-      e = list[l];
-      file = e.id.split("-")[2];
-      lock = this.app.project.isLocked("sprites/" + file + ".png");
-      if ((lock != null) && Date.now() < lock.time) {
-        e.querySelector(".active-user").style = "display: block; background: " + (this.app.appui.createFriendColor(lock.user)) + ";";
-      } else {
-        e.querySelector(".active-user").style = "display: none;";
-      }
-    }
-  };
-
-  SpriteEditor.prototype.createSpriteBox = function(sprite) {
-    var activeuser, element, icon, iconbox, text;
-    element = document.createElement("div");
-    element.classList.add("sprite-box");
-    element.setAttribute("id", "project-sprite-" + sprite.name);
-    element.setAttribute("title", sprite.name);
-    if (sprite.name === this.selected_sprite) {
-      element.classList.add("selected");
-    }
-    iconbox = document.createElement("div");
-    iconbox.classList.add("icon-box");
-    icon = this.createSpriteThumb(sprite);
-    icon.setAttribute("id", "sprite-image-" + sprite.name);
-    iconbox.appendChild(icon);
-    element.appendChild(iconbox);
-    sprite.addImage(icon, 64);
-    element.appendChild(document.createElement("br"));
-    text = document.createElement("span");
-    text.innerHTML = sprite.name;
-    element.appendChild(text);
-    element.addEventListener("click", (function(_this) {
-      return function() {
-        return _this.openSprite(sprite.name);
-      };
-    })(this));
-    activeuser = document.createElement("i");
-    activeuser.classList.add("active-user");
-    activeuser.classList.add("fa");
-    activeuser.classList.add("fa-user");
-    element.appendChild(activeuser);
-    return element;
-  };
-
-  SpriteEditor.prototype.createSpriteThumb = function(sprite) {
-    var canvas, mouseover, update;
-    canvas = document.createElement("canvas");
-    canvas.width = 64;
-    canvas.height = 64;
-    sprite.addLoadListener((function(_this) {
-      return function() {
-        var context, frame, h, r, w;
-        context = canvas.getContext("2d");
-        frame = sprite.frames[0].getCanvas();
-        r = Math.min(64 / frame.width, 64 / frame.height);
-        context.imageSmoothingEnabled = false;
-        w = r * frame.width;
-        h = r * frame.height;
-        return context.drawImage(frame, 32 - w / 2, 32 - h / 2, w, h);
-      };
-    })(this));
-    mouseover = false;
-    update = (function(_this) {
-      return function() {
-        var context, dt, frame, h, r, t, w;
-        if (mouseover && sprite.frames.length > 1) {
-          requestAnimationFrame(function() {
-            return update();
-          });
-        }
-        dt = 1000 / sprite.fps;
-        t = Date.now();
-        frame = mouseover ? Math.floor(t / dt) % sprite.frames.length : 0;
-        context = canvas.getContext("2d");
-        context.imageSmoothingEnabled = false;
-        context.clearRect(0, 0, 64, 64);
-        frame = sprite.frames[frame].getCanvas();
-        r = Math.min(64 / frame.width, 64 / frame.height);
-        w = r * frame.width;
-        h = r * frame.height;
-        return context.drawImage(frame, 32 - w / 2, 32 - h / 2, w, h);
-      };
-    })(this);
-    canvas.addEventListener("mouseenter", (function(_this) {
-      return function() {
-        mouseover = true;
-        return update();
-      };
-    })(this));
-    canvas.addEventListener("mouseout", (function(_this) {
-      return function() {
-        return mouseover = false;
-      };
-    })(this));
-    canvas.updateSprite = update;
-    return canvas;
   };
 
   SpriteEditor.prototype.spriteDimensionChanged = function(dim) {
@@ -1051,6 +899,78 @@ this.SpriteEditor = (function() {
     return this.spriteview.rotateSprite(direction);
   };
 
+  SpriteEditor.prototype.fileDropped = function(file, folder) {
+    var reader;
+    console.info("processing " + file.name);
+    console.info("folder: " + folder);
+    reader = new FileReader();
+    reader.addEventListener("load", (function(_this) {
+      return function() {
+        var img;
+        console.info("file read, size = " + reader.result.length);
+        if (reader.result.length > 5000000) {
+          return;
+        }
+        img = new Image;
+        img.src = reader.result;
+        return img.onload = function() {
+          var name, sprite;
+          if (img.complete && img.width > 0 && img.height > 0 && img.width <= 2048 && img.height <= 2048) {
+            name = file.name.split(".")[0];
+            name = _this.findNewFilename(name, "getSprite", folder);
+            if (folder != null) {
+              name = folder.getFullDashPath() + "-" + name;
+            }
+            if (folder != null) {
+              folder.setOpen(true);
+            }
+            sprite = _this.app.project.createSprite(name, img);
+            _this.setSelectedItem(name);
+            return _this.app.client.sendRequest({
+              name: "write_project_file",
+              project: _this.app.project.id,
+              file: "sprites/" + name + ".png",
+              properties: {},
+              content: reader.result.split(",")[1]
+            }, function(msg) {
+              console.info(msg);
+              _this.app.project.removePendingChange(_this);
+              _this.app.project.updateSpriteList();
+              return _this.checkNameFieldActivation();
+            });
+          }
+        };
+      };
+    })(this));
+    return reader.readAsDataURL(file);
+  };
+
+  SpriteEditor.prototype.updateCodeTip = function() {
+    var code, sprite;
+    if ((this.selected_sprite != null) && (this.app.project.getSprite(this.selected_sprite) != null)) {
+      sprite = this.app.project.getSprite(this.selected_sprite);
+      code = "screen.drawSprite( \"" + (this.selected_sprite.replace(/-/g, "/")) + "\", x, y, " + sprite.width + ", " + sprite.height + " )";
+    } else {
+      code = "";
+    }
+    return this.code_tip.set(code);
+  };
+
+  SpriteEditor.prototype.setCoordinates = function(x, y) {
+    var e;
+    e = document.getElementById("sprite-coordinates");
+    if (x < 0 || y < 0) {
+      return e.innerText = "";
+    } else {
+      return e.innerText = x + " , " + y;
+    }
+  };
+
+  SpriteEditor.prototype.renameItem = function(item, name) {
+    this.app.project.changeSpriteName(item.name, name);
+    return SpriteEditor.__super__.renameItem.call(this, item, name);
+  };
+
   return SpriteEditor;
 
-})();
+})(Manager);

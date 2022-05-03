@@ -48,16 +48,24 @@ this.MicroMap = (function() {
 
   MicroMap.prototype.set = function(x, y, ref) {
     if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+      if (typeof ref === "string") {
+        ref = ref.replace(/\//g, "-");
+      }
       this.map[x + y * this.width] = ref;
       return this.needs_update = true;
     }
   };
 
   MicroMap.prototype.get = function(x, y) {
+    var c;
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
       return 0;
     }
-    return this.map[x + y * this.width] || 0;
+    c = this.map[x + y * this.width];
+    if (typeof c === "string") {
+      c = c.replace(/-/g, "/");
+    }
+    return c || 0;
   };
 
   MicroMap.prototype.getCanvas = function() {
@@ -86,6 +94,9 @@ this.MicroMap = (function() {
         if ((s != null) && s.length > 0) {
           s = s.split(":");
           sprite = this.sprites[s[0]];
+          if (sprite == null) {
+            sprite = this.sprites[s[0].replace(/-/g, "/")];
+          }
           if ((sprite != null) && (sprite.frames[0] != null)) {
             if (s[1] != null) {
               xy = s[1].split(",");

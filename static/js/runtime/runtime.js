@@ -95,7 +95,7 @@ this.Runtime = (function() {
           return _this.checkStartReady();
         };
       })(this));
-      name = i.file.split(".")[0];
+      name = i.file.split(".")[0].replace(/-/g, "/");
       s.name = name;
       this.sprites[name] = s;
     }
@@ -325,7 +325,7 @@ this.Runtime = (function() {
   Runtime.prototype.projectFileDeleted = function(type, file) {
     switch (type) {
       case "sprites":
-        return delete this.sprites[file.substring(0, file.length - 4)];
+        return delete this.sprites[file.substring(0, file.length - 4).replace(/-/g, "/")];
       case "maps":
         return delete this.maps[file.substring(0, file.length - 5).replace(/-/g, "/")];
     }
@@ -338,7 +338,9 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.updateSprite = function(name, version, data, properties) {
-    var img;
+    var img, slug;
+    slug = name;
+    name = name.replace(/-/g, "/");
     if (data != null) {
       data = "data:image/png;base64," + data;
       if (this.sprites[name] != null) {
@@ -363,7 +365,7 @@ this.Runtime = (function() {
       if (this.sprites[name] != null) {
         img = new Image;
         img.crossOrigin = "Anonymous";
-        img.src = this.url + "sprites/" + name + (".png?v=" + version);
+        img.src = this.url + "sprites/" + slug + (".png?v=" + version);
         return img.onload = (function(_this) {
           return function() {
             UpdateSprite(_this.sprites[name], img, properties);
@@ -371,7 +373,7 @@ this.Runtime = (function() {
           };
         })(this);
       } else {
-        this.sprites[name] = LoadSprite(this.url + "sprites/" + name + (".png?v=" + version), properties, (function(_this) {
+        this.sprites[name] = LoadSprite(this.url + "sprites/" + slug + (".png?v=" + version), properties, (function(_this) {
           return function() {
             return _this.updateMaps();
           };

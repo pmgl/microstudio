@@ -1,5 +1,15 @@
-class @SpriteEditor
+class @SpriteEditor extends Manager
   constructor:(@app)->
+    @folder = "sprites"
+    @item = "sprite"
+    @list_change_event = "spritelist"
+    @get_item = "getSprite"
+    @use_thumbnails = false
+    @extensions = ["png"]
+    @update_list = "updateSpriteList"
+
+    @init()
+
     @spriteview = new SpriteView @
 
     @auto_palette = new AutoPalette @
@@ -11,35 +21,6 @@ class @SpriteEditor
     @save_delay = 1000
     @save_time = 0
     setInterval (()=>@checkSave()),@save_delay/2
-
-    @app.appui.setAction "create-sprite-button",()=>@createSprite()
-    #document.getElementById("sprite-name").addEventListener "input",(event)=>@spriteNameChanged()
-
-    @sprite_name_validator = new InputValidator document.getElementById("sprite-name"),
-      document.getElementById("sprite-name-button"),
-      null,
-      (value)=>
-        return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
-        @app.project.lockFile("sprites/#{@selected_sprite}.png")
-        name = value[0].toLowerCase()
-        name = RegexLib.fixFilename(name)
-        document.getElementById("sprite-name").value = name
-        @sprite_name_validator.update()
-        if @selected_sprite != "icon" and name != @selected_sprite and RegexLib.filename.test(name) and not @app.project.getSprite(name)?
-          old = @selected_sprite
-          @selected_sprite = name
-          @spriteview.sprite.rename name
-          @app.project.changeSpriteName(old,name)
-          @app.project.lockFile("sprites/#{@selected_sprite}.png")
-          @saveSprite ()=>
-            @app.client.sendRequest {
-              name: "delete_project_file"
-              project: @app.project.id
-              file: "sprites/#{old}.png"
-            },(msg)=>
-              @app.project.updateSpriteList()
-
-    @sprite_name_validator.regex = RegexLib.filename
 
     document.getElementById("sprite-width").addEventListener "input",(event)=>@spriteDimensionChanged("width")
     document.getElementById("sprite-height").addEventListener "input",(event)=>@spriteDimensionChanged("height")
@@ -111,32 +92,18 @@ class @SpriteEditor
       event.preventDefault()
       #console.info event
 
-    document.getElementById("spritelist").addEventListener "drop",(event)=>
-      event.preventDefault()
-      try
-        list = []
-        for i in event.dataTransfer.items
-          list.push i.getAsFile()
+    @code_tip = new CodeSnippetField(@app,"#sprite-code-tip")
 
-        funk = ()=>
-          if list.length>0
-            file = list.splice(0,1)[0]
-            console.info "processing #{file.name}"
-            img = new Image
-            reader = new FileReader()
-            reader.addEventListener "load",()=>
-              img.src = reader.result
+    @background_color_picker = new BackgroundColorPicker this,((color)=>
+      @spriteview.updateBackgroundColor()
+      document.getElementById("sprite-background-color").style.background = color),"sprite"
 
-            reader.readAsDataURL(file)
-            #url = "data:application/javascript;base64,"+btoa(Audio.processor)
-
-            img.onload = ()=>
-              if img.complete and img.width>0 and img.height>0 and img.width<=2048 and img.height<=2048
-                @createSprite RegexLib.fixFilename(file.name.split(".")[0]),img,()=>funk()
-        funk()
-
-      catch err
-        console.error err
+    document.getElementById("sprite-background-color").addEventListener "mousedown",(event)=>
+      if @background_color_picker.shown
+        @background_color_picker.hide()
+      else
+        @background_color_picker.show()
+        event.stopPropagation()
 
   createToolButton:(tool)->
     parent = document.getElementById("spritetools")
@@ -275,16 +242,19 @@ class @SpriteEditor
     @checkSave(true,callback)
 
   projectOpened:()->
+    super()
     @app.project.addListener @
     @setSelectedSprite null
 
   projectUpdate:(change)->
-    if change == "spritelist"
-      @rebuildSpriteList()
-    else if change == "locks"
-      @updateCurrentFileLock()
-      @updateActiveUsers()
-    else if change instanceof ProjectSprite
+    super(change)
+
+    switch change
+      when "locks"
+        @updateCurrentFileLock()
+        @updateActiveUsers()
+
+    if change instanceof ProjectSprite
       name = change.name
       c = document.querySelector "#sprite-image-#{name}"
       sprite = change
@@ -332,6 +302,16 @@ class @SpriteEditor
        console.info("retrying sprite save...")
       ),10000
 
+
+
+  createAsset:(folder,name="sprite",content="")->
+    @checkSave true,()=>
+      if folder?
+        name = folder.getFullDashPath()+"-#{name}"
+        folder.setOpen true
+
+      @createSprite name,null
+
   createSprite:(name,img,callback)->
     @checkSave true,()=>
       if img?
@@ -351,27 +331,29 @@ class @SpriteEditor
         @spriteview.getFrame().getContext().drawImage img,0,0
 
       @spriteview.update()
-      @setSelectedSprite(sprite.name)
+      @setSelectedItem(sprite.name)
       @spriteview.editable = true
       @saveSprite ()=>
-        @rebuildSpriteList()
+        @rebuildList()
         callback() if callback?
+
+  setSelectedItem:(name)->
+    @checkSave(true)
+    sprite = @app.project.getSprite name
+    if sprite?
+      @spriteview.setSprite sprite
+
+    @spriteview.windowResized()
+    @spriteview.update()
+    @spriteview.editable = true
+    @setSelectedSprite name
+    super(name)
 
   setSelectedSprite:(sprite)->
     @selected_sprite = sprite
     @animation_panel.spriteChanged()
-    list = document.getElementById("sprite-list").childNodes
 
     if @selected_sprite?
-      for e in list
-        if e.getAttribute("id") == "project-sprite-#{sprite}"
-          e.classList.add("selected")
-        else
-          e.classList.remove("selected")
-
-      document.getElementById("sprite-name").value = sprite
-      @sprite_name_validator.update()
-      document.getElementById("sprite-name").disabled = @selected_sprite == "icon"
       if @spriteview.sprite?
         document.getElementById("sprite-width").value = @spriteview.sprite.width
         document.getElementById("sprite-height").value = @spriteview.sprite.height
@@ -385,10 +367,6 @@ class @SpriteEditor
         e.firstChild.style.display = "inline-block"
       @spriteview.windowResized()
     else
-      for e in list
-        e.classList.remove("selected")
-      document.getElementById("sprite-name").value = ""
-      document.getElementById("sprite-name").disabled = true
       document.getElementById("sprite-width").disabled = true
       document.getElementById("sprite-height").disabled = true
       e = document.getElementById("spriteeditor")
@@ -398,6 +376,8 @@ class @SpriteEditor
     @updateCurrentFileLock()
     @updateSelectionHints()
     @auto_palette.update()
+    @updateCodeTip()
+    @setCoordinates(-1,-1)
 
   setSprite:(data)->
     data = "data:image/png;base64,"+data
@@ -420,114 +400,6 @@ class @SpriteEditor
     @spriteview.setColor @color
     @auto_palette.colorPicked @color
     document.getElementById("colortext").value = @color
-
-  rebuildSpriteList:()->
-    list = document.getElementById "sprite-list"
-    list.innerHTML = ""
-
-    for s in @app.project.sprite_list
-      element = @createSpriteBox s
-      list.appendChild element
-
-    @updateActiveUsers()
-    if @selected_sprite? and not @app.project.getSprite(@selected_sprite)?
-      @setSelectedSprite null
-    return
-
-  openSprite:(s)->
-    @checkSave(true)
-    @spriteview.setSprite @app.project.getSprite s
-    @spriteview.windowResized()
-    @spriteview.update()
-    @spriteview.editable = true
-    @setSelectedSprite(s)
-
-  updateActiveUsers:()->
-    list = document.getElementById("sprite-list").childNodes
-    for e in list
-      file = e.id.split("-")[2]
-      lock = @app.project.isLocked("sprites/#{file}.png")
-      if lock? and Date.now()<lock.time
-        e.querySelector(".active-user").style = "display: block; background: #{@app.appui.createFriendColor(lock.user)};"
-      else
-        e.querySelector(".active-user").style = "display: none;"
-    return
-
-  createSpriteBox:(sprite)->
-    element = document.createElement "div"
-    element.classList.add "sprite-box"
-    element.setAttribute "id","project-sprite-#{sprite.name}"
-    element.setAttribute "title",sprite.name
-    if sprite.name == @selected_sprite
-      element.classList.add "selected"
-
-    iconbox = document.createElement "div"
-    iconbox.classList.add("icon-box")
-
-    icon = @createSpriteThumb(sprite)
-    icon.setAttribute "id","sprite-image-#{sprite.name}"
-    iconbox.appendChild icon
-    element.appendChild iconbox
-
-    sprite.addImage icon,64
-
-    element.appendChild document.createElement "br"
-
-    text = document.createElement "span"
-    text.innerHTML = sprite.name
-
-    element.appendChild text
-
-    element.addEventListener "click",()=>
-      @openSprite sprite.name
-
-    activeuser = document.createElement "i"
-    activeuser.classList.add "active-user"
-    activeuser.classList.add "fa"
-    activeuser.classList.add "fa-user"
-    element.appendChild activeuser
-    element
-
-  createSpriteThumb:(sprite)->
-    canvas = document.createElement "canvas"
-    canvas.width = 64
-    canvas.height = 64
-    sprite.addLoadListener ()=>
-      context = canvas.getContext "2d"
-      frame = sprite.frames[0].getCanvas()
-      r = Math.min(64/frame.width,64/frame.height)
-      context.imageSmoothingEnabled = false
-      w = r*frame.width
-      h = r*frame.height
-      context.drawImage frame,32-w/2,32-h/2,w,h
-
-    mouseover = false
-    update = ()=>
-      if mouseover and sprite.frames.length>1
-        requestAnimationFrame ()=>update()
-
-      dt = 1000/sprite.fps
-      t = Date.now()
-      frame = if mouseover then Math.floor(t/dt)%sprite.frames.length else 0
-      context = canvas.getContext "2d"
-      context.imageSmoothingEnabled = false
-      context.clearRect 0,0,64,64
-      frame = sprite.frames[frame].getCanvas()
-      r = Math.min(64/frame.width,64/frame.height)
-      w = r*frame.width
-      h = r*frame.height
-      context.drawImage frame,32-w/2,32-h/2,w,h
-
-    canvas.addEventListener "mouseenter",()=>
-      mouseover = true
-      update()
-
-    canvas.addEventListener "mouseout",()=>
-      mouseover = false
-
-    canvas.updateSprite = update
-
-    canvas
 
   spriteDimensionChanged:(dim)->
     if @selected_sprite == "icon"
@@ -755,3 +627,56 @@ class @SpriteEditor
     return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
     @app.project.lockFile("sprites/#{@selected_sprite}.png")
     @spriteview.rotateSprite(direction)
+
+  fileDropped:(file,folder)->
+    console.info "processing #{file.name}"
+    console.info "folder: "+folder
+    reader = new FileReader()
+    reader.addEventListener "load",()=>
+      console.info "file read, size = "+ reader.result.length
+      return if reader.result.length>5000000
+
+      img = new Image
+      img.src = reader.result
+      img.onload = ()=>
+        if img.complete and img.width > 0 and img.height > 0 and img.width<=2048 and img.height<=2048
+          name = file.name.split(".")[0]
+          name = @findNewFilename name,"getSprite",folder
+          if folder? then name = folder.getFullDashPath()+"-"+name
+          if folder? then folder.setOpen true
+
+          sprite = @app.project.createSprite name,img
+          @setSelectedItem name
+
+          @app.client.sendRequest {
+            name: "write_project_file"
+            project: @app.project.id
+            file: "sprites/#{name}.png"
+            properties: {}
+            content: reader.result.split(",")[1]
+          },(msg)=>
+            console.info msg
+            @app.project.removePendingChange(@)
+            @app.project.updateSpriteList()
+            @checkNameFieldActivation()
+
+    reader.readAsDataURL(file)
+
+  updateCodeTip:()->
+    if @selected_sprite? and @app.project.getSprite(@selected_sprite)?
+      sprite = @app.project.getSprite(@selected_sprite)
+      code = """screen.drawSprite( "#{@selected_sprite.replace(/-/g,"/")}", x, y, #{sprite.width}, #{sprite.height} )"""
+    else
+      code = ""
+    @code_tip.set code
+
+  setCoordinates:(x,y)->
+    e = document.getElementById("sprite-coordinates")
+    if x<0 or y<0
+      e.innerText = ""
+    else
+      e.innerText = "#{x} , #{y}"
+
+  renameItem:(item,name)->
+    @app.project.changeSpriteName item.name,name # needed to trigger updating of maps
+    super(item,name)

@@ -73,7 +73,7 @@ class @Runtime
         @updateMaps()
         @checkStartReady()
 
-      name = i.file.split(".")[0]
+      name = i.file.split(".")[0].replace /-/g,"/"
       s.name = name
       @sprites[name] = s
 
@@ -241,7 +241,7 @@ class @Runtime
   projectFileDeleted:(type,file)->
     switch type
       when "sprites"
-        delete @sprites[file.substring(0,file.length-4)]
+        delete @sprites[file.substring(0,file.length-4).replace(/-/g,"/")]
       when "maps"
         delete @maps[file.substring(0,file.length-5).replace(/-/g,"/")]
 
@@ -251,6 +251,8 @@ class @Runtime
     @screen.resize()
 
   updateSprite:(name,version,data,properties)->
+    slug = name
+    name = name.replace(/-/g,"/")
     if data?
       data = "data:image/png;base64,"+data
       if @sprites[name]?
@@ -267,12 +269,12 @@ class @Runtime
       if @sprites[name]?
         img = new Image
         img.crossOrigin = "Anonymous"
-        img.src = @url+"sprites/"+name+".png?v=#{version}"
+        img.src = @url+"sprites/"+slug+".png?v=#{version}"
         img.onload = ()=>
           UpdateSprite @sprites[name],img,properties
           @updateMaps()
       else
-        @sprites[name] = LoadSprite @url+"sprites/"+name+".png?v=#{version}",properties,()=>@updateMaps()
+        @sprites[name] = LoadSprite @url+"sprites/"+slug+".png?v=#{version}",properties,()=>@updateMaps()
         @sprites[name].name = name
 
   updateMap:(name,version,data)->

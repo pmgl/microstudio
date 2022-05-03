@@ -160,7 +160,7 @@ this.FolderView = (function() {
     activeuser.classList.add("fa");
     activeuser.classList.add("fa-user");
     element.appendChild(activeuser);
-    element.draggable = true;
+    element.draggable = item.canBeRenamed != null ? item.canBeRenamed() : true;
     element.addEventListener("dragstart", (function(_this) {
       return function(event) {
         _this.drag_file = item;

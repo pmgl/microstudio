@@ -732,6 +732,7 @@ this.Editor = (function(superClass) {
   };
 
   Editor.prototype.projectOpened = function() {
+    Editor.__super__.projectOpened.call(this);
     this.sessions = {};
     this.app.project.addListener(this);
     this.app.runwindow.resetButtons();

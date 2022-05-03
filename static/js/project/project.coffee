@@ -123,9 +123,7 @@ class @Project
     @notifyListeners("locks") if change
 
   changeSpriteName:(old,name)->
-    @sprite_table[name] = @sprite_table[old]
-    delete @sprite_table[old]
-
+    old = old.replace /-/g,"/"
     for map in @map_list
       changed = false
       for i in [0..map.width-1] by 1
@@ -216,6 +214,7 @@ class @Project
     s = new ProjectSprite @,sprite.file,null,null,sprite.properties,sprite.size
     @sprite_table[s.name] = s
     @sprite_list.push s
+    @sprite_folder.push s
     s
 
   getSprite:(name)->
@@ -233,6 +232,7 @@ class @Project
     sprite = new ProjectSprite @,filename+".png",width,height
     @sprite_table[sprite.name] = sprite
     @sprite_list.push sprite
+    @sprite_folder.push sprite
     @notifyListeners "spritelist"
     sprite
 

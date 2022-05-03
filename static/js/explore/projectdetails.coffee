@@ -43,6 +43,36 @@ class @ProjectDetails
         @app.project.updateSourceList()
         @setSelectedSource(@selected_source)
 
+    document.getElementById("project-contents-sprite-import").addEventListener "click",()=>
+      return if not @app.project?
+      return if not @selected_sprite?
+      name = @selected_sprite.name
+      return if not name?
+      return if @imported_sprites[name]
+      @imported_sprites[name] = true
+
+      document.getElementById("project-contents-sprite-import").style.display = "none"
+
+      count = 1
+      base = name
+      while @app.project.getSprite(name)?
+        count += 1
+        name = base+count
+
+      data = @selected_sprite.saveData().split(",")[1]
+
+      @app.client.sendRequest {
+        name: "write_project_file"
+        project: @app.project.id
+        file: "sprites/#{name}.png"
+        properties:
+          frames: @selected_sprite.frames.length
+          fps: @selected_sprite.fps
+        content: data
+      },(msg)=>
+        @app.project.updateSpriteList()
+
+
     document.querySelector("#project-contents-doc-import").addEventListener "click",()=>
       return if not @app.project?
       return if @imported_doc or not @doc?
@@ -86,6 +116,7 @@ class @ProjectDetails
     @music = []
     @maps = []
     @imported_sources = {}
+    @imported_sprites = {}
     @imported_doc = false
 
     document.querySelector("#project-contents-doc-import").classList.remove "done"
@@ -285,147 +316,42 @@ class @ProjectDetails
     view.rebuildList folder
     return
 
-  createSpriteBox:(file,prefs)->
-    div = document.createElement "div"
-    div.classList.add "sprite"
-
-    img = @createSpriteThumb(new Sprite(location.origin+"/#{@project.owner}/#{@project.slug}/#{file}",null,prefs))
-    div.appendChild img
-
-    if @app.project?
-      button = document.createElement "div"
-      i = document.createElement "i"
-      i.classList.add "fa"
-      i.classList.add "fa-download"
-      button.appendChild i
-      span = document.createElement "span"
-      span.innerText = @app.translator.get("Import to project")+" #{@app.project.title}"
-      button.appendChild span
-      clicked = false
-      button.addEventListener "click",()=>
-        return if clicked
-        clicked = true
-        source = new Image
-        source.crossOrigin = "Anonymous"
-        source.src = location.origin+"/#{@project.owner}/#{@project.slug}/#{file}"
-        source.onload = ()=>
-          canvas = document.createElement "canvas"
-          canvas.width = source.width
-          canvas.height = source.height
-          canvas.getContext("2d").drawImage source,0,0
-
-          name = file.split(".")[0]
-          count = 1
-          while @app.project.getSprite(name)?
-            count += 1
-            name = file.split(".")[0]+count
-
-          file = name+".png"
-
-          @app.client.sendRequest {
-            name: "write_project_file"
-            project: @app.project.id
-            file: "sprites/#{file}"
-            content: canvas.toDataURL().split(",")[1]
-            properties: prefs
-          },(msg)=>
-            @app.project.updateSpriteList()
-            div.style.width = "0px"
-            setTimeout (()=>div.style.display = "none"),1000
-
-      div.appendChild button
-
-    document.querySelector("#project-contents-view .sprite-list").appendChild div
-
-
-  createSpriteThumb:(sprite)->
-    canvas = document.createElement "canvas"
-    canvas.width = 100
-    canvas.height = 100
-    sprite.loaded = ()=>
-      context = canvas.getContext "2d"
-      frame = sprite.frames[0].getCanvas()
-      r = Math.min(100/frame.width,100/frame.height)
-      context.imageSmoothingEnabled = false
-      w = r*frame.width
-      h = r*frame.height
-      context.drawImage frame,50-w/2,50-h/2,w,h
-
-    mouseover = false
-    update = ()=>
-      if mouseover and sprite.frames.length>1
-        requestAnimationFrame ()=>update()
-
-      return if sprite.frames.length<1
-
-      dt = 1000/sprite.fps
-      t = Date.now()
-      frame = if mouseover then Math.floor(t/dt)%sprite.frames.length else 0
-      context = canvas.getContext "2d"
-      context.imageSmoothingEnabled = false
-      context.clearRect 0,0,100,100
-      frame = sprite.frames[frame].getCanvas()
-      r = Math.min(100/frame.width,100/frame.height)
-      w = r*frame.width
-      h = r*frame.height
-      context.drawImage frame,50-w/2,50-h/2,w,h
-
-    canvas.addEventListener "mouseenter",()=>
-      mouseover = true
-      update()
-
-    canvas.addEventListener "mouseout",()=>
-      mouseover = false
-
-    canvas.updateSprite = update
-
-    canvas
-
   setSpriteList:(files)->
+    table = {}
+    @sprites = {}
+    manager =
+      folder: "sprites"
+      item: "sprite"
+      openItem:(item)=>
+        @sprites_folder_view.setSelectedItem item
+        @selected_sprite = @sprites[item]
+        if @app.project? and not @imported_sprites[item]
+          document.querySelector("#project-contents-sprite-import span").innerText = @app.translator.get("Import %ITEM% to project %PROJECT%").replace("%ITEM%",item.replace(/-/g,"/")).replace("%PROJECT%",@app.project.title)
+          document.getElementById("project-contents-sprite-import").style.display = "block"
+        else
+          document.getElementById("project-contents-sprite-import").style.display = "none"
+
+
+    project = JSON.parse(JSON.stringify(@project)) # create a clone
+
+    project.getFullURL = ()->
+      url = location.origin+"/#{project.owner}/#{project.slug}/"
+
+    project.map_list = []
+    project.notifyListeners = ()->
+
+    folder = new ProjectFolder null,"sprites"
     for f in files
-      @createSpriteBox(f.file,f.properties)
+      s = new ProjectSprite project,f.file,null,null,f.properties
+      folder.push s
+      table[s.name] = s
+      @sprites[s.name] = s
+
+    @sprites_folder_view = new FolderView manager,document.querySelector("#project-contents-view .sprite-list")
+    @sprites_folder_view.editable = false
+    @sprites_folder_view.rebuildList folder
+    document.getElementById("project-contents-sprite-import").style.display = "none"
     return
-
-  createImportButton:(div,file,folder)->
-    button = document.createElement "div"
-    i = document.createElement "i"
-    i.classList.add "fa"
-    i.classList.add "fa-download"
-    button.appendChild i
-    span = document.createElement "span"
-    span.innerText = @app.translator.get("Import to project")+" #{@app.project.title}"
-    button.appendChild span
-    clicked = false
-    button.addEventListener "click",()=>
-      return if clicked
-      clicked = true
-      source = new Image
-      source.crossOrigin = "Anonymous"
-      source.src = location.origin+"/#{@project.owner}/#{@project.slug}/#{file}"
-      source.onload = ()=>
-        canvas = document.createElement "canvas"
-        canvas.width = source.width
-        canvas.height = source.height
-        canvas.getContext("2d").drawImage source,0,0
-
-        name = file.split(".")[0]
-        count = 1
-        while @app.project.getSprite(name)?
-          count += 1
-          name = file.split(".")[0]+count
-
-        file = name+".png"
-
-        @app.client.sendRequest {
-          name: "write_project_file"
-          project: @app.project.id
-          file: "sprites/#{file}"
-          content: canvas.toDataURL().split(",")[1]
-          properties: prefs
-        },(msg)=>
-          @app.project.updateSpriteList()
-          div.style.width = "0px"
-          setTimeout (()=>div.style.display = "none"),1000
 
   setSoundList:(files)->
     if files.length>0
