@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2022-05-03
+* **Folders!** ... now in all project tabs!
+* Sprite editor customizable background color
+* Sprite editor displays drawing coordinates
+* Map and sprite editors display a code snippet tip.
+
 ### Update 2022-04-25
 * reworked Explore section, now correctly shows and queries all public projects (#66)
 * added tip for markdown support in project description (#77)
