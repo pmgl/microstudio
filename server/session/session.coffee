@@ -282,6 +282,7 @@ class @Session
       @user.setFlag("newsletter",data.newsletter)
       @user.set("hash",hash)
       @user.resetValidationToken()
+      @user.updateTier()
     else
       @user = @content.createUser
         nick: data.nick

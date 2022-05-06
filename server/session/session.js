@@ -569,6 +569,7 @@ this.Session = (function() {
       this.user.setFlag("newsletter", data.newsletter);
       this.user.set("hash", hash);
       this.user.resetValidationToken();
+      this.user.updateTier();
     } else {
       this.user = this.content.createUser({
         nick: data.nick,
