@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2022-05-09
+* Now remembering splitbar positions #119
+* `screen.drawSprite`: size can be omitted, will default to sprite size #120
+* Fixed storage space allowance when upgrading guest to user #122
+* Fixed #126 (project icon could be deleted)
+
 ### Update 2022-05-03
 * **Folders!** ... now in all project tabs!
 * Sprite editor customizable background color
