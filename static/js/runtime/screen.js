@@ -729,6 +729,9 @@ this.Screen = (function() {
     if (canvas == null) {
       return;
     }
+    if (w == null) {
+      w = canvas.width;
+    }
     if (!h) {
       h = w / canvas.width * canvas.height;
     }
@@ -747,6 +750,9 @@ this.Screen = (function() {
     canvas = this.getSpriteFrame(sprite);
     if (canvas == null) {
       return;
+    }
+    if (w == null) {
+      w = sw;
     }
     if (!h) {
       h = w / sw * sh;

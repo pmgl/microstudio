@@ -455,7 +455,7 @@ class @msImage
       if not frame?
         dt = 1000/sprite.fps
         frame = Math.floor((Date.now()-sprite.animation_start)/dt)%sprite.frames.length
-      if frame>=0 and frame<sprite.frames.length
+      if frame >= 0 and frame < sprite.frames.length
         return sprite.frames[frame].canvas
       else
         return sprite.frames[0].canvas
@@ -465,10 +465,14 @@ class @msImage
       return null
 
   drawImage:(sprite,x,y,w,h)-> @drawSprite(sprite,x,y,w,h)
+
   drawSprite:(sprite,x,y,w,h)->
     @initContext()
     canvas = @getSpriteFrame(sprite)
     return if not canvas?
+
+    if not w?
+      w = canvas.width
 
     if not h
       h = w/canvas.width*canvas.height
@@ -486,6 +490,9 @@ class @msImage
     @initContext()
     canvas = @getSpriteFrame(sprite)
     return if not canvas?
+
+    if not w?
+      w = canvas.width
 
     if not h
       h = w/sw*sh

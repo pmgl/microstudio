@@ -515,6 +515,9 @@ class @Screen
     canvas = @getSpriteFrame(sprite)
     return if not canvas?
 
+    if not w?
+      w = canvas.width
+
     if not h
       h = w/canvas.width*canvas.height
 
@@ -529,6 +532,9 @@ class @Screen
   drawSpritePart:(sprite,sx,sy,sw,sh,x,y,w,h)->
     canvas = @getSpriteFrame(sprite)
     return if not canvas?
+
+    if not w?
+      w = sw
 
     if not h
       h = w/sw*sh
