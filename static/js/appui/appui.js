@@ -174,7 +174,7 @@ AppUI = (function() {
     this.doc_splitbar = new SplitBar("doc-section", "horizontal");
     this.code_splitbar = new SplitBar("code-section", "horizontal");
     this.runtime_splitbar = new SplitBar("runtime-container", "vertical");
-    this.runtime_splitbar.setPosition(67);
+    this.runtime_splitbar.initPosition(67);
     this.debug_splitbar = new SplitBar("terminal-debug-container", "horizontal");
     this.debug_splitbar.closed2 = true;
     this.debug_splitbar.splitbar_size = 12;
@@ -1022,12 +1022,13 @@ AppUI = (function() {
     this.show("projectview");
     this.hide("myprojects");
     this.project.addListener(this);
-    this.code_splitbar.setPosition(50);
+    this.code_splitbar.initPosition(50);
     this.debug_splitbar.closed2 = true;
     this.debug_splitbar.update();
-    this.runtime_splitbar.setPosition(50);
+    this.runtime_splitbar.initPosition(50);
     this.app.runwindow.terminal.start();
-    return this.updateActiveUsers();
+    this.updateActiveUsers();
+    return this.doc_splitbar.initPosition(50);
   };
 
   AppUI.prototype.projectUpdate = function(change) {

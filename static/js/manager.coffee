@@ -6,7 +6,7 @@ class @Manager
     @folder_view.init()
 
     @splitbar = new SplitBar(@main_splitpanel or "#{@folder}-section","horizontal")
-    @splitbar.setPosition(20)
+    @splitbar.initPosition(20)
 
     create_asset = document.querySelector "##{@item}-asset-bar .create-asset-button"
     create_folder = document.querySelector "##{@item}-asset-bar .create-folder-button"

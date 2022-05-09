@@ -144,7 +144,7 @@ class AppUI
     @doc_splitbar = new SplitBar("doc-section","horizontal")
     @code_splitbar = new SplitBar("code-section","horizontal")
     @runtime_splitbar = new SplitBar("runtime-container","vertical")
-    @runtime_splitbar.setPosition(67)
+    @runtime_splitbar.initPosition(67)
     @debug_splitbar = new SplitBar("terminal-debug-container","horizontal")
     @debug_splitbar.closed2 = true
     @debug_splitbar.splitbar_size = 12
@@ -797,12 +797,13 @@ class AppUI
     @show "projectview"
     @hide "myprojects"
     @project.addListener @
-    @code_splitbar.setPosition(50)
+    @code_splitbar.initPosition(50)
     @debug_splitbar.closed2 = true
     @debug_splitbar.update()
-    @runtime_splitbar.setPosition(50)
+    @runtime_splitbar.initPosition(50)
     @app.runwindow.terminal.start()
     @updateActiveUsers()
+    @doc_splitbar.initPosition(50)
 
   projectUpdate:(change)->
     if change == "spritelist"

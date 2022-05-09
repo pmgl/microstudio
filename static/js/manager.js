@@ -8,7 +8,7 @@ this.Manager = (function() {
     this.folder_view = new FolderView(this, document.getElementById(this.item + "list"));
     this.folder_view.init();
     this.splitbar = new SplitBar(this.main_splitpanel || (this.folder + "-section"), "horizontal");
-    this.splitbar.setPosition(20);
+    this.splitbar.initPosition(20);
     create_asset = document.querySelector("#" + this.item + "-asset-bar .create-asset-button");
     create_folder = document.querySelector("#" + this.item + "-asset-bar .create-folder-button");
     create_asset.addEventListener("click", (function(_this) {

@@ -1,7 +1,8 @@
 this.SplitBar = (function() {
   function SplitBar(id, type) {
+    this.id = id;
     this.type = type != null ? type : "horizontal";
-    this.element = document.getElementById(id);
+    this.element = document.getElementById(this.id);
     this.side1 = this.element.childNodes[0];
     this.splitbar = this.element.childNodes[1];
     this.side2 = this.element.childNodes[2];
@@ -78,7 +79,8 @@ this.SplitBar = (function() {
           ns = Math.round(Math.max(0, Math.min(100, this.drag_position + dx)));
           if (ns !== this.position) {
             this.position = ns;
-            return window.dispatchEvent(new Event('resize'));
+            window.dispatchEvent(new Event('resize'));
+            return this.savePosition();
           }
           break;
         default:
@@ -86,7 +88,8 @@ this.SplitBar = (function() {
           ns = Math.round(Math.max(0, Math.min(100, this.drag_position + dy)));
           if (ns !== this.position) {
             this.position = ns;
-            return window.dispatchEvent(new Event('resize'));
+            window.dispatchEvent(new Event('resize'));
+            return this.savePosition();
           }
       }
     }
@@ -102,9 +105,32 @@ this.SplitBar = (function() {
     }
   };
 
-  SplitBar.prototype.setPosition = function(position) {
+  SplitBar.prototype.initPosition = function(default_position) {
+    var load;
+    if (default_position == null) {
+      default_position = 50;
+    }
+    load = localStorage.getItem("splitbar-" + this.id);
+    if ((load != null) && load >= 0 && load <= 100) {
+      return this.setPosition(load * 1, false);
+    } else {
+      return this.setPosition(default_position, false);
+    }
+  };
+
+  SplitBar.prototype.setPosition = function(position, save) {
     this.position = position;
-    return this.update();
+    if (save == null) {
+      save = true;
+    }
+    this.update();
+    if (save) {
+      return this.savePosition();
+    }
+  };
+
+  SplitBar.prototype.savePosition = function() {
+    return localStorage.setItem("splitbar-" + this.id, this.position);
   };
 
   SplitBar.prototype.update = function() {

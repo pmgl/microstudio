@@ -1,6 +1,6 @@
 class @SplitBar
-  constructor:(id,@type="horizontal")->
-    @element = document.getElementById(id)
+  constructor:(@id,@type="horizontal")->
+    @element = document.getElementById(@id)
     @side1 = @element.childNodes[0]
     @splitbar = @element.childNodes[1]
     @side2 = @element.childNodes[2]
@@ -44,12 +44,14 @@ class @SplitBar
           if ns != @position
             @position = ns
             window.dispatchEvent(new Event('resize'))
+            @savePosition()
         else
           dy = (event.clientY-@drag_start_y)/(@element.clientHeight-@splitbar.clientHeight)*100
           ns = Math.round(Math.max(0,Math.min(100,@drag_position+dy)))
           if ns != @position
             @position = ns
             window.dispatchEvent(new Event('resize'))
+            @savePosition()
 
   stopDrag:()->
     @dragging = false
@@ -58,8 +60,19 @@ class @SplitBar
       e.classList.remove "ignoreMouseEvents"
     return
 
-  setPosition:(@position)->
+  initPosition:( default_position = 50 )->
+    load = localStorage.getItem("splitbar-#{@id}")
+    if load? and load >= 0 and load <= 100
+      @setPosition(load*1,false)
+    else
+      @setPosition(default_position,false)
+
+  setPosition:(@position,save=true)->
     @update()
+    @savePosition() if save
+
+  savePosition:()->
+    localStorage.setItem("splitbar-#{@id}",@position)
 
   update:()->
     return if @element.clientWidth == 0 or @element.clientHeight == 0

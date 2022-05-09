@@ -15,7 +15,7 @@ this.MapEditor = (function(superClass) {
     this.update_list = "updateMapList";
     this.init();
     this.mapeditor_splitbar = new SplitBar("mapeditor-container", "horizontal");
-    this.mapeditor_splitbar.setPosition(80);
+    this.mapeditor_splitbar.initPosition(80);
     this.mapview = new MapView(this);
     this.tilepicker = new TilePicker(this);
     document.getElementById("mapeditor-wrapper").appendChild(this.mapview.canvas);

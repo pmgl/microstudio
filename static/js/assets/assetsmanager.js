@@ -36,7 +36,7 @@ this.AssetsManager = (function(superClass) {
 
   AssetsManager.prototype.init = function() {
     AssetsManager.__super__.init.call(this);
-    return this.splitbar.setPosition(30);
+    return this.splitbar.initPosition(30);
   };
 
   AssetsManager.prototype.update = function() {

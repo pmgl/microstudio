@@ -11,7 +11,7 @@ class @MapEditor extends Manager
     @init()
 
     @mapeditor_splitbar = new SplitBar("mapeditor-container","horizontal")
-    @mapeditor_splitbar.setPosition(80)
+    @mapeditor_splitbar.initPosition(80)
 
     @mapview = new MapView @
     @tilepicker = new TilePicker @

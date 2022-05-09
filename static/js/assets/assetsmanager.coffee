@@ -26,7 +26,7 @@ class @AssetsManager extends Manager
 
   init:()->
     super()
-    @splitbar.setPosition(30)
+    @splitbar.initPosition(30)
 
   update:()->
     super()
