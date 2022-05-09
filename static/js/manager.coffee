@@ -129,6 +129,8 @@ class @Manager
       if item?
         document.getElementById("#{@item}-name").disabled = item.canBeRenamed? and not item.canBeRenamed()
 
+        document.getElementById("delete-#{@item}").style.display = if item.canBeRenamed? and not item.canBeRenamed() then "none" else "inline-block"
+
       if item? and item.uploading
         document.getElementById("#{@item}-name").disabled = true
     else
@@ -144,8 +146,11 @@ class @Manager
   deleteItem:()->
     if @selected_item?
       a = @app.project[@get_item] @selected_item
-      if a?
-        text = @app.translator.get("Do you really want to delete %ITEM%?").replace("%ITEM%",@selected_item)
+      if a? and not a.canBeRenamed? or a.canBeRenamed()
+        return if @app.project.isLocked("#{@folder}/#{a.name}.#{a.ext}")
+        @app.project.lockFile("#{@folder}/#{a.name}.#{a.ext}")
+
+        text = @app.translator.get("Do you really want to delete %ITEM%?").replace("%ITEM%",@selected_item.replace(/-/g,"/"))
         ConfirmDialog.confirm text,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
           @app.client.sendRequest {
             name: "delete_project_file"

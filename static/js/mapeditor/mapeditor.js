@@ -57,11 +57,6 @@ this.MapEditor = (function(superClass) {
         return _this.paste();
       };
     })(this));
-    this.app.appui.setAction("delete-map", (function(_this) {
-      return function() {
-        return _this.deleteMap();
-      };
-    })(this));
     document.addEventListener("keydown", (function(_this) {
       return function(event) {
         if (document.getElementById("mapeditor").offsetParent == null) {
@@ -410,32 +405,6 @@ this.MapEditor = (function(superClass) {
       document.getElementById("map-block-height").value = this.mapview.map.block_height;
       this.map_size_validator.update();
       return this.map_blocksize_validator.update();
-    }
-  };
-
-  MapEditor.prototype.deleteMap = function() {
-    var msg;
-    if (this.app.project.isLocked("maps/" + this.selected_map + ".json")) {
-      return;
-    }
-    this.app.project.lockFile("maps/" + this.selected_map + ".json");
-    if (this.selected_map != null) {
-      msg = this.app.translator.get("Really delete %ITEM%?").replace("%ITEM%", this.selected_map);
-      return ConfirmDialog.confirm(msg, this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
-        return function() {
-          return _this.app.client.sendRequest({
-            name: "delete_project_file",
-            project: _this.app.project.id,
-            file: "maps/" + _this.selected_map + ".json"
-          }, function(msg) {
-            _this.app.project.updateMapList();
-            _this.mapview.map.clear();
-            _this.mapview.update();
-            _this.mapview.editable = false;
-            return _this.setSelectedMap(null);
-          });
-        };
-      })(this));
     }
   };
 

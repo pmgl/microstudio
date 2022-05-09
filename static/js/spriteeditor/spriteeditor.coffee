@@ -40,7 +40,6 @@ class @SpriteEditor extends Manager
     @app.appui.setAction "copy-sprite",()=>@copy()
     @app.appui.setAction "cut-sprite",()=>@cut()
     @app.appui.setAction "paste-sprite",()=>@paste()
-    @app.appui.setAction "delete-sprite",()=>@deleteSprite()
 
     @app.appui.setAction "sprite-helper-tile",()=>@toggleTile()
     @app.appui.setAction "sprite-helper-vsymmetry",()=>@toggleVSymmetry()
@@ -449,23 +448,6 @@ class @SpriteEditor extends Manager
       document.getElementById("sprite-height").value = @spriteview.sprite.height
       @sprite_size_validator.update()
 
-  deleteSprite:()->
-    return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
-    @app.project.lockFile("sprites/#{@selected_sprite}.png")
-    if @selected_sprite? and @selected_sprite != "icon"
-      msg = @app.translator.get("Really delete %ITEM%?").replace("%ITEM%",@selected_sprite)
-      ConfirmDialog.confirm msg,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
-        @app.client.sendRequest {
-          name: "delete_project_file"
-          project: @app.project.id
-          file: "sprites/#{@selected_sprite}.png"
-        },(msg)=>
-          @app.project.updateSpriteList()
-          @spriteview.sprite = new Sprite(16,16)
-          @spriteview.update()
-          @spriteview.editable = false
-          @setSelectedSprite null
-
   undo:()->
     return if @app.project.isLocked("sprites/#{@selected_sprite}.png")
     @app.project.lockFile("sprites/#{@selected_sprite}.png")
@@ -553,7 +535,8 @@ class @SpriteEditor extends Manager
         @spriteview.getFrame().getContext().drawImage @clipboard.frames[0].getCanvas(),x,y
         @setSelectedTool("fa-vector-square")
       else
-        @spriteview.sprite.copyFrom(@clipboard)
+        if @selected_sprite != "icon" or (@clipboard.width == @clipboard.height and @clipboard.frames.length == 1)
+          @spriteview.sprite.copyFrom(@clipboard)
 
       @spriteview.sprite.undo.pushState @spriteview.sprite.clone()
       @currentSpriteUpdated()

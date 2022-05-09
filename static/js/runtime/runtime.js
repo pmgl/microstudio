@@ -894,7 +894,12 @@ arrayBufferToBase64 = function(buffer) {
 
 this.System = {
   project: {
-    writeFile: function(obj, name, thumbnail, format, options) {
+    writeFile: function(obj, name, options, callback) {
+      var res;
+      res = {
+        ready: 0,
+        error: 0
+      };
       if (obj instanceof MicroSound) {
         return loadWaveFileLib(function() {
           var buffer, ch, ch1, ch2, encoded, i, j, k, ref, ref1, wav;
@@ -935,8 +940,21 @@ this.System = {
           name = "sprites/" + name;
         }
         return writeProjectFile(name, obj.canvas.toDataURL().split(",")[1]);
+      } else if (obj instanceof Sprite) {
+        return console.info("writing sprite");
+      } else if (typeof obj === "string") {
+        return console.info("writing text");
+      } else if (typeof obj === "object") {
+        return console.info("writing object");
       }
-    }
+    },
+    listFiles: function(path, callback) {},
+    readFile: function(path, callback) {
+      var ready, res;
+      res = ready = 0;
+      return res;
+    },
+    deleteFile: function(path, callback) {}
   },
   file: {
     save: function(obj, name, format, options) {

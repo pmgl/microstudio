@@ -78,11 +78,6 @@ this.SpriteEditor = (function(superClass) {
         return _this.paste();
       };
     })(this));
-    this.app.appui.setAction("delete-sprite", (function(_this) {
-      return function() {
-        return _this.deleteSprite();
-      };
-    })(this));
     this.app.appui.setAction("sprite-helper-tile", (function(_this) {
       return function() {
         return _this.toggleTile();
@@ -660,32 +655,6 @@ this.SpriteEditor = (function(superClass) {
     }
   };
 
-  SpriteEditor.prototype.deleteSprite = function() {
-    var msg;
-    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
-      return;
-    }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
-    if ((this.selected_sprite != null) && this.selected_sprite !== "icon") {
-      msg = this.app.translator.get("Really delete %ITEM%?").replace("%ITEM%", this.selected_sprite);
-      return ConfirmDialog.confirm(msg, this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
-        return function() {
-          return _this.app.client.sendRequest({
-            name: "delete_project_file",
-            project: _this.app.project.id,
-            file: "sprites/" + _this.selected_sprite + ".png"
-          }, function(msg) {
-            _this.app.project.updateSpriteList();
-            _this.spriteview.sprite = new Sprite(16, 16);
-            _this.spriteview.update();
-            _this.spriteview.editable = false;
-            return _this.setSelectedSprite(null);
-          });
-        };
-      })(this));
-    }
-  };
-
   SpriteEditor.prototype.undo = function() {
     var s;
     if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
@@ -802,7 +771,9 @@ this.SpriteEditor = (function(superClass) {
         this.spriteview.getFrame().getContext().drawImage(this.clipboard.frames[0].getCanvas(), x, y);
         this.setSelectedTool("fa-vector-square");
       } else {
-        this.spriteview.sprite.copyFrom(this.clipboard);
+        if (this.selected_sprite !== "icon" || (this.clipboard.width === this.clipboard.height && this.clipboard.frames.length === 1)) {
+          this.spriteview.sprite.copyFrom(this.clipboard);
+        }
       }
       this.spriteview.sprite.undo.pushState(this.spriteview.sprite.clone());
       this.currentSpriteUpdated();

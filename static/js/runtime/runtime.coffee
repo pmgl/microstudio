@@ -172,7 +172,7 @@ class @Runtime
       @exit()
 
     @vm.context.global.system.file = System.file
-    #@vm.context.global.system.project = System.project
+    # @vm.context.global.system.project = System.project
     System.runtime = @
 
     for file,src of @sources
@@ -666,7 +666,11 @@ arrayBufferToBase64 = ( buffer )->
 
 @System =
   project:
-    writeFile:(obj,name,thumbnail,format,options)->
+    writeFile:(obj,name,options,callback)->
+      res =
+        ready: 0
+        error: 0
+
       if obj instanceof MicroSound
         loadWaveFileLib ()->
           wav = new wavefile.WaveFile
@@ -701,6 +705,24 @@ arrayBufferToBase64 = ( buffer )->
 
         if not name.startsWith("sprites/") then name = "sprites/#{name}"
         writeProjectFile(name,obj.canvas.toDataURL().split(",")[1])
+      else if obj instanceof Sprite
+        console.info "writing sprite"
+      else if typeof obj == "string"
+        console.info "writing text" # code file, TXT, CSV, OBJ
+      else if typeof obj == "object"
+        console.info "writing object"
+
+    listFiles:(path,callback)->
+
+    readFile:(path,callback)->
+      res =
+        ready = 0
+
+      res
+
+    deleteFile:(path,callback)->
+
+
 
 
   file:

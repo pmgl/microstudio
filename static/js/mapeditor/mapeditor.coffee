@@ -29,7 +29,6 @@ class @MapEditor extends Manager
     @app.appui.setAction "copy-map",()=>@copy()
     @app.appui.setAction "cut-map",()=>@cut()
     @app.appui.setAction "paste-map",()=>@paste()
-    @app.appui.setAction "delete-map",()=>@deleteMap()
 
     document.addEventListener "keydown",(event)=>
       return if not document.getElementById("mapeditor").offsetParent?
@@ -312,23 +311,6 @@ class @MapEditor extends Manager
       document.getElementById("map-block-height").value = @mapview.map.block_height
       @map_size_validator.update()
       @map_blocksize_validator.update()
-
-  deleteMap:()->
-    return if @app.project.isLocked("maps/#{@selected_map}.json")
-    @app.project.lockFile("maps/#{@selected_map}.json")
-    if @selected_map?
-      msg = @app.translator.get("Really delete %ITEM%?").replace("%ITEM%",@selected_map)
-      ConfirmDialog.confirm msg,@app.translator.get("Delete"),@app.translator.get("Cancel"),()=>
-        @app.client.sendRequest {
-          name: "delete_project_file"
-          project: @app.project.id
-          file: "maps/#{@selected_map}.json"
-        },(msg)=>
-          @app.project.updateMapList()
-          @mapview.map.clear()
-          @mapview.update()
-          @mapview.editable = false
-          @setSelectedMap null
 
   rebuildSpriteList:()->
     if not @sprite_folder_view?

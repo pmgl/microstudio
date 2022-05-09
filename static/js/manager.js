@@ -160,6 +160,7 @@ this.Manager = (function() {
       this.name_validator.update();
       if (item != null) {
         document.getElementById(this.item + "-name").disabled = (item.canBeRenamed != null) && !item.canBeRenamed();
+        document.getElementById("delete-" + this.item).style.display = (item.canBeRenamed != null) && !item.canBeRenamed() ? "none" : "inline-block";
       }
       if ((item != null) && item.uploading) {
         return document.getElementById(this.item + "-name").disabled = true;
@@ -185,8 +186,12 @@ this.Manager = (function() {
     var a, text;
     if (this.selected_item != null) {
       a = this.app.project[this.get_item](this.selected_item);
-      if (a != null) {
-        text = this.app.translator.get("Do you really want to delete %ITEM%?").replace("%ITEM%", this.selected_item);
+      if ((a != null) && (a.canBeRenamed == null) || a.canBeRenamed()) {
+        if (this.app.project.isLocked(this.folder + "/" + a.name + "." + a.ext)) {
+          return;
+        }
+        this.app.project.lockFile(this.folder + "/" + a.name + "." + a.ext);
+        text = this.app.translator.get("Do you really want to delete %ITEM%?").replace("%ITEM%", this.selected_item.replace(/-/g, "/"));
         return ConfirmDialog.confirm(text, this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
           return function() {
             return _this.app.client.sendRequest({
