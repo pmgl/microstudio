@@ -285,7 +285,6 @@ this.Options = (function() {
                 _this.app.editor.setCode(DEFAULT_CODE["microscript"]);
               }
               _this.app.editor.editorContentsChanged();
-              _this.app.editor.setTitleSourceName();
               return _this.setLanguage(value);
             };
           })(this)), ((function(_this) {

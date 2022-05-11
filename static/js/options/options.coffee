@@ -198,7 +198,6 @@ class @Options
               else
                 @app.editor.setCode DEFAULT_CODE["microscript"]
               @app.editor.editorContentsChanged()
-              @app.editor.setTitleSourceName()
               @setLanguage(value)
             ),
             (()=>
