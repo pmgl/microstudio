@@ -388,7 +388,7 @@ this.MicroVM = (function() {
     if (value == null) {
       return value;
     }
-    if (typeof value === "function" || value instanceof Program.Function || ((typeof Routine !== "undefined" && Routine !== null) && value instanceof Routine)) {
+    if (typeof value === "function" || ((typeof Program !== "undefined" && Program !== null) && value instanceof Program.Function) || ((typeof Routine !== "undefined" && Routine !== null) && value instanceof Routine)) {
       return void 0;
     } else if (typeof value === "object") {
       if (referenced.indexOf(value) >= 0) {

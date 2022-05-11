@@ -264,7 +264,7 @@ class @MicroVM
 
   makeStorableObject:(value,referenced)->
     return value if not value?
-    if typeof value == "function" or value instanceof Program.Function or (Routine? and value instanceof Routine)
+    if typeof value == "function" or (Program? and value instanceof Program.Function) or (Routine? and value instanceof Routine)
       undefined
     else if typeof value == "object"
       return undefined if referenced.indexOf(value)>=0
