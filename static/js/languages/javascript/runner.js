@@ -18,6 +18,9 @@ this.Runner = (function() {
       if (key === "Image") {
         kd = "msImage";
       }
+      if (key === "Map") {
+        kd = "msMap";
+      }
       src += kd + " =  window.ctx." + key + ";\n";
     }
     return this.run(src);

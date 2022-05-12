@@ -27,6 +27,7 @@
     "jquery": "^3.6.0",
     "jquery-ui-dist": "^1.12.1",
     "jszip": "^3.6.0",
+    "lamejs": "^1.2.1",
     "le-acme-core": "^2.1.4",
     "marked": "^2.1.2",
     "matter-js": "^0.17.1",

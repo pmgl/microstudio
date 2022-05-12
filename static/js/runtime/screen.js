@@ -771,7 +771,7 @@ this.Screen = (function() {
     if (typeof map === "string") {
       map = this.runtime.maps[map];
     }
-    if ((map == null) || !map.ready || (map.canvas == null)) {
+    if ((map == null) || !map.ready) {
       return;
     }
     this.context.globalAlpha = this.alpha;
@@ -1032,7 +1032,6 @@ this.Screen = (function() {
   };
 
   Screen.prototype.mouseWheel = function(e) {
-    e.preventDefault();
     if (e.wheelDelta < 0 || e.detail > 0) {
       return this.wheel = -1;
     } else {

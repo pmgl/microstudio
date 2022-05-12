@@ -2,13 +2,16 @@ class @Sound
   constructor:(@audio,@url)->
     if @url instanceof AudioBuffer
       @buffer = @url
+      @ready = 1
     else
+      @ready = 0
       request = new XMLHttpRequest()
       request.open('GET', @url, true)
       request.responseType = 'arraybuffer'
 
       request.onload = ()=>
         @audio.context.decodeAudioData request.response, (@buffer)=>
+          @ready = 1
 
       request.send()
 

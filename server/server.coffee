@@ -91,6 +91,7 @@ class @Server
     app.use("/lib/fengari",express.static("node_modules/fengari-web/dist"))
     app.use("/lib/qrcode",express.static("node_modules/qrcode/build"))
     app.use("/lib/wavefile",express.static("node_modules/wavefile/dist"))
+    app.use("/lib/lamejs/lame.min.js",express.static("node_modules/lamejs/lame.min.js"))
 
     @db = new DB "#{@app_data}/data",(db)=>
       for plugin in @plugins

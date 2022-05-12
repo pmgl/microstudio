@@ -30,6 +30,7 @@ this.Parser = (function() {
       Sound: true,
       Image: true,
       Sprite: true,
+      Map: true,
       system: true,
       storage: true,
       print: true,

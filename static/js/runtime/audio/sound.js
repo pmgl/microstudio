@@ -5,7 +5,9 @@ this.Sound = (function() {
     this.url = url;
     if (this.url instanceof AudioBuffer) {
       this.buffer = this.url;
+      this.ready = 1;
     } else {
+      this.ready = 0;
       request = new XMLHttpRequest();
       request.open('GET', this.url, true);
       request.responseType = 'arraybuffer';
@@ -13,6 +15,7 @@ this.Sound = (function() {
         return function() {
           return _this.audio.context.decodeAudioData(request.response, function(buffer1) {
             _this.buffer = buffer1;
+            return _this.ready = 1;
           });
         };
       })(this);

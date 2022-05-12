@@ -785,6 +785,7 @@ this.SpriteEditor = (function(superClass) {
     this.spriteview.update();
     document.getElementById("sprite-width").value = this.spriteview.sprite.width;
     document.getElementById("sprite-height").value = this.spriteview.sprite.height;
+    this.animation_panel.updateFrames();
     this.sprite_size_validator.update();
     return this.spriteview.windowResized();
   };

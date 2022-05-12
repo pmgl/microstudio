@@ -549,7 +549,7 @@ class @Screen
 
   drawMap:(map,x,y,w,h)->
     map = @runtime.maps[map] if typeof map == "string"
-    return if not map? or not map.ready or not map.canvas?
+    return if not map? or not map.ready
     @context.globalAlpha = @alpha
     @context.imageSmoothingEnabled = not @pixelated
     if @initDrawOp(x,-y)
@@ -763,8 +763,6 @@ class @Screen
     false
 
   mouseWheel:(e)->
-    e.preventDefault()
-
     if e.wheelDelta < 0 or e.detail > 0
       @wheel = -1
     else

@@ -5,6 +5,8 @@ this.Player = (function() {
     this.source_count = 0;
     this.sources = {};
     this.resources = resources;
+    this.request_id = 1;
+    this.pending_requests = {};
     if (resources.sources != null) {
       ref = resources.sources;
       for (i = 0, len = ref.length; i < len; i++) {
@@ -192,6 +194,13 @@ this.Player = (function() {
           return this.runtime.watch(data.list);
         case "stop_watching":
           return this.runtime.stopWatching();
+        default:
+          if (data.request_id != null) {
+            if (this.pending_requests[data.request_id] != null) {
+              this.pending_requests[data.request_id](data);
+              return delete this.pending_requests[data.request_id];
+            }
+          }
       }
     } catch (error1) {
       err = error1;
@@ -230,6 +239,12 @@ this.Player = (function() {
         return console.error(err);
       }
     }
+  };
+
+  Player.prototype.postRequest = function(data, callback) {
+    data.request_id = this.request_id;
+    this.pending_requests[this.request_id++] = callback;
+    return this.postMessage(data);
   };
 
   return Player;

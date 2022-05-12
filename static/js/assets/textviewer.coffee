@@ -57,35 +57,39 @@ class @TextViewer
 
     @manager.checkThumbnail asset,()=>
       console.info "Must create thumbnail"
-      canvas = document.createElement "canvas"
-      canvas.width = 128
-      canvas.height = 96
-      context = canvas.getContext "2d"
-      context.save()
-      context.fillStyle = "#222"
-      context.fillRect(0,0,canvas.width,canvas.height)
-      color = switch ext
-        when "json" then "hsl(0,50%,60%)"
-        when "csv" then "hsl(60,50%,60%)"
-        else "hsl(160,50%,60%)"
-
-      grd = context.createLinearGradient(0,0,0,96)
-      grd.addColorStop(0,color)
-      grd.addColorStop(1,"#222")
-      context.fillStyle = grd
-
-      context.rect(4,4,120,120)
-      context.clip()
-      context.font = "5pt Verdana"
-      lines = text.split("\n")
-      i = 0
-      while i<lines.length and i<10
-        context.fillText lines[i],4,10+i*8
-        i += 1
-
-      context.restore()
+      canvas = @createThumbnail text,ext
 
       if asset.element?
         asset.element.querySelector("img").src = canvas.toDataURL()
 
       @manager.updateAssetIcon asset,canvas
+
+  createThumbnail:(text,ext)->
+    canvas = document.createElement "canvas"
+    canvas.width = 128
+    canvas.height = 96
+    context = canvas.getContext "2d"
+    context.save()
+    context.fillStyle = "#222"
+    context.fillRect(0,0,canvas.width,canvas.height)
+    color = switch ext
+      when "json" then "hsl(0,50%,60%)"
+      when "csv" then "hsl(60,50%,60%)"
+      else "hsl(160,50%,60%)"
+
+    grd = context.createLinearGradient(0,0,0,96)
+    grd.addColorStop(0,color)
+    grd.addColorStop(1,"#222")
+    context.fillStyle = grd
+
+    context.rect(4,4,120,120)
+    context.clip()
+    context.font = "5pt Verdana"
+    lines = text.split("\n")
+    i = 0
+    while i<lines.length and i<10
+      context.fillText lines[i],4,10+i*8
+      i += 1
+
+    context.restore()
+    canvas

@@ -1,4 +1,4 @@
-var arrayBufferToBase64, loadWaveFileLib, saveFile, writeProjectFile;
+var arrayBufferToBase64, loadLameJSLib, loadWaveFileLib, saveFile, writeProjectFile;
 
 this.Runtime = (function() {
   function Runtime(url1, sources, resources, listener) {
@@ -104,15 +104,17 @@ this.Runtime = (function() {
       for (k = 0, len2 = ref1.length; k < len2; k++) {
         m = ref1[k];
         name = m.file.split(".")[0].replace(/-/g, "/");
-        this.maps[name] = new MicroMap(this.url + ("maps/" + m.file + "?v=" + m.version), 0, 0, 0, this.sprites);
-        this.maps[name].name = name;
-        this.maps[name].loaded = (function(_this) {
+        this.maps[name] = LoadMap(this.url + ("maps/" + m.file + "?v=" + m.version), (function(_this) {
           return function() {
             return _this.checkStartReady();
           };
-        })(this);
+        })(this));
+        this.maps[name].name = name;
       }
     } else if (this.resources.maps != null) {
+      if (window.player == null) {
+        window.player = this.listener;
+      }
       ref2 = this.resources.maps;
       for (key in ref2) {
         value = ref2[key];
@@ -195,7 +197,8 @@ this.Runtime = (function() {
       fonts: window.fonts,
       Sound: Sound.createSoundClass(this.audio),
       Image: msImage,
-      Sprite: Sprite
+      Sprite: Sprite,
+      Map: MicroMap
     };
     if (window.graphics === "M3D") {
       global.M3D = M3D;
@@ -234,6 +237,9 @@ this.Runtime = (function() {
       };
     })(this);
     this.vm.context.global.system.file = System.file;
+    if (window.ms_in_editor) {
+      this.vm.context.global.system.project = new ProjectInterface(this)["interface"];
+    }
     System.runtime = this;
     ref1 = this.sources;
     for (file in ref1) {
@@ -389,11 +395,11 @@ this.Runtime = (function() {
     if (data != null) {
       m = this.maps[name];
       if (m != null) {
-        m.load(data, this.sprites);
+        UpdateMap(m, data);
         return m.needs_update = true;
       } else {
-        m = new MicroMap(1, 1, 1, 1, this.sprites);
-        m.load(data, this.sprites);
+        m = new MicroMap(1, 1, 1, 1);
+        UpdateMap(m, data);
         this.maps[name] = m;
         return this.maps[name].name = name;
       }
@@ -403,7 +409,7 @@ this.Runtime = (function() {
       if (m != null) {
         return m.loadFile(url);
       } else {
-        this.maps[name] = new MicroMap(url, 0, 0, 0, this.sprites);
+        this.maps[name] = LoadMap(url);
         return this.maps[name].name = name;
       }
     }
@@ -684,6 +690,9 @@ this.Runtime = (function() {
     if (this.vm.context.global.Sprite != null) {
       this.exclusion_list.push(this.vm.context.global.Sprite);
     }
+    if (this.vm.context.global.Map != null) {
+      this.exclusion_list.push(this.vm.context.global.Map);
+    }
     if (this.vm.context.global.random != null) {
       this.exclusion_list.push(this.vm.context.global.random);
     }
@@ -872,6 +881,20 @@ loadWaveFileLib = function(callback) {
   }
 };
 
+loadLameJSLib = function(callback) {
+  var s;
+  if (typeof lamejs !== "undefined" && lamejs !== null) {
+    return callback();
+  } else {
+    s = document.createElement("script");
+    s.src = location.origin + "/lib/lamejs/lame.min.js";
+    document.head.appendChild(s);
+    return s.onload = function() {
+      return callback();
+    };
+  }
+};
+
 writeProjectFile = function(name, data, thumb) {
   return window.player.postMessage({
     name: "write_project_file",
@@ -893,69 +916,6 @@ arrayBufferToBase64 = function(buffer) {
 };
 
 this.System = {
-  project: {
-    writeFile: function(obj, name, options, callback) {
-      var res;
-      res = {
-        ready: 0,
-        error: 0
-      };
-      if (obj instanceof MicroSound) {
-        return loadWaveFileLib(function() {
-          var buffer, ch, ch1, ch2, encoded, i, j, k, ref, ref1, wav;
-          wav = new wavefile.WaveFile;
-          ch1 = [];
-          for (i = j = 0, ref = obj.length - 1; j <= ref; i = j += 1) {
-            ch1[i] = Math.round(Math.min(1, Math.max(-1, obj.read(0, i))) * 32767);
-          }
-          if (obj.channels === 2) {
-            ch2 = [];
-            for (i = k = 0, ref1 = obj.length - 1; k <= ref1; i = k += 1) {
-              ch2[i] = Math.round(Math.min(1, Math.max(-1, obj.read(1, i))) * 32767);
-            }
-            ch = [ch1, ch2];
-          } else {
-            ch = [ch1];
-          }
-          wav.fromScratch(ch.length, obj.sampleRate, '16', ch);
-          buffer = wav.toBuffer();
-          encoded = arrayBufferToBase64(buffer);
-          if (typeof name !== "string") {
-            name = "sounds/sound";
-          }
-          if (!name.startsWith("sounds/")) {
-            name = "sounds/" + name;
-          }
-          if (thumbnail instanceof msImage) {
-            return writeProjectFile(name, encoded, thumbnail.canvas.toDataURL().split(",")[1]);
-          } else {
-            return writeProjectFile(name, encoded);
-          }
-        });
-      } else if (obj instanceof msImage) {
-        if (typeof name !== "string") {
-          name = "sprites/sprite";
-        }
-        if (!name.startsWith("sprites/")) {
-          name = "sprites/" + name;
-        }
-        return writeProjectFile(name, obj.canvas.toDataURL().split(",")[1]);
-      } else if (obj instanceof Sprite) {
-        return console.info("writing sprite");
-      } else if (typeof obj === "string") {
-        return console.info("writing text");
-      } else if (typeof obj === "object") {
-        return console.info("writing object");
-      }
-    },
-    listFiles: function(path, callback) {},
-    readFile: function(path, callback) {
-      var ready, res;
-      res = ready = 0;
-      return res;
-    },
-    deleteFile: function(path, callback) {}
-  },
   file: {
     save: function(obj, name, format, options) {
       var a, c;
@@ -1017,6 +977,14 @@ this.System = {
           name += ".json";
         }
         return saveFile(obj, name, "text/json");
+      } else if (typeof obj === "string") {
+        if (typeof name !== "string") {
+          name = "text";
+        }
+        if (!name.endsWith(".txt")) {
+          name += ".txt";
+        }
+        return saveFile(obj, name, "text/plain");
       }
     }
   }

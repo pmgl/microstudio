@@ -4,6 +4,8 @@ class @Player
     @source_count = 0
     @sources = {}
     @resources = resources
+    @request_id = 1
+    @pending_requests = {}
     if resources.sources?
       for source in resources.sources
         @loadSource(source)
@@ -157,6 +159,12 @@ class @Player
         when "stop_watching"
           @runtime.stopWatching()
 
+        else
+          if data.request_id?
+            if @pending_requests[data.request_id]?
+              @pending_requests[data.request_id](data)
+              delete @pending_requests[data.request_id]
+
     catch err
       console.error err
 
@@ -181,6 +189,11 @@ class @Player
         @listener(data)
       catch err
         console.error err
+
+  postRequest:(data,callback)->
+    data.request_id = @request_id
+    @pending_requests[@request_id++] = callback
+    @postMessage(data)
 
 if navigator.serviceWorker? and not window.skip_service_worker
   navigator.serviceWorker.register('sw.js', { scope: location.pathname }).then((reg)->

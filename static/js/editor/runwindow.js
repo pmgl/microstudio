@@ -88,6 +88,7 @@ this.RunWindow = (function() {
     this.initWarnings();
     this.message_listeners = {};
     this.listeners = [];
+    this.project_access = new ProjectAccess(this.app);
   }
 
   RunWindow.prototype.initWarnings = function() {
@@ -528,12 +529,11 @@ this.RunWindow = (function() {
           break;
         case "time_machine":
           return this.app.debug.time_machine.messageReceived(msg);
-        case "write_project_file":
-          this.app.project.writeFile(msg.filename, msg.content, msg.thumbnail);
-          return console.info(msg);
         default:
           if ((msg.name != null) && (this.message_listeners[msg.name] != null)) {
             return this.message_listeners[msg.name](msg);
+          } else {
+            return this.project_access.messageReceived(msg);
           }
       }
     } catch (error1) {

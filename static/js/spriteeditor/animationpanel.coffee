@@ -198,7 +198,7 @@ class @AnimationPreview
     @frame = 0
     @last = Date.now()
     @fps = 5
-    @update()
+    @timer()
     @input = document.querySelector("#sprite-animation-preview input")
     @input.addEventListener "input",()=>
       @fps = 1+Math.round(Math.pow(@input.value/100,2)*59)
@@ -219,8 +219,11 @@ class @AnimationPreview
   setSlider:()->
     @input.value = Math.pow((@fps-1)/59,1/2)*100
 
+  timer:()->
+    requestAnimationFrame ()=>@timer()
+    @update()
+    
   update:()->
-    requestAnimationFrame ()=>@update()
     if @sprite_editor.spriteview.sprite?
       time = Date.now()
       if time>@last+1000/@fps

@@ -187,6 +187,10 @@ class @Project
       name = msg.file.substring("music/".length,msg.file.length).split(".")[0]
       if not @music_table[name]?
         @updateMusicList()
+    else if msg.file.indexOf("assets/") == 0
+      name = msg.file.substring("assets/".length,msg.file.length).split(".")[0]
+      if not @asset_table[name]?
+        @updateAssetList()
 
   fileDeleted:(msg)->
     if msg.file.indexOf("ms/") == 0
@@ -466,22 +470,42 @@ class @Project
 
     size
 
-  writeFile:(name,content,thumbnail)->
+  writeFile:(name,content,options)->
     name = name.split("/")
+    folder = name[0]
     for i in [0..name.length-1]
       name[i] = RegexLib.fixFilename name[i]
-    name = name[0]+"/"+name.slice(1).join("-")
+    name = name.slice(1).join("-")
 
-    if name.startsWith "sounds/"
-      name = name.substring(name.indexOf("/")+1)
-      @writeSoundFile name,content,thumbnail
-    else if name.startsWith "sprites/"
-      name = name.substring(name.indexOf("/")+1)
-      @writeSpriteFile name,content
+    switch folder
+      when "ms"
+        @writeSourceFile name,content
 
+      when "sprites"
+        @writeSpriteFile name,content,options.frames,options.fps
 
+      when "maps"
+        @writeMapFile name,content
 
-  writeSoundFile:(name,content,thumbnail)->
+      when "sounds"
+        @writeSoundFile name,content
+
+      when "music"
+        @writeMusicFile name,content
+
+      when "assets"
+        @writeAssetFile name,content,options.ext
+
+  writeSourceFile:(name,content)->
+    @app.client.sendRequest {
+      name: "write_project_file"
+      project: @id
+      file: "ms/#{name}.ms"
+      content: content
+    },(msg)=>
+      @updateSourceList()
+
+  writeSoundFile:(name,content)->
     base64ToArrayBuffer = (base64)->
       binary_string = window.atob(base64)
       len = binary_string.length
@@ -506,13 +530,86 @@ class @Project
         console.info msg
         @updateSoundList()
 
-  writeSpriteFile:(name,content)->
+  writeMusicFile:(name,content)->
+    base64ToArrayBuffer = (base64)->
+      binary_string = window.atob(base64)
+      len = binary_string.length
+      bytes = new Uint8Array(len)
+      for i in [0..len-1] by 1
+        bytes[i] = binary_string.charCodeAt(i)
+      bytes.buffer
+
+    audioContext = new AudioContext()
+    audioContext.decodeAudioData base64ToArrayBuffer(content),(decoded)=>
+      console.info decoded
+      thumbnailer = new SoundThumbnailer(decoded,192,64,"hsl(200,80%,60%)")
+
+      @app.client.sendRequest {
+        name: "write_project_file"
+        project: @id
+        file: "music/#{name}.mp3"
+        properties: {}
+        content: content
+        thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
+      },(msg)=>
+        console.info msg
+        @updateMusicList()
+
+  writeSpriteFile:(name,content,frames,fps)->
     @app.client.sendRequest {
       name: "write_project_file"
       project: @id
       file: "sprites/#{name}.png"
-      properties: { frames: 1 , fps: 5 }
+      properties: { frames: frames , fps: fps }
       content: content
     },(msg)=>
-      console.info msg
-      @updateSpriteList()
+      @fileUpdated
+        file: "sprites/#{name}.png"
+        properties:
+          frames: frames
+          fps: fps
+      # @updateSpriteList()
+
+  writeMapFile:(name,content)->
+    @app.client.sendRequest {
+      name: "write_project_file"
+      project: @id
+      file: "maps/#{name}.json"
+      content: content
+    },(msg)=>
+      @fileUpdated
+        file: "maps/#{name}.json"
+
+      @updateMapList()
+
+  writeAssetFile:(name,content,ext)->
+    if ext == "json"
+      content = JSON.stringify content
+
+    thumbnail = undefined
+
+    if ext in ["txt","csv","json","obj"]
+      thumbnail = @app.assets_manager.text_viewer.createThumbnail content,ext
+      thumbnail = thumbnail.toDataURL().split(",")[1]
+
+    if ext == "obj"
+      content = btoa content
+
+    send = ()=>
+      @app.client.sendRequest {
+        name: "write_project_file"
+        project: @id
+        file: "assets/#{name}.#{ext}"
+        content: content
+        thumbnail: thumbnail
+      },(msg)=>
+        @updateAssetList()
+
+    if ext in ["png","jpg"]
+      @app.assets_manager.image_viewer.createThumbnail content,(canvas)=>
+        thumbnail = canvas.toDataURL().split(",")[1]
+        content = content.split(",")[1]
+        send()
+      return
+
+    send()

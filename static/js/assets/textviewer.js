@@ -75,45 +75,51 @@ this.TextViewer = (function() {
     this.editor.setValue(text, -1);
     return this.manager.checkThumbnail(asset, (function(_this) {
       return function() {
-        var canvas, color, context, grd, i, lines;
+        var canvas;
         console.info("Must create thumbnail");
-        canvas = document.createElement("canvas");
-        canvas.width = 128;
-        canvas.height = 96;
-        context = canvas.getContext("2d");
-        context.save();
-        context.fillStyle = "#222";
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        color = (function() {
-          switch (ext) {
-            case "json":
-              return "hsl(0,50%,60%)";
-            case "csv":
-              return "hsl(60,50%,60%)";
-            default:
-              return "hsl(160,50%,60%)";
-          }
-        })();
-        grd = context.createLinearGradient(0, 0, 0, 96);
-        grd.addColorStop(0, color);
-        grd.addColorStop(1, "#222");
-        context.fillStyle = grd;
-        context.rect(4, 4, 120, 120);
-        context.clip();
-        context.font = "5pt Verdana";
-        lines = text.split("\n");
-        i = 0;
-        while (i < lines.length && i < 10) {
-          context.fillText(lines[i], 4, 10 + i * 8);
-          i += 1;
-        }
-        context.restore();
+        canvas = _this.createThumbnail(text, ext);
         if (asset.element != null) {
           asset.element.querySelector("img").src = canvas.toDataURL();
         }
         return _this.manager.updateAssetIcon(asset, canvas);
       };
     })(this));
+  };
+
+  TextViewer.prototype.createThumbnail = function(text, ext) {
+    var canvas, color, context, grd, i, lines;
+    canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 96;
+    context = canvas.getContext("2d");
+    context.save();
+    context.fillStyle = "#222";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    color = (function() {
+      switch (ext) {
+        case "json":
+          return "hsl(0,50%,60%)";
+        case "csv":
+          return "hsl(60,50%,60%)";
+        default:
+          return "hsl(160,50%,60%)";
+      }
+    })();
+    grd = context.createLinearGradient(0, 0, 0, 96);
+    grd.addColorStop(0, color);
+    grd.addColorStop(1, "#222");
+    context.fillStyle = grd;
+    context.rect(4, 4, 120, 120);
+    context.clip();
+    context.font = "5pt Verdana";
+    lines = text.split("\n");
+    i = 0;
+    while (i < lines.length && i < 10) {
+      context.fillText(lines[i], 4, 10 + i * 8);
+      i += 1;
+    }
+    context.restore();
+    return canvas;
   };
 
   return TextViewer;

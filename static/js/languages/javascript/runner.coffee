@@ -9,6 +9,7 @@ class @Runner
     for key of @microvm.context.global
       kd = key
       if key == "Image" then kd = "msImage"
+      if key == "Map" then kd = "msMap"
       src += """#{kd} =  window.ctx.#{key};\n"""
 
     @run(src)

@@ -80,12 +80,14 @@ class @Runtime
     if Array.isArray(@resources.maps)
       for m in @resources.maps
         name = m.file.split(".")[0].replace(/-/g,"/")
-        @maps[name] = new MicroMap(@url+"maps/#{m.file}?v=#{m.version}",0,0,0,@sprites)
-        @maps[name].name = name
-        @maps[name].loaded = ()=>
+        @maps[name] = LoadMap @url+"maps/#{m.file}?v=#{m.version}",()=>
           @checkStartReady()
+        @maps[name].name = name
 
     else if @resources.maps?
+      if not window.player?
+        window.player = @listener
+
       for key,value of @resources.maps
         @updateMap(key,0,value)
 
@@ -144,6 +146,7 @@ class @Runtime
       Sound: Sound.createSoundClass @audio
       Image: msImage
       Sprite: Sprite
+      Map: MicroMap
 
     if window.graphics == "M3D"
       global.M3D = M3D
@@ -172,7 +175,9 @@ class @Runtime
       @exit()
 
     @vm.context.global.system.file = System.file
-    # @vm.context.global.system.project = System.project
+    if window.ms_in_editor
+      @vm.context.global.system.project = new ProjectInterface(@).interface
+
     System.runtime = @
 
     for file,src of @sources
@@ -282,11 +287,11 @@ class @Runtime
     if data?
       m = @maps[name]
       if m?
-        m.load(data,@sprites)
+        UpdateMap m,data
         m.needs_update = true
       else
-        m = new MicroMap(1,1,1,1,@sprites)
-        m.load data,@sprites
+        m = new MicroMap(1,1,1,1)
+        UpdateMap m,data
         @maps[name] = m
         @maps[name].name = name
     else
@@ -295,7 +300,7 @@ class @Runtime
       if m?
         m.loadFile(url)
       else
-        @maps[name] = new MicroMap(url,0,0,0,@sprites)
+        @maps[name] = LoadMap url
         @maps[name].name = name
 
   updateCode:(name,version,data)->
@@ -525,6 +530,7 @@ class @Runtime
     @exclusion_list.push(@vm.context.global.Image) if @vm.context.global.Image?
     @exclusion_list.push(@vm.context.global.Sound) if @vm.context.global.Sound?
     @exclusion_list.push(@vm.context.global.Sprite) if @vm.context.global.Sprite?
+    @exclusion_list.push(@vm.context.global.Map) if @vm.context.global.Map?
     @exclusion_list.push(@vm.context.global.random) if @vm.context.global.random?
     @exclusion_list.push(@vm.context.global.print) if @vm.context.global.print?
     @watchStep()
@@ -649,6 +655,16 @@ loadWaveFileLib = (callback)->
     s.onload = ()->
       callback()
 
+loadLameJSLib = (callback)->
+  if lamejs?
+    callback()
+  else
+    s = document.createElement "script"
+    s.src = location.origin+"/lib/lamejs/lame.min.js"
+    document.head.appendChild s
+    s.onload = ()->
+      callback()
+
 writeProjectFile = (name,data,thumb)->
   window.player.postMessage
     name: "write_project_file"
@@ -665,66 +681,6 @@ arrayBufferToBase64 = ( buffer )->
   window.btoa( binary )
 
 @System =
-  project:
-    writeFile:(obj,name,options,callback)->
-      res =
-        ready: 0
-        error: 0
-
-      if obj instanceof MicroSound
-        loadWaveFileLib ()->
-          wav = new wavefile.WaveFile
-          ch1 = []
-          for i in [0..obj.length-1] by 1
-            ch1[i] = Math.round(Math.min(1,Math.max(-1,obj.read(0,i)))*32767)
-          if obj.channels == 2
-            ch2 = []
-            for i in [0..obj.length-1] by 1
-              ch2[i] = Math.round(Math.min(1,Math.max(-1,obj.read(1,i)))*32767)
-
-            ch = [ch1,ch2]
-          else
-            ch = [ch1]
-
-          wav.fromScratch ch.length,obj.sampleRate,'16',ch
-          buffer = wav.toBuffer()
-          encoded = arrayBufferToBase64(buffer)
-
-          if typeof name != "string"
-            name = "sounds/sound"
-
-          if not name.startsWith("sounds/") then name = "sounds/#{name}"
-
-          if thumbnail instanceof msImage
-            writeProjectFile(name,encoded,thumbnail.canvas.toDataURL().split(",")[1])
-          else
-            writeProjectFile(name,encoded)
-      else if obj instanceof msImage
-        if typeof name != "string"
-          name = "sprites/sprite"
-
-        if not name.startsWith("sprites/") then name = "sprites/#{name}"
-        writeProjectFile(name,obj.canvas.toDataURL().split(",")[1])
-      else if obj instanceof Sprite
-        console.info "writing sprite"
-      else if typeof obj == "string"
-        console.info "writing text" # code file, TXT, CSV, OBJ
-      else if typeof obj == "object"
-        console.info "writing object"
-
-    listFiles:(path,callback)->
-
-    readFile:(path,callback)->
-      res =
-        ready = 0
-
-      res
-
-    deleteFile:(path,callback)->
-
-
-
-
   file:
     save:(obj,name,format,options)->
       if obj instanceof MicroSound
@@ -777,3 +733,10 @@ arrayBufferToBase64 = ( buffer )->
         if not name.endsWith(".json") then name += ".json"
 
         saveFile obj,name,"text/json"
+
+      else if typeof obj == "string"
+        if typeof name != "string"
+          name = "text"
+        if not name.endsWith(".txt") then name += ".txt"
+
+        saveFile obj,name,"text/plain"

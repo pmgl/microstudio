@@ -546,6 +546,7 @@ class @SpriteEditor extends Manager
     @spriteview.update()
     document.getElementById("sprite-width").value = @spriteview.sprite.width
     document.getElementById("sprite-height").value = @spriteview.sprite.height
+    @animation_panel.updateFrames()
     @sprite_size_validator.update()
     @spriteview.windowResized()
 

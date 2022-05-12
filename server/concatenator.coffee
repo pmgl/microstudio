@@ -27,6 +27,7 @@ class @Concatenator
       "/js/languages/microscript/random.js"
       "/js/runtime/microvm.js"
       '/js/runtime/runtime.js'
+      '/js/runtime/projectinterface.js'
       '/js/runtime/timemachine.js'
       '/js/runtime/assetmanager.js'
       '/js/runtime/keyboard.js'
@@ -184,6 +185,7 @@ class @Concatenator
       "/js/doceditor/doceditor.js"
       "/js/editor/editor.js"
       "/js/editor/runwindow.js"
+      "/js/editor/projectaccess.js"
       "/js/editor/rulercanvas.js"
       "/js/editor/valuetool.js"
       "/js/options/options.js"
@@ -210,6 +212,7 @@ class @Concatenator
       "/js/mapeditor/mapview.js"
       "/js/mapeditor/mapeditor.js"
       "/js/mapeditor/tilepicker.js"
+      "/js/mapeditor/map.js"
 
       "/js/assets/assetsmanager.js"
       "/js/assets/modelviewer.js"
@@ -234,7 +237,6 @@ class @Concatenator
       "/js/util/pixelartscaler.js"
 
       "/js/runtime/microvm.js"
-      "/js/runtime/map.js"
 
       "/js/debug/debug.js"
       "/js/debug/watch.js"
@@ -267,6 +269,7 @@ class @Concatenator
       "/js/languages/microscript/random.js"
       "/js/runtime/microvm.js"
       '/js/runtime/runtime.js'
+      '/js/runtime/projectinterface.js'
       '/js/runtime/timemachine.js'
       '/js/runtime/screen.js'
       '/js/runtime/assetmanager.js'

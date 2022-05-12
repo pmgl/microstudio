@@ -1,11 +1,31 @@
 class @MicroMap
-  constructor:(@width,@height,@block_width,@block_height)->
-    @sprites = window.player.runtime.sprites
-
+  constructor:(@width,@height,@block_width,@block_height,@sprites)->
     @map = []
-    @ready = true
+    if @width? and typeof @width == "string"
+      @ready = false
+      req = new XMLHttpRequest()
+      req.onreadystatechange = (event) =>
+        if req.readyState == XMLHttpRequest.DONE
+          @ready = true
+          if req.status == 200
+            @load req.responseText,@sprites
+            @update()
+
+          if @loaded?
+            @loaded()
+
+      req.open "GET",@width
+      req.send()
+
+      @width = 10
+      @height = 10
+      @block_width = 10
+      @block_height = 10
+    else
+      @ready = true
 
     @clear()
+    @update()
 
   clear:()->
     for j in [0..@height-1] by 1
@@ -100,8 +120,45 @@ class @MicroMap
 
     return
 
+  resize:(w,h,@block_width=@block_width,@block_height=@block_height)->
+    map = []
+    for j in [0..h-1] by 1
+      for i in [0..w-1] by 1
+        if j<@height and i<@width
+          map[i+j*w] = @map[i+j*@width]
+        else
+          map[i+j*w] = null
 
+    @map = map
+    @width = w
+    @height = h
 
+  save:()->
+    index = 1
+    list = [0]
+    table = {}
+    for j in [0..@height-1] by 1
+      for i in [0..@width-1] by 1
+        s = @map[i+j*@width]
+        if s? and s.length>0 and not table[s]?
+          list.push s
+          table[s] = index++
+
+    map = []
+    for j in [0..@height-1] by 1
+      for i in [0..@width-1] by 1
+        s = @map[i+j*@width]
+        map[i+j*@width] = if s? and s.length>0 then table[s] else 0
+
+    data =
+      width: @width
+      height: @height
+      block_width: @block_width
+      block_height: @block_height
+      sprites: list
+      data: map
+
+    JSON.stringify data
 
   loadFile:(url)->
     req = new XMLHttpRequest()
@@ -131,6 +188,17 @@ class @MicroMap
 
     return
 
+  @loadMap:(data,sprites)->
+    data = JSON.parse data
+    map = new MicroMap(data.width,data.height,data.block_width,data.block_height,sprites)
+    for j in [0..data.height-1] by 1
+      for i in [0..data.width-1] by 1
+        s = data.data[i+j*data.width]
+        if s>0
+          map.map[i+j*data.width] = data.sprites[s]
+
+    map
+
   clone:()->
     map = new MicroMap(@width,@height,@block_width,@block_height,@sprites)
     for j in [0..@height-1] by 1
@@ -150,70 +218,3 @@ class @MicroMap
         @map[i+j*@width] = map.map[i+j*@width]
     @update()
     @
-
-
-@LoadMap = (url,loaded)->
-  map = new MicroMap(1,1,1,1)
-  map.ready = false
-
-  req = new XMLHttpRequest()
-  req.onreadystatechange = (event) =>
-    if req.readyState == XMLHttpRequest.DONE
-      map.ready = true
-      if req.status == 200
-        UpdateMap map,req.responseText
-
-      map.needs_update = true
-
-      if loaded?
-        loaded()
-
-  req.open "GET",url
-  req.send()
-  map
-
-@UpdateMap = (map,data)->
-  data = JSON.parse data
-
-  map.width = data.width
-  map.height = data.height
-  map.block_width = data.block_width
-  map.block_height = data.block_height
-
-  for j in [0..data.height-1] by 1
-    for i in [0..data.width-1] by 1
-      s = data.data[i+j*data.width]
-      if s>0
-        map.map[i+j*data.width] = data.sprites[s]
-      else
-        map.map[i+j*data.width] = null
-
-  map.needs_update = true
-  map
-
-@SaveMap = (map)->
-  index = 1
-  list = [0]
-  table = {}
-  for j in [0..map.height-1] by 1
-    for i in [0..map.width-1] by 1
-      s = map.map[i+j*map.width]
-      if s? and s.length>0 and not table[s]?
-        list.push s
-        table[s] = index++
-
-  m = []
-  for j in [0..map.height-1] by 1
-    for i in [0..map.width-1] by 1
-      s = map.map[i+j*map.width]
-      m[i+j*map.width] = if s? and s.length>0 then table[s] else 0
-
-  data =
-    width: map.width
-    height: map.height
-    block_width: map.block_width
-    block_height: map.block_height
-    sprites: list
-    data: m
-
-  JSON.stringify data

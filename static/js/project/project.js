@@ -276,6 +276,11 @@ this.Project = (function() {
       if (this.music_table[name] == null) {
         return this.updateMusicList();
       }
+    } else if (msg.file.indexOf("assets/") === 0) {
+      name = msg.file.substring("assets/".length, msg.file.length).split(".")[0];
+      if (this.asset_table[name] == null) {
+        return this.updateAssetList();
+      }
     }
   };
 
@@ -684,23 +689,44 @@ this.Project = (function() {
     return size;
   };
 
-  Project.prototype.writeFile = function(name, content, thumbnail) {
-    var i, k, ref;
+  Project.prototype.writeFile = function(name, content, options) {
+    var folder, i, k, ref;
     name = name.split("/");
+    folder = name[0];
     for (i = k = 0, ref = name.length - 1; 0 <= ref ? k <= ref : k >= ref; i = 0 <= ref ? ++k : --k) {
       name[i] = RegexLib.fixFilename(name[i]);
     }
-    name = name[0] + "/" + name.slice(1).join("-");
-    if (name.startsWith("sounds/")) {
-      name = name.substring(name.indexOf("/") + 1);
-      return this.writeSoundFile(name, content, thumbnail);
-    } else if (name.startsWith("sprites/")) {
-      name = name.substring(name.indexOf("/") + 1);
-      return this.writeSpriteFile(name, content);
+    name = name.slice(1).join("-");
+    switch (folder) {
+      case "ms":
+        return this.writeSourceFile(name, content);
+      case "sprites":
+        return this.writeSpriteFile(name, content, options.frames, options.fps);
+      case "maps":
+        return this.writeMapFile(name, content);
+      case "sounds":
+        return this.writeSoundFile(name, content);
+      case "music":
+        return this.writeMusicFile(name, content);
+      case "assets":
+        return this.writeAssetFile(name, content, options.ext);
     }
   };
 
-  Project.prototype.writeSoundFile = function(name, content, thumbnail) {
+  Project.prototype.writeSourceFile = function(name, content) {
+    return this.app.client.sendRequest({
+      name: "write_project_file",
+      project: this.id,
+      file: "ms/" + name + ".ms",
+      content: content
+    }, (function(_this) {
+      return function(msg) {
+        return _this.updateSourceList();
+      };
+    })(this));
+  };
+
+  Project.prototype.writeSoundFile = function(name, content) {
     var audioContext, base64ToArrayBuffer;
     base64ToArrayBuffer = function(base64) {
       var binary_string, bytes, i, k, len, ref;
@@ -733,22 +759,115 @@ this.Project = (function() {
     })(this));
   };
 
-  Project.prototype.writeSpriteFile = function(name, content) {
+  Project.prototype.writeMusicFile = function(name, content) {
+    var audioContext, base64ToArrayBuffer;
+    base64ToArrayBuffer = function(base64) {
+      var binary_string, bytes, i, k, len, ref;
+      binary_string = window.atob(base64);
+      len = binary_string.length;
+      bytes = new Uint8Array(len);
+      for (i = k = 0, ref = len - 1; k <= ref; i = k += 1) {
+        bytes[i] = binary_string.charCodeAt(i);
+      }
+      return bytes.buffer;
+    };
+    audioContext = new AudioContext();
+    return audioContext.decodeAudioData(base64ToArrayBuffer(content), (function(_this) {
+      return function(decoded) {
+        var thumbnailer;
+        console.info(decoded);
+        thumbnailer = new SoundThumbnailer(decoded, 192, 64, "hsl(200,80%,60%)");
+        return _this.app.client.sendRequest({
+          name: "write_project_file",
+          project: _this.id,
+          file: "music/" + name + ".mp3",
+          properties: {},
+          content: content,
+          thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
+        }, function(msg) {
+          console.info(msg);
+          return _this.updateMusicList();
+        });
+      };
+    })(this));
+  };
+
+  Project.prototype.writeSpriteFile = function(name, content, frames, fps) {
     return this.app.client.sendRequest({
       name: "write_project_file",
       project: this.id,
       file: "sprites/" + name + ".png",
       properties: {
-        frames: 1,
-        fps: 5
+        frames: frames,
+        fps: fps
       },
       content: content
     }, (function(_this) {
       return function(msg) {
-        console.info(msg);
-        return _this.updateSpriteList();
+        return _this.fileUpdated({
+          file: "sprites/" + name + ".png",
+          properties: {
+            frames: frames,
+            fps: fps
+          }
+        });
       };
     })(this));
+  };
+
+  Project.prototype.writeMapFile = function(name, content) {
+    return this.app.client.sendRequest({
+      name: "write_project_file",
+      project: this.id,
+      file: "maps/" + name + ".json",
+      content: content
+    }, (function(_this) {
+      return function(msg) {
+        _this.fileUpdated({
+          file: "maps/" + name + ".json"
+        });
+        return _this.updateMapList();
+      };
+    })(this));
+  };
+
+  Project.prototype.writeAssetFile = function(name, content, ext) {
+    var send, thumbnail;
+    if (ext === "json") {
+      content = JSON.stringify(content);
+    }
+    thumbnail = void 0;
+    if (ext === "txt" || ext === "csv" || ext === "json" || ext === "obj") {
+      thumbnail = this.app.assets_manager.text_viewer.createThumbnail(content, ext);
+      thumbnail = thumbnail.toDataURL().split(",")[1];
+    }
+    if (ext === "obj") {
+      content = btoa(content);
+    }
+    send = (function(_this) {
+      return function() {
+        return _this.app.client.sendRequest({
+          name: "write_project_file",
+          project: _this.id,
+          file: "assets/" + name + "." + ext,
+          content: content,
+          thumbnail: thumbnail
+        }, function(msg) {
+          return _this.updateAssetList();
+        });
+      };
+    })(this);
+    if (ext === "png" || ext === "jpg") {
+      this.app.assets_manager.image_viewer.createThumbnail(content, (function(_this) {
+        return function(canvas) {
+          thumbnail = canvas.toDataURL().split(",")[1];
+          content = content.split(",")[1];
+          return send();
+        };
+      })(this));
+      return;
+    }
+    return send();
   };
 
   return Project;

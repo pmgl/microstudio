@@ -174,6 +174,8 @@ class @MapEditor extends Manager
        console.info("retrying map save...")
       ),10000
 
+  fileDropped:(file,folder)->
+    # required to enable moving maps to the root folder
 
   createAsset:(folder,name="map",content="")->
     @checkSave(true)

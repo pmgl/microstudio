@@ -246,6 +246,8 @@ this.MapEditor = (function(superClass) {
     })(this)), 10000);
   };
 
+  MapEditor.prototype.fileDropped = function(file, folder) {};
+
   MapEditor.prototype.createAsset = function(folder, name, content) {
     var map;
     if (name == null) {

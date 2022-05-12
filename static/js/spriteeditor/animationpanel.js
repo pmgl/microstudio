@@ -265,7 +265,7 @@ this.AnimationPreview = (function() {
     this.frame = 0;
     this.last = Date.now();
     this.fps = 5;
-    this.update();
+    this.timer();
     this.input = document.querySelector("#sprite-animation-preview input");
     this.input.addEventListener("input", (function(_this) {
       return function() {
@@ -294,13 +294,17 @@ this.AnimationPreview = (function() {
     return this.input.value = Math.pow((this.fps - 1) / 59, 1 / 2) * 100;
   };
 
-  AnimationPreview.prototype.update = function() {
-    var frame, h, r, time, w;
+  AnimationPreview.prototype.timer = function() {
     requestAnimationFrame((function(_this) {
       return function() {
-        return _this.update();
+        return _this.timer();
       };
     })(this));
+    return this.update();
+  };
+
+  AnimationPreview.prototype.update = function() {
+    var frame, h, r, time, w;
     if (this.sprite_editor.spriteview.sprite != null) {
       time = Date.now();
       if (time > this.last + 1000 / this.fps) {
