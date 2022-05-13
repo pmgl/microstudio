@@ -298,7 +298,7 @@ class @ProjectAccess
 
       when "sprites"
         sprite = @app.project.getSprite(path)
-        if sprite?
+        if sprite? and path != "icon"
           deleteFile sprite.file,false,()=>
             @app.project.updateSpriteList()
         else

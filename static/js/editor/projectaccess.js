@@ -368,7 +368,7 @@ this.ProjectAccess = (function() {
         break;
       case "sprites":
         sprite = this.app.project.getSprite(path);
-        if (sprite != null) {
+        if ((sprite != null) && path !== "icon") {
           return deleteFile(sprite.file, false, (function(_this) {
             return function() {
               return _this.app.project.updateSpriteList();
