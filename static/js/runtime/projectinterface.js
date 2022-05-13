@@ -16,6 +16,11 @@ this.ProjectInterface = (function() {
         return function(path, obj, options, callback) {
           return _this.writeFile(path, obj, options, callback);
         };
+      })(this),
+      deleteFile: (function(_this) {
+        return function(path, callback) {
+          return _this.deleteFile(path, callback);
+        };
       })(this)
     };
   }
@@ -343,7 +348,9 @@ this.ProjectInterface = (function() {
       if (result.error) {
         res.error = result.error;
       }
-      return callback(result.list, result.error);
+      if (typeof callback === "function") {
+        return callback(result.list, result.error);
+      }
     });
     return res;
   };
@@ -429,7 +436,27 @@ this.ProjectInterface = (function() {
     return res;
   };
 
-  ProjectInterface.prototype.deleteFile = function(path, callback) {};
+  ProjectInterface.prototype.deleteFile = function(path, callback) {
+    var msg, res;
+    msg = {
+      name: "delete_project_file",
+      path: path
+    };
+    res = {
+      ready: 0
+    };
+    this.runtime.listener.postRequest(msg, function(result) {
+      res.ready = 1;
+      res.result = result.content || 0;
+      if (result.error) {
+        res.error = result.error;
+      }
+      if (typeof callback === "function") {
+        return callback(res.result, result.error);
+      }
+    });
+    return res;
+  };
 
   return ProjectInterface;
 

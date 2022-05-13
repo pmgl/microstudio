@@ -25,6 +25,9 @@ class @ProjectAccess
       when "read_project_file"
         @readProjectFile msg
 
+      when "delete_project_file"
+        @deleteProjectFile msg
+
   fileEntry:(folder,asset)->
     path = "#{folder}/#{asset.name.replace(/-/g,"/")}"
     if @directory
@@ -254,3 +257,81 @@ class @ProjectAccess
       name: "write_project_file"
       request_id: msg.request_id
       content: "success"
+
+
+  deleteProjectFile:(msg)->
+    path = @fixPath msg.path
+    path = path.split("/")
+
+    kind = path[0]
+
+    path.splice(0,1)
+    path = path.join("-")
+
+    deleteFile = (path,thumbnail,callback)=>
+      @app.client.sendRequest {
+        name: "delete_project_file"
+        project: @app.project.id
+        file: path
+        thumbnail: thumbnail
+      },(response)=>
+        callback()
+        @app.runwindow.postMessage
+          name: "delete_project_file"
+          request_id: msg.request_id
+          content: "success"
+
+    error = (text)=>
+      @app.runwindow.postMessage
+        name: "delete_project_file"
+        request_id: msg.request_id
+        error: text
+
+    switch kind
+      when "source"
+        source = @app.project.getSource(path)
+        if source?
+          deleteFile source.file,false,()=>
+            @app.project.updateSourceList()
+        else
+          error("File Not Found")
+
+      when "sprites"
+        sprite = @app.project.getSprite(path)
+        if sprite?
+          deleteFile sprite.file,false,()=>
+            @app.project.updateSpriteList()
+        else
+          error("File Not Found")
+
+      when "maps"
+        map = @app.project.getMap(path)
+        if map?
+          deleteFile map.file,false,()=>
+            @app.project.updateMapList()
+        else
+          error("File Not Found")
+
+      when "sounds"
+        sound = @app.project.getSound(path)
+        if sound?
+          deleteFile sound.file,true,()=>
+            @app.project.updateSoundList()
+        else
+          error("File Not Found")
+
+      when "music"
+        music = @app.project.getMusic(path)
+        if music?
+          deleteFile music.file,true,()=>
+            @app.project.updateMusicList()
+        else
+          error("File Not Found")
+
+      when "assets"
+        asset = @app.project.getAsset(path)
+        if asset?
+          deleteFile asset.file,true,()=>
+            @app.project.updateAssetList()
+        else
+          error("File Not Found")

@@ -30,6 +30,8 @@ this.ProjectAccess = (function() {
         return this.listProjectFiles(msg);
       case "read_project_file":
         return this.readProjectFile(msg);
+      case "delete_project_file":
+        return this.deleteProjectFile(msg);
     }
   };
 
@@ -316,6 +318,114 @@ this.ProjectAccess = (function() {
       request_id: msg.request_id,
       content: "success"
     });
+  };
+
+  ProjectAccess.prototype.deleteProjectFile = function(msg) {
+    var asset, deleteFile, error, kind, map, music, path, sound, source, sprite;
+    path = this.fixPath(msg.path);
+    path = path.split("/");
+    kind = path[0];
+    path.splice(0, 1);
+    path = path.join("-");
+    deleteFile = (function(_this) {
+      return function(path, thumbnail, callback) {
+        return _this.app.client.sendRequest({
+          name: "delete_project_file",
+          project: _this.app.project.id,
+          file: path,
+          thumbnail: thumbnail
+        }, function(response) {
+          callback();
+          return _this.app.runwindow.postMessage({
+            name: "delete_project_file",
+            request_id: msg.request_id,
+            content: "success"
+          });
+        });
+      };
+    })(this);
+    error = (function(_this) {
+      return function(text) {
+        return _this.app.runwindow.postMessage({
+          name: "delete_project_file",
+          request_id: msg.request_id,
+          error: text
+        });
+      };
+    })(this);
+    switch (kind) {
+      case "source":
+        source = this.app.project.getSource(path);
+        if (source != null) {
+          return deleteFile(source.file, false, (function(_this) {
+            return function() {
+              return _this.app.project.updateSourceList();
+            };
+          })(this));
+        } else {
+          return error("File Not Found");
+        }
+        break;
+      case "sprites":
+        sprite = this.app.project.getSprite(path);
+        if (sprite != null) {
+          return deleteFile(sprite.file, false, (function(_this) {
+            return function() {
+              return _this.app.project.updateSpriteList();
+            };
+          })(this));
+        } else {
+          return error("File Not Found");
+        }
+        break;
+      case "maps":
+        map = this.app.project.getMap(path);
+        if (map != null) {
+          return deleteFile(map.file, false, (function(_this) {
+            return function() {
+              return _this.app.project.updateMapList();
+            };
+          })(this));
+        } else {
+          return error("File Not Found");
+        }
+        break;
+      case "sounds":
+        sound = this.app.project.getSound(path);
+        if (sound != null) {
+          return deleteFile(sound.file, true, (function(_this) {
+            return function() {
+              return _this.app.project.updateSoundList();
+            };
+          })(this));
+        } else {
+          return error("File Not Found");
+        }
+        break;
+      case "music":
+        music = this.app.project.getMusic(path);
+        if (music != null) {
+          return deleteFile(music.file, true, (function(_this) {
+            return function() {
+              return _this.app.project.updateMusicList();
+            };
+          })(this));
+        } else {
+          return error("File Not Found");
+        }
+        break;
+      case "assets":
+        asset = this.app.project.getAsset(path);
+        if (asset != null) {
+          return deleteFile(asset.file, true, (function(_this) {
+            return function() {
+              return _this.app.project.updateAssetList();
+            };
+          })(this));
+        } else {
+          return error("File Not Found");
+        }
+    }
   };
 
   return ProjectAccess;

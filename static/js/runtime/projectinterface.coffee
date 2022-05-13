@@ -5,6 +5,7 @@ class @ProjectInterface
       listFiles: (path,callback) => @listFiles(path,callback)
       readFile: (path,callback) => @readFile(path,callback)
       writeFile: (path,obj,options,callback) => @writeFile(path,obj,options,callback)
+      deleteFile: (path,callback) => @deleteFile(path,callback)
 
 
   callback:(callback,data,res,error)->
@@ -285,7 +286,7 @@ class @ProjectInterface
 
       if result.error
         res.error = result.error
-      callback(result.list,result.error)
+      callback(result.list,result.error) if typeof callback == "function"
 
     res
 
@@ -356,3 +357,19 @@ class @ProjectInterface
     res
 
   deleteFile:(path,callback)->
+    msg =
+      name: "delete_project_file"
+      path: path
+
+    res =
+      ready: 0
+
+    @runtime.listener.postRequest msg, (result)->
+      res.ready = 1
+      res.result = result.content or 0
+
+      if result.error
+        res.error = result.error
+      callback(res.result,result.error) if typeof callback == "function"
+
+    res
