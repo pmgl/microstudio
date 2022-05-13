@@ -650,6 +650,7 @@ a#run-link {
   transition-property: padding-left ;
   transition-duration: .5s ;
   background: hsl(200,30%,30%);
+  overflow: hidden ;
 }
 #code-toolbar i {
   margin-right: 5px ;

@@ -1,5 +1,18 @@
 ## Changelog
 
+### Update 2022-05-13
+* Project Access API: create and manage project files programmatically
+  * `system.project.listFiles()`
+  * `system.project.readFile()`
+  * `system.project.writeFile()`
+  * `system.project.deleteFile()`
+(see: https://github.com/pmgl/microstudio/wiki/en-API-cheatsheet#project-access-api)
+* Fixed #128 storage.set broken in Lua / Python / JS
+* Fixed bug when changing language of an existing project
+* Fixed impossible to move map from folder to root
+* Fixed ms 2.0 bug when calling `super` and no super class is found
+(https://microstudio.dev/community/bugs/offline-version---crash-ide-page/390/)
+
 ### Update 2022-05-09
 * Now remembering splitbar positions #119
 * `screen.drawSprite`: size can be omitted, will default to sprite size #120

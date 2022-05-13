@@ -1335,7 +1335,17 @@ this.Processor = (function() {
               } else if (args > f.num_args) {
                 stack_index -= args - f.num_args;
               }
+            } else {
+              args = arg1[op_index];
+              stack_index -= args;
+              stack[++stack_index] = 0;
+              op_index++;
             }
+          } else {
+            args = arg1[op_index];
+            stack_index -= args;
+            stack[++stack_index] = 0;
+            op_index++;
           }
           break;
         case 94:

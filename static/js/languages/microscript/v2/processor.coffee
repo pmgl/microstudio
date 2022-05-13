@@ -1201,6 +1201,17 @@ class @Processor
                   stack[++stack_index] = 0
               else if args>f.num_args
                 stack_index -= args-f.num_args
+            else
+              args = arg1[op_index]
+              stack_index -= args
+              stack[++stack_index] = 0
+              op_index++
+
+          else
+            args = arg1[op_index]
+            stack_index -= args
+            stack[++stack_index] = 0
+            op_index++
 
         when 94 # OPCODE_RETURN
           local_index -= arg1[op_index]
