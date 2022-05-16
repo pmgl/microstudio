@@ -171,7 +171,7 @@ class @Runner
 
       for t in @threads
         if t != @main_thread
-          continue if t.paused
+          continue if t.paused or t.terminated
           processor = t.processor
           if not processor.done
             if t.sleep_until?
@@ -184,7 +184,7 @@ class @Runner
               processing = true
           else if t.start_time?
             if t.repeat
-              while time >= t.start_time
+              while time >= t.start_time and not (t.paused or t.terminated)
                 if time >= t.start_time+150
                   t.start_time = time+t.delay
                 else

@@ -210,7 +210,7 @@ this.Runner = (function() {
       for (j = 0, len = ref.length; j < len; j++) {
         t = ref[j];
         if (t !== this.main_thread) {
-          if (t.paused) {
+          if (t.paused || t.terminated) {
             continue;
           }
           processor = t.processor;
@@ -227,7 +227,7 @@ this.Runner = (function() {
             }
           } else if (t.start_time != null) {
             if (t.repeat) {
-              while (time >= t.start_time) {
+              while (time >= t.start_time && !(t.paused || t.terminated)) {
                 if (time >= t.start_time + 150) {
                   t.start_time = time + t.delay;
                 } else {
