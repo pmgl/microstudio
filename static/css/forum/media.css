@@ -2,6 +2,16 @@
   /*.post-activity {
     display: none ;
   }*/
+  .community-icon span {
+    display: none ;
+  }
+  .discord span {
+    display: none ;
+  }
+  header .rightpart .discord i {
+    margin-right: 0 ;
+  }
+
   .post-container, .posts, .description, .create-post-button-wrapper {
     padding: 20px ;
   }

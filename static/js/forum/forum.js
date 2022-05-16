@@ -129,6 +129,9 @@ this.Forum = (function() {
       })(this));
     }
     this.checkEmbedded();
+    if (community.language === "fr") {
+      document.querySelector("header .rightpart .discord").href = "https://discord.gg/nEMpBU7";
+    }
   }
 
   Forum.prototype.rotateSort = function() {
@@ -515,7 +518,7 @@ this.Forum = (function() {
           if (_this.user == null) {
             document.querySelector("header .username i").classList.remove("fa-user");
             document.querySelector("header .username i").classList.add("fa-sign-in-alt");
-            return document.querySelector("header .username").style.display = "block";
+            return document.querySelector("header .username").style.display = "inline-block";
           }
         };
       })(this)), 2000);
@@ -532,7 +535,7 @@ this.Forum = (function() {
       if ((community.permissions != null) && community.permissions.post !== "user" && !this.user.flags.admin) {
         canpost = false;
       }
-      document.querySelector("header .username").style.display = "block";
+      document.querySelector("header .username").style.display = "inline-block";
       document.querySelector("header .username span").innerText = this.user.nick;
       if (this.user.flags.profile_image) {
         document.querySelector("header .username img").style.display = "inline-block";

@@ -75,6 +75,8 @@ class @Forum
         @rotateSort()
 
     @checkEmbedded()
+    if community.language == "fr"
+      document.querySelector("header .rightpart .discord").href = "https://discord.gg/nEMpBU7"
 
   rotateSort:()->
     @current_sort = (@current_sort+1)%@sort_modes.length
@@ -361,7 +363,7 @@ class @Forum
         if not @user?
           document.querySelector("header .username i").classList.remove "fa-user"
           document.querySelector("header .username i").classList.add "fa-sign-in-alt"
-          document.querySelector("header .username").style.display = "block"
+          document.querySelector("header .username").style.display = "inline-block"
         ),2000
       e = document.querySelector("#create-post-button")
       if e? then e.style.display = "none"
@@ -375,7 +377,7 @@ class @Forum
       if community.permissions? and community.permissions.post != "user" and not @user.flags.admin
         canpost = false
 
-      document.querySelector("header .username").style.display = "block"
+      document.querySelector("header .username").style.display = "inline-block"
       document.querySelector("header .username span").innerText = @user.nick
       if @user.flags.profile_image
         document.querySelector("header .username img").style.display = "inline-block"

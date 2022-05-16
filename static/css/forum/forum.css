@@ -45,10 +45,31 @@ header .community-icon  i {
   margin-right: 10px ;
 }
 
-header .username {
-  display: none ;
+header .rightpart {
   float: right ;
   margin: 12px 20px 0 0 ;
+}
+header .rightpart div {
+  vertical-align: middle;
+}
+
+header .rightpart .discord {
+  display: inline-block ;
+  padding: 5px 10px ;
+  border-radius: 5px ;
+  background: hsl(235,50%,60%) ;
+  color: #FFF ;
+  margin-right: 40px ;
+  box-shadow: 0 0 3px rgba(0,0,0,.5), inset 0 0 6px rgba(255,255,255,.25) ;
+  cursor: pointer ;
+  font-size: 16px ;
+}
+header .rightpart .discord i {
+  margin-right: 10px ;
+}
+
+header .username {
+  display: none ;
   padding: 0 10px 0 0 ;
   border-radius: 30px ;
   background: rgba(255,255,255,.2);

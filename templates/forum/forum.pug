@@ -10,9 +10,9 @@ html(lang=language)
     link(rel="stylesheet" type="text/css" href="/css/forum/forum.css")
     link(rel="stylesheet" type="text/css" href="/css/forum/media.css")
     link(rel="stylesheet" type="text/css" href="/css/md.css")
-      
+
     link(rel="stylesheet" href="/lib/fontlib/fontawesome/css/all.css")
-      
+
     link(rel="stylesheet" href="/lib/fontlib/ubuntu/index.css")
     link(rel="stylesheet" href="/lib/fontlib/ubuntu-mono/index.css")
     link(rel="stylesheet" href="/lib/fontlib/source-sans-pro/index.css")
@@ -37,10 +37,15 @@ html(lang=language)
 
   body(class=theme)
     header
-      div.username
-        i.fa.fa-user
-        img(style="display: none")
-        span #{translator.get("Login")}
+      div.rightpart
+        a.discord(href="https://discord.gg/BDMqjxd" target="_blank")
+          i.fab.fa-discord
+          span Discord
+
+        div.username
+          i.fa.fa-user
+          img(style="display: none")
+          span #{translator.get("Login")}
 
       a(href="/")
         img.logo#logo(src="/img/microstudiologo.svg" alt="microStudio" title="microStudio")
