@@ -7,6 +7,7 @@ Concatenator = require __dirname+"/concatenator.js"
 Fonts = require __dirname+"/fonts.js"
 ExportFeatures = require __dirname+"/app/exportfeatures.js"
 ForumApp = require __dirname+"/forum/forumapp.js"
+API = require __dirname+"/api.js"
 
 marked = require "marked"
 sanitizeHTML = require "sanitize-html"
@@ -25,6 +26,7 @@ class @WebApp
     #  redir = res.redirect(redir)
 
     @forum_app = new ForumApp @server,@
+    @api = new API @server,@
 
     @concatenator = new Concatenator @
     @fonts = new Fonts

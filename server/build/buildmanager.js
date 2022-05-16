@@ -49,6 +49,17 @@ this.BuildManager = (function() {
     return s;
   };
 
+  BuildManager.prototype.getActiveBuildersData = function() {
+    var key, obj, ref, value;
+    obj = {};
+    ref = this.builders;
+    for (key in ref) {
+      value = ref[key];
+      obj[key] = value.length;
+    }
+    return obj;
+  };
+
   BuildManager.prototype.startBuild = function(project, target) {
     var key;
     key = project.id + "-" + target;

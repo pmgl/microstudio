@@ -32,6 +32,13 @@ class @BuildManager
 
     s
 
+  getActiveBuildersData:()->
+    obj = {}
+    for key,value of @builders
+      obj[key] = value.length
+
+    obj
+
   startBuild:(project,target)->
     key = project.id+"-"+target
     if not @builds[key]
