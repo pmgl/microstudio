@@ -34,6 +34,7 @@ App = (function() {
     this.runwindow = new RunWindow(this);
     this.debug = new Debug(this);
     this.options = new Options(this);
+    this.tab_manager = new TabManager(this);
     this.publish = new Publish(this);
     this.user_settings = new UserSettings(this);
     this.connected = false;
@@ -308,6 +309,7 @@ App = (function() {
     this.runwindow.projectOpened();
     this.debug.projectOpened();
     this.options.projectOpened();
+    this.tab_manager.projectOpened();
     this.publish.loadProject(this.project);
     this.project.load();
     if (!this.tutorial.shown) {
@@ -460,7 +462,8 @@ App = (function() {
       case "project_options_updated":
         if ((this.project != null) && msg.project === this.project.id) {
           this.project.optionsUpdated(msg);
-          return this.options.projectOpened();
+          this.options.projectOpened();
+          return this.tab_manager.projectOpened();
         }
         break;
       case "user_stats":

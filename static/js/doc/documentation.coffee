@@ -68,7 +68,12 @@ class @Documentation
         else if lang != "en"
           @load(id,callback,"en")
 
-    req.open "GET","/microstudio.wiki/#{lang}/#{lang}-#{id}.md"
+    if id.startsWith("http")
+      url = id
+    else
+      url = "/microstudio.wiki/#{lang}/#{lang}-#{id}.md"
+
+    req.open "GET",url
     req.send()
 
   updateViewPos:()->
@@ -202,7 +207,7 @@ class @Documentation
 
     within = false
     for r in res
-      if r.ref == r.radix and r.radix.length == best and r.index+r.radix.length<line.length
+      if r.ref == r.radix and r.radix.length == best and r.index+r.radix.length < line.length
         return [r]
       within = within or r.within
 
@@ -228,3 +233,60 @@ class @Documentation
       if line.indexOf(key) >= 0
         res.push value
     res
+
+  getPluginsSection:()->
+    help_sections = document.getElementById "help-sections"
+    plugins_section = document.getElementById "help-plugins"
+    if not plugins_section?
+      plugins_section = document.createElement "div"
+      plugins_section.classList.add "help-section-category"
+      plugins_section.classList.add "collapsed"
+      plugins_section.classList.add "bg-green"
+      plugins_section.id = "help-plugins"
+      help_sections.appendChild plugins_section
+
+      plugins_section.innerHTML = """
+      <div class="help-section-title">
+        <i class="fa"></i><span>#{@app.translator.get("Plug-ins")}</span>
+      </div>
+      <div class="help-section-content"></div>
+      """
+      plugins_section.querySelector(".help-section-title").addEventListener "click",()=>
+        if plugins_section.classList.contains "collapsed"
+          plugins_section.classList.remove "collapsed"
+        else
+          plugins_section.classList.add "collapsed"
+        @updateViewPos()
+
+    plugins_section
+
+  addPlugin:(id,title,link)->
+    id = "documentation-#{id}"
+    if not document.getElementById id
+      plugins_section = @getPluginsSection()
+      doc = document.createElement "div"
+      doc.id = id
+      doc.classList.add "help-section-button"
+      doc.innerText = title
+      plugins_section.querySelector(".help-section-content").appendChild doc
+      doc.addEventListener "click",()=>
+        @setSection link
+
+      @updateViewPos()
+
+  removePlugin:(id)->
+    id = "documentation-#{id}"
+    element = document.getElementById id
+    if element?
+      parent = element.parentNode
+      parent.removeChild element
+      if parent.childNodes.length == 0
+        @removeAllPlugins()
+
+      @updateViewPos()
+
+  removeAllPlugins:()->
+    plugins_section = document.getElementById "help-plugins"
+    if plugins_section?
+      plugins_section.parentNode.removeChild plugins_section
+      @updateViewPos()

@@ -1,4 +1,4 @@
-var arrayBufferToBase64, loadLameJSLib, loadWaveFileLib, saveFile, writeProjectFile;
+var arrayBufferToBase64, loadFile, loadLameJSLib, loadWaveFileLib, saveFile, writeProjectFile;
 
 this.Runtime = (function() {
   function Runtime(url1, sources, resources, listener) {
@@ -30,6 +30,7 @@ this.Runtime = (function() {
     })(this);
     this.update_memory = {};
     this.time_machine = new TimeMachine(this);
+    this.createDropFeature();
   }
 
   Runtime.prototype.updateSource = function(file, src, reinit) {
@@ -649,6 +650,16 @@ this.Runtime = (function() {
     } else {
       this.touch.release = 0;
     }
+    this.vm.context.global.system.file.dropped = 0;
+    if (this.files_dropped != null) {
+      this.vm.context.global.system.file.dropped = this.files_dropped;
+      delete this.files_dropped;
+    }
+    this.vm.context.global.system.file.loaded = 0;
+    if (this.files_loaded != null) {
+      this.vm.context.global.system.file.loaded = this.files_loaded;
+      delete this.files_loaded;
+    }
     this.gamepad.update();
     this.keyboard.update();
     try {
@@ -848,6 +859,72 @@ this.Runtime = (function() {
     }
   };
 
+  Runtime.prototype.createDropFeature = function() {
+    document.addEventListener("dragenter", (function(_this) {
+      return function(event) {
+        return event.stopPropagation();
+      };
+    })(this));
+    document.addEventListener("dragleave", (function(_this) {
+      return function(event) {
+        return event.stopPropagation();
+      };
+    })(this));
+    document.addEventListener("dragover", (function(_this) {
+      return function(event) {
+        event.preventDefault();
+        if (player.runtime.screen.mouseMove != null) {
+          return player.runtime.screen.mouseMove(event);
+        }
+      };
+    })(this));
+    return document.addEventListener("drop", (function(_this) {
+      return function(event) {
+        var err, file, files, i, index, j, len1, list, processFile, ref, result;
+        event.preventDefault();
+        event.stopPropagation();
+        try {
+          list = [];
+          files = [];
+          ref = event.dataTransfer.items;
+          for (j = 0, len1 = ref.length; j < len1; j++) {
+            i = ref[j];
+            if (i.kind === "file") {
+              file = i.getAsFile();
+              files.push(file);
+            }
+          }
+          result = [];
+          index = 0;
+          processFile = function() {
+            var f;
+            if (index < files.length) {
+              f = files[index++];
+              return loadFile(f, function(data) {
+                result.push({
+                  name: f.name,
+                  size: f.size,
+                  content: data,
+                  file_type: f.type
+                });
+                return processFile();
+              });
+            } else {
+              player.runtime.files_dropped = result;
+              if (typeof window.dropHandler === "function") {
+                return window.dropHandler(result);
+              }
+            }
+          };
+          return processFile();
+        } catch (error) {
+          err = error;
+          return console.error(err);
+        }
+      };
+    })(this));
+  };
+
   return Runtime;
 
 })();
@@ -915,7 +992,70 @@ arrayBufferToBase64 = function(buffer) {
   return window.btoa(binary);
 };
 
+loadFile = function(file, callback) {
+  var fr;
+  switch (file.type) {
+    case "image/png":
+    case "image/jpeg":
+      fr = new FileReader;
+      fr.onload = function() {
+        var img;
+        img = new Image;
+        img.onload = function() {
+          var image;
+          image = new msImage(img);
+          return callback(image);
+        };
+        return img.src = fr.result;
+      };
+      return fr.readAsDataURL(file);
+    case "audio/wav":
+    case "audio/x-wav":
+    case "audio/mp3":
+      fr = new FileReader;
+      fr.onload = function() {
+        return player.runtime.audio.getContext().decodeAudioData(fr.result, function(buffer) {
+          return callback(new Sound(player.runtime.audio, buffer));
+        });
+      };
+      return fr.readAsArrayBuffer(file);
+    case "application/json":
+      fr = new FileReader;
+      fr.onload = function() {
+        var err, object;
+        object = fr.result;
+        try {
+          object = JSON.parse(fr.result);
+        } catch (error) {
+          err = error;
+        }
+        return callback(object);
+      };
+      return fr.readAsText(file);
+    default:
+      fr = new FileReader;
+      fr.onload = function() {
+        return callback(fr.result);
+      };
+      return fr.readAsText(file);
+  }
+};
+
 this.System = {
+  javascript: function(s) {
+    var err, res;
+    try {
+      res = eval(s);
+    } catch (error) {
+      err = error;
+      console.error(err);
+    }
+    if (res != null) {
+      return res;
+    } else {
+      return 0;
+    }
+  },
   file: {
     save: function(obj, name, format, options) {
       var a, c;
@@ -986,6 +1126,60 @@ this.System = {
         }
         return saveFile(obj, name, "text/plain");
       }
+    },
+    load: function(options, callback) {
+      var extensions, i, input, j, ref;
+      if (typeof options === "string" || Array.isArray(options)) {
+        extensions = options;
+      } else {
+        extensions = options.extensions || null;
+      }
+      input = document.createElement("input");
+      if (options.multiple) {
+        input.multiple = true;
+      }
+      input.type = "file";
+      if (typeof extensions === "string") {
+        input.accept = "." + extensions;
+      } else if (Array.isArray(extensions)) {
+        for (i = j = 0, ref = extensions.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+          extensions[i] = "." + extensions[i];
+        }
+        input.accept = extensions.join(",");
+      }
+      input.addEventListener("change", (function(_this) {
+        return function(event) {
+          var files, index, processFile, result;
+          files = event.target.files;
+          result = [];
+          index = 0;
+          processFile = function() {
+            var f;
+            if (index < files.length) {
+              f = files[index++];
+              return loadFile(f, function(data) {
+                result.push({
+                  name: f.name,
+                  size: f.size,
+                  content: data,
+                  file_type: f.type
+                });
+                return processFile();
+              });
+            } else {
+              player.runtime.files_loaded = result;
+              if (typeof callback === "function") {
+                return callback(result);
+              }
+            }
+          };
+          return processFile();
+        };
+      })(this));
+      return input.click();
+    },
+    setDropHandler: function(handler) {
+      return window.dropHandler = handler;
     }
   }
 };

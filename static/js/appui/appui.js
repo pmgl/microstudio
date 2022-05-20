@@ -4,7 +4,7 @@ AppUI = (function() {
   function AppUI(app1) {
     var advanced, fn, fn1, j, k, len, len1, ref, ref1, s;
     this.app = app1;
-    this.sections = ["code", "sprites", "maps", "assets", "sounds", "music", "doc", "options", "publish"];
+    this.sections = ["code", "sprites", "maps", "assets", "sounds", "music", "doc", "options", "publish", "tabs"];
     this.menuoptions = ["home", "explore", "projects", "help", "tutorials", "about", "usersettings"];
     ref = this.sections;
     fn = (function(_this) {
@@ -178,7 +178,6 @@ AppUI = (function() {
     this.debug_splitbar = new SplitBar("terminal-debug-container", "horizontal");
     this.debug_splitbar.closed2 = true;
     this.debug_splitbar.splitbar_size = 12;
-    this.createSideMenuAutoScroll();
     this.setAction("backtoprojects", (function(_this) {
       return function() {
         if (_this.app.project != null) {
@@ -379,6 +378,7 @@ AppUI = (function() {
     this.show("myprojects");
     this.app.runwindow.projectClosed();
     this.app.debug.projectClosed();
+    this.app.tab_manager.projectClosed();
     this.app.project = null;
     this.project = null;
     this.app.updateProjectList();
@@ -388,7 +388,7 @@ AppUI = (function() {
   };
 
   AppUI.prototype.setSection = function(section, useraction) {
-    var fn, j, len, ref, s;
+    var fn, item, j, k, len, len1, list, menuitem, ref, s;
     this.current_section = section;
     ref = this.sections;
     fn = (function(_this) {
@@ -412,6 +412,18 @@ AppUI = (function() {
       s = ref[j];
       fn(s);
     }
+    menuitem = document.getElementById("menuitem-" + section);
+    if (menuitem != null) {
+      menuitem.classList.add("selected");
+    }
+    list = document.querySelectorAll(".menuitem-plugin");
+    for (k = 0, len1 = list.length; k < len1; k++) {
+      item = list[k];
+      if (item.id !== ("menuitem-" + section)) {
+        item.classList.remove("selected");
+      }
+    }
+    this.app.tab_manager.setTabView(section);
     if (section === "sprites") {
       this.app.sprite_editor.spriteview.windowResized();
     }
@@ -1238,24 +1250,6 @@ AppUI = (function() {
   AppUI.prototype.resetImportButton = function() {
     document.getElementById("import-project-button").innerHTML = "<i class=\"fa fa-upload\"></i> " + (this.app.translator.get("Import Project"));
     return document.getElementById("import-project-button").style.removeProperty("background");
-  };
-
-  AppUI.prototype.createSideMenuAutoScroll = function() {
-    var inner, sidemenu;
-    sidemenu = document.getElementById("sidemenu");
-    inner = sidemenu.querySelector("ul");
-    return sidemenu.addEventListener("mousemove", function(event) {
-      var h1, h2, ratio;
-      h1 = sidemenu.getBoundingClientRect().height;
-      h2 = inner.getBoundingClientRect().height;
-      ratio = (event.clientY - sidemenu.getBoundingClientRect().y) / h1;
-      ratio = Math.max(0, Math.min(1, ratio * 1.5 - .25));
-      if (h2 > h1) {
-        return inner.style.top = (Math.round((h1 - h2) * ratio)) + "px";
-      } else {
-        return inner.style.top = "0px";
-      }
-    });
   };
 
   return AppUI;

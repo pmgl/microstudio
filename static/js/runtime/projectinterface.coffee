@@ -53,6 +53,7 @@ class @ProjectInterface
         name: "write_project_file"
         path: path
         content: obj
+        options: options
 
       @runtime.listener.postRequest msg,(result)=>
         @callback callback,result.content,res,result.error
@@ -68,6 +69,7 @@ class @ProjectInterface
         name: "write_project_file"
         path: path
         content: obj.canvas.toDataURL().split(",")[1]
+        options: options
 
       @runtime.listener.postRequest msg,(result)=>
         @callback callback,result.content,res,result.error
@@ -93,6 +95,7 @@ class @ProjectInterface
         content: canvas.toDataURL().split(",")[1]
         fps: fps
         frames: frames
+        options: options
 
       @runtime.listener.postRequest msg,(result)=>
         @callback callback,result.content,res,result.error
@@ -111,6 +114,7 @@ class @ProjectInterface
         name: "write_project_file"
         path: path
         content: SaveMap obj
+        options: options
 
       @runtime.listener.postRequest msg,(result)=>
         @callback callback,result.content,res,result.error
@@ -147,6 +151,7 @@ class @ProjectInterface
           name: "write_project_file"
           path: path
           content: encoded
+          options: options
 
         @runtime.listener.postRequest msg,(result)=>
           @callback callback,result.content,res,result.error
@@ -204,6 +209,7 @@ class @ProjectInterface
             name: "write_project_file"
             path: path
             content: fr.result.split(",")[1]
+            options: options
 
           @runtime.listener.postRequest msg,(result)=>
             @callback callback,result.content,res,result.error
@@ -235,6 +241,7 @@ class @ProjectInterface
         path: path
         content: obj.canvas.toDataURL(mime)
         ext: ext
+        options: options
 
       @runtime.listener.postRequest msg,(result)=>
         @callback callback,result.content,res,result.error
@@ -250,6 +257,7 @@ class @ProjectInterface
         path: path
         content: obj
         ext: ext
+        options: options
 
       @runtime.listener.postRequest msg,(result)=>
         @callback callback,result.content,res,result.error
@@ -262,6 +270,7 @@ class @ProjectInterface
         path: path
         content: obj
         ext: "json"
+        options: options
 
       @runtime.listener.postRequest msg,(result)=>
         @callback callback,result.content,res,result.error

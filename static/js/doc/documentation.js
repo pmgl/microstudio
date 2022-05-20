@@ -90,7 +90,7 @@ this.Documentation = (function() {
   };
 
   Documentation.prototype.load = function(id, callback, lang) {
-    var ref1, req;
+    var ref1, req, url;
     if (id == null) {
       id = "Quickstart";
     }
@@ -119,7 +119,12 @@ this.Documentation = (function() {
         }
       };
     })(this);
-    req.open("GET", "/microstudio.wiki/" + lang + "/" + lang + "-" + id + ".md");
+    if (id.startsWith("http")) {
+      url = id;
+    } else {
+      url = "/microstudio.wiki/" + lang + "/" + lang + "-" + id + ".md";
+    }
+    req.open("GET", url);
     return req.send();
   };
 
@@ -327,6 +332,74 @@ this.Documentation = (function() {
       }
     }
     return res;
+  };
+
+  Documentation.prototype.getPluginsSection = function() {
+    var help_sections, plugins_section;
+    help_sections = document.getElementById("help-sections");
+    plugins_section = document.getElementById("help-plugins");
+    if (plugins_section == null) {
+      plugins_section = document.createElement("div");
+      plugins_section.classList.add("help-section-category");
+      plugins_section.classList.add("collapsed");
+      plugins_section.classList.add("bg-green");
+      plugins_section.id = "help-plugins";
+      help_sections.appendChild(plugins_section);
+      plugins_section.innerHTML = "<div class=\"help-section-title\">\n  <i class=\"fa\"></i><span>" + (this.app.translator.get("Plug-ins")) + "</span>\n</div>\n<div class=\"help-section-content\"></div>";
+      plugins_section.querySelector(".help-section-title").addEventListener("click", (function(_this) {
+        return function() {
+          if (plugins_section.classList.contains("collapsed")) {
+            plugins_section.classList.remove("collapsed");
+          } else {
+            plugins_section.classList.add("collapsed");
+          }
+          return _this.updateViewPos();
+        };
+      })(this));
+    }
+    return plugins_section;
+  };
+
+  Documentation.prototype.addPlugin = function(id, title, link) {
+    var doc, plugins_section;
+    id = "documentation-" + id;
+    if (!document.getElementById(id)) {
+      plugins_section = this.getPluginsSection();
+      doc = document.createElement("div");
+      doc.id = id;
+      doc.classList.add("help-section-button");
+      doc.innerText = title;
+      plugins_section.querySelector(".help-section-content").appendChild(doc);
+      doc.addEventListener("click", (function(_this) {
+        return function() {
+          return _this.setSection(link);
+        };
+      })(this));
+      return this.updateViewPos();
+    }
+  };
+
+  Documentation.prototype.removePlugin = function(id) {
+    var element, parent;
+    id = "documentation-" + id;
+    element = document.getElementById(id);
+    if (element != null) {
+      parent = element.parentNode;
+      parent.removeChild(element);
+      if (parent.childNodes.length === 0) {
+        this.removeAllPlugins();
+      }
+      return this.updateViewPos();
+    }
+  };
+
+  Documentation.prototype.removeAllPlugins = function() {
+    var plugins_section;
+    plugins_section = document.getElementById("help-plugins");
+    if (plugins_section != null) {
+      plugins_section.parentNode.removeChild(plugins_section);
+      return this.updateViewPos();
+    }
   };
 
   return Documentation;

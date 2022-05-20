@@ -631,6 +631,7 @@ padding-left: 2px ;
   float: right ;
   text-shadow: none ;
 }
+.sidemenu::-webkit-scrollbar { display: none ; }
 
 .sidemenu {
   position: absolute;
@@ -639,7 +640,8 @@ padding-left: 2px ;
   left: 0px;
   width: 60px;
   z-index: 2 ;
-  overflow: hidden ;
+  overflow-y: auto ;
+  scrollbar-width: none ;
 }
 
 .sidemenu ul {
@@ -660,6 +662,13 @@ padding-left: 2px ;
   width: 60px;
   cursor: pointer ;
   margin: 0px 0px ;
+}
+
+.sidemenu li img {
+  width: 32px ;
+  height: 32px ;
+  margin-bottom: 5px ;
+  border-radius: 5px ;
 }
 
 .sidemenu li .fa-code { color: hsla(0,100%,80%,.85);}
@@ -709,6 +718,13 @@ padding-left: 2px ;
 .sidemenu li i {
   font-size: 20px;
   padding-bottom: 5px;
+}
+
+#menuitem-tabs {
+  margin: 5px ;
+  border-radius: 10px ;
+  padding: 10px 10px 5px 10px ;
+  width: 30px ;
 }
 
 .section-container {

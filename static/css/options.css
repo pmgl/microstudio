@@ -214,3 +214,95 @@
 #advanced-project-options {
   display: none ;
 }
+
+#tabs-section {
+  overflow: auto ;
+  /*background: rgba(255,255,255,.05);*/
+  border-top: solid 10px hsl(200,30%,30%);
+  padding: 40px 80px ;
+}
+
+.plugin-list > div {
+  position: relative ;
+  border-radius: 10px ;
+  background: rgba(255,255,255,.05) ;
+  cursor: pointer ;
+  padding: 10px ;
+  margin-bottom: 20px ;
+  min-height: 64px ;
+}
+.plugin-list > div:hover {
+  background: rgba(255,255,255,.1) ;
+}
+.plugin-list > div > div {
+}
+.plugin-list > div > img {
+  float: left ;
+  width: 64px ;
+  height: 64px ;
+  border-radius: 10px ;
+  background: rgba(0,0,0,.5) ;
+}
+.plugin-list .description {
+  padding-left: 88px ;
+}
+.plugin-list .plugin-author {
+  float: right ;
+  margin: 10px ;
+  position: relative ;
+  top: -10px ;
+}
+.plugin-list i {
+  margin-right: 5px ;
+}
+.plugin-list h4 {
+  margin: 0 0 10px 0 ;
+}
+.plugin-list .plugin-folder {
+  display: none ;
+  font-size: 12px ;
+  color: rgba(255,255,255,.5);
+}
+.plugin-list > div.selected {
+  background: hsl(200,50%,40%) ;
+}
+.plugin-list > div.selected:hover {
+  background: hsl(200,50%,50%) ;
+}
+
+.plugin-list > div .check {
+  display: none ;
+  position: absolute ;
+  bottom: 20px ;
+  left: 20px ;
+  font-size: 30px ;
+  color: #FFF ;
+}
+
+.plugin-list > div.selected .check {
+  display: block ;
+}
+.plugin-list > div.selected .plugin-folder {
+  display: block ;
+}
+.plugin-view {
+  position: absolute ;
+  left: 0 ;
+  right: 0 ;
+  top: 0 ;
+  bottom: 0 ;
+  border-top: solid 10px hsl(200,30%,30%) ;
+  background: #000 ;
+}
+.plugin-view-container {
+  position: absolute ;
+  left: 2px ;
+  right: 2px ;
+  top: 2px ;
+  bottom: 2px ;
+}
+.plugin-view iframe {
+  width: 100% ;
+  height: 100% ;
+  border: none ;
+}

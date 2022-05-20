@@ -1,12 +1,13 @@
 this.ProjectAccess = (function() {
-  function ProjectAccess(app, directory) {
+  function ProjectAccess(app, directory, listener) {
     this.app = app;
     this.directory = directory != null ? directory : null;
+    this.listener = listener;
   }
 
   ProjectAccess.prototype.fixPath = function(path) {
     var d, i, j, k, len, n, p, ref;
-    if (this.directory == null) {
+    if (!this.directory) {
       return path;
     } else {
       p = path.split("/");
@@ -20,6 +21,10 @@ this.ProjectAccess = (function() {
       }
       return p.join("/");
     }
+  };
+
+  ProjectAccess.prototype.setFolder = function(directory) {
+    this.directory = directory;
   };
 
   ProjectAccess.prototype.messageReceived = function(msg) {
@@ -89,14 +94,14 @@ this.ProjectAccess = (function() {
         list = filter(this.app.project.asset_list);
         break;
       default:
-        this.app.runwindow.postMessage({
+        this.listener.postMessage({
           name: "list_project_files",
           request_id: msg.request_id,
           error: "Folder does not exist: " + kind
         });
         return;
     }
-    return this.app.runwindow.postMessage({
+    return this.listener.postMessage({
       name: "list_project_files",
       list: list,
       request_id: msg.request_id
@@ -141,7 +146,7 @@ this.ProjectAccess = (function() {
                 var fr;
                 fr = new FileReader();
                 fr.onload = function(e) {
-                  return _this.app.runwindow.postMessage({
+                  return _this.listener.postMessage({
                     name: "read_project_file",
                     request_id: msg.request_id,
                     content: fr.result
@@ -172,7 +177,7 @@ this.ProjectAccess = (function() {
                 var fr;
                 fr = new FileReader();
                 fr.onload = function(e) {
-                  return _this.app.runwindow.postMessage({
+                  return _this.listener.postMessage({
                     name: "read_project_file",
                     request_id: msg.request_id,
                     content: fr.result
@@ -193,7 +198,7 @@ this.ProjectAccess = (function() {
             fetch(asset.getURL()).then((function(_this) {
               return function(result) {
                 return result.text().then(function(text) {
-                  return _this.app.runwindow.postMessage({
+                  return _this.listener.postMessage({
                     name: "read_project_file",
                     request_id: msg.request_id,
                     content: {
@@ -208,7 +213,7 @@ this.ProjectAccess = (function() {
             fetch(asset.getURL()).then((function(_this) {
               return function(result) {
                 return result.json().then(function(json) {
-                  return _this.app.runwindow.postMessage({
+                  return _this.listener.postMessage({
                     name: "read_project_file",
                     request_id: msg.request_id,
                     content: {
@@ -226,7 +231,7 @@ this.ProjectAccess = (function() {
                   var fr;
                   fr = new FileReader();
                   fr.onload = function(r) {
-                    return _this.app.runwindow.postMessage({
+                    return _this.listener.postMessage({
                       name: "read_project_file",
                       request_id: msg.request_id,
                       content: {
@@ -243,20 +248,20 @@ this.ProjectAccess = (function() {
         }
         return;
       default:
-        this.app.runwindow.postMessage({
+        this.listener.postMessage({
           name: "read_project_file",
           request_id: msg.request_id,
           error: "Folder does not exist: " + kind
         });
     }
     if (content != null) {
-      return this.app.runwindow.postMessage({
+      return this.listener.postMessage({
         name: "read_project_file",
         request_id: msg.request_id,
         content: content
       });
     } else {
-      return this.app.runwindow.postMessage({
+      return this.listener.postMessage({
         name: "read_project_file",
         request_id: msg.request_id,
         error: "File Not Found"
@@ -264,11 +269,43 @@ this.ProjectAccess = (function() {
     }
   };
 
+  ProjectAccess.prototype.projectFileExists = function(path) {
+    var kind;
+    path = path.split("/");
+    kind = path[0];
+    path.splice(0, 1);
+    path = path.join("-");
+    switch (kind) {
+      case "source":
+        return this.app.project.source_table[path];
+      case "sprites":
+        return this.app.project.sprite_table[path];
+      case "maps":
+        return this.app.project.map_table[path];
+      case "sounds":
+        return this.app.project.sound_table[path];
+      case "music":
+        return this.app.project.music_table[path];
+      case "assets":
+        return this.app.project.asset_table[path];
+    }
+    return false;
+  };
+
   ProjectAccess.prototype.writeProjectFile = function(msg) {
-    var kind, path;
+    var base, count, kind, name, path;
     path = this.fixPath(msg.path);
     path = path.split("/");
     kind = path[0];
+    if (!(msg.options && msg.options.replace)) {
+      base = path.join("/");
+      name = base;
+      count = 2;
+      while (this.projectFileExists(name)) {
+        name = base + count++;
+      }
+      path = name.split("/");
+    }
     switch (kind) {
       case "source":
         path.splice(0, 1);
@@ -306,14 +343,14 @@ this.ProjectAccess = (function() {
         });
         break;
       default:
-        this.app.runwindow.postMessage({
+        this.listener.postMessage({
           name: "write_project_file",
           request_id: msg.request_id,
           error: "Folder does not exist: " + kind
         });
         return;
     }
-    return this.app.runwindow.postMessage({
+    return this.listener.postMessage({
       name: "write_project_file",
       request_id: msg.request_id,
       content: "success"
@@ -336,7 +373,7 @@ this.ProjectAccess = (function() {
           thumbnail: thumbnail
         }, function(response) {
           callback();
-          return _this.app.runwindow.postMessage({
+          return _this.listener.postMessage({
             name: "delete_project_file",
             request_id: msg.request_id,
             content: "success"
@@ -346,7 +383,7 @@ this.ProjectAccess = (function() {
     })(this);
     error = (function(_this) {
       return function(text) {
-        return _this.app.runwindow.postMessage({
+        return _this.listener.postMessage({
           name: "delete_project_file",
           request_id: msg.request_id,
           error: text

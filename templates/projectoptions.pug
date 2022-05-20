@@ -70,6 +70,7 @@ div.projectoptions#projectoptions
             select#projectoption-type
               option(value="app") #{translator.get("App (game, demo...)")}
               option(value="library") #{translator.get("Library")}
+              option(value="plugin") #{translator.get("Plug-in")}
               option(value="tutorial") #{translator.get("Tutorial")}
 
           div.projectoption#project-option-language
@@ -105,10 +106,3 @@ div.projectoptions#projectoptions
           div.adduser
             input.username#add-project-user-nick(placeholder=translator.get("nickname"))
             div.addbutton#add-project-user <i class="fa fa-user-plus"></i> #{translator.get("Add User")}
-
-      div.projectoption(style="padding-top:40px;")
-        h3 #{translator.get("Active Tabs")}
-        each tab in ["Code","Sprites","Maps","Sounds","Music","Assets","Doc","Publish"]
-          input(type="checkbox" id="project-option-active-tab-"+tab.toLowerCase())
-          label(for="project-option-active-tab-"+tab.toLowerCase()) #{translator.get(tab)}
-          br

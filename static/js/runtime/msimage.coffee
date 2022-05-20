@@ -1,5 +1,8 @@
 class @msImage
+  @classname = "Image"
+
   constructor:(@width,@height,@centered=false)->
+    @class = msImage
     if @width instanceof Image
       @image = @width
       @width = @image.width
@@ -10,8 +13,8 @@ class @msImage
       @height = @canvas.height
     else
       @canvas = document.createElement "canvas"
-      @canvas.width = @width
-      @canvas.height = @height
+      @canvas.width = @width = Math.round @width
+      @canvas.height = @height = Math.round @height
 
   setRGB:(x,y,r,g,b)->
     @initContext()

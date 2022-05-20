@@ -35,6 +35,7 @@ this.Content = (function() {
     this.hot_projects = [];
     this.top_projects = [];
     this.new_projects = [];
+    this.plugin_projects = [];
     this.updatePublicProjects();
     console.info("Content loaded: " + this.user_count + " users and " + this.project_count + " projects");
     this.top_interval = setInterval(((function(_this) {
@@ -193,6 +194,7 @@ this.Content = (function() {
     this.hot_projects = [];
     this.top_projects = [];
     this.new_projects = [];
+    this.plugin_projects = [];
     ref = this.projects;
     for (key in ref) {
       project = ref[key];
@@ -200,6 +202,9 @@ this.Content = (function() {
         this.hot_projects.push(project);
         this.top_projects.push(project);
         this.new_projects.push(project);
+        if (project.type === "plugin") {
+          this.plugin_projects.push(project);
+        }
       }
     }
     return this.sortPublicProjects();
@@ -216,6 +221,9 @@ this.Content = (function() {
     });
     this.sorted_tags.sort(function(a, b) {
       return b.uses + b.num_users * 10 - a.uses - a.num_users * 10;
+    });
+    this.plugin_projects.sort(function(a, b) {
+      return b.likes - a.likes;
     });
     if (this.top_projects.length < 5) {
       return;
@@ -251,7 +259,10 @@ this.Content = (function() {
         this.top_projects.push(project);
       }
       if (this.new_projects.indexOf(project) < 0) {
-        return this.new_projects.push(project);
+        this.new_projects.push(project);
+      }
+      if (project.type === "plugin" && this.plugin_projects.indexOf(project) < 0) {
+        return this.plugin_projects.push(project);
       }
     } else {
       index = this.hot_projects.indexOf(project);
@@ -264,7 +275,28 @@ this.Content = (function() {
       }
       index = this.new_projects.indexOf(project);
       if (index >= 0) {
-        return this.new_projects.splice(index, 1);
+        this.new_projects.splice(index, 1);
+      }
+      index = this.plugin_projects.indexOf(project);
+      if (index >= 0) {
+        return this.plugin_projects.splice(index, 1);
+      }
+    }
+  };
+
+  Content.prototype.setProjectType = function(project, type) {
+    var index;
+    project.set("type", type);
+    if (project["public"]) {
+      if (project.type === "plugin") {
+        if (this.plugin_projects.indexOf(project) < 0) {
+          return this.plugin_projects.push(project);
+        }
+      } else {
+        index = this.plugin_projects.indexOf(project);
+        if (index >= 0) {
+          return this.plugin_projects.splice(index, 1);
+        }
       }
     }
   };
@@ -282,7 +314,11 @@ this.Content = (function() {
     }
     index = this.new_projects.indexOf(project);
     if (index >= 0) {
-      return this.new_projects.splice(index, 1);
+      this.new_projects.splice(index, 1);
+    }
+    index = this.plugin_projects.indexOf(project);
+    if (index >= 0) {
+      return this.plugin_projects.splice(index, 1);
     }
   };
 
@@ -411,7 +447,8 @@ this.Content = (function() {
       language: data.language,
       graphics: data.graphics,
       libs: data.libs,
-      tabs: data.tabs
+      tabs: data.tabs,
+      plugins: data.plugins
     };
     record = this.db.create("projects", d);
     project = this.loadProject(record);

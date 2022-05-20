@@ -76,11 +76,15 @@ this.RunWindow = (function() {
       };
     })(this));
     this.terminal = new Terminal(this);
-    window.onmessage = (function(_this) {
+    window.addEventListener("message", (function(_this) {
       return function(msg) {
-        return _this.messageReceived(msg.data);
+        var iframe;
+        iframe = document.getElementById("runiframe");
+        if ((iframe != null) && msg.source === iframe.contentWindow) {
+          return _this.messageReceived(msg.data);
+        }
       };
-    })(this);
+    })(this));
     this.command_table = {};
     this.command_id = 0;
     this.floating_window = new FloatingWindow(this.app, "run-window", this);
@@ -88,7 +92,7 @@ this.RunWindow = (function() {
     this.initWarnings();
     this.message_listeners = {};
     this.listeners = [];
-    this.project_access = new ProjectAccess(this.app);
+    this.project_access = new ProjectAccess(this.app, null, this);
   }
 
   RunWindow.prototype.initWarnings = function() {

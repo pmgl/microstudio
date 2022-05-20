@@ -26,6 +26,7 @@ class @Runtime
     @update_memory = {}
 
     @time_machine = new TimeMachine @
+    @createDropFeature()
 
   updateSource:(file,src,reinit=false)->
     return false if not @vm?
@@ -175,6 +176,7 @@ class @Runtime
       @exit()
 
     @vm.context.global.system.file = System.file
+    #@vm.context.global.system.javascript = System.javascript
     if window.ms_in_editor
       @vm.context.global.system.project = new ProjectInterface(@).interface
 
@@ -491,6 +493,16 @@ class @Runtime
     else
       @touch.release = 0
 
+    @vm.context.global.system.file.dropped = 0
+    if @files_dropped?
+      @vm.context.global.system.file.dropped = @files_dropped
+      delete @files_dropped
+
+    @vm.context.global.system.file.loaded = 0
+    if @files_loaded?
+      @vm.context.global.system.file.loaded = @files_loaded
+      delete @files_loaded
+
     @gamepad.update()
     @keyboard.update()
     try
@@ -633,6 +645,50 @@ class @Runtime
       window.close()
     catch err
 
+  createDropFeature:()->
+    document.addEventListener "dragenter",(event)=>
+      event.stopPropagation()
+
+    document.addEventListener "dragleave",(event)=>
+      event.stopPropagation()
+
+    document.addEventListener "dragover",(event)=>
+      event.preventDefault()
+      if player.runtime.screen.mouseMove?
+        player.runtime.screen.mouseMove(event)
+
+    document.addEventListener "drop",(event)=>
+      event.preventDefault()
+      event.stopPropagation()
+
+      try
+        list = []
+        files = []
+        for i in event.dataTransfer.items
+          if i.kind == "file"
+            file = i.getAsFile()
+            files.push file
+
+        result = []
+        index = 0
+        processFile = ()->
+          if index < files.length
+            f = files[index++]
+            loadFile f,(data)->
+              result.push
+                name: f.name
+                size: f.size
+                content: data
+                file_type: f.type
+
+              processFile()
+          else
+            player.runtime.files_dropped = result
+            window.dropHandler(result) if typeof window.dropHandler == "function"
+
+        processFile()
+      catch err
+        console.error err
 
 saveFile = (data,name,type)->
   a = document.createElement("a")
@@ -680,7 +736,56 @@ arrayBufferToBase64 = ( buffer )->
     binary += String.fromCharCode( bytes[ i ] )
   window.btoa( binary )
 
+
+loadFile = (file,callback)->
+  switch file.type
+    when "image/png","image/jpeg"
+      fr = new FileReader
+      fr.onload = ()->
+        img = new Image
+        img.onload = ()->
+          image = new msImage img
+          callback(image)
+
+        img.src = fr.result
+      fr.readAsDataURL(file)
+
+    when "audio/wav","audio/x-wav","audio/mp3"
+      fr = new FileReader
+      fr.onload = ()->
+        player.runtime.audio.getContext().decodeAudioData fr.result, (buffer)->
+          callback new Sound player.runtime.audio,buffer
+
+      fr.readAsArrayBuffer file
+
+    when "application/json"
+      fr = new FileReader
+      fr.onload = ()->
+        object = fr.result
+        try
+          object = JSON.parse fr.result
+        catch err
+
+        callback object
+
+      fr.readAsText(file)
+
+    else
+      fr = new FileReader
+      fr.onload = ()->
+        callback fr.result
+
+      fr.readAsText(file)
+
 @System =
+  javascript:(s)->
+    try
+      res = eval(s)
+    catch err
+      console.error err
+
+    if res? then res else 0
+
   file:
     save:(obj,name,format,options)->
       if obj instanceof MicroSound
@@ -740,3 +845,47 @@ arrayBufferToBase64 = ( buffer )->
         if not name.endsWith(".txt") then name += ".txt"
 
         saveFile obj,name,"text/plain"
+
+    load:(options,callback)->
+      if typeof options == "string" or Array.isArray(options)
+        extensions = options
+      else
+        extensions = options.extensions or null
+
+      input = document.createElement "input"
+      if options.multiple
+        input.multiple = true
+
+      input.type = "file"
+      if typeof extensions == "string"
+        input.accept = ".#{extensions}"
+      else if Array.isArray extensions
+        for i in [0..extensions.length-1]
+          extensions[i] = ".#{extensions[i]}"
+        input.accept = extensions.join(",")
+
+      input.addEventListener "change",(event)=>
+        files = event.target.files
+        result = []
+        index = 0
+        processFile = ()->
+          if index < files.length
+            f = files[index++]
+            loadFile f,(data)->
+              result.push
+                name: f.name
+                size: f.size
+                content: data
+                file_type: f.type
+
+              processFile()
+          else
+            player.runtime.files_loaded = result
+            callback(result) if typeof callback == "function"
+
+        processFile()
+
+      input.click()
+
+    setDropHandler:(handler)->
+      window.dropHandler = handler

@@ -26,8 +26,10 @@ class @RunWindow
 
     @terminal = new Terminal @
 
-    window.onmessage = (msg)=>
-      @messageReceived msg.data
+    window.addEventListener "message", (msg)=>
+      iframe = document.getElementById("runiframe")
+      if iframe? and msg.source == iframe.contentWindow
+        @messageReceived msg.data
 
     @command_table = {}
     @command_id = 0
@@ -39,7 +41,7 @@ class @RunWindow
 
     @message_listeners = {}
     @listeners = []
-    @project_access = new ProjectAccess @app
+    @project_access = new ProjectAccess @app,null,@
 
   initWarnings:()->
     document.getElementById("console-options-warning-undefined").addEventListener "change",()=>

@@ -1,9 +1,9 @@
 class @ProjectAccess
-  constructor:(@app,@directory = null)->
+  constructor:(@app,@directory = null,@listener)->
     #@directory = "plugin_folder"
 
   fixPath:(path)->
-    if not @directory?
+    if not @directory
       path
     else
       p = path.split("/")
@@ -13,6 +13,8 @@ class @ProjectAccess
       for i in [0..p.length-1] by 1
         p[i] = RegexLib.fixFilename p[i]
       p.join("/")
+
+  setFolder:(@directory)->
 
   messageReceived:(msg)->
     switch msg.name
@@ -75,13 +77,13 @@ class @ProjectAccess
         list = filter @app.project.asset_list
 
       else
-        @app.runwindow.postMessage
+        @listener.postMessage
           name: "list_project_files"
           request_id: msg.request_id
           error: "Folder does not exist: #{kind}"
         return
 
-    @app.runwindow.postMessage
+    @listener.postMessage
       name: "list_project_files"
       list: list
       request_id: msg.request_id
@@ -119,7 +121,7 @@ class @ProjectAccess
             result.blob().then (blob)=>
               fr = new FileReader()
               fr.onload = (e)=>
-                @app.runwindow.postMessage
+                @listener.postMessage
                   name: "read_project_file"
                   request_id: msg.request_id
                   content: fr.result
@@ -143,7 +145,7 @@ class @ProjectAccess
             result.blob().then (blob)=>
               fr = new FileReader()
               fr.onload = (e)=>
-                @app.runwindow.postMessage
+                @listener.postMessage
                   name: "read_project_file"
                   request_id: msg.request_id
                   content: fr.result
@@ -159,7 +161,7 @@ class @ProjectAccess
           if asset.ext in ["txt","csv","obj"]
             fetch(asset.getURL()).then (result)=>
               result.text().then (text)=>
-                @app.runwindow.postMessage
+                @listener.postMessage
                   name: "read_project_file"
                   request_id: msg.request_id
                   content:
@@ -168,7 +170,7 @@ class @ProjectAccess
           else if asset.ext == "json"
             fetch(asset.getURL()).then (result)=>
               result.json().then (json)=>
-                @app.runwindow.postMessage
+                @listener.postMessage
                   name: "read_project_file"
                   request_id: msg.request_id
                   content:
@@ -180,7 +182,7 @@ class @ProjectAccess
               result.blob().then (blob)=>
                 fr = new FileReader()
                 fr.onload = (r)=>
-                  @app.runwindow.postMessage
+                  @listener.postMessage
                     name: "read_project_file"
                     request_id: msg.request_id
                     content:
@@ -192,28 +194,65 @@ class @ProjectAccess
         return
 
       else
-        @app.runwindow.postMessage
+        @listener.postMessage
           name: "read_project_file"
           request_id: msg.request_id
           error: "Folder does not exist: #{kind}"
 
     if content?
-      @app.runwindow.postMessage
+      @listener.postMessage
         name: "read_project_file"
         request_id: msg.request_id
         content: content
     else
-      @app.runwindow.postMessage
+      @listener.postMessage
         name: "read_project_file"
         request_id: msg.request_id
         error: "File Not Found"
 
+
+  projectFileExists:(path)->
+    path = path.split("/")
+
+    kind = path[0]
+    path.splice 0,1
+    path = path.join("-")
+
+    switch kind
+      when "source"
+        return @app.project.source_table[path]
+
+      when "sprites"
+        return @app.project.sprite_table[path]
+
+      when "maps"
+        return @app.project.map_table[path]
+
+      when "sounds"
+        return @app.project.sound_table[path]
+
+      when "music"
+        return @app.project.music_table[path]
+
+      when "assets"
+        return @app.project.asset_table[path]
+
+    false
 
   writeProjectFile:(msg)->
     path = @fixPath msg.path
     path = path.split("/")
 
     kind = path[0]
+
+    if not (msg.options and msg.options.replace)
+      base = path.join("/")
+      name = base
+      count = 2
+      while @projectFileExists name
+        name = base+count++
+
+      path = name.split("/")
 
     switch kind
       when "source"
@@ -247,13 +286,13 @@ class @ProjectAccess
         @app.project.writeFile(path,msg.content,{ext: msg.ext})
 
       else
-        @app.runwindow.postMessage
+        @listener.postMessage
           name: "write_project_file"
           request_id: msg.request_id
           error: "Folder does not exist: #{kind}"
         return
 
-    @app.runwindow.postMessage
+    @listener.postMessage
       name: "write_project_file"
       request_id: msg.request_id
       content: "success"
@@ -276,13 +315,13 @@ class @ProjectAccess
         thumbnail: thumbnail
       },(response)=>
         callback()
-        @app.runwindow.postMessage
+        @listener.postMessage
           name: "delete_project_file"
           request_id: msg.request_id
           content: "success"
 
     error = (text)=>
-      @app.runwindow.postMessage
+      @listener.postMessage
         name: "delete_project_file"
         request_id: msg.request_id
         error: text

@@ -11,6 +11,18 @@
   fixFilename:(text)->
     text.normalize('NFD').replace(/[^a-zA-Z0-9_]/g, "").toLowerCase()
 
+  fixFilePath:(text)->
+    while text.startsWith "/"
+      text = text.substring(1)
+
+    while text.endsWith "/"
+      text = text.substring(0,text.length-1)
+
+    t = text.split("/")
+    for s,i in t
+      t[i] = RegexLib.fixFilename s
+    t.join("/")
+
   fixNick:(text)->
     text.normalize('NFD').replace(/[^a-zA-Z0-9_]/g, "")
 

@@ -189,6 +189,8 @@ class @Concatenator
       "/js/editor/rulercanvas.js"
       "/js/editor/valuetool.js"
       "/js/options/options.js"
+      "/js/options/tabmanager.js"
+      "/js/options/pluginview.js"
 
       "/js/publish/publish.js"
       "/js/publish/appbuild.js"

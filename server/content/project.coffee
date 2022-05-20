@@ -49,6 +49,7 @@ class @Project
       @controls = data.controls or ["touch","mouse"]
       @libs = data.libs or []
       @tabs = data.tabs
+      @plugins = data.plugins
       @type = data.type or "app"
       @users = []
       @comments = new Comments @,data.comments

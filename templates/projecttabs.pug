@@ -1,0 +1,18 @@
+div.projecttabs#projecttabs
+  div.projectoption
+    h3 #{translator.get("Active Tabs")}
+    each tab in ["Code","Sprites","Maps","Sounds","Music","Assets","Doc","Publish"]
+      input(type="checkbox" id="project-option-active-tab-"+tab.toLowerCase())
+      label(for="project-option-active-tab-"+tab.toLowerCase()) #{translator.get(tab)}
+      br
+
+  div.projectoption
+    h3 #{translator.get("Plug-ins")}
+
+    div#project-tabs-your-plugins
+      h4 #{translator.get("Your Plug-ins")}
+      div.plugin-list
+
+    div#project-tabs-public-plugins
+      h4 #{translator.get("Community Plug-ins")}
+      div.plugin-list

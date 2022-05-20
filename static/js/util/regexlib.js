@@ -10,6 +10,21 @@ this.RegexLib = {
   fixFilename: function(text) {
     return text.normalize('NFD').replace(/[^a-zA-Z0-9_]/g, "").toLowerCase();
   },
+  fixFilePath: function(text) {
+    var i, j, len, s, t;
+    while (text.startsWith("/")) {
+      text = text.substring(1);
+    }
+    while (text.endsWith("/")) {
+      text = text.substring(0, text.length - 1);
+    }
+    t = text.split("/");
+    for (i = j = 0, len = t.length; j < len; i = ++j) {
+      s = t[i];
+      t[i] = RegexLib.fixFilename(s);
+    }
+    return t.join("/");
+  },
   fixNick: function(text) {
     return text.normalize('NFD').replace(/[^a-zA-Z0-9_]/g, "");
   }

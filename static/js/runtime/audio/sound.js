@@ -3,6 +3,9 @@ this.Sound = (function() {
     var request;
     this.audio = audio;
     this.url = url;
+    if (typeof MicroSound !== "undefined" && MicroSound !== null) {
+      this["class"] = MicroSound;
+    }
     if (this.url instanceof AudioBuffer) {
       this.buffer = this.url;
       this.ready = 1;
@@ -105,11 +108,14 @@ this.Sound = (function() {
 
   Sound.createSoundClass = function(audiocore) {
     return window.MicroSound = (function() {
+      _Class.classname = "Sound";
+
       function _Class(channels, length, sampleRate) {
         var buffer, ch1, ch2, snd;
         if (sampleRate == null) {
           sampleRate = 44100;
         }
+        this["class"] = MicroSound;
         channels = channels === 1 ? 1 : 2;
         if (!(length > 1) || !(length < 44100 * 1000)) {
           length = 44100;

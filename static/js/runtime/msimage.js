@@ -1,10 +1,13 @@
 var b, j, len1, ref;
 
 this.msImage = (function() {
+  msImage.classname = "Image";
+
   function msImage(width, height, centered) {
     this.width = width;
     this.height = height;
     this.centered = centered != null ? centered : false;
+    this["class"] = msImage;
     if (this.width instanceof Image) {
       this.image = this.width;
       this.width = this.image.width;
@@ -15,8 +18,8 @@ this.msImage = (function() {
       this.height = this.canvas.height;
     } else {
       this.canvas = document.createElement("canvas");
-      this.canvas.width = this.width;
-      this.canvas.height = this.height;
+      this.canvas.width = this.width = Math.round(this.width);
+      this.canvas.height = this.height = Math.round(this.height);
     }
   }
 

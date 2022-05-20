@@ -80,6 +80,7 @@ class @Session
     @register "remove_project_user",(msg)=>@removeProjectUser(msg)
 
     @register "get_public_projects",(msg)=>@getPublicProjects(msg)
+    @register "get_public_plugins",(msg)=>@getPublicPlugins(msg)
     @register "get_public_project",(msg)=>@getPublicProject(msg)
     @register "clone_project",(msg)=>@cloneProject(msg)
     @register "clone_public_project",(msg)=>@clonePublicProject(msg)
@@ -482,6 +483,7 @@ class @Session
         clone.setGraphics project.graphics
         clone.set "libs",project.libs
         clone.set "tabs",project.tabs
+        clone.set "plugins",project.plugins
         clone.set "files",JSON.parse JSON.stringify project.files
         man = @getProjectManager(project)
 
@@ -532,6 +534,7 @@ class @Session
           clone.setGraphics project.graphics
           clone.set "libs",project.libs
           clone.set "tabs",project.tabs
+          clone.set "plugins",project.plugins
           clone.set "files",JSON.parse JSON.stringify project.files
           man = @getProjectManager(project)
 
@@ -651,8 +654,12 @@ class @Session
           if typeof data.value == "object"
             project.set "tabs",data.value
 
+        when "plugins"
+          if typeof data.value == "object"
+            project.set "plugins",data.value
+
         when "type"
-          project.setType data.value if typeof data.value == "string"
+          @content.setProjectType project,data.value if typeof data.value == "string"
 
         when "orientation"
           project.setOrientation data.value if typeof data.value == "string"
@@ -712,6 +719,7 @@ class @Session
           language: p.language
           libs: p.libs
           tabs: p.tabs
+          plugins: p.plugins
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
@@ -744,6 +752,7 @@ class @Session
           language: p.language
           libs: p.libs
           tabs: p.tabs
+          plugins: p.plugins
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
@@ -927,6 +936,7 @@ class @Session
           language: p.language
           libs: p.libs
           tabs: p.tabs
+          plugins: p.plugins
 
     tags = []
     for t in @content.sorted_tags
@@ -938,6 +948,41 @@ class @Session
       list: list
       tags: tags
       offset: offset
+      request_id: data.request_id
+
+
+  getPublicPlugins:(data)->
+    source = @content.plugin_projects
+    list = []
+
+    for p in source
+      if p.public and not p.deleted and not p.owner.flags.censored
+        list.push
+          id: p.id
+          title: p.title
+          description: p.description
+          poster: p.files? and p.files["sprites/poster.png"]?
+          type: p.type
+          tags: p.tags
+          slug: p.slug
+          owner: p.owner.nick
+          owner_info:
+            tier: p.owner.flags.tier
+            profile_image: p.owner.flags.profile_image
+          likes: p.likes
+          liked: @user? and @user.isLiked(p.id)
+          tags: p.tags
+          date_published: p.first_published
+          last_modified: p.last_modified
+          graphics: p.graphics
+          language: p.language
+          libs: p.libs
+          tabs: p.tabs
+          plugins: p.plugins
+
+    @send
+      name: "public_plugins"
+      list: list
       request_id: data.request_id
 
   getPublicProject:(msg)->
@@ -969,6 +1014,7 @@ class @Session
             language: p.language
             libs: p.libs
             tabs: p.tabs
+            plugins: p.plugins
 
           @send
             name: "get_public_project"

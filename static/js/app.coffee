@@ -35,6 +35,7 @@ class App
     @runwindow = new RunWindow @
     @debug = new Debug @
     @options = new Options @
+    @tab_manager = new TabManager @
     @publish = new Publish @
     @user_settings = new UserSettings @
     @connected = false
@@ -221,6 +222,7 @@ class App
     @runwindow.projectOpened()
     @debug.projectOpened()
     @options.projectOpened()
+    @tab_manager.projectOpened()
     @publish.loadProject(@project)
     @project.load()
     if not @tutorial.shown
@@ -334,6 +336,7 @@ class App
         if @project? and msg.project == @project.id
           @project.optionsUpdated(msg)
           @options.projectOpened()
+          @tab_manager.projectOpened()
       when "user_stats"
         if @user?
           @user.info.stats = msg.stats

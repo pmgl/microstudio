@@ -20,6 +20,7 @@ class @Project
     @aspect = data.aspect
     @users = data.users
     @tabs = data.tabs
+    @plugins = data.plugins
 
     @file_types = ["source","sprite","map","asset","sound","music"]
     for f in @file_types

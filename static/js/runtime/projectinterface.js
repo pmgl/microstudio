@@ -73,7 +73,8 @@ this.ProjectInterface = (function() {
       msg = {
         name: "write_project_file",
         path: path,
-        content: obj
+        content: obj,
+        options: options
       };
       this.runtime.listener.postRequest(msg, (function(_this) {
         return function(result) {
@@ -93,7 +94,8 @@ this.ProjectInterface = (function() {
       msg = {
         name: "write_project_file",
         path: path,
-        content: obj.canvas.toDataURL().split(",")[1]
+        content: obj.canvas.toDataURL().split(",")[1],
+        options: options
       };
       this.runtime.listener.postRequest(msg, (function(_this) {
         return function(result) {
@@ -120,7 +122,8 @@ this.ProjectInterface = (function() {
         path: path,
         content: canvas.toDataURL().split(",")[1],
         fps: fps,
-        frames: frames
+        frames: frames,
+        options: options
       };
       this.runtime.listener.postRequest(msg, (function(_this) {
         return function(result) {
@@ -142,7 +145,8 @@ this.ProjectInterface = (function() {
       msg = {
         name: "write_project_file",
         path: path,
-        content: SaveMap(obj)
+        content: SaveMap(obj),
+        options: options
       };
       this.runtime.listener.postRequest(msg, (function(_this) {
         return function(result) {
@@ -184,7 +188,8 @@ this.ProjectInterface = (function() {
           msg = {
             name: "write_project_file",
             path: path,
-            content: encoded
+            content: encoded,
+            options: options
           };
           return _this.runtime.listener.postRequest(msg, function(result) {
             return _this.callback(callback, result.content, res, result.error);
@@ -254,7 +259,8 @@ this.ProjectInterface = (function() {
             msg = {
               name: "write_project_file",
               path: path,
-              content: fr.result.split(",")[1]
+              content: fr.result.split(",")[1],
+              options: options
             };
             return _this.runtime.listener.postRequest(msg, function(result) {
               return _this.callback(callback, result.content, res, result.error);
@@ -288,7 +294,8 @@ this.ProjectInterface = (function() {
         name: "write_project_file",
         path: path,
         content: obj.canvas.toDataURL(mime),
-        ext: ext
+        ext: ext,
+        options: options
       };
       this.runtime.listener.postRequest(msg, (function(_this) {
         return function(result) {
@@ -305,7 +312,8 @@ this.ProjectInterface = (function() {
         name: "write_project_file",
         path: path,
         content: obj,
-        ext: ext
+        ext: ext,
+        options: options
       };
       this.runtime.listener.postRequest(msg, (function(_this) {
         return function(result) {
@@ -318,7 +326,8 @@ this.ProjectInterface = (function() {
         name: "write_project_file",
         path: path,
         content: obj,
-        ext: "json"
+        ext: "json",
+        options: options
       };
       this.runtime.listener.postRequest(msg, (function(_this) {
         return function(result) {

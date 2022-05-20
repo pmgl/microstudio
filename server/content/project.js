@@ -65,6 +65,7 @@ this.Project = (function() {
       this.controls = data.controls || ["touch", "mouse"];
       this.libs = data.libs || [];
       this.tabs = data.tabs;
+      this.plugins = data.plugins;
       this.type = data.type || "app";
       this.users = [];
       this.comments = new Comments(this, data.comments);

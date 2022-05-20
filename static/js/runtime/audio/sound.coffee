@@ -1,5 +1,7 @@
 class @Sound
   constructor:(@audio,@url)->
+    @class = MicroSound if MicroSound?
+
     if @url instanceof AudioBuffer
       @buffer = @url
       @ready = 1
@@ -67,7 +69,10 @@ class @Sound
 
   @createSoundClass = (audiocore)->
     window.MicroSound = class
+      @classname = "Sound"
+
       constructor:(channels,length,sampleRate=44100)->
+        @class = MicroSound
         channels = if channels == 1 then 1 else 2
         if not (length>1) or not (length < 44100*1000)
           length = 44100
