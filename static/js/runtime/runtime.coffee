@@ -375,7 +375,12 @@ class @Runtime
     #  console.info("fps: #{Math.round(1000/@dt)}")
 
   updateCall:()->
-    @updateControls()
+    if @vm.runner.triggers_controls_update
+      if not @vm.runner.updateControls?
+        @vm.runner.updateControls = ()=> @updateControls()
+    else
+      @updateControls()
+
     try
       #time = Date.now()
       @vm.call("update")

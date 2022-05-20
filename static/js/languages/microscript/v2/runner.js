@@ -87,7 +87,8 @@ this.Runner = (function() {
     this.fps = 60;
     this.fps_max = 60;
     this.cpu_load = 0;
-    return this.microvm.context.meta.print("microScript 2.0 - beta");
+    this.microvm.context.meta.print("microScript 2.0 - beta");
+    return this.triggers_controls_update = true;
   };
 
   Runner.prototype.run = function(src, filename, callback) {
@@ -341,6 +342,9 @@ this.Thread = (function() {
         program = parser.program;
         compiler = new Compiler(program);
         this.processor.load(compiler.routine);
+        if (f === "update()" && (this.runner.updateControls != null)) {
+          this.runner.updateControls();
+        }
       }
       return true;
     } else {

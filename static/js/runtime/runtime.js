@@ -504,7 +504,17 @@ this.Runtime = (function() {
 
   Runtime.prototype.updateCall = function() {
     var err;
-    this.updateControls();
+    if (this.vm.runner.triggers_controls_update) {
+      if (this.vm.runner.updateControls == null) {
+        this.vm.runner.updateControls = (function(_this) {
+          return function() {
+            return _this.updateControls();
+          };
+        })(this);
+      }
+    } else {
+      this.updateControls();
+    }
     try {
       this.vm.call("update");
       this.time_machine.step();

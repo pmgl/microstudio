@@ -69,6 +69,8 @@ class @Runner
     @cpu_load = 0
     @microvm.context.meta.print("microScript 2.0 - beta")
 
+    @triggers_controls_update = true
+
   run:(src,filename,callback)->
     @init() if not @initialized
 
@@ -263,6 +265,8 @@ class @Thread
         program = parser.program
         compiler = new Compiler(program)
         @processor.load compiler.routine
+        if f == "update()" and @runner.updateControls?
+          @runner.updateControls()
       true
     else
       false
