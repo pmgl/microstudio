@@ -1392,7 +1392,7 @@ this.Session = (function() {
   };
 
   Session.prototype.getPublicProjects = function(data) {
-    var found, i, j, k, l, len1, len2, len3, list, m, offset, p, ref, ref1, ref2, ref3, search, source, t, tags;
+    var found, i, j, k, l, len1, len2, len3, list, m, offset, p, ref, ref1, ref2, ref3, search, source, t, tags, type;
     switch (data.ranking) {
       case "new":
         source = this.content.new_projects;
@@ -1407,6 +1407,7 @@ this.Session = (function() {
     tags = Array.isArray(data.tags) ? data.tags : [];
     search = typeof data.search === "string" ? data.search : "";
     search = search.trim();
+    type = data.type || "all";
     offset = data.offset || 0;
     for (i = j = ref = offset, ref1 = source.length - 1; j <= ref1; i = j += 1) {
       p = source[i];
@@ -1441,6 +1442,9 @@ this.Session = (function() {
           if (!found) {
             continue;
           }
+        }
+        if (type !== "all" && p.type !== type) {
+          continue;
         }
         list.push({
           id: p.id,

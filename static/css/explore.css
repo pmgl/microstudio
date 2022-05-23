@@ -5,9 +5,10 @@
 .exploreview i {
   margin-right: 10px ;
 }
+
 #explore-contents {
   position: absolute ;
-  top: 60px ;
+  top: 100px ;
   bottom: 0px ;
   left: 0 ;
   right: 0 ;
@@ -148,6 +149,22 @@
   padding: 5px ;
   vertical-align: middle ;
 }
+
+#explore-tags-bar {
+  position: absolute ;
+  top: 50px ;
+  left: 0 ;
+  right: 0 ;
+  padding: 5px ;
+  vertical-align: middle ;
+  overflow: hidden ;
+  z-index: 1 ;
+  background: hsl(330,30%,30%);
+  border-bottom: solid 2px hsl(200,10%,10%);
+}
+#explore-tags-bar.collapsed {
+  height: 30px ;
+}
 #explore-back-button {
   display: none ;
   border-radius: 5px ;
@@ -179,7 +196,38 @@
   background: hsl(200,50%,50%);
 }
 #explore-sort-button i {
-  margin-right: 5px ;
+  margin-right: 10px ;
+}
+#explore-type-button {
+  background: hsl(200,50%,50%);
+  border-radius: 3px ;
+  padding: 4px 8px ;
+  font-size: 16px ;
+  margin-left: 12px ;
+  margin-top: 1px ;
+  cursor: pointer ;
+}
+
+#explore-type-button.all i:before { content: "\f009" ; }
+#explore-type-button.app i:before { content: "\f11b" ; }
+#explore-type-button.library i:before { content: "\f1c9" ; }
+#explore-type-button.plugin i:before { content: "\f1e6" ; }
+#explore-type-button.tutorial i:before { content: "\f19d" ; }
+
+#explore-type-button.app {
+  background: hsl(0,50%,50%);
+}
+#explore-type-button.library {
+  background: hsl(160,50%,50%);
+}
+#explore-type-button.plugin {
+  background: hsl(200,50%,50%);
+}
+#explore-type-button.tutorial {
+  background: hsl(300,50%,50%);
+}
+#explore-type-button i {
+  margin-right: 10px ;
 }
 #explore-search {
   position: absolute ;
@@ -209,20 +257,22 @@
       font-size: 16px;
 }
 #explore-tags {
+  padding-left: 40px ;
+}
+#explore-tags-collapse {
   position: absolute ;
-  left: 150px ;
-  right: 200px ;
-  top: 0 ;
-  bottom: 0 ;
-  white-space: nowrap ;
-  overflow: hidden;
+  left: 5px ;
+  top: 0px ;
+  padding: 10px ;
+  cursor: pointer ;
+  font-size: 20px ;
 }
 #explore-tags div {
   display: inline-block ;
   border-radius: 20px ;
   padding: 3px 8px ;
-  margin: 10px 2px ;
-  background: rgba(255,255,255,.1);
+  margin: 5px 2px ;
+  background: rgba(255,255,255,.2);
   color: #FFF ;
   cursor: pointer ;
   font-size: 12px ;

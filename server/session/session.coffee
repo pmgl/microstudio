@@ -888,6 +888,7 @@ class @Session
     tags = if Array.isArray(data.tags) then data.tags else []
     search = if typeof data.search == "string" then data.search else ""
     search = search.trim()
+    type = data.type or "all"
     offset = data.offset or 0
 
     for i in [offset..source.length-1] by 1
@@ -914,6 +915,9 @@ class @Session
               found = true
               break
           continue if not found
+
+        if type != "all" and p.type != type
+          continue
 
         list.push
           id: p.id

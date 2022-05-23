@@ -102,7 +102,7 @@ header li i {
 }
 
 header li.selected, header li:hover {
-  background:rgba(255,255,255,.15) ;
+  background:rgba(255,255,255,.2) ;
 }
 
 header li .fa-patreon {

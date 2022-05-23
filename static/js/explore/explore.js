@@ -14,6 +14,8 @@ this.Explore = (function() {
     this.tags = [];
     this.visited_projects = {};
     this.sort_types = ["hot", "new", "top"];
+    this.project_types = ["all", "app", "library", "plugin", "tutorial"];
+    this.project_type = "all";
     this.sort_functions = {
       hot: function(a, b) {
         return b.likes - a.likes + b.date_published / (1000 * 3600 * 24) - a.date_published / (1000 * 3600 * 24);
@@ -42,6 +44,26 @@ this.Explore = (function() {
           }
         }
         document.querySelector("#explore-sort-button span").innerText = _this.app.translator.get(_this.sort.substring(0, 1).toUpperCase() + _this.sort.substring(1));
+        return _this.query();
+      };
+    })(this));
+    document.getElementById("explore-type-button").addEventListener("click", (function(_this) {
+      return function() {
+        var e, j, len, ref, s;
+        s = _this.project_types.indexOf(_this.project_type);
+        s = (s + 1) % _this.project_types.length;
+        _this.project_type = _this.project_types[s];
+        e = document.getElementById("explore-type-button");
+        ref = _this.project_types;
+        for (j = 0, len = ref.length; j < len; j++) {
+          s = ref[j];
+          if (s === _this.project_type) {
+            e.classList.add(s);
+          } else {
+            e.classList.remove(s);
+          }
+        }
+        document.querySelector("#explore-type-button span").innerText = _this.app.translator.get(_this.project_type.substring(0, 1).toUpperCase() + _this.project_type.substring(1));
         return _this.query();
       };
     })(this));
@@ -112,6 +134,22 @@ this.Explore = (function() {
               }
             }
           });
+        }
+      };
+    })(this));
+    document.querySelector("#explore-tags-bar i").addEventListener("click", (function(_this) {
+      return function() {
+        var bar, icon;
+        bar = document.querySelector("#explore-tags-bar");
+        icon = bar.querySelector("i");
+        if (bar.classList.contains("collapsed")) {
+          bar.classList.remove("collapsed");
+          icon.classList.remove("fa-caret-right");
+          return icon.classList.add("fa-caret-down");
+        } else {
+          bar.classList.add("collapsed");
+          icon.classList.add("fa-caret-right");
+          return icon.classList.remove("fa-caret-down");
         }
       };
     })(this));
@@ -291,6 +329,7 @@ this.Explore = (function() {
     document.title = this.app.translator.get("%PROJECT% - by %USER%").replace("%PROJECT%", p.title).replace("%USER%", p.owner);
     this.get("explore-back-button").style.display = "inline-block";
     this.get("explore-tools").style.display = "none";
+    this.get("explore-tags-bar").style.display = "none";
     this.get("explore-contents").style.display = "none";
     this.get("explore-project-details").style.display = "block";
     this.get("project-details-image").src = location.origin + ("/" + p.owner + "/" + p.slug + "/icon.png");
@@ -417,6 +456,7 @@ this.Explore = (function() {
   Explore.prototype.closeProject = function(p) {
     this.get("explore-back-button").style.display = "none";
     this.get("explore-tools").style.display = "inline-block";
+    this.get("explore-tags-bar").style.display = "block";
     this.get("explore-contents").style.display = "block";
     this.get("explore-project-details").style.display = "none";
     this.project = null;
@@ -519,6 +559,7 @@ this.Explore = (function() {
     this.app.client.sendRequest({
       name: "get_public_projects",
       ranking: this.sort,
+      type: this.project_type,
       tags: this.active_tags,
       search: this.search.toLowerCase(),
       position: position,

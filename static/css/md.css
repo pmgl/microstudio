@@ -29,6 +29,10 @@
 }
 .md p {
   margin: 0 0 10px 0 ;
+  line-height: 1.5em ;
+}
+.md li {
+  line-height: 1.5em ;
 }
 .md h5 {
   font-size: 15px ;

@@ -1,5 +1,13 @@
 ## Changelog
 
+### Update 2022-05-23
+* Plug-ins! Create your own plug-ins or just use community plug-ins for your project
+* `system.file.load`: open file dialog and let user load a file
+* `system.file.dropped`: check it to see if the user dropped a file to your app.
+* Added Discord link on forum #108
+* Fixed periodic threads extra cycles #130
+* Fixed inputs update when update() is sliced, #109
+
 ### Update 2022-05-13
 * Project Access API: create and manage project files programmatically
   * `system.project.listFiles()`

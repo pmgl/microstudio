@@ -301,11 +301,17 @@ html(lang=language)
               i.fas.fa-arrows-alt-v
               span #{translator.get("Hot")}
 
-            div#explore-tags
+            div#explore-type-button.all
+              i.fa
+              span #{translator.get("All")}
 
             div#explore-search
               input#explore-search-input(name="search")
               i.fa.fa-search
+
+        div#explore-tags-bar.collapsed
+          div#explore-tags
+          i.fa.fa-caret-right#explore-tags-collapse
 
         div#explore-contents
           div#explore-box-list

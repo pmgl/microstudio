@@ -14,6 +14,9 @@ class @Explore
 
     @sort_types = ["hot","new","top"]
 
+    @project_types = ["all","app","library","plugin","tutorial"]
+    @project_type = "all"
+
     @sort_functions =
       hot: (a,b)-> b.likes-a.likes+b.date_published/(1000*3600*24)-a.date_published/(1000*3600*24)
       top: (a,b)-> b.likes-a.likes
@@ -30,6 +33,19 @@ class @Explore
         else
           e.classList.remove s
       document.querySelector("#explore-sort-button span").innerText = @app.translator.get @sort.substring(0,1).toUpperCase()+@sort.substring(1)
+      @query()
+
+    document.getElementById("explore-type-button").addEventListener "click",()=>
+      s = @project_types.indexOf @project_type
+      s = (s+1)%@project_types.length
+      @project_type = @project_types[s]
+      e = document.getElementById("explore-type-button")
+      for s in @project_types
+        if s == @project_type
+          e.classList.add s
+        else
+          e.classList.remove s
+      document.querySelector("#explore-type-button span").innerText = @app.translator.get @project_type.substring(0,1).toUpperCase()+@project_type.substring(1)
       @query()
 
     document.getElementById("explore-search-input").addEventListener "input",()=>
@@ -83,6 +99,18 @@ class @Explore
               likes.classList.add "voted"
             else
               likes.classList.remove "voted"
+
+    document.querySelector("#explore-tags-bar i").addEventListener "click",()=>
+      bar = document.querySelector("#explore-tags-bar")
+      icon = bar.querySelector "i"
+      if bar.classList.contains "collapsed"
+        bar.classList.remove "collapsed"
+        icon.classList.remove "fa-caret-right"
+        icon.classList.add "fa-caret-down"
+      else
+        bar.classList.add "collapsed"
+        icon.classList.add "fa-caret-right"
+        icon.classList.remove "fa-caret-down"
 
   closeDetails:()->
     @closeProject()
@@ -232,6 +260,7 @@ class @Explore
 
     @get("explore-back-button").style.display = "inline-block"
     @get("explore-tools").style.display = "none"
+    @get("explore-tags-bar").style.display = "none"
     @get("explore-contents").style.display = "none"
     @get("explore-project-details").style.display = "block"
 
@@ -338,6 +367,7 @@ class @Explore
   closeProject:(p)->
     @get("explore-back-button").style.display = "none"
     @get("explore-tools").style.display = "inline-block"
+    @get("explore-tags-bar").style.display = "block"
     @get("explore-contents").style.display = "block"
     @get("explore-project-details").style.display = "none"
     @project = null
@@ -410,6 +440,7 @@ class @Explore
     @app.client.sendRequest {
       name:"get_public_projects"
       ranking: @sort
+      type: @project_type
       tags: @active_tags
       search: @search.toLowerCase()
       position: position
