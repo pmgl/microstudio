@@ -1,13 +1,18 @@
 this.Gamepad = (function() {
   function Gamepad(listener, index) {
-    var pads;
+    var error, pads;
     this.listener = listener;
     this.index = index != null ? index : 0;
-    if (navigator.getGamepads != null) {
-      pads = navigator.getGamepads();
-      if (this.index < pads.length && (pads[this.index] != null)) {
-        this.pad = pads[this.index];
+    try {
+      if (navigator.getGamepads != null) {
+        pads = navigator.getGamepads();
+        if (this.index < pads.length && (pads[this.index] != null)) {
+          this.pad = pads[this.index];
+        }
       }
+    } catch (error1) {
+      error = error1;
+      console.error(error);
     }
     this.buttons_map = {
       0: "A",
@@ -43,8 +48,13 @@ this.Gamepad = (function() {
   }
 
   Gamepad.prototype.update = function() {
-    var angle, i, j, k, key, l, len, len1, len2, m, n, o, pad, pad_count, pads, r, ref, ref1, ref2, ref3, ref4, ref5, ref6, value, x, y;
-    pads = navigator.getGamepads();
+    var angle, err, i, j, k, key, l, len, len1, len2, m, n, o, pad, pad_count, pads, r, ref, ref1, ref2, ref3, ref4, ref5, ref6, value, x, y;
+    try {
+      pads = navigator.getGamepads();
+    } catch (error1) {
+      err = error1;
+      return;
+    }
     pad_count = 0;
     for (i = j = 0, len = pads.length; j < len; i = ++j) {
       pad = pads[i];

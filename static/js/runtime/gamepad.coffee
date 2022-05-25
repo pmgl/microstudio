@@ -1,9 +1,12 @@
 class @Gamepad
   constructor:(@listener,@index = 0)->
-    if navigator.getGamepads?
-      pads = navigator.getGamepads()
-      if @index<pads.length and pads[@index]?
-        @pad = pads[@index]
+    try
+      if navigator.getGamepads?
+        pads = navigator.getGamepads()
+        if @index < pads.length and pads[@index]?
+          @pad = pads[@index]
+    catch error
+      console.error error
 
     @buttons_map =
       0: "A"
@@ -37,7 +40,11 @@ class @Gamepad
       3: {}
 
   update:()->
-    pads = navigator.getGamepads()
+    try
+      pads = navigator.getGamepads()
+    catch err
+      return
+
     pad_count = 0
     for pad,i in pads
       break if not pad?
