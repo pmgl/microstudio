@@ -380,7 +380,7 @@ this.ProjectDetails = (function() {
     folder = new ProjectFolder(null, "source");
     for (j = 0, len = files.length; j < len; j++) {
       f = files[j];
-      s = new ProjectSource(project, f.file);
+      s = new ExploreProjectSource(project, f.file);
       this.project_sources[s.name] = s;
       folder.push(s);
       table[s.name] = s;
@@ -686,5 +686,39 @@ this.ProjectDetails = (function() {
   };
 
   return ProjectDetails;
+
+})();
+
+this.ExploreProjectSource = (function() {
+  function ExploreProjectSource(project1, file1, size) {
+    var s;
+    this.project = project1;
+    this.file = file1;
+    this.size = size != null ? size : 0;
+    this.name = this.file.split(".")[0];
+    this.ext = this.file.split(".")[1];
+    this.filename = this.file;
+    this.file = "ms/" + this.file;
+    s = this.name.split("-");
+    this.shortname = s[s.length - 1];
+    this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
+    this.content = "";
+    this.fetched = false;
+    this.reload();
+  }
+
+  ExploreProjectSource.prototype.reload = function() {
+    return fetch(this.project.getFullURL() + ("ms/" + this.name + ".ms")).then((function(_this) {
+      return function(result) {
+        return result.text().then(function(text) {
+          _this.content = text;
+          _this.fetched = true;
+          return _this.project.notifyListeners(_this);
+        });
+      };
+    })(this));
+  };
+
+  return ExploreProjectSource;
 
 })();

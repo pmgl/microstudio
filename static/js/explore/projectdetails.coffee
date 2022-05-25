@@ -305,7 +305,7 @@ class @ProjectDetails
 
     folder = new ProjectFolder null,"source"
     for f in files
-      s = new ProjectSource project,f.file
+      s = new ExploreProjectSource project,f.file
       @project_sources[s.name] = s
       folder.push s
       table[s.name] = s
@@ -565,3 +565,25 @@ class @ProjectDetails
         id: c.id
       },(msg)=>
         @updateComments()
+
+
+class @ExploreProjectSource
+  constructor:(@project,@file,@size=0)->
+    @name = @file.split(".")[0]
+    @ext = @file.split(".")[1]
+    @filename = @file
+    @file = "ms/#{@file}"
+    s = @name.split "-"
+    @shortname = s[s.length-1]
+    @path_prefix = if s.length>1 then s.splice(0,s.length-1).join("-")+"-" else ""
+
+    @content = ""
+    @fetched = false
+    @reload()
+
+  reload:()->
+    fetch(@project.getFullURL()+"ms/#{@name}.ms").then (result)=>
+      result.text().then (text)=>
+        @content = text
+        @fetched = true
+        @project.notifyListeners @
