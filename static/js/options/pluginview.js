@@ -3,6 +3,9 @@ this.PluginView = (function() {
     this.app = app;
     this.data = data1;
     this.access = new ProjectAccess(this.app, this.data.folder, this);
+  }
+
+  PluginView.prototype.createElement = function() {
     this.element = document.createElement("div");
     this.element.classList.add("plugin-view");
     this.element.style.display = "none";
@@ -15,15 +18,20 @@ this.PluginView = (function() {
         }
       };
     })(this);
-    window.addEventListener("message", this.message_listener);
-  }
+    return window.addEventListener("message", this.message_listener);
+  };
 
   PluginView.prototype.show = function() {
+    if (this.element == null) {
+      this.createElement();
+    }
     return this.element.style.display = "block";
   };
 
   PluginView.prototype.hide = function() {
-    return this.element.style.display = "none";
+    if (this.element != null) {
+      return this.element.style.display = "none";
+    }
   };
 
   PluginView.prototype.setFolder = function(folder) {
@@ -35,12 +43,18 @@ this.PluginView = (function() {
   };
 
   PluginView.prototype.postMessage = function(data) {
-    return this.element.querySelector("iframe").contentWindow.postMessage(JSON.stringify(data), "*");
+    if (this.element != null) {
+      return this.element.querySelector("iframe").contentWindow.postMessage(JSON.stringify(data), "*");
+    }
   };
 
   PluginView.prototype.close = function() {
-    window.removeEventListener("message", this.message_listener);
-    return document.getElementById("section-container").removeChild(this.element);
+    if (this.message_listener != null) {
+      window.removeEventListener("message", this.message_listener);
+    }
+    if (this.element != null) {
+      return document.getElementById("section-container").removeChild(this.element);
+    }
   };
 
   return PluginView;

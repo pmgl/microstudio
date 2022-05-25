@@ -2,6 +2,7 @@ class @PluginView
   constructor:(@app,@data)->
     @access = new ProjectAccess @app,@data.folder,@
 
+  createElement:()->
     @element = document.createElement "div"
     @element.classList.add "plugin-view"
     @element.style.display = "none"
@@ -17,10 +18,12 @@ class @PluginView
     window.addEventListener "message",@message_listener
 
   show:()->
+    @createElement() if not @element?
     @element.style.display = "block"
 
   hide:()->
-    @element.style.display = "none"
+    if @element?
+      @element.style.display = "none"
 
   setFolder:(folder)->
     @access.setFolder folder
@@ -29,8 +32,11 @@ class @PluginView
     @access.messageReceived msg
 
   postMessage:(data)->
-    @element.querySelector("iframe").contentWindow.postMessage JSON.stringify(data),"*"
+    if @element?
+      @element.querySelector("iframe").contentWindow.postMessage JSON.stringify(data),"*"
 
   close:()->
-    window.removeEventListener "message",@message_listener
-    document.getElementById("section-container").removeChild @element
+    if @message_listener?
+      window.removeEventListener "message",@message_listener
+    if @element?
+      document.getElementById("section-container").removeChild @element
