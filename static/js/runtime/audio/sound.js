@@ -137,15 +137,19 @@ this.Sound = (function() {
         };
         this.write = function(channel, position, value) {
           if (channel === 0) {
+            ch1 = buffer.getChannelData(0);
             return ch1[position] = value;
           } else if (channels === 2) {
+            ch2 = buffer.getChannelData(1);
             return ch2[position] = value;
           }
         };
         this.read = function(channel, position) {
           if (channel === 0) {
+            ch1 = buffer.getChannelData(0);
             return ch1[position];
           } else if (channels === 2) {
+            ch2 = buffer.getChannelData(1);
             return ch2[position];
           } else {
             return 0;

@@ -93,14 +93,18 @@ class @Sound
         @play = (volume,pitch,pan,loopit)-> snd.play(volume,pitch,pan,loopit)
         @write = (channel,position,value)->
           if channel == 0
+            ch1 = buffer.getChannelData(0)
             ch1[position] = value
           else if channels == 2
+            ch2 = buffer.getChannelData(1)
             ch2[position] = value
 
         @read = (channel,position)->
           if channel == 0
+            ch1 = buffer.getChannelData(0)
             ch1[position]
           else if channels == 2
+            ch2 = buffer.getChannelData(1)
             ch2[position]
           else
             0
