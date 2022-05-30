@@ -71,7 +71,11 @@ this.Parser = (function() {
         if ((expression == null) && !this.tokenizer.finished()) {
           token = this.tokenizer.next();
           if ((token != null) && token.reserved_keyword) {
-            this.error("Misuse of reserved keyword: '" + token.value + "'");
+            if (token.value === "end") {
+              this.error("Too many 'end'");
+            } else {
+              this.error("Misuse of reserved keyword: '" + token.value + "'");
+            }
           } else {
             this.error("Unexpected data");
           }

@@ -59,7 +59,10 @@ class @Parser
         if not expression? and not @tokenizer.finished()
           token = @tokenizer.next()
           if token? and token.reserved_keyword
-            @error "Misuse of reserved keyword: '#{token.value}'"
+            if token.value == "end"
+              @error "Too many 'end'"
+            else
+              @error "Misuse of reserved keyword: '#{token.value}'"
           else
             @error "Unexpected data"
         break if expression == null

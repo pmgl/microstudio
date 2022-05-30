@@ -40,7 +40,7 @@ class @Tokenizer
     @buffer.splice(0,0,token)
 
   finished:()->
-    @index>=@input.length
+    @index >= @input.length and @buffer.length == 0
 
   nextChar:(ignore_comments=false)->
     c = @input.charAt(@index++)

@@ -40,7 +40,7 @@ this.Tokenizer = (function() {
   };
 
   Tokenizer.prototype.finished = function() {
-    return this.index >= this.input.length;
+    return this.index >= this.input.length && this.buffer.length === 0;
   };
 
   Tokenizer.prototype.nextChar = function(ignore_comments) {
