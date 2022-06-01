@@ -243,6 +243,11 @@ this.Session = (function() {
         return _this.getPublicPlugins(msg);
       };
     })(this));
+    this.register("get_public_libraries", (function(_this) {
+      return function(msg) {
+        return _this.getPublicLibraries(msg);
+      };
+    })(this));
     this.register("get_public_project", (function(_this) {
       return function(msg) {
         return _this.getPublicProject(msg);
@@ -833,6 +838,7 @@ this.Session = (function() {
           clone.set("libs", project.libs);
           clone.set("tabs", project.tabs);
           clone.set("plugins", project.plugins);
+          clone.set("libraries", project.libraries);
           clone.set("files", JSON.parse(JSON.stringify(project.files)));
           man = _this.getProjectManager(project);
           folders = ["ms", "sprites", "maps", "sounds", "sounds_th", "music", "music_th", "assets", "assets_th", "doc"];
@@ -903,6 +909,7 @@ this.Session = (function() {
             clone.set("libs", project.libs);
             clone.set("tabs", project.tabs);
             clone.set("plugins", project.plugins);
+            clone.set("libraries", project.libraries);
             clone.set("files", JSON.parse(JSON.stringify(project.files)));
             man = _this.getProjectManager(project);
             folders = ["ms", "sprites", "maps", "sounds", "sounds_th", "music", "music_th", "assets", "assets_th", "doc"];
@@ -1080,6 +1087,11 @@ this.Session = (function() {
             project.set("plugins", data.value);
           }
           break;
+        case "libraries":
+          if (typeof data.value === "object") {
+            project.set("libraries", data.value);
+          }
+          break;
         case "type":
           if (typeof data.value === "string") {
             this.content.setProjectType(project, data.value);
@@ -1161,6 +1173,7 @@ this.Session = (function() {
           libs: p.libs,
           tabs: p.tabs,
           plugins: p.plugins,
+          libraries: p.libraries,
           date_created: p.date_created,
           last_modified: p.last_modified,
           "public": p["public"],
@@ -1198,6 +1211,7 @@ this.Session = (function() {
           libs: p.libs,
           tabs: p.tabs,
           plugins: p.plugins,
+          libraries: p.libraries,
           date_created: p.date_created,
           last_modified: p.last_modified,
           "public": p["public"],
@@ -1468,7 +1482,8 @@ this.Session = (function() {
           language: p.language,
           libs: p.libs,
           tabs: p.tabs,
-          plugins: p.plugins
+          plugins: p.plugins,
+          libraries: p.libraries
         });
       }
     }
@@ -1519,12 +1534,54 @@ this.Session = (function() {
           language: p.language,
           libs: p.libs,
           tabs: p.tabs,
-          plugins: p.plugins
+          plugins: p.plugins,
+          libraries: p.libraries
         });
       }
     }
     return this.send({
       name: "public_plugins",
+      list: list,
+      request_id: data.request_id
+    });
+  };
+
+  Session.prototype.getPublicLibraries = function(data) {
+    var j, len1, list, p, source;
+    source = this.content.library_projects;
+    list = [];
+    for (j = 0, len1 = source.length; j < len1; j++) {
+      p = source[j];
+      if (p["public"] && !p.deleted && !p.owner.flags.censored) {
+        list.push({
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          poster: (p.files != null) && (p.files["sprites/poster.png"] != null),
+          type: p.type,
+          tags: p.tags,
+          slug: p.slug,
+          owner: p.owner.nick,
+          owner_info: {
+            tier: p.owner.flags.tier,
+            profile_image: p.owner.flags.profile_image
+          },
+          likes: p.likes,
+          liked: (this.user != null) && this.user.isLiked(p.id),
+          tags: p.tags,
+          date_published: p.first_published,
+          last_modified: p.last_modified,
+          graphics: p.graphics,
+          language: p.language,
+          libs: p.libs,
+          tabs: p.tabs,
+          plugins: p.plugins,
+          libraries: p.libraries
+        });
+      }
+    }
+    return this.send({
+      name: "public_libraries",
       list: list,
       request_id: data.request_id
     });
@@ -1561,7 +1618,8 @@ this.Session = (function() {
             language: p.language,
             libs: p.libs,
             tabs: p.tabs,
-            plugins: p.plugins
+            plugins: p.plugins,
+            libraries: p.libraries
           };
           return this.send({
             name: "get_public_project",

@@ -2,6 +2,9 @@ this.Parser = (function() {
   function Parser(input, filename) {
     this.input = input;
     this.filename = filename != null ? filename : "";
+    if (/^\s*\/\/\s*javascript\s*\n/.test(this.input)) {
+      this.input = 'system.javascript("""\n\n' + this.input + '\n\n""")';
+    }
     this.tokenizer = new Tokenizer(this.input, this.filename);
     this.program = new Program();
     this.current_block = [];

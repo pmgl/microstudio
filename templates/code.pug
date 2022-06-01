@@ -10,6 +10,10 @@ div.code-editor#code-editor
     div.assetlist#sourcelist
       div.asset-list#source-list
 
+    div#manage-libs-button
+      i.fas.fa-file-import
+      span #{translator.get("Import Libraries")}
+
   div.horizontal-splitbar#code-editor-splitbar
 
   div.code-right#code-main
@@ -45,7 +49,8 @@ div.code-editor#code-editor
           i(class="fa fa-question")
         div.content
 
-
+    div.lib-manager-container
+      include libmanager.pug
 
 div.code-splitbar#code-splitbar
 

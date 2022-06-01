@@ -66,6 +66,7 @@ this.Project = (function() {
       this.libs = data.libs || [];
       this.tabs = data.tabs;
       this.plugins = data.plugins;
+      this.libraries = data.libraries;
       this.type = data.type || "app";
       this.users = [];
       this.comments = new Comments(this, data.comments);

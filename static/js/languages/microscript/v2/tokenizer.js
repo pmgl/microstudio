@@ -278,10 +278,18 @@ this.Tokenizer = (function() {
   };
 
   Tokenizer.prototype.parseString = function(s, close) {
-    var c, code, n;
+    var c, code, count_close, n;
     if (close == null) {
       close = '"';
     }
+    if (close === '"') {
+      if (this.input.charAt(this.index) === '"' && this.input.charAt(this.index + 1) === '"' && this.input.charAt(this.index + 2) !== '"') {
+        close = '"""';
+        this.nextChar(true);
+        this.nextChar(true);
+      }
+    }
+    count_close = 0;
     while (true) {
       if (this.index >= this.input.length) {
         return this.error("Unclosed string value");
@@ -313,6 +321,14 @@ this.Tokenizer = (function() {
           return new Token(this, Token.TYPE_STRING, s.substring(1, s.length - 1));
         }
       } else {
+        if (close === '"""' && c === '"') {
+          count_close += 1;
+          if (count_close === 3) {
+            return new Token(this, Token.TYPE_STRING, s.substring(1, s.length - 2));
+          }
+        } else {
+          count_close = 0;
+        }
         s += c;
       }
     }

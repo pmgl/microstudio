@@ -220,6 +220,14 @@ class @Tokenizer
 
 
   parseString:(s,close='"')->
+    if close == '"'
+      if @input.charAt(@index) == '"' and @input.charAt(@index+1) == '"' and @input.charAt(@index+2) != '"'
+        close = '"""'
+        @nextChar(true)
+        @nextChar(true)
+
+    count_close = 0
+
     loop
       return @error("Unclosed string value") if @index>=@input.length
       c = @nextChar(true)
@@ -241,6 +249,12 @@ class @Tokenizer
           s += c
           return new Token @,Token.TYPE_STRING,s.substring(1,s.length-1)
       else
+        if close == '"""' and c == '"'
+          count_close += 1
+          if count_close == 3
+            return new Token @,Token.TYPE_STRING,s.substring(1,s.length-2)
+        else
+          count_close = 0
         s += c
 
   error:(s)->

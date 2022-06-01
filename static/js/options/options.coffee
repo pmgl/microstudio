@@ -54,6 +54,8 @@ class @Options
               @app.project.libs.splice index,1
               @optionChanged "libs",@app.project.libs
 
+    @library_tip = document.querySelector "#project-option-type .library"
+
   textInput:(element,action)->
     e = document.getElementById(element)
     e.addEventListener "input",(event)=>action(e.value)
@@ -74,6 +76,8 @@ class @Options
     document.getElementById("projectoption-type").value = @app.project.type or "app"
     document.getElementById("projectoption-graphics").value = @app.project.graphics or "M1"
     document.getElementById("projectoption-language").value = @app.project.language or "microscript_v1_i"
+
+    @library_tip.style.display = if @app.project.type == "library" then "block" else "none"
 
     list = document.querySelectorAll("#project-option-libs input")
     for input in list
@@ -160,6 +164,7 @@ class @Options
 
   typeChanged:(value)->
     @app.project.setType(value)
+    @library_tip.style.display = if value == "library" then "block" else "none"
     @app.client.sendRequest {
       name: "set_project_option"
       project: @app.project.id

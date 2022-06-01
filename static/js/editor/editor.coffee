@@ -139,6 +139,13 @@ class @Editor extends Manager
       @editor.setOptions({ fontSize: @font_size })
       localStorage.setItem("code_editor_font_size",@font_size)
 
+    @lib_manager_button = document.querySelector "#manage-libs-button"
+    @lib_manager = document.querySelector ".lib-manager-container"
+    @editor_view = document.querySelector "#editor-view"
+
+    @lib_manager_button.addEventListener "click",()=>
+      @toggleLibManager()
+
   updateLanguage:()->
     if @app.project
       switch @app.project.language
@@ -152,9 +159,21 @@ class @Editor extends Manager
     @editor.getSession().setMode(@language.ace_mode)
     @updateSourceLanguage()
 
+  checkEmbeddedJavaScript:(src)->
+    if @app.project.language == "microscript_v2"
+      if /^\s*\/\/\s*javascript\s*\n/.test(src)
+        if @language != @app.languages.javascript
+          @language = @app.languages.javascript
+          @editor.getSession().setMode(@language.ace_mode)
+      else
+        if @language != @app.languages.microscript2
+          @language = @app.languages.microscript2
+          @editor.getSession().setMode(@language.ace_mode)
+
   editorContentsChanged:()->
     return if @ignore_changes
     src = @editor.getValue()
+    @checkEmbeddedJavaScript src
     @update_time = Date.now()
     @save_time = Date.now()
     @app.project.addPendingChange @
@@ -227,6 +246,7 @@ class @Editor extends Manager
     @editor.getSession().setUndoManager(new ace.UndoManager())
     @ignore_changes = false
     @updateCurrentFileLock()
+    @checkEmbeddedJavaScript code
 
   addDocButton:(pointer,section)->
     content = document.querySelector("#help-window .content")
@@ -507,6 +527,7 @@ class @Editor extends Manager
     super(name)
 
   setSelectedSource:(name)->
+    @toggleLibManager false
     @checkSave(true)
     if @selected_source?
       @sessions[@selected_source] =
@@ -670,3 +691,14 @@ class @Editor extends Manager
           img.src = url
           document.getElementById("qrcode-button").innerHTML = ""
           document.getElementById("qrcode-button").appendChild img
+
+
+  toggleLibManager:(view = @editor_view.style.display != "none")->
+    if view
+      @lib_manager.style.display = "block"
+      @editor_view.style.display = "none"
+      @lib_manager_button.classList.add "selected"
+    else
+      @lib_manager.style.display = "none"
+      @editor_view.style.display = "block"
+      @lib_manager_button.classList.remove "selected"

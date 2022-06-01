@@ -73,6 +73,13 @@ div.projectoptions#projectoptions
               option(value="plugin") #{translator.get("Plug-in")}
               option(value="tutorial") #{translator.get("Tutorial")}
 
+            div.tip.library
+              p #{translator.get("Library")}
+              ul
+                li.tip #{translator.get("Library files to import should be stored in a 'lib' folder.")}
+                li.tip #{translator.get("Your demo app files must be outside the 'lib' folder.")}
+                li.tip #{translator.get("Document your library in the 'doc' tab of your project!")}
+
           div.projectoption#project-option-language
             h3 #{translator.get("Language support")}
             select#projectoption-language

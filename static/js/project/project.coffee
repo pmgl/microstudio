@@ -21,6 +21,7 @@ class @Project
     @users = data.users
     @tabs = data.tabs
     @plugins = data.plugins
+    @libraries = data.libraries
 
     @file_types = ["source","sprite","map","asset","sound","music"]
     for f in @file_types

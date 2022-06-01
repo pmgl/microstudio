@@ -101,7 +101,7 @@ this.TabManager = (function() {
   };
 
   TabManager.prototype.createPluginBox = function(project) {
-    var desc, div, id, nick, path, plugins, user;
+    var desc, div, e, i, id, len, list, nick, path, plugins, user;
     console.info(project);
     nick = typeof project.owner === "string" ? project.owner : project.owner.nick;
     id = project.id;
@@ -120,10 +120,15 @@ this.TabManager = (function() {
     div.classList.add("plugin-box");
     div.dataset.id = id;
     desc = project.description;
-    if (desc.length > 200) {
-      desc = desc.substring(0, 200) + " (...)";
+    if (desc.length > 300) {
+      desc = desc.substring(0, 300) + " (...)";
     }
-    div.innerHTML = "<img class=\"pixelated icon\" src=\"" + location.origin + path + "/sprites/icon.png\"/>\n<div class=\"description\">\n  <div class=\"plugin-author\"></div>\n  <h4>" + project.title + "</h4>\n  <p>" + project.description + "</p>\n  <div class=\"plugin-folder\">\n    <label for=\"plugin-folder-" + id + "\">Working folder</label><br/>\n    <input id=\"plugin-folder-" + id + "\" type=\"text\" value=\"" + project.slug + "\"></input><br/>\n    This plugin file access will be restricted to the specified folder (or to the root folder if left blank).\n  </div>\n  <i class=\"fa fa-check check\"></i>\n</div>";
+    div.innerHTML = "<img class=\"pixelated icon\" src=\"" + location.origin + path + "/sprites/icon.png\"/>\n<div class=\"description\">\n  <div class=\"plugin-author\"></div>\n  <h4>" + project.title + "</h4>\n  <p>" + (DOMPurify.sanitize(marked(desc))) + "</p>\n  <div class=\"plugin-folder\">\n    <label for=\"plugin-folder-" + id + "\">Working folder</label><br/>\n    <input id=\"plugin-folder-" + id + "\" type=\"text\" value=\"" + project.slug + "\"></input><br/>\n    This plugin file access will be restricted to the specified folder (or to the root folder if left blank).\n  </div>\n  <i class=\"fa fa-check check\"></i>\n</div>";
+    list = div.getElementsByTagName("a");
+    for (i = 0, len = list.length; i < len; i++) {
+      e = list[i];
+      e.target = "_blank";
+    }
     if (project.owner_info) {
       user = this.app.appui.createUserTag(nick, project.owner_info.tier, project.owner_info.profile_image, 20);
     } else if (project.owner.nick === this.app.user.nick) {

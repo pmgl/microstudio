@@ -50,6 +50,7 @@ class @Project
       @libs = data.libs or []
       @tabs = data.tabs
       @plugins = data.plugins
+      @libraries = data.libraries
       @type = data.type or "app"
       @users = []
       @comments = new Comments @,data.comments

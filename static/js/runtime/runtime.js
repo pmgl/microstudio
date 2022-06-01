@@ -238,6 +238,7 @@ this.Runtime = (function() {
       };
     })(this);
     this.vm.context.global.system.file = System.file;
+    this.vm.context.global.system.javascript = System.javascript;
     if (window.ms_in_editor) {
       this.vm.context.global.system.project = new ProjectInterface(this)["interface"];
     }
@@ -1053,9 +1054,10 @@ loadFile = function(file, callback) {
 
 this.System = {
   javascript: function(s) {
-    var err, res;
+    var err, f, res;
     try {
-      res = eval(s);
+      f = eval("res = function() { " + s + " }");
+      res = f.call(player.runtime.vm.context.global);
     } catch (error) {
       err = error;
       console.error(err);

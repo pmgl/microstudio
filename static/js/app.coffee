@@ -36,6 +36,7 @@ class App
     @debug = new Debug @
     @options = new Options @
     @tab_manager = new TabManager @
+    @lib_manager = new LibManager @
     @publish = new Publish @
     @user_settings = new UserSettings @
     @connected = false
@@ -223,6 +224,7 @@ class App
     @debug.projectOpened()
     @options.projectOpened()
     @tab_manager.projectOpened()
+    @lib_manager.projectOpened()
     @publish.loadProject(@project)
     @project.load()
     if not @tutorial.shown
@@ -337,6 +339,7 @@ class App
           @project.optionsUpdated(msg)
           @options.projectOpened()
           @tab_manager.projectOpened()
+          @lib_manager.projectOpened()
       when "user_stats"
         if @user?
           @user.info.stats = msg.stats

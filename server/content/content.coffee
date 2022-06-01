@@ -28,6 +28,7 @@ class @Content
     @top_projects = []
     @new_projects = []
     @plugin_projects = []
+    @library_projects = []
     @updatePublicProjects()
 
     console.info "Content loaded: #{@user_count} users and #{@project_count} projects"
@@ -143,6 +144,7 @@ class @Content
     @top_projects = []
     @new_projects = []
     @plugin_projects = []
+    @library_projects = []
     for key,project of @projects
       if project.public and not project.unlisted and project.owner.flags["validated"] and not project.deleted and not project.owner.flags["censored"]
         @hot_projects.push project
@@ -150,6 +152,8 @@ class @Content
         @new_projects.push project
         if project.type == "plugin"
           @plugin_projects.push project
+        if project.type == "library"
+          @library_projects.push project
 
     @sortPublicProjects()
 
@@ -159,6 +163,7 @@ class @Content
     @new_projects.sort (a,b)-> b.first_published-a.first_published
     @sorted_tags.sort (a,b)-> b.uses+b.num_users*10-a.uses-a.num_users*10
     @plugin_projects.sort (a,b)-> b.likes-a.likes
+    @library_projects.sort (a,b)-> b.likes-a.likes
 
     return if @top_projects.length<5
 
@@ -189,6 +194,8 @@ class @Content
       @new_projects.push(project) if @new_projects.indexOf(project) < 0
       if project.type == "plugin" and @plugin_projects.indexOf(project) < 0
         @plugin_projects.push project
+      if project.type == "library" and @library_projects.indexOf(project) < 0
+        @library_projects.push project
       #@sortPublicProjects()
     else
       index = @hot_projects.indexOf(project)
@@ -205,6 +212,10 @@ class @Content
       if index>=0
         @plugin_projects.splice index,1
 
+      index = @library_projects.indexOf(project)
+      if index>=0
+        @library_projects.splice index,1
+
   setProjectType:(project,type)->
     project.set("type",type)
     if project.public
@@ -215,6 +226,14 @@ class @Content
         index = @plugin_projects.indexOf(project)
         if index>=0
           @plugin_projects.splice index,1
+
+      if project.type == "library"
+        if @library_projects.indexOf(project) < 0
+          @library_projects.push project
+      else
+        index = @library_projects.indexOf(project)
+        if index>=0
+          @library_projects.splice index,1
 
   projectDeleted:(project)->
     @project_count -= 1
@@ -233,6 +252,9 @@ class @Content
     if index>=0
       @plugin_projects.splice index,1
 
+    index = @library_projects.indexOf(project)
+    if index>=0
+      @library_projects.splice index,1
 
   addProjectTag:(project,t)->
     tag = @tags[t]
@@ -331,6 +353,8 @@ class @Content
       libs: data.libs
       tabs: data.tabs
       plugins: data.plugins
+      libraries: data.libraries
+      description: data.description or ""
 
     record = @db.create "projects",d
     project = @loadProject record

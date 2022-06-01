@@ -36,6 +36,7 @@ this.Content = (function() {
     this.top_projects = [];
     this.new_projects = [];
     this.plugin_projects = [];
+    this.library_projects = [];
     this.updatePublicProjects();
     console.info("Content loaded: " + this.user_count + " users and " + this.project_count + " projects");
     this.top_interval = setInterval(((function(_this) {
@@ -195,6 +196,7 @@ this.Content = (function() {
     this.top_projects = [];
     this.new_projects = [];
     this.plugin_projects = [];
+    this.library_projects = [];
     ref = this.projects;
     for (key in ref) {
       project = ref[key];
@@ -204,6 +206,9 @@ this.Content = (function() {
         this.new_projects.push(project);
         if (project.type === "plugin") {
           this.plugin_projects.push(project);
+        }
+        if (project.type === "library") {
+          this.library_projects.push(project);
         }
       }
     }
@@ -223,6 +228,9 @@ this.Content = (function() {
       return b.uses + b.num_users * 10 - a.uses - a.num_users * 10;
     });
     this.plugin_projects.sort(function(a, b) {
+      return b.likes - a.likes;
+    });
+    this.library_projects.sort(function(a, b) {
       return b.likes - a.likes;
     });
     if (this.top_projects.length < 5) {
@@ -262,7 +270,10 @@ this.Content = (function() {
         this.new_projects.push(project);
       }
       if (project.type === "plugin" && this.plugin_projects.indexOf(project) < 0) {
-        return this.plugin_projects.push(project);
+        this.plugin_projects.push(project);
+      }
+      if (project.type === "library" && this.library_projects.indexOf(project) < 0) {
+        return this.library_projects.push(project);
       }
     } else {
       index = this.hot_projects.indexOf(project);
@@ -279,7 +290,11 @@ this.Content = (function() {
       }
       index = this.plugin_projects.indexOf(project);
       if (index >= 0) {
-        return this.plugin_projects.splice(index, 1);
+        this.plugin_projects.splice(index, 1);
+      }
+      index = this.library_projects.indexOf(project);
+      if (index >= 0) {
+        return this.library_projects.splice(index, 1);
       }
     }
   };
@@ -290,12 +305,22 @@ this.Content = (function() {
     if (project["public"]) {
       if (project.type === "plugin") {
         if (this.plugin_projects.indexOf(project) < 0) {
-          return this.plugin_projects.push(project);
+          this.plugin_projects.push(project);
         }
       } else {
         index = this.plugin_projects.indexOf(project);
         if (index >= 0) {
-          return this.plugin_projects.splice(index, 1);
+          this.plugin_projects.splice(index, 1);
+        }
+      }
+      if (project.type === "library") {
+        if (this.library_projects.indexOf(project) < 0) {
+          return this.library_projects.push(project);
+        }
+      } else {
+        index = this.library_projects.indexOf(project);
+        if (index >= 0) {
+          return this.library_projects.splice(index, 1);
         }
       }
     }
@@ -318,7 +343,11 @@ this.Content = (function() {
     }
     index = this.plugin_projects.indexOf(project);
     if (index >= 0) {
-      return this.plugin_projects.splice(index, 1);
+      this.plugin_projects.splice(index, 1);
+    }
+    index = this.library_projects.indexOf(project);
+    if (index >= 0) {
+      return this.library_projects.splice(index, 1);
     }
   };
 
@@ -448,7 +477,9 @@ this.Content = (function() {
       graphics: data.graphics,
       libs: data.libs,
       tabs: data.tabs,
-      plugins: data.plugins
+      plugins: data.plugins,
+      libraries: data.libraries,
+      description: data.description || ""
     };
     record = this.db.create("projects", d);
     project = this.loadProject(record);

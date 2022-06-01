@@ -216,6 +216,17 @@ class @Explore
             p.liked = false
             likes.classList.remove "voted"
 
+    if p.type != "app"
+      label = document.createElement "div"
+      label.classList.add "type-label"
+      label.classList.add p.type
+      switch p.type
+        when "library" then label.innerHTML = """<i class="fas fa-file-code"></i> #{@app.translator.get("Library")}"""
+        when "plugin" then label.innerHTML = """<i class="fas fa-plug"></i> #{@app.translator.get("Plug-in")}"""
+        when "tutorial" then label.innerHTML = """<i class="fas fa-graduation-cap"></i> #{@app.translator.get("Tutorial")}"""
+
+      element.appendChild label
+
     runbutton.addEventListener "click",(event)=>
       event.stopPropagation()
       if p.type == "tutorial"

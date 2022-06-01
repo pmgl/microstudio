@@ -97,6 +97,7 @@ this.Options = (function() {
       input = list[i];
       fn(input);
     }
+    this.library_tip = document.querySelector("#project-option-type .library");
   }
 
   Options.prototype.textInput = function(element, action) {
@@ -130,6 +131,7 @@ this.Options = (function() {
     document.getElementById("projectoption-type").value = this.app.project.type || "app";
     document.getElementById("projectoption-graphics").value = this.app.project.graphics || "M1";
     document.getElementById("projectoption-language").value = this.app.project.language || "microscript_v1_i";
+    this.library_tip.style.display = this.app.project.type === "library" ? "block" : "none";
     list = document.querySelectorAll("#project-option-libs input");
     for (i = 0, len = list.length; i < len; i++) {
       input = list[i];
@@ -244,6 +246,7 @@ this.Options = (function() {
 
   Options.prototype.typeChanged = function(value) {
     this.app.project.setType(value);
+    this.library_tip.style.display = value === "library" ? "block" : "none";
     return this.app.client.sendRequest({
       name: "set_project_option",
       project: this.app.project.id,

@@ -1444,6 +1444,9 @@ padding-left: 2px ;
   border-radius: 16px ;
   box-shadow: 0 0 2px #000 ;
 }
+.usertag span {
+  color: rgba(255,255,255,.9);
+}
 .usertag.founder {
   background: hsla(0,50%,40%,.5) ;
 }

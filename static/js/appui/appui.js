@@ -379,6 +379,7 @@ AppUI = (function() {
     this.app.runwindow.projectClosed();
     this.app.debug.projectClosed();
     this.app.tab_manager.projectClosed();
+    this.app.lib_manager.projectClosed();
     this.app.project = null;
     this.project = null;
     this.app.updateProjectList();
@@ -1250,6 +1251,27 @@ AppUI = (function() {
   AppUI.prototype.resetImportButton = function() {
     document.getElementById("import-project-button").innerHTML = "<i class=\"fa fa-upload\"></i> " + (this.app.translator.get("Import Project"));
     return document.getElementById("import-project-button").style.removeProperty("background");
+  };
+
+  AppUI.prototype.bumpElement = function(select) {
+    var element, interval, start;
+    element = document.querySelector(select);
+    if (element != null) {
+      start = Date.now();
+      return interval = setInterval((function() {
+        var d, s, t;
+        t = (Date.now() - start) / 300;
+        if (t >= 1) {
+          element.style.transform = "none";
+          return clearInterval(interval);
+        } else {
+          t = Math.pow(t, .8);
+          s = 1 + .5 * Math.sin(t * Math.PI);
+          d = -.5 * Math.sin(t * Math.PI) * 20;
+          return element.style.transform = "scale(" + s + ") rotateZ(" + d + "deg)";
+        }
+      }), 16);
+    }
   };
 
   return AppUI;

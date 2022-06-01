@@ -424,7 +424,32 @@ a#run-link {
 #color-value-tool-button {
   display: none ;
 }
-
+#sourcelist {
+  bottom: 34px ;
+}
+#manage-libs-button {
+  position: absolute ;
+  bottom: 3px ;
+  left: 2px ;
+  right: 2px ;
+  border-radius: 5px ;
+  color: rgba(255,255,255,.75) ;
+  padding: 5px 10px ;
+  text-align: left ;
+  cursor: pointer ;
+  font-size: 14px ;
+  white-space: nowrap ;
+  overflow: hidden ;
+}
+#manage-libs-button:hover {
+  background: hsl(200,30%,30%);
+}
+#manage-libs-button.selected {
+  background: hsl(200,30%,30%);
+}
+#manage-libs-button i {
+  margin-right: 10px ;
+}
 .source-list-panel {
   position: absolute ;
   top: 40px ;
@@ -663,4 +688,33 @@ a#run-link {
 }
 .code-toolbar #delete-source i {
   margin: 0 ;
+}
+
+.lib-manager-container {
+  position: absolute ;
+  top: 42px ;
+  left: 2px ;
+  right: 2px ;
+  bottom: 2px ;
+  background: hsl(200,20%,20%) ;
+  z-index: 4 ;
+  padding: 40px ;
+  overflow: auto ;
+  display: none ;
+}
+
+.lib-box .docbutton {
+  background: rgba(0,0,0,.5) ;
+  padding: 5px 10px ;
+  border-radius: 5px ;
+  display: inline-block ;
+  margin-right: 10px ;
+  margin-top: 5px ;
+  font-size: 14px ;
+}
+.lib-box .docbutton i {
+  margin-right: 5px ;
+}
+.lib-box > div > a.docbutton {
+  color: rgba(255,255,255,.8) ;
 }

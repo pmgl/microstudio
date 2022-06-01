@@ -176,7 +176,7 @@ class @Runtime
       @exit()
 
     @vm.context.global.system.file = System.file
-    #@vm.context.global.system.javascript = System.javascript
+    @vm.context.global.system.javascript = System.javascript
     if window.ms_in_editor
       @vm.context.global.system.project = new ProjectInterface(@).interface
 
@@ -785,7 +785,8 @@ loadFile = (file,callback)->
 @System =
   javascript:(s)->
     try
-      res = eval(s)
+      f = eval("res = function() { #{s} }" )
+      res = f.call(player.runtime.vm.context.global)
     catch err
       console.error err
 

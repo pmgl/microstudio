@@ -285,6 +285,7 @@ class AppUI
     @app.runwindow.projectClosed()
     @app.debug.projectClosed()
     @app.tab_manager.projectClosed()
+    @app.lib_manager.projectClosed()
     @app.project = null
     @project = null
     @app.updateProjectList()
@@ -983,3 +984,19 @@ class AppUI
   resetImportButton:()->
     document.getElementById("import-project-button").innerHTML = """<i class="fa fa-upload"></i> #{@app.translator.get("Import Project")}"""
     document.getElementById("import-project-button").style.removeProperty "background"
+
+  bumpElement:(select)->
+    element = document.querySelector select
+    if element?
+      start = Date.now()
+      interval = setInterval (()->
+        t = (Date.now()-start)/300
+        if t >= 1
+          element.style.transform = "none"
+          clearInterval interval
+        else
+          t = Math.pow(t,.8)
+          s = 1+.5*Math.sin(t*Math.PI)
+          d = -.5*Math.sin(t*Math.PI)*20
+          element.style.transform = "scale(#{s}) rotateZ(#{d}deg)"
+        ),16

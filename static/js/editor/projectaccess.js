@@ -311,6 +311,7 @@ this.ProjectAccess = (function() {
         path.splice(0, 1);
         path = "ms/" + path.join("/");
         this.app.project.writeFile(path, msg.content);
+        this.app.appui.bumpElement("#menuitem-code");
         break;
       case "sprites":
         path.splice(0, 1);
@@ -319,21 +320,25 @@ this.ProjectAccess = (function() {
           frames: msg.frames,
           fps: msg.fps
         });
+        this.app.appui.bumpElement("#menuitem-sprites");
         break;
       case "maps":
         path.splice(0, 1);
         path = "maps/" + path.join("/");
         this.app.project.writeFile(path, msg.content);
+        this.app.appui.bumpElement("#menuitem-maps");
         break;
       case "sounds":
         path.splice(0, 1);
         path = "sounds/" + path.join("/");
         this.app.project.writeFile(path, msg.content);
+        this.app.appui.bumpElement("#menuitem-sounds");
         break;
       case "music":
         path.splice(0, 1);
         path = "music/" + path.join("/");
         this.app.project.writeFile(path, msg.content);
+        this.app.appui.bumpElement("#menuitem-music");
         break;
       case "assets":
         path.splice(0, 1);
@@ -341,6 +346,7 @@ this.ProjectAccess = (function() {
         this.app.project.writeFile(path, msg.content, {
           ext: msg.ext
         });
+        this.app.appui.bumpElement("#menuitem-assets");
         break;
       default:
         this.listener.postMessage({

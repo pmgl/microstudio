@@ -1,5 +1,12 @@
 ## Changelog
 
+### Update 2022-06-01
+* Libraries reloaded! You can now browse and import libraries to your project in one click
+* Embed JavaScript code in your microScript app or library
+* new triple double-quote string delimiter: `"""some text"""` (useful for embedding JavaScript)
+* some auto-indent improvements for microScript 2.0
+* Fixed #138 (too many 'end' did not raise an error)
+
 ### Update 2022-05-23
 * Plug-ins! Create your own plug-ins or just use community plug-ins for your project
 * `system.file.load`: open file dialog and let user load a file

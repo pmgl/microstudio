@@ -111,6 +111,25 @@
   left: 20px ;
 }
 
+.explore-project-box .type-label {
+  position: absolute ;
+  top: 0 ;
+  right: 0 ;
+  padding: 5px 10px ;
+  border-bottom-left-radius: 10px ;
+  background: #000 ;
+  font-size: 14px ;
+  box-shadow: 0 0 5px #000 ;
+}
+.explore-project-box .type-label.library {
+  background: hsl(160,50%,50%) ;
+}
+.explore-project-box .type-label.plugin {
+  background: hsl(200,50%,50%) ;
+}
+.explore-project-box .type-label.tutorial {
+  background: hsl(300,50%,50%) ;
+}
 .explore-project-button {
   background: hsl(160,50%,40%);
   padding: 4px 8px ;

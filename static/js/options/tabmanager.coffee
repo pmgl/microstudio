@@ -89,14 +89,14 @@ class @TabManager
     div.classList.add "plugin-box"
     div.dataset.id = id
     desc = project.description
-    if desc.length>200
-      desc = desc.substring(0,200)+" (...)"
+    if desc.length>300
+      desc = desc.substring(0,300)+" (...)"
     div.innerHTML = """
     <img class="pixelated icon" src="#{location.origin}#{path}/sprites/icon.png"/>
     <div class="description">
       <div class="plugin-author"></div>
       <h4>#{project.title}</h4>
-      <p>#{project.description}</p>
+      <p>#{DOMPurify.sanitize marked desc}</p>
       <div class="plugin-folder">
         <label for="plugin-folder-#{id}">Working folder</label><br/>
         <input id="plugin-folder-#{id}" type="text" value="#{project.slug}"></input><br/>
@@ -105,6 +105,11 @@ class @TabManager
       <i class="fa fa-check check"></i>
     </div>
     """
+
+    list = div.getElementsByTagName "a"
+    for e in list
+      e.target = "_blank"
+
     if project.owner_info
       user = @app.appui.createUserTag(nick,project.owner_info.tier,project.owner_info.profile_image,20)
     else if project.owner.nick == @app.user.nick

@@ -185,7 +185,7 @@ this.Explore = (function() {
   };
 
   Explore.prototype.createProjectBox = function(p) {
-    var author, element, icon, infobox, likes, runbutton, smallicon, tag, title;
+    var author, element, icon, infobox, label, likes, runbutton, smallicon, tag, title;
     element = document.createElement("div");
     element.classList.add("explore-project-box");
     if (p.tags.length > 0) {
@@ -269,6 +269,22 @@ this.Explore = (function() {
         });
       };
     })(this));
+    if (p.type !== "app") {
+      label = document.createElement("div");
+      label.classList.add("type-label");
+      label.classList.add(p.type);
+      switch (p.type) {
+        case "library":
+          label.innerHTML = "<i class=\"fas fa-file-code\"></i> " + (this.app.translator.get("Library"));
+          break;
+        case "plugin":
+          label.innerHTML = "<i class=\"fas fa-plug\"></i> " + (this.app.translator.get("Plug-in"));
+          break;
+        case "tutorial":
+          label.innerHTML = "<i class=\"fas fa-graduation-cap\"></i> " + (this.app.translator.get("Tutorial"));
+      }
+      element.appendChild(label);
+    }
     runbutton.addEventListener("click", (function(_this) {
       return function(event) {
         event.stopPropagation();

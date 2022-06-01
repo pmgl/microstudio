@@ -187,6 +187,14 @@ this.Editor = (function(superClass) {
         return localStorage.setItem("code_editor_font_size", _this.font_size);
       };
     })(this));
+    this.lib_manager_button = document.querySelector("#manage-libs-button");
+    this.lib_manager = document.querySelector(".lib-manager-container");
+    this.editor_view = document.querySelector("#editor-view");
+    this.lib_manager_button.addEventListener("click", (function(_this) {
+      return function() {
+        return _this.toggleLibManager();
+      };
+    })(this));
   }
 
   Editor.prototype.updateLanguage = function() {
@@ -212,12 +220,29 @@ this.Editor = (function(superClass) {
     return this.updateSourceLanguage();
   };
 
+  Editor.prototype.checkEmbeddedJavaScript = function(src) {
+    if (this.app.project.language === "microscript_v2") {
+      if (/^\s*\/\/\s*javascript\s*\n/.test(src)) {
+        if (this.language !== this.app.languages.javascript) {
+          this.language = this.app.languages.javascript;
+          return this.editor.getSession().setMode(this.language.ace_mode);
+        }
+      } else {
+        if (this.language !== this.app.languages.microscript2) {
+          this.language = this.app.languages.microscript2;
+          return this.editor.getSession().setMode(this.language.ace_mode);
+        }
+      }
+    }
+  };
+
   Editor.prototype.editorContentsChanged = function() {
     var source, src;
     if (this.ignore_changes) {
       return;
     }
     src = this.editor.getValue();
+    this.checkEmbeddedJavaScript(src);
     this.update_time = Date.now();
     this.save_time = Date.now();
     this.app.project.addPendingChange(this);
@@ -318,7 +343,8 @@ this.Editor = (function(superClass) {
     this.editor.setValue(code, -1);
     this.editor.getSession().setUndoManager(new ace.UndoManager());
     this.ignore_changes = false;
-    return this.updateCurrentFileLock();
+    this.updateCurrentFileLock();
+    return this.checkEmbeddedJavaScript(code);
   };
 
   Editor.prototype.addDocButton = function(pointer, section) {
@@ -705,6 +731,7 @@ this.Editor = (function(superClass) {
 
   Editor.prototype.setSelectedSource = function(name) {
     var different, source;
+    this.toggleLibManager(false);
     this.checkSave(true);
     if (this.selected_source != null) {
       this.sessions[this.selected_source] = {
@@ -914,6 +941,21 @@ this.Editor = (function(superClass) {
           }
         };
       })(this));
+    }
+  };
+
+  Editor.prototype.toggleLibManager = function(view) {
+    if (view == null) {
+      view = this.editor_view.style.display !== "none";
+    }
+    if (view) {
+      this.lib_manager.style.display = "block";
+      this.editor_view.style.display = "none";
+      return this.lib_manager_button.classList.add("selected");
+    } else {
+      this.lib_manager.style.display = "none";
+      this.editor_view.style.display = "block";
+      return this.lib_manager_button.classList.remove("selected");
     }
   };
 

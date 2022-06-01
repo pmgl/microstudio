@@ -259,31 +259,37 @@ class @ProjectAccess
         path.splice(0,1)
         path = "ms/"+path.join("/")
         @app.project.writeFile(path,msg.content)
+        @app.appui.bumpElement "#menuitem-code"
 
       when "sprites"
         path.splice(0,1)
         path = "sprites/"+path.join("/")
         @app.project.writeFile(path,msg.content,{ frames: msg.frames, fps: msg.fps })
+        @app.appui.bumpElement "#menuitem-sprites"
 
       when "maps"
         path.splice(0,1)
         path = "maps/"+path.join("/")
         @app.project.writeFile(path,msg.content)
+        @app.appui.bumpElement "#menuitem-maps"
 
       when "sounds"
         path.splice(0,1)
         path = "sounds/"+path.join("/")
         @app.project.writeFile(path,msg.content)
+        @app.appui.bumpElement "#menuitem-sounds"
 
       when "music"
         path.splice(0,1)
         path = "music/"+path.join("/")
         @app.project.writeFile(path,msg.content)
+        @app.appui.bumpElement "#menuitem-music"
 
       when "assets"
         path.splice(0,1)
         path = "assets/"+path.join("/")
         @app.project.writeFile(path,msg.content,{ext: msg.ext})
+        @app.appui.bumpElement "#menuitem-assets"
 
       else
         @listener.postMessage

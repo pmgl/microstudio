@@ -188,6 +188,8 @@ class @Concatenator
       "/js/editor/projectaccess.js"
       "/js/editor/rulercanvas.js"
       "/js/editor/valuetool.js"
+      "/js/editor/libmanager.js"
+
       "/js/options/options.js"
       "/js/options/tabmanager.js"
       "/js/options/pluginview.js"

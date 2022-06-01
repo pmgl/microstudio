@@ -61,9 +61,9 @@ this.Documentation = (function() {
     })(this));
   }
 
-  Documentation.prototype.setSection = function(id, callback) {
+  Documentation.prototype.setSection = function(id, callback, url) {
     var e, fn, j, len1, list;
-    this.load(id, (function(_this) {
+    this.load((url != null ? url : id), (function(_this) {
       return function(doc1) {
         _this.doc = doc1;
         _this.update();
@@ -341,7 +341,6 @@ this.Documentation = (function() {
     if (plugins_section == null) {
       plugins_section = document.createElement("div");
       plugins_section.classList.add("help-section-category");
-      plugins_section.classList.add("collapsed");
       plugins_section.classList.add("bg-green");
       plugins_section.id = "help-plugins";
       help_sections.appendChild(plugins_section);
@@ -398,6 +397,73 @@ this.Documentation = (function() {
     plugins_section = document.getElementById("help-plugins");
     if (plugins_section != null) {
       plugins_section.parentNode.removeChild(plugins_section);
+      return this.updateViewPos();
+    }
+  };
+
+  Documentation.prototype.getLibsSection = function() {
+    var help_sections, libs_section;
+    help_sections = document.getElementById("help-sections");
+    libs_section = document.getElementById("help-libraries");
+    if (libs_section == null) {
+      libs_section = document.createElement("div");
+      libs_section.classList.add("help-section-category");
+      libs_section.classList.add("bg-purple");
+      libs_section.id = "help-libraries";
+      help_sections.appendChild(libs_section);
+      libs_section.innerHTML = "<div class=\"help-section-title\">\n  <i class=\"fa\"></i><span>" + (this.app.translator.get("Libraries in use")) + "</span>\n</div>\n<div class=\"help-section-content\"></div>";
+      libs_section.querySelector(".help-section-title").addEventListener("click", (function(_this) {
+        return function() {
+          if (libs_section.classList.contains("collapsed")) {
+            libs_section.classList.remove("collapsed");
+          } else {
+            libs_section.classList.add("collapsed");
+          }
+          return _this.updateViewPos();
+        };
+      })(this));
+    }
+    return libs_section;
+  };
+
+  Documentation.prototype.addLib = function(id, title, link) {
+    var doc, libs_section;
+    id = "documentation-" + id;
+    if (!document.getElementById(id)) {
+      libs_section = this.getLibsSection();
+      doc = document.createElement("div");
+      doc.id = id;
+      doc.classList.add("help-section-button");
+      doc.innerText = title;
+      libs_section.querySelector(".help-section-content").appendChild(doc);
+      doc.addEventListener("click", (function(_this) {
+        return function() {
+          return _this.setSection(link);
+        };
+      })(this));
+      return this.updateViewPos();
+    }
+  };
+
+  Documentation.prototype.removeLib = function(id) {
+    var element, parent;
+    id = "documentation-" + id;
+    element = document.getElementById(id);
+    if (element != null) {
+      parent = element.parentNode;
+      parent.removeChild(element);
+      if (parent.childNodes.length === 0) {
+        this.removeAllLibs();
+      }
+      return this.updateViewPos();
+    }
+  };
+
+  Documentation.prototype.removeAllLibs = function() {
+    var libs_section;
+    libs_section = document.getElementById("help-libraries");
+    if (libs_section != null) {
+      libs_section.parentNode.removeChild(libs_section);
       return this.updateViewPos();
     }
   };

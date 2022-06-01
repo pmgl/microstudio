@@ -117,10 +117,12 @@ class @ExportFeatures
     libs: project.libs
     tabs: project.tabs
     plugins: project.plugins
+    libraries: project.libraries
     date_created: project.date_created
     last_modified: project.last_modified
     first_published: project.first_published
     files: project.files
+    description: project.description
 
   addSpritesExport:()->
     # /user/project[/code]/export/sprites/

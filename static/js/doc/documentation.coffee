@@ -36,8 +36,8 @@ class @Documentation
 
     window.addEventListener "resize",()=>@updateViewPos()
 
-  setSection:(id,callback)->
-    @load id,(@doc)=>
+  setSection:(id,callback,url)->
+    @load (if url? then url else id),(@doc)=>
       @update()
       callback() if callback?
 
@@ -240,7 +240,7 @@ class @Documentation
     if not plugins_section?
       plugins_section = document.createElement "div"
       plugins_section.classList.add "help-section-category"
-      plugins_section.classList.add "collapsed"
+      #plugins_section.classList.add "collapsed"
       plugins_section.classList.add "bg-green"
       plugins_section.id = "help-plugins"
       help_sections.appendChild plugins_section
@@ -289,4 +289,62 @@ class @Documentation
     plugins_section = document.getElementById "help-plugins"
     if plugins_section?
       plugins_section.parentNode.removeChild plugins_section
+      @updateViewPos()
+
+
+  getLibsSection:()->
+    help_sections = document.getElementById "help-sections"
+    libs_section = document.getElementById "help-libraries"
+    if not libs_section?
+      libs_section = document.createElement "div"
+      libs_section.classList.add "help-section-category"
+      #libs_section.classList.add "collapsed"
+      libs_section.classList.add "bg-purple"
+      libs_section.id = "help-libraries"
+      help_sections.appendChild libs_section
+
+      libs_section.innerHTML = """
+      <div class="help-section-title">
+        <i class="fa"></i><span>#{@app.translator.get("Libraries in use")}</span>
+      </div>
+      <div class="help-section-content"></div>
+      """
+      libs_section.querySelector(".help-section-title").addEventListener "click",()=>
+        if libs_section.classList.contains "collapsed"
+          libs_section.classList.remove "collapsed"
+        else
+          libs_section.classList.add "collapsed"
+        @updateViewPos()
+
+    libs_section
+
+  addLib:(id,title,link)->
+    id = "documentation-#{id}"
+    if not document.getElementById id
+      libs_section = @getLibsSection()
+      doc = document.createElement "div"
+      doc.id = id
+      doc.classList.add "help-section-button"
+      doc.innerText = title
+      libs_section.querySelector(".help-section-content").appendChild doc
+      doc.addEventListener "click",()=>
+        @setSection link
+
+      @updateViewPos()
+
+  removeLib:(id)->
+    id = "documentation-#{id}"
+    element = document.getElementById id
+    if element?
+      parent = element.parentNode
+      parent.removeChild element
+      if parent.childNodes.length == 0
+        @removeAllLibs()
+
+      @updateViewPos()
+
+  removeAllLibs:()->
+    libs_section = document.getElementById "help-libraries"
+    if libs_section?
+      libs_section.parentNode.removeChild libs_section
       @updateViewPos()
