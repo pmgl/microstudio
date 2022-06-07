@@ -308,7 +308,7 @@ class @Runtime
   updateCode:(name,version,data)->
     if data?
       @sources[name] = data
-      if @vm?
+      if @vm? and data != @update_memory[name]
         @vm.clearWarnings()
       @updateSource name,data,true
     else

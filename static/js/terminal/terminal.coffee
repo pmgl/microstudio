@@ -6,6 +6,7 @@ class @Terminal
     @loadHistory()
     @buffer = []
     @length = 0
+    @error_lines = 0
 
   loadHistory:()->
     @history = []
@@ -162,6 +163,7 @@ class @Terminal
 
   error:(text,scroll=false)->
     @echo(text,scroll,"error")
+    @error_lines += 1
 
   truncate:()->
     e = document.getElementById("terminal-lines")
@@ -175,5 +177,6 @@ class @Terminal
     document.getElementById("terminal-lines").innerHTML = ""
     @buffer = []
     @length = 0
+    @error_lines = 0
     document.querySelector("#terminal-input-gt i").classList.remove("fa-ellipsis-v")
     delete @runwindow.multiline

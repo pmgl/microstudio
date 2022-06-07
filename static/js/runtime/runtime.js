@@ -421,7 +421,7 @@ this.Runtime = (function() {
     var req, url;
     if (data != null) {
       this.sources[name] = data;
-      if (this.vm != null) {
+      if ((this.vm != null) && data !== this.update_memory[name]) {
         this.vm.clearWarnings();
       }
       return this.updateSource(name, data, true);

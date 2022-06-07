@@ -1,5 +1,9 @@
 ## Changelog
 
+### Update 2022-06-07
+* Publishing to Explore section made more friendly and allows screening clones and empty projects
+* Improved microScript 2.0 warning reporting when live coding
+
 ### Update 2022-06-01
 * Libraries reloaded! You can now browse and import libraries to your project in one click
 * Embed JavaScript code in your microScript app or library

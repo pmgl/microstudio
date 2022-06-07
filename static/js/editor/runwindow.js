@@ -297,6 +297,26 @@ this.RunWindow = (function() {
 
   RunWindow.prototype.updateCode = function(file, src) {
     var iframe;
+    if (this.error_check != null) {
+      clearTimeout(this.error_check);
+    }
+    this.error_buffer = [];
+    this.error_check = setTimeout(((function(_this) {
+      return function() {
+        var err, i, len, ref, results;
+        _this.error_check = null;
+        if (_this.terminal.error_lines > 0) {
+          _this.terminal.clear();
+        }
+        ref = _this.error_buffer;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          err = ref[i];
+          results.push(_this.logError(err));
+        }
+        return results;
+      };
+    })(this)), 3000);
     src = this.app.editor.editor.getValue();
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -397,6 +417,10 @@ this.RunWindow = (function() {
 
   RunWindow.prototype.logError = function(err) {
     var error, text;
+    if (this.error_check != null) {
+      this.error_buffer.push(err);
+      return;
+    }
     error = err.error;
     switch (err.type) {
       case "non_function":
@@ -588,61 +612,6 @@ this.RunWindow = (function() {
         output_callback: output_callback
       };
       return this.play();
-    }
-  };
-
-  RunWindow.prototype.reportWarnings = function() {
-    var key, ref, ref1, ref2, results, value;
-    if (this.local_vm != null) {
-      ref = this.local_vm.context.warnings.invoking_non_function;
-      for (key in ref) {
-        value = ref[key];
-        if (!value.reported) {
-          value.reported = true;
-          this.logError({
-            error: "",
-            type: "non_function",
-            expression: value.expression,
-            line: value.line,
-            column: value.column,
-            file: value.file
-          });
-        }
-      }
-      ref1 = this.local_vm.context.warnings.using_undefined_variable;
-      for (key in ref1) {
-        value = ref1[key];
-        if (!value.reported) {
-          value.reported = true;
-          this.logError({
-            error: "",
-            type: "undefined_variable",
-            expression: value.expression,
-            line: value.line,
-            column: value.column,
-            file: value.file
-          });
-        }
-      }
-      ref2 = this.local_vm.context.warnings.assigning_field_to_undefined;
-      results = [];
-      for (key in ref2) {
-        value = ref2[key];
-        if (!value.reported) {
-          value.reported = true;
-          results.push(this.logError({
-            error: "",
-            type: "assigning_undefined",
-            expression: value.expression,
-            line: value.line,
-            column: value.column,
-            file: value.file
-          }));
-        } else {
-          results.push(void 0);
-        }
-      }
-      return results;
     }
   };
 

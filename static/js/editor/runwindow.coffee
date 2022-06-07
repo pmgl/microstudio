@@ -218,6 +218,20 @@ class @RunWindow
     setTimeout (()=>@app.appui.runtime_splitbar.update()),600
 
   updateCode:(file,src)->
+    if @error_check?
+      clearTimeout @error_check
+
+    @error_buffer = []
+    @error_check = setTimeout (()=>
+      @error_check = null
+      if @terminal.error_lines > 0
+        @terminal.clear()
+        
+      for err in @error_buffer
+        @logError err
+
+    ),3000
+
     src = @app.editor.editor.getValue()
     iframe = document.getElementById("runiframe")
     if iframe?
@@ -308,6 +322,10 @@ class @RunWindow
     @rulercanvas.resize Math.round(w),Math.round(h),Math.round((ch-h)/2)
 
   logError:(err)->
+    if @error_check?
+      @error_buffer.push err
+      return
+
     error = err.error
     switch err.type
       when "non_function"
@@ -465,41 +483,6 @@ class @RunWindow
         output_callback: output_callback
 
       @play()
-
-  reportWarnings:()->
-    if @local_vm?
-      for key,value of @local_vm.context.warnings.invoking_non_function
-        if not value.reported
-          value.reported = true
-          @logError
-            error: ""
-            type: "non_function"
-            expression: value.expression
-            line: value.line
-            column: value.column
-            file: value.file
-
-      for key,value of @local_vm.context.warnings.using_undefined_variable
-        if not value.reported
-          value.reported = true
-          @logError
-            error: ""
-            type: "undefined_variable"
-            expression: value.expression
-            line: value.line
-            column: value.column
-            file: value.file
-
-      for key,value of @local_vm.context.warnings.assigning_field_to_undefined
-        if not value.reported
-          value.reported = true
-          @logError
-            error: ""
-            type: "assigning_undefined"
-            expression: value.expression
-            line: value.line
-            column: value.column
-            file: value.file
 
   projectOpened:()->
     iframe = document.getElementById("runiframe")

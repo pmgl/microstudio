@@ -11,6 +11,7 @@ this.Terminal = (function() {
     this.loadHistory();
     this.buffer = [];
     this.length = 0;
+    this.error_lines = 0;
   }
 
   Terminal.prototype.loadHistory = function() {
@@ -222,7 +223,8 @@ this.Terminal = (function() {
     if (scroll == null) {
       scroll = false;
     }
-    return this.echo(text, scroll, "error");
+    this.echo(text, scroll, "error");
+    return this.error_lines += 1;
   };
 
   Terminal.prototype.truncate = function() {
@@ -239,6 +241,7 @@ this.Terminal = (function() {
     document.getElementById("terminal-lines").innerHTML = "";
     this.buffer = [];
     this.length = 0;
+    this.error_lines = 0;
     document.querySelector("#terminal-input-gt i").classList.remove("fa-ellipsis-v");
     return delete this.runwindow.multiline;
   };
