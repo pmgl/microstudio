@@ -50,6 +50,7 @@ this.Project = (function() {
       this.slug = data.slug;
       this.code = data.code || this.createCode();
       this.tags = data.tags || [];
+      this.flags = data.flags || {};
       this.description = data.description || "";
       this.likes = 0;
       this["public"] = data["public"];
@@ -171,6 +172,15 @@ this.Project = (function() {
 
   Project.prototype.setGraphics = function(graphics) {
     return this.set("graphics", graphics);
+  };
+
+  Project.prototype.setFlag = function(flag, value) {
+    if (value) {
+      this.flags[flag] = value;
+    } else {
+      delete this.flags[flag];
+    }
+    return this.set("flags", this.flags);
   };
 
   Project.prototype.saveUsers = function() {

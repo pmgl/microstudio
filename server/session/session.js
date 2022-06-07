@@ -338,6 +338,16 @@ this.Session = (function() {
         return _this.tutorialCompleted(msg);
       };
     })(this));
+    this.register("set_project_approved", (function(_this) {
+      return function(msg) {
+        return _this.setProjectApproved(msg);
+      };
+    })(this));
+    this.register("set_user_approved", (function(_this) {
+      return function(msg) {
+        return _this.setUserApproved(msg);
+      };
+    })(this));
     ref = this.server.plugins;
     for (j = 0, len1 = ref.length; j < len1; j++) {
       plugin = ref[j];
@@ -993,6 +1003,50 @@ this.Session = (function() {
     }
   };
 
+  Session.prototype.setProjectApproved = function(data) {
+    var project;
+    if (this.user == null) {
+      return;
+    }
+    if (data.project == null) {
+      return;
+    }
+    if (this.user.flags.admin || this.user.flags.moderator) {
+      project = this.content.projects[data.project];
+      if (project != null) {
+        project.setFlag("approved", data.approved);
+        return this.send({
+          name: "set_project_approved",
+          id: project.id,
+          approved: data.approved,
+          request_id: data.request_id
+        });
+      }
+    }
+  };
+
+  Session.prototype.setUserApproved = function(data) {
+    var user;
+    if (this.user == null) {
+      return;
+    }
+    if (data.user == null) {
+      return;
+    }
+    if (this.user.flags.admin || this.user.flags.moderator) {
+      user = this.content.users_by_nick[data.user];
+      if ((user != null) && !user.flags.admin && !user.flags.moderator) {
+        user.setFlag("approved", data.approved);
+        return this.send({
+          name: "set_project_approved",
+          user: data.user,
+          approved: data.approved,
+          request_id: data.request_id
+        });
+      }
+    }
+  };
+
   Session.prototype.setProjectTags = function(data) {
     var project;
     if (this.user == null) {
@@ -1162,6 +1216,7 @@ this.Session = (function() {
           code: p.code,
           description: p.description,
           tags: p.tags,
+          flags: p.flags,
           poster: (p.files != null) && (p.files["sprites/poster.png"] != null),
           platforms: p.platforms,
           controls: p.controls,
@@ -1200,6 +1255,7 @@ this.Session = (function() {
           code: p.code,
           description: p.description,
           tags: p.tags,
+          flags: p.flags,
           poster: (p.files != null) && (p.files["sprites/poster.png"] != null),
           platforms: p.platforms,
           controls: p.controls,
@@ -1467,11 +1523,13 @@ this.Session = (function() {
           poster: (p.files != null) && (p.files["sprites/poster.png"] != null),
           type: p.type,
           tags: p.tags,
+          flags: p.flags,
           slug: p.slug,
           owner: p.owner.nick,
           owner_info: {
             tier: p.owner.flags.tier,
-            profile_image: p.owner.flags.profile_image
+            profile_image: p.owner.flags.profile_image,
+            approved: p.owner.flags.approved
           },
           likes: p.likes,
           liked: (this.user != null) && this.user.isLiked(p.id),
@@ -1519,15 +1577,16 @@ this.Session = (function() {
           poster: (p.files != null) && (p.files["sprites/poster.png"] != null),
           type: p.type,
           tags: p.tags,
+          flags: p.flags,
           slug: p.slug,
           owner: p.owner.nick,
           owner_info: {
             tier: p.owner.flags.tier,
-            profile_image: p.owner.flags.profile_image
+            profile_image: p.owner.flags.profile_image,
+            approved: p.owner.flags.approved
           },
           likes: p.likes,
           liked: (this.user != null) && this.user.isLiked(p.id),
-          tags: p.tags,
           date_published: p.first_published,
           last_modified: p.last_modified,
           graphics: p.graphics,
@@ -1560,15 +1619,16 @@ this.Session = (function() {
           poster: (p.files != null) && (p.files["sprites/poster.png"] != null),
           type: p.type,
           tags: p.tags,
+          flags: p.flags,
           slug: p.slug,
           owner: p.owner.nick,
           owner_info: {
             tier: p.owner.flags.tier,
-            profile_image: p.owner.flags.profile_image
+            profile_image: p.owner.flags.profile_image,
+            approved: p.owner.flags.approved
           },
           likes: p.likes,
           liked: (this.user != null) && this.user.isLiked(p.id),
-          tags: p.tags,
           date_published: p.first_published,
           last_modified: p.last_modified,
           graphics: p.graphics,
@@ -1603,15 +1663,16 @@ this.Session = (function() {
             poster: (p.files != null) && (p.files["sprites/poster.png"] != null),
             type: p.type,
             tags: p.tags,
+            flags: p.flags,
             slug: p.slug,
             owner: p.owner.nick,
             owner_info: {
               tier: p.owner.flags.tier,
-              profile_image: p.owner.flags.profile_image
+              profile_image: p.owner.flags.profile_image,
+              approved: p.owner.flags.approved
             },
             likes: p.likes,
             liked: (this.user != null) && this.user.isLiked(p.id),
-            tags: p.tags,
             date_published: p.first_published,
             last_modified: p.last_modified,
             graphics: p.graphics,

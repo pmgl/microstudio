@@ -10,6 +10,7 @@ class @API
       list = @server.content.new_projects.slice(0,4)
       projects = []
       for p in list
+        approved = p.flags.approved or (p.owner? and p.owner.flags.approved)
         projects.push
           id: p.id
           title: p.title
@@ -17,6 +18,8 @@ class @API
           owner: p.owner.nick
           url: "https://microstudio.dev/i/#{p.owner.nick}/#{p.slug}/"
           date: p.first_published
+          type: p.type
+          approved: approved
 
       posts = @server.content.forum.posts
       list = []

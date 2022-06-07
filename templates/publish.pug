@@ -14,34 +14,23 @@ div.publish-box#publish-box-online
     div.publish-text #{translator.get("This project is currently public.")}
 
     br
-    input(type="checkbox" id="publish-unlisted")
-    label(for="publish-unlisted") #{translator.get("Unlisted")}
+    input(type="checkbox" id="publish-listed")
+    label(for="publish-listed") #{translator.get("List my project in the Explore section")}
     br
-    span.tip #{translator.get("If you mark your public project Unlisted, it will not show up in the main Explore section")}
+    span.tip #{translator.get("Tick this checkbox if you want your project to show up in the Explore section.")}
+    br
+    div#publish-checklist.tip #{translator.get("Your project will be reviewed before it shows up in the Explore section. Make sure that your project complies with the following:")}
+      ul
+        li #{translator.get("Your project is an original work.")}
+        li #{translator.get("You have created your own nice icon for your project.")}
+        li #{translator.get("You made the assets in your project yourself (sprites, sounds, music), or you made sure that you are allowed to use and publish the assets.")}
+        li #{translator.get("If you are using an asset pack, you made sure to add the required credits and generally comply with the license of the asset pack.")}
     br
     h3 #{translator.get("Public link")}
     a(target="_blank")#publish-public-link
 
 
   h2 #{translator.get("Make public on microStudio")}
-
-  div#publish-checklist
-    h3 #{translator.get("Checklist before publishing")}
-    p #{translator.get("Before making your project public, please make sure to understand and comply with the following. Tick the boxes when you comply, then press the publication button again")}
-    input(type="checkbox" id="publish-check-original")
-    label(for="publish-check-original") #{translator.get("My project is an original work, not a barely modified clone of an existing project.")}
-    br
-    input(type="checkbox" id="publish-check-useful")
-    label(for="publish-check-useful") #{translator.get("My project brings something interesting or fun to others, it's not just a test.")}
-    br
-    input(type="checkbox" id="publish-check-icon")
-    label(for="publish-check-icon") #{translator.get("I have created a nice icon for it (the default project icon is not accepted, please create yours!).")}
-    br
-    input(type="checkbox" id="publish-check-copyright")
-    label(for="publish-check-copyright") #{translator.get("I made the assets in my project myself (sprites, sounds, music), or I made sure that I am allowed to use and publish the assets I imported into it.")}
-    br
-    input(type="checkbox" id="publish-check-license")
-    label(for="publish-check-license") #{translator.get("If I am using an asset pack, I made sure to add the required credits and generally comply with the license of the asset packs.")}
 
   p #{translator.get("Making your project public will allow it to be listed in the Explore section of the site. Public projects can be run and used by anyone. Making a project public allows anyone to view and possibly reuse the source code.")}
 
@@ -55,6 +44,7 @@ div.publish-box#publish-box-online
     div.validate-button <i class="fa fa-plus"></i> #{translator.get("Add")}
 
   div#publish-tag-list
+  div(style="clear: both") &nbsp;
 
 div.publish-box
   div.action-box#html-export

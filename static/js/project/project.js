@@ -32,6 +32,7 @@ this.Project = (function() {
     this.tabs = data.tabs;
     this.plugins = data.plugins;
     this.libraries = data.libraries;
+    this.flags = data.flags || {};
     this.file_types = ["source", "sprite", "map", "asset", "sound", "music"];
     ref = this.file_types;
     for (k = 0, len1 = ref.length; k < len1; k++) {

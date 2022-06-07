@@ -25,30 +25,13 @@ class @Publish
     @builders.push new AppBuild(@app,"linux")
     @builders.push new AppBuild(@app,"raspbian")
 
-    @checks = ["original","useful","icon","copyright","license"]
-    for c in @checks
-      document.getElementById("publish-check-#{c}").addEventListener "input",(event)=>@checkChecks()
-
-    document.getElementById("publish-unlisted").addEventListener "change",()=>
+    document.getElementById("publish-listed").addEventListener "change",()=>
       if @app.project?
-        @app.project.unlisted = document.getElementById("publish-unlisted").checked
-        @app.options.optionChanged "unlisted",document.getElementById("publish-unlisted").checked
+        @app.project.unlisted = not document.getElementById("publish-listed").checked
+        @app.options.optionChanged "unlisted", not document.getElementById("publish-listed").checked
         @sendProjectPublic(@app.project.public)
+        @updateCheckList()
 
-  checkChecks:()->
-    all = true
-    for c in @checks
-      if not document.getElementById("publish-check-#{c}").checked
-        all = false
-
-    if all
-      document.querySelector("#publish-box .publish-button").classList.remove "disabled"
-    else if @app.project.public
-      document.querySelector("#publish-box .publish-button").classList.remove "disabled"
-    else
-      document.querySelector("#publish-box .publish-button").classList.add "disabled"
-
-    return all
 
   loadProject:(project)->
     if project.public
@@ -58,14 +41,11 @@ class @Publish
       document.getElementById("publish-box").style.display = "block"
       document.getElementById("unpublish-box").style.display = "none"
 
-    document.getElementById("publish-checklist").style.display = "none"
-    for c in @checks
-      document.getElementById("publish-check-#{c}").checked = false
-    @checkChecks()
-
     document.getElementById("publish-validate-first").style.display = if @app.user.flags["validated"] then "none" else "block"
 
-    document.getElementById("publish-unlisted").checked = project.unlisted
+    document.getElementById("publish-listed").checked = not project.unlisted
+
+    @updateCheckList()
 
     public_url = """#{location.origin.replace(".dev",".io")}/i/#{@app.project.owner.nick}/#{@app.project.slug}/"""
     document.getElementById("publish-public-link").href = public_url
@@ -90,6 +70,13 @@ class @Publish
     for build in @builders
       build.loadProject(project)
     return
+
+  updateCheckList:()->
+    project = @app.project
+    if project.public and not project.unlisted and not @app.user.flags.approved and not project.flags.approved
+      document.getElementById("publish-checklist").style.display = "block"
+    else
+      document.getElementById("publish-checklist").style.display = "none"
 
   updateTags:()->
     list = document.getElementById("publish-tag-list")
@@ -157,16 +144,15 @@ class @Publish
 
   setProjectPublic:(pub)->
     return if pub and not @app.user.flags["validated"]
-    if pub and not @checkChecks()
-      document.getElementById("publish-checklist").style.display = "block"
-      document.querySelector("#publish-box .publish-button").classList.add "disabled"
-      return
-
     if pub
-      document.getElementById("publish-checklist").style.display = "none"
+      document.getElementById("publish-checklist").style.display = "block"
+      @app.options.optionChanged "unlisted", true
+      document.getElementById("publish-listed").checked = false
+      @app.project.unlisted = true
 
     @checkDescriptionSave(true)
     @sendProjectPublic(pub)
+    @updateCheckList()
 
   sendProjectPublic:(pub)->
     if @app.project?

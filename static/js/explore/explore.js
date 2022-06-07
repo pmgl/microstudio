@@ -185,7 +185,7 @@ this.Explore = (function() {
   };
 
   Explore.prototype.createProjectBox = function(p) {
-    var author, element, icon, infobox, label, likes, runbutton, smallicon, tag, title;
+    var author, awaiting, element, icon, infobox, label, likes, runbutton, smallicon, tag, title;
     element = document.createElement("div");
     element.classList.add("explore-project-box");
     if (p.tags.length > 0) {
@@ -284,6 +284,12 @@ this.Explore = (function() {
           label.innerHTML = "<i class=\"fas fa-graduation-cap\"></i> " + (this.app.translator.get("Tutorial"));
       }
       element.appendChild(label);
+    }
+    if (!p.flags.approved && !p.owner_info.approved) {
+      awaiting = document.createElement("div");
+      awaiting.classList.add("awaiting-label");
+      awaiting.innerHTML = "Awaiting approval";
+      element.appendChild(awaiting);
     }
     runbutton.addEventListener("click", (function(_this) {
       return function(event) {
@@ -418,29 +424,66 @@ this.Explore = (function() {
         })(this)(t);
       }
     }
-    if ((this.app.user != null) && this.app.user.flags.admin) {
-      div = document.createElement("div");
-      div.innerText = "Unpublish";
-      div.style.padding = "10px";
-      div.style.background = "hsl(20,50%,50%)";
-      div.style.cursor = "pointer";
-      div.style.display = "inline-block";
-      div.style["border-radius"] = "5px";
-      div.addEventListener("click", (function(_this) {
-        return function() {
-          if (confirm("Really unpublish project?")) {
-            return _this.app.client.sendRequest({
-              name: "set_project_public",
-              id: p.id,
-              "public": false
-            }, function(msg) {
-              _this.closeDetails();
-              return _this.app.appui.setMainSection("explore", true);
-            });
-          }
-        };
-      })(this));
-      document.getElementById("project-details-description").appendChild(div);
+    if ((this.app.user != null) && (this.app.user.flags.admin || this.app.user.flags.moderator)) {
+      if (p.owner_info.approved) {
+        document.getElementById("project-details-description").appendChild(this.createModerationParagraph("User approved, project visible to everyone"));
+        document.getElementById("project-details-description").appendChild(this.createModerationButton("Remove user approval", (function(_this) {
+          return function() {
+            if (confirm("Really remove user approval?")) {
+              return _this.app.client.sendRequest({
+                name: "set_user_approved",
+                user: p.owner,
+                approved: false
+              }, function(msg) {
+                return location.reload();
+              });
+            }
+          };
+        })(this)));
+      } else if (p.flags.approved) {
+        document.getElementById("project-details-description").appendChild(this.createModerationParagraph("Project is approved and visible to everyone"));
+        document.getElementById("project-details-description").appendChild(this.createModerationButton("Remove project approval", (function(_this) {
+          return function() {
+            if (confirm("Really remove project approval?")) {
+              return _this.app.client.sendRequest({
+                name: "set_project_approved",
+                project: p.id,
+                approved: false
+              }, function(msg) {
+                return location.reload();
+              });
+            }
+          };
+        })(this)));
+      } else {
+        document.getElementById("project-details-description").appendChild(this.createModerationParagraph("Project is visible only to moderators, awaiting approval"));
+        document.getElementById("project-details-description").appendChild(this.createModerationButton("Approve project", (function(_this) {
+          return function() {
+            if (confirm("Really approve project?")) {
+              return _this.app.client.sendRequest({
+                name: "set_project_approved",
+                project: p.id,
+                approved: true
+              }, function(msg) {
+                return location.reload();
+              });
+            }
+          };
+        })(this)));
+        document.getElementById("project-details-description").appendChild(this.createModerationButton("Approve user", (function(_this) {
+          return function() {
+            if (confirm("Really approve user?")) {
+              return _this.app.client.sendRequest({
+                name: "set_user_approved",
+                user: p.owner,
+                approved: true
+              }, function(msg) {
+                return location.reload();
+              });
+            }
+          };
+        })(this)));
+      }
       div = document.createElement("div");
       div.classList.add("tag");
       div.innerText = "+ add";
@@ -467,6 +510,27 @@ this.Explore = (function() {
       this.details = new ProjectDetails(this.app);
     }
     return this.details.set(p);
+  };
+
+  Explore.prototype.createModerationParagraph = function(text) {
+    var p;
+    p = document.createElement("p");
+    p.style = "padding: 25px 0px 5px 0";
+    p.innerHTML = text;
+    return p;
+  };
+
+  Explore.prototype.createModerationButton = function(text, callback) {
+    var div;
+    div = document.createElement("div");
+    div.style = "padding: 5px 10px ; margin-left: 10px ; background:hsl(20,50%,50%) ; cursor: pointer; display: inline-block; border-radius: 5px";
+    div.innerHTML = text;
+    div.addEventListener("click", (function(_this) {
+      return function() {
+        return callback();
+      };
+    })(this));
+    return div;
   };
 
   Explore.prototype.closeProject = function(p) {
@@ -513,7 +577,7 @@ this.Explore = (function() {
   };
 
   Explore.prototype.loadProjects = function(pos) {
-    var contents, i, j, p, ref, ref1, scrollzone;
+    var contents, i, j, mod, p, ref, ref1, scrollzone;
     if (pos == null) {
       pos = 0;
     }
@@ -525,9 +589,12 @@ this.Explore = (function() {
     if (pos === 0) {
       contents.innerHTML = "";
     }
+    mod = (this.app.user != null) && (this.app.user.flags.admin || this.app.user.flags.moderator);
     for (i = j = ref = pos, ref1 = this.projects.length - 1; j <= ref1; i = j += 1) {
       p = this.projects[i];
-      contents.appendChild(this.createProjectBox(p));
+      if (mod || (p.flags.approved || p.owner_info.approved)) {
+        contents.appendChild(this.createProjectBox(p));
+      }
     }
   };
 

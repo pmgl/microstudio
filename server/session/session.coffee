@@ -107,6 +107,10 @@ class @Session
 
     @register "tutorial_completed",(msg)=>@tutorialCompleted(msg)
 
+    # moderation
+    @register "set_project_approved",(msg)=>@setProjectApproved msg
+    @register "set_user_approved",(msg)=>@setUserApproved msg
+
     for plugin in @server.plugins
       if plugin.registerSessionMessages?
         plugin.registerSessionMessages @
@@ -595,6 +599,34 @@ class @Session
           public: project.public
           request_id: data.request_id
 
+  setProjectApproved:(data)->
+    return if not @user?
+    return if not data.project?
+
+    if @user.flags.admin or @user.flags.moderator
+      project = @content.projects[data.project]
+      if project?
+        project.setFlag "approved",data.approved
+        @send
+          name:"set_project_approved"
+          id: project.id
+          approved: data.approved
+          request_id: data.request_id
+
+  setUserApproved:(data)->
+    return if not @user?
+    return if not data.user?
+
+    if @user.flags.admin or @user.flags.moderator
+      user = @content.users_by_nick[data.user]
+      if user? and not user.flags.admin and not user.flags.moderator
+        user.setFlag "approved",data.approved
+        @send
+          name:"set_project_approved"
+          user: data.user
+          approved: data.approved
+          request_id: data.request_id
+
   setProjectTags:(data)->
     return @sendError("not connected") if not @user?
     return if data.public and not @user.flags["validated"]
@@ -716,6 +748,7 @@ class @Session
           code: p.code
           description: p.description
           tags: p.tags
+          flags: p.flags
           poster: p.files? and p.files["sprites/poster.png"]?
           platforms: p.platforms
           controls: p.controls
@@ -750,6 +783,7 @@ class @Session
           code: p.code
           description: p.description
           tags: p.tags
+          flags: p.flags
           poster: p.files? and p.files["sprites/poster.png"]?
           platforms: p.platforms
           controls: p.controls
@@ -935,11 +969,13 @@ class @Session
           poster: p.files? and p.files["sprites/poster.png"]?
           type: p.type
           tags: p.tags
+          flags: p.flags
           slug: p.slug
           owner: p.owner.nick
           owner_info:
             tier: p.owner.flags.tier
             profile_image: p.owner.flags.profile_image
+            approved: p.owner.flags.approved
           likes: p.likes
           liked: @user? and @user.isLiked(p.id)
           tags: p.tags
@@ -978,14 +1014,15 @@ class @Session
           poster: p.files? and p.files["sprites/poster.png"]?
           type: p.type
           tags: p.tags
+          flags: p.flags
           slug: p.slug
           owner: p.owner.nick
           owner_info:
             tier: p.owner.flags.tier
             profile_image: p.owner.flags.profile_image
+            approved: p.owner.flags.approved
           likes: p.likes
           liked: @user? and @user.isLiked(p.id)
-          tags: p.tags
           date_published: p.first_published
           last_modified: p.last_modified
           graphics: p.graphics
@@ -1013,14 +1050,15 @@ class @Session
           poster: p.files? and p.files["sprites/poster.png"]?
           type: p.type
           tags: p.tags
+          flags: p.flags
           slug: p.slug
           owner: p.owner.nick
           owner_info:
             tier: p.owner.flags.tier
             profile_image: p.owner.flags.profile_image
+            approved: p.owner.flags.approved
           likes: p.likes
           liked: @user? and @user.isLiked(p.id)
-          tags: p.tags
           date_published: p.first_published
           last_modified: p.last_modified
           graphics: p.graphics
@@ -1050,14 +1088,15 @@ class @Session
             poster: p.files? and p.files["sprites/poster.png"]?
             type: p.type
             tags: p.tags
+            flags: p.flags
             slug: p.slug
             owner: p.owner.nick
             owner_info:
               tier: p.owner.flags.tier
               profile_image: p.owner.flags.profile_image
+              approved: p.owner.flags.approved
             likes: p.likes
             liked: @user? and @user.isLiked(p.id)
-            tags: p.tags
             date_published: p.first_published
             last_modified: p.last_modified
             graphics: p.graphics

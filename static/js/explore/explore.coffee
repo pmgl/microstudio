@@ -227,6 +227,13 @@ class @Explore
 
       element.appendChild label
 
+    if not p.flags.approved and not p.owner_info.approved
+      awaiting = document.createElement "div"
+      awaiting.classList.add "awaiting-label"
+      awaiting.innerHTML = """Awaiting approval"""
+
+      element.appendChild awaiting
+
     runbutton.addEventListener "click",(event)=>
       event.stopPropagation()
       if p.type == "tutorial"
@@ -334,25 +341,45 @@ class @Explore
                   tags: p.tags
                 },(msg)=>
                   @openProject p
-    if @app.user? and @app.user.flags.admin
-      div = document.createElement "div"
-      div.innerText = "Unpublish"
-      div.style.padding = "10px"
-      div.style.background = "hsl(20,50%,50%)"
-      div.style.cursor = "pointer"
-      div.style.display = "inline-block"
-      div.style["border-radius"] = "5px"
-      div.addEventListener "click",()=>
-        if confirm("Really unpublish project?")
-          @app.client.sendRequest {
-            name:"set_project_public"
-            id: p.id
-            public: false
-          },(msg)=>
-            @closeDetails()
-            @app.appui.setMainSection "explore",true
-
-      document.getElementById("project-details-description").appendChild div
+    if @app.user? and (@app.user.flags.admin or @app.user.flags.moderator)
+      if p.owner_info.approved
+        document.getElementById("project-details-description").appendChild @createModerationParagraph "User approved, project visible to everyone"
+        document.getElementById("project-details-description").appendChild @createModerationButton "Remove user approval",()=>
+          if confirm("Really remove user approval?")
+            @app.client.sendRequest {
+              name:"set_user_approved"
+              user: p.owner
+              approved: false
+            },(msg)=>
+              location.reload()
+      else if p.flags.approved
+        document.getElementById("project-details-description").appendChild @createModerationParagraph "Project is approved and visible to everyone"
+        document.getElementById("project-details-description").appendChild @createModerationButton "Remove project approval",()=>
+          if confirm("Really remove project approval?")
+            @app.client.sendRequest {
+              name:"set_project_approved"
+              project: p.id
+              approved: false
+            },(msg)=>
+              location.reload()
+      else
+        document.getElementById("project-details-description").appendChild @createModerationParagraph "Project is visible only to moderators, awaiting approval"
+        document.getElementById("project-details-description").appendChild @createModerationButton "Approve project",()=>
+          if confirm("Really approve project?")
+            @app.client.sendRequest {
+              name:"set_project_approved"
+              project: p.id
+              approved: true
+            },(msg)=>
+              location.reload()
+        document.getElementById("project-details-description").appendChild @createModerationButton "Approve user",()=>
+          if confirm("Really approve user?")
+            @app.client.sendRequest {
+              name:"set_user_approved"
+              user: p.owner
+              approved: true
+            },(msg)=>
+              location.reload()
 
       div = document.createElement "div"
       div.classList.add("tag")
@@ -374,6 +401,21 @@ class @Explore
     if not @details?
       @details = new ProjectDetails @app
     @details.set p
+
+
+  createModerationParagraph:(text)->
+    p = document.createElement "p"
+    p.style = "padding: 25px 0px 5px 0"
+    p.innerHTML = text
+    p
+
+  createModerationButton:(text,callback)->
+    div = document.createElement "div"
+    div.style = "padding: 5px 10px ; margin-left: 10px ; background:hsl(20,50%,50%) ; cursor: pointer; display: inline-block; border-radius: 5px"
+    div.innerHTML = text
+    div.addEventListener "click",()=>
+      callback()
+    div
 
   closeProject:(p)->
     @get("explore-back-button").style.display = "none"
@@ -414,9 +456,11 @@ class @Explore
     scrollzone = document.getElementById "explore-contents"
     if pos == 0 then contents.innerHTML = ""
 
+    mod = @app.user? and (@app.user.flags.admin or @app.user.flags.moderator)
     for i in [pos..@projects.length-1] by 1
       p = @projects[i]
-      contents.appendChild @createProjectBox p
+      if mod or (p.flags.approved or p.owner_info.approved)
+        contents.appendChild @createProjectBox p
     return
 
   update:()->

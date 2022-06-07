@@ -48,9 +48,8 @@
 }
 
 #publish-checklist {
-  clear: both ;
-  margin-bottom: 20px ;
-  padding: 1px 20px 20px 20px ;
+  margin: 20px 0 ;
+  padding: 20px ;
   border-radius: 5px ;
   background: rgba(255,255,255,.1) ;
   display: none ;

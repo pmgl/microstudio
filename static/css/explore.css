@@ -130,6 +130,18 @@
 .explore-project-box .type-label.tutorial {
   background: hsl(300,50%,50%) ;
 }
+
+.explore-project-box .awaiting-label {
+  position: absolute ;
+  top: 0 ;
+  left: 0 ;
+  padding: 5px 10px ;
+  border-bottom-right-radius: 10px ;
+  background: #000 ;
+  font-size: 14px ;
+  box-shadow: 0 0 5px #000 ;
+}
+
 .explore-project-button {
   background: hsl(160,50%,40%);
   padding: 4px 8px ;

@@ -22,6 +22,7 @@ class @Project
     @tabs = data.tabs
     @plugins = data.plugins
     @libraries = data.libraries
+    @flags = data.flags or {}
 
     @file_types = ["source","sprite","map","asset","sound","music"]
     for f in @file_types

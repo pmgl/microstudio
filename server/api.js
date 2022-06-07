@@ -5,7 +5,7 @@ this.API = (function() {
     this.app = this.webapp.app;
     this.app.get(/^\/api\/status\/?$/, (function(_this) {
       return function(req, res) {
-        var i, id, j, len, len1, list, p, post, posts, projects, response;
+        var approved, i, id, j, len, len1, list, p, post, posts, projects, response;
         if (_this.webapp.ensureDevArea(req, res)) {
           return;
         }
@@ -14,13 +14,16 @@ this.API = (function() {
         projects = [];
         for (i = 0, len = list.length; i < len; i++) {
           p = list[i];
+          approved = p.flags.approved || ((p.owner != null) && p.owner.flags.approved);
           projects.push({
             id: p.id,
             title: p.title,
             slug: p.slug,
             owner: p.owner.nick,
             url: "https://microstudio.dev/i/" + p.owner.nick + "/" + p.slug + "/",
-            date: p.first_published
+            date: p.first_published,
+            type: p.type,
+            approved: approved
           });
         }
         posts = _this.server.content.forum.posts;

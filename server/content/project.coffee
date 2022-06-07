@@ -34,6 +34,7 @@ class @Project
       @slug = data.slug
       @code = data.code or @createCode()
       @tags = data.tags or []
+      @flags = data.flags or {}
       @description = data.description or ""
       @likes = 0
       @public = data.public
@@ -125,6 +126,13 @@ class @Project
 
   setGraphics:(graphics)->
     @set "graphics",graphics
+
+  setFlag:(flag,value)->
+    if value
+      @flags[flag] = value
+    else
+      delete @flags[flag]
+    @set "flags",@flags
 
   saveUsers:()->
     data = []

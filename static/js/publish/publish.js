@@ -1,6 +1,5 @@
 this.Publish = (function() {
   function Publish(app) {
-    var c, j, len, ref;
     this.app = app;
     this.app.appui.setAction("publish-button", (function(_this) {
       return function() {
@@ -34,49 +33,20 @@ this.Publish = (function() {
     this.builders.push(new AppBuild(this.app, "macos"));
     this.builders.push(new AppBuild(this.app, "linux"));
     this.builders.push(new AppBuild(this.app, "raspbian"));
-    this.checks = ["original", "useful", "icon", "copyright", "license"];
-    ref = this.checks;
-    for (j = 0, len = ref.length; j < len; j++) {
-      c = ref[j];
-      document.getElementById("publish-check-" + c).addEventListener("input", (function(_this) {
-        return function(event) {
-          return _this.checkChecks();
-        };
-      })(this));
-    }
-    document.getElementById("publish-unlisted").addEventListener("change", (function(_this) {
+    document.getElementById("publish-listed").addEventListener("change", (function(_this) {
       return function() {
         if (_this.app.project != null) {
-          _this.app.project.unlisted = document.getElementById("publish-unlisted").checked;
-          _this.app.options.optionChanged("unlisted", document.getElementById("publish-unlisted").checked);
-          return _this.sendProjectPublic(_this.app.project["public"]);
+          _this.app.project.unlisted = !document.getElementById("publish-listed").checked;
+          _this.app.options.optionChanged("unlisted", !document.getElementById("publish-listed").checked);
+          _this.sendProjectPublic(_this.app.project["public"]);
+          return _this.updateCheckList();
         }
       };
     })(this));
   }
 
-  Publish.prototype.checkChecks = function() {
-    var all, c, j, len, ref;
-    all = true;
-    ref = this.checks;
-    for (j = 0, len = ref.length; j < len; j++) {
-      c = ref[j];
-      if (!document.getElementById("publish-check-" + c).checked) {
-        all = false;
-      }
-    }
-    if (all) {
-      document.querySelector("#publish-box .publish-button").classList.remove("disabled");
-    } else if (this.app.project["public"]) {
-      document.querySelector("#publish-box .publish-button").classList.remove("disabled");
-    } else {
-      document.querySelector("#publish-box .publish-button").classList.add("disabled");
-    }
-    return all;
-  };
-
   Publish.prototype.loadProject = function(project) {
-    var b, build, c, j, k, len, len1, public_url, ref, ref1;
+    var b, build, j, len, public_url, ref;
     if (project["public"]) {
       document.getElementById("publish-box").style.display = "none";
       document.getElementById("unpublish-box").style.display = "block";
@@ -84,15 +54,9 @@ this.Publish = (function() {
       document.getElementById("publish-box").style.display = "block";
       document.getElementById("unpublish-box").style.display = "none";
     }
-    document.getElementById("publish-checklist").style.display = "none";
-    ref = this.checks;
-    for (j = 0, len = ref.length; j < len; j++) {
-      c = ref[j];
-      document.getElementById("publish-check-" + c).checked = false;
-    }
-    this.checkChecks();
     document.getElementById("publish-validate-first").style.display = this.app.user.flags["validated"] ? "none" : "block";
-    document.getElementById("publish-unlisted").checked = project.unlisted;
+    document.getElementById("publish-listed").checked = !project.unlisted;
+    this.updateCheckList();
     public_url = (location.origin.replace(".dev", ".io")) + "/i/" + this.app.project.owner.nick + "/" + this.app.project.slug + "/";
     document.getElementById("publish-public-link").href = public_url;
     document.getElementById("publish-public-link").innerText = public_url;
@@ -115,10 +79,20 @@ this.Publish = (function() {
         return window.location = loc + "publish/html/";
       };
     })(this);
-    ref1 = this.builders;
-    for (k = 0, len1 = ref1.length; k < len1; k++) {
-      build = ref1[k];
+    ref = this.builders;
+    for (j = 0, len = ref.length; j < len; j++) {
+      build = ref[j];
       build.loadProject(project);
+    }
+  };
+
+  Publish.prototype.updateCheckList = function() {
+    var project;
+    project = this.app.project;
+    if (project["public"] && !project.unlisted && !this.app.user.flags.approved && !project.flags.approved) {
+      return document.getElementById("publish-checklist").style.display = "block";
+    } else {
+      return document.getElementById("publish-checklist").style.display = "none";
     }
   };
 
@@ -224,16 +198,15 @@ this.Publish = (function() {
     if (pub && !this.app.user.flags["validated"]) {
       return;
     }
-    if (pub && !this.checkChecks()) {
-      document.getElementById("publish-checklist").style.display = "block";
-      document.querySelector("#publish-box .publish-button").classList.add("disabled");
-      return;
-    }
     if (pub) {
-      document.getElementById("publish-checklist").style.display = "none";
+      document.getElementById("publish-checklist").style.display = "block";
+      this.app.options.optionChanged("unlisted", true);
+      document.getElementById("publish-listed").checked = false;
+      this.app.project.unlisted = true;
     }
     this.checkDescriptionSave(true);
-    return this.sendProjectPublic(pub);
+    this.sendProjectPublic(pub);
+    return this.updateCheckList();
   };
 
   Publish.prototype.sendProjectPublic = function(pub) {
