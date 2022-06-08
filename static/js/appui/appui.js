@@ -77,6 +77,7 @@ AppUI = (function() {
       document.getElementById("usersetting-block-email").style.display = "none";
       document.getElementById("usersetting-block-newsletter").style.display = "none";
       document.getElementById("usersetting-block-account-type").style.display = "none";
+      document.body.classList.add("standalone");
     }
     this.createLoginFunctions();
     advanced = document.getElementById("advanced-create-project-options-button");

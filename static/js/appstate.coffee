@@ -101,6 +101,11 @@ class @AppState
       for p in ["about","tutorials","explore","documentation"]
         if location.pathname.startsWith("/#{p}/") or location.pathname == "/#{p}"
           history.replaceState {name:p},"",location.pathname
+          if p == "explore"
+            s = location.pathname.split("/")[2]
+            if s in ["library","plugin","tutorial","app","all"]
+              @app.explore.setProjectType s
+
           return @app.appui.setMainSection ((p)=>{"documentation":"help"}[p] or p)(p)
 
       if @app.user?

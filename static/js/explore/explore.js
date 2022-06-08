@@ -49,21 +49,10 @@ this.Explore = (function() {
     })(this));
     document.getElementById("explore-type-button").addEventListener("click", (function(_this) {
       return function() {
-        var e, j, len, ref, s;
+        var s;
         s = _this.project_types.indexOf(_this.project_type);
         s = (s + 1) % _this.project_types.length;
-        _this.project_type = _this.project_types[s];
-        e = document.getElementById("explore-type-button");
-        ref = _this.project_types;
-        for (j = 0, len = ref.length; j < len; j++) {
-          s = ref[j];
-          if (s === _this.project_type) {
-            e.classList.add(s);
-          } else {
-            e.classList.remove(s);
-          }
-        }
-        document.querySelector("#explore-type-button span").innerText = _this.app.translator.get(_this.project_type.substring(0, 1).toUpperCase() + _this.project_type.substring(1));
+        _this.setProjectType(_this.project_types[s]);
         return _this.query();
       };
     })(this));
@@ -154,6 +143,22 @@ this.Explore = (function() {
       };
     })(this));
   }
+
+  Explore.prototype.setProjectType = function(project_type) {
+    var e, j, len, ref, s;
+    this.project_type = project_type;
+    e = document.getElementById("explore-type-button");
+    ref = this.project_types;
+    for (j = 0, len = ref.length; j < len; j++) {
+      s = ref[j];
+      if (s === this.project_type) {
+        e.classList.add(s);
+      } else {
+        e.classList.remove(s);
+      }
+    }
+    return document.querySelector("#explore-type-button span").innerText = this.app.translator.get(this.project_type.substring(0, 1).toUpperCase() + this.project_type.substring(1));
+  };
 
   Explore.prototype.closeDetails = function() {
     return this.closeProject();

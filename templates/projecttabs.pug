@@ -9,6 +9,12 @@ div.projecttabs#projecttabs
   div.projectoption
     h3 #{translator.get("Plug-ins")}
 
+    div.plugins-standalone-info
+      p #{translator.get("You can browse public plug-ins on microstudio.dev. To use them in the standalone app, export them from microstudio.dev and import them in the standalone app.")}
+      a.button(href="https://microstudio.dev/explore/plugin/" target="_blank")
+        i.fas.fa-window-maximize
+        span #{translator.get("Browse public plug-ins")}
+
     div#project-tabs-your-plugins
       h4 #{translator.get("Your Plug-ins")}
       div.plugin-list

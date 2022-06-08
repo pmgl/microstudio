@@ -306,3 +306,22 @@
   height: 100% ;
   border: none ;
 }
+
+.projectoption .button {
+  display: inline-block ;
+  background: hsl(200,50%,50%) ;
+  color: #FFF ;
+  padding: 5px 10px ;
+  border-radius: 5px ;
+  text-decoration: none ;
+}
+.projectoption .button i {
+  margin-right: 10px ;
+}
+.plugins-standalone-info {
+  display: none ;
+}
+
+body.standalone .plugins-standalone-info {
+  display: block ;
+}

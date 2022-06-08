@@ -145,6 +145,12 @@ this.AppState = (function() {
           history.replaceState({
             name: p
           }, "", location.pathname);
+          if (p === "explore") {
+            s = location.pathname.split("/")[2];
+            if (s === "library" || s === "plugin" || s === "tutorial" || s === "app" || s === "all") {
+              this.app.explore.setProjectType(s);
+            }
+          }
           return this.app.appui.setMainSection(((function(_this) {
             return function(p) {
               return {

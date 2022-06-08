@@ -38,14 +38,7 @@ class @Explore
     document.getElementById("explore-type-button").addEventListener "click",()=>
       s = @project_types.indexOf @project_type
       s = (s+1)%@project_types.length
-      @project_type = @project_types[s]
-      e = document.getElementById("explore-type-button")
-      for s in @project_types
-        if s == @project_type
-          e.classList.add s
-        else
-          e.classList.remove s
-      document.querySelector("#explore-type-button span").innerText = @app.translator.get @project_type.substring(0,1).toUpperCase()+@project_type.substring(1)
+      @setProjectType @project_types[s]
       @query()
 
     document.getElementById("explore-search-input").addEventListener "input",()=>
@@ -111,6 +104,15 @@ class @Explore
         bar.classList.add "collapsed"
         icon.classList.add "fa-caret-right"
         icon.classList.remove "fa-caret-down"
+
+  setProjectType:(@project_type)->
+    e = document.getElementById("explore-type-button")
+    for s in @project_types
+      if s == @project_type
+        e.classList.add s
+      else
+        e.classList.remove s
+    document.querySelector("#explore-type-button span").innerText = @app.translator.get @project_type.substring(0,1).toUpperCase()+@project_type.substring(1)
 
   closeDetails:()->
     @closeProject()

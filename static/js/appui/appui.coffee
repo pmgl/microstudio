@@ -70,6 +70,8 @@ class AppUI
       document.getElementById("usersetting-block-newsletter").style.display = "none"
       document.getElementById("usersetting-block-account-type").style.display = "none"
 
+      document.body.classList.add "standalone"
+
     #@setSection("options")
     @createLoginFunctions()
 

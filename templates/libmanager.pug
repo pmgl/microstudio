@@ -2,6 +2,12 @@ div.lib-manager#lib-manager
   div.projectoption
     h3 #{translator.get("Libraries")}
 
+    div.plugins-standalone-info
+      p #{translator.get("You can browse public libraries on microstudio.dev. To use them in the standalone app, export them from microstudio.dev and import them in the standalone app.")}
+      a.button(href="https://microstudio.dev/explore/library/" target="_blank")
+        i.fas.fa-window-maximize
+        span #{translator.get("Browse public libraries")}
+
     div#your-libs
       h4 #{translator.get("Your Libraries")}
       div.lib-list.plugin-list
