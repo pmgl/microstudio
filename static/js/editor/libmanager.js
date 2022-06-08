@@ -77,6 +77,10 @@ this.LibManager = (function() {
     }
   };
 
+  LibManager.prototype.resetLibs = function() {
+    return this.libs_fetched = false;
+  };
+
   LibManager.prototype.fetchAvailableLibs = function(callback) {
     var box, i, len, p, ref, your_libs, your_list;
     if (this.libs_fetched) {

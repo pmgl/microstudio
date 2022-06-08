@@ -72,6 +72,8 @@ class @LibManager
     else
       @setLibActive id,true
 
+  resetLibs:()->
+    @libs_fetched = false
 
   fetchAvailableLibs:(callback)->
     return callback() if @libs_fetched

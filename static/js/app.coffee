@@ -189,6 +189,9 @@ class App
             @appui.showNotification @translator.get "Project imported successfully"
             @appui.resetImportButton()
             @importing = false
+            @tab_manager.resetPlugins()
+            @lib_manager.resetLibs()
+
       ),(progress)=>
         @appui.setImportProgress(progress)
 

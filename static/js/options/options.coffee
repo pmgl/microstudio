@@ -172,6 +172,9 @@ class @Options
       value: value
     },(msg)=>
 
+    @app.tab_manager.resetPlugins()
+    @app.lib_manager.resetLibs()
+
   graphicsChanged:(value)->
     @app.project.setGraphics(value)
     @app.debug.updateDebuggerVisibility()

@@ -247,7 +247,7 @@ this.Options = (function() {
   Options.prototype.typeChanged = function(value) {
     this.app.project.setType(value);
     this.library_tip.style.display = value === "library" ? "block" : "none";
-    return this.app.client.sendRequest({
+    this.app.client.sendRequest({
       name: "set_project_option",
       project: this.app.project.id,
       option: "type",
@@ -255,6 +255,8 @@ this.Options = (function() {
     }, (function(_this) {
       return function(msg) {};
     })(this));
+    this.app.tab_manager.resetPlugins();
+    return this.app.lib_manager.resetLibs();
   };
 
   Options.prototype.graphicsChanged = function(value) {

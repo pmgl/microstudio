@@ -200,6 +200,10 @@ this.TabManager = (function() {
     }
   };
 
+  TabManager.prototype.resetPlugins = function() {
+    return this.plugins_fetched = false;
+  };
+
   TabManager.prototype.fetchAvailablePlugins = function(callback) {
     var box, i, len, p, ref, your_list, your_plugins;
     if (this.plugins_fetched) {

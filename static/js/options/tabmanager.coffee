@@ -162,6 +162,9 @@ class @TabManager
       if @plugin_views[id]?
         @plugin_views[id].setFolder e.value
 
+  resetPlugins:()->
+    @plugins_fetched = false
+
   fetchAvailablePlugins:(callback)->
     return callback() if @plugins_fetched
 

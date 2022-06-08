@@ -247,7 +247,9 @@ App = (function() {
               _this.updateProjectList(msg.id);
               _this.appui.showNotification(_this.translator.get("Project imported successfully"));
               _this.appui.resetImportButton();
-              return _this.importing = false;
+              _this.importing = false;
+              _this.tab_manager.resetPlugins();
+              return _this.lib_manager.resetLibs();
           }
         }), function(progress) {
           return _this.appui.setImportProgress(progress);
