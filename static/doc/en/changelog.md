@@ -1,5 +1,13 @@
 ## Changelog
 
+### Update 2022-06-14
+* `screen.setDrawRotation()` and `screen.setDrawScale()` do not affect `screen.drawLine()`, `screen.drawPolyline()`,
+`screen.drawPolygon()` and `screen.fillPolygon()` anymore.
+It makes more sense like this, as the initial choice to make them affected was made because of the lack of `screen.setRotation()` and
+`screen.setScale()` ; these two functions have since been added.
+If you used `screen.setDrawRotation()` or `screen.setDrawScale()` to affect drawing lines and polygons in one of your projects,
+this update might break it.
+
 ### Update 2022-06-07
 * Publishing to Explore section made more friendly and allows screening clones and empty projects
 * Improved microScript 2.0 warning reporting when live coding

@@ -279,8 +279,11 @@ this.msImage = (function() {
     return this.object_scale_y = object_scale_y;
   };
 
-  msImage.prototype.initDrawOp = function(x, y) {
+  msImage.prototype.initDrawOp = function(x, y, object_transform) {
     var res;
+    if (object_transform == null) {
+      object_transform = true;
+    }
     res = false;
     if (this.image_transform) {
       this.context.save();
@@ -290,7 +293,7 @@ this.msImage = (function() {
       this.context.rotate(this.rotation / 180 * Math.PI);
       this.context.translate(x, y);
     }
-    if (this.object_rotation !== 0 || this.object_scale_x !== 1 || this.object_scale_y !== 1) {
+    if (object_transform && (this.object_rotation !== 0 || this.object_scale_x !== 1 || this.object_scale_y !== 1)) {
       if (!res) {
         this.context.save();
         res = true;
@@ -409,7 +412,7 @@ this.msImage = (function() {
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
     this.context.lineWidth = this.line_width;
-    transform = this.initDrawOp(0, 0);
+    transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(x1, y1);
     this.context.lineTo(x2, y2);
@@ -437,7 +440,7 @@ this.msImage = (function() {
       return;
     }
     len = Math.floor(args.length / 2);
-    transform = this.initDrawOp(0, 0);
+    transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(args[0], args[1]);
     for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
@@ -467,7 +470,7 @@ this.msImage = (function() {
       return;
     }
     len = Math.floor(args.length / 2);
-    transform = this.initDrawOp(0, 0);
+    transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(args[0], args[1]);
     for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
@@ -498,7 +501,7 @@ this.msImage = (function() {
       return;
     }
     len = Math.floor(args.length / 2);
-    transform = this.initDrawOp(0, 0);
+    transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(args[0], args[1]);
     for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {

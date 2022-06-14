@@ -267,7 +267,7 @@ class @Screen
 
   setDrawScale:(@object_scale_x,@object_scale_y=@object_scale_x)->
 
-  initDrawOp:(x,y)->
+  initDrawOp:(x,y,object_transform=true)->
     res = false
 
     if @screen_transform
@@ -278,7 +278,7 @@ class @Screen
       @context.rotate -@rotation/180*Math.PI
       @context.translate x,y
 
-    if @object_rotation != 0 or @object_scale_x != 1 or @object_scale_y != 1
+    if object_transform and (@object_rotation != 0 or @object_scale_x != 1 or @object_scale_y != 1)
       if not res
         @context.save()
         res = true
@@ -374,7 +374,7 @@ class @Screen
     @setColor color
     @context.globalAlpha = @alpha
     @context.lineWidth = @line_width
-    transform = @initDrawOp 0,0
+    transform = @initDrawOp 0,0,false
     @context.beginPath()
     @context.moveTo x1,-y1
     @context.lineTo x2,-y2
@@ -394,7 +394,7 @@ class @Screen
     @context.lineWidth = @line_width
     return if args.length < 4
     len = Math.floor(args.length/2)
-    transform = @initDrawOp 0,0
+    transform = @initDrawOp 0,0,false
     @context.beginPath()
     @context.moveTo args[0],-args[1]
     for i in [1..len-1]
@@ -417,7 +417,7 @@ class @Screen
     @context.lineWidth = @line_width
     return if args.length<4
     len = Math.floor(args.length/2)
-    transform = @initDrawOp 0,0
+    transform = @initDrawOp 0,0,false
     @context.beginPath()
     @context.moveTo args[0],-args[1]
     for i in [1..len-1]
@@ -440,7 +440,7 @@ class @Screen
     @context.lineWidth = @line_width
     return if args.length<4
     len = Math.floor(args.length/2)
-    transform = @initDrawOp 0,0
+    transform = @initDrawOp 0,0,false
     @context.beginPath()
     @context.moveTo args[0],-args[1]
     for i in [1..len-1]

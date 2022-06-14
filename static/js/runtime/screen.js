@@ -425,8 +425,11 @@ this.Screen = (function() {
     this.object_scale_y = object_scale_y != null ? object_scale_y : this.object_scale_x;
   };
 
-  Screen.prototype.initDrawOp = function(x, y) {
+  Screen.prototype.initDrawOp = function(x, y, object_transform) {
     var res;
+    if (object_transform == null) {
+      object_transform = true;
+    }
     res = false;
     if (this.screen_transform) {
       this.context.save();
@@ -436,7 +439,7 @@ this.Screen = (function() {
       this.context.rotate(-this.rotation / 180 * Math.PI);
       this.context.translate(x, y);
     }
-    if (this.object_rotation !== 0 || this.object_scale_x !== 1 || this.object_scale_y !== 1) {
+    if (object_transform && (this.object_rotation !== 0 || this.object_scale_x !== 1 || this.object_scale_y !== 1)) {
       if (!res) {
         this.context.save();
         res = true;
@@ -548,7 +551,7 @@ this.Screen = (function() {
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
     this.context.lineWidth = this.line_width;
-    transform = this.initDrawOp(0, 0);
+    transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(x1, -y1);
     this.context.lineTo(x2, -y2);
@@ -575,7 +578,7 @@ this.Screen = (function() {
       return;
     }
     len = Math.floor(args.length / 2);
-    transform = this.initDrawOp(0, 0);
+    transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(args[0], -args[1]);
     for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
@@ -604,7 +607,7 @@ this.Screen = (function() {
       return;
     }
     len = Math.floor(args.length / 2);
-    transform = this.initDrawOp(0, 0);
+    transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(args[0], -args[1]);
     for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
@@ -634,7 +637,7 @@ this.Screen = (function() {
       return;
     }
     len = Math.floor(args.length / 2);
-    transform = this.initDrawOp(0, 0);
+    transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(args[0], -args[1]);
     for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
