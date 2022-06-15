@@ -1,7 +1,7 @@
 class @Parser
   constructor:(@input,@filename="")->
     if /^\s*\/\/\s*javascript\s*\n/.test @input
-      @input = 'system.javascript("""\n\n'+ @input + '\n\n""")'
+      @input = 'system.javascript("""\n\n'+ @input.replace(/\\/g,"\\\\") + '\n\n""")'
 
     @tokenizer = new Tokenizer(@input,@filename)
     @program = new Program()

@@ -3,7 +3,7 @@ this.Parser = (function() {
     this.input = input;
     this.filename = filename != null ? filename : "";
     if (/^\s*\/\/\s*javascript\s*\n/.test(this.input)) {
-      this.input = 'system.javascript("""\n\n' + this.input + '\n\n""")';
+      this.input = 'system.javascript("""\n\n' + this.input.replace(/\\/g, "\\\\") + '\n\n""")';
     }
     this.tokenizer = new Tokenizer(this.input, this.filename);
     this.program = new Program();
