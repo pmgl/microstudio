@@ -128,7 +128,7 @@ class @Sync
               file: file
 
         if @checklist.length == 0
-          text = @app.translator.get("Your project is 100% in sync with %PROJECT%").replace("%PROJECT%","#{@app.project.title}  - [#{@app.project.slug}]")
+          text = @app.translator.get("Your project is 100% in sync with %PROJECT%").replace("%PROJECT%","#{@source.title}  - [#{@source.slug}]")
           @project_sync_list.innerHTML = """<h3>#{text}</h3>"""
           @project_sync_proceed.style.display = "none"
         else

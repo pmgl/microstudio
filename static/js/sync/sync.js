@@ -164,7 +164,7 @@ this.Sync = (function() {
             }
           }
           if (_this.checklist.length === 0) {
-            text = _this.app.translator.get("Your project is 100% in sync with %PROJECT%").replace("%PROJECT%", _this.app.project.title + "  - [" + _this.app.project.slug + "]");
+            text = _this.app.translator.get("Your project is 100% in sync with %PROJECT%").replace("%PROJECT%", _this.source.title + "  - [" + _this.source.slug + "]");
             _this.project_sync_list.innerHTML = "<h3>" + text + "</h3>";
             return _this.project_sync_proceed.style.display = "none";
           } else {
