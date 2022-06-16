@@ -143,6 +143,11 @@ this.Session = (function() {
         return _this.setProjectOption(msg);
       };
     })(this));
+    this.register("set_project_property", (function(_this) {
+      return function(msg) {
+        return _this.setProjectProperty(msg);
+      };
+    })(this));
     this.register("set_project_public", (function(_this) {
       return function(msg) {
         return _this.setProjectPublic(msg);
@@ -216,6 +221,11 @@ this.Session = (function() {
     this.register("get_file_versions", (function(_this) {
       return function(msg) {
         return _this.getFileVersions(msg);
+      };
+    })(this));
+    this.register("sync_project_files", (function(_this) {
+      return function(msg) {
+        return _this.syncProjectFiles(msg);
       };
     })(this));
     this.register("invite_to_project", (function(_this) {
@@ -743,6 +753,36 @@ this.Session = (function() {
     });
   };
 
+  Session.prototype.syncProjectFiles = function(data) {
+    var dest, source;
+    if (data.request_id == null) {
+      return this.sendError("Bad request");
+    }
+    if (this.user == null) {
+      return this.sendError("not connected", data.request_id);
+    }
+    if (data.source == null) {
+      return this.sendError("bad request", data.request_id);
+    }
+    if (data.dest == null) {
+      return this.sendError("bad request", data.request_id);
+    }
+    if (data.ops == null) {
+      return this.sendError("bad request", data.request_id);
+    }
+    dest = this.content.projects[data.dest];
+    if (dest != null) {
+      this.setCurrentProject(dest);
+      source = this.content.projects[data.source];
+      if (source != null) {
+        if (!dest.manager.canReadProject(this.user, source)) {
+          return this.sendError("access denied", data.request_id);
+        }
+        return dest.manager.syncFiles(this, data, source);
+      }
+    }
+  };
+
   Session.prototype.importProject = function(data) {
     var buffer, projectFileName, zip;
     if (data.request_id == null) {
@@ -1179,6 +1219,23 @@ this.Session = (function() {
     }
   };
 
+  Session.prototype.setProjectProperty = function(data) {
+    var project;
+    if (this.user == null) {
+      return this.sendError("not connected");
+    }
+    if (data.project == null) {
+      return this.sendError("no project");
+    }
+    if (data.property == null) {
+      return this.sendError("no property");
+    }
+    project = this.user.findProject(data.project);
+    if (project != null) {
+      return project.setProperty(data.property, data.value);
+    }
+  };
+
   Session.prototype.deleteProject = function(data) {
     var project;
     if (this.user == null) {
@@ -1229,6 +1286,7 @@ this.Session = (function() {
           tabs: p.tabs,
           plugins: p.plugins,
           libraries: p.libraries,
+          properties: p.properties,
           date_created: p.date_created,
           last_modified: p.last_modified,
           "public": p["public"],

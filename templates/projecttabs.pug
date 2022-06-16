@@ -1,7 +1,7 @@
 div.projecttabs#projecttabs
   div.projectoption
     h3 #{translator.get("Active Tabs")}
-    each tab in ["Code","Sprites","Maps","Sounds","Music","Assets","Doc","Publish"]
+    each tab in ["Code","Sprites","Maps","Sounds","Music","Assets","Doc","Sync","Publish"]
       input(type="checkbox" id="project-option-active-tab-"+tab.toLowerCase())
       label(for="project-option-active-tab-"+tab.toLowerCase()) #{translator.get(tab)}
       br

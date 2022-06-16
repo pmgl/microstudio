@@ -678,7 +678,7 @@ padding-left: 2px ;
 .sidemenu li .fa-volume-up { color: hsla(135,100%,80%,.85);}
 .sidemenu li .fa-music { color: hsla(180,100%,80%,.85);}
 .sidemenu li .fa-book { color: hsla(225,100%,80%,.85);}
-.sidemenu li .fa-server { color: hsla(270,100%,80%,.85);}
+.sidemenu li .fa-sync { color: hsla(270,100%,80%,.85);}
 .sidemenu li .fa-cogs { color: hsla(315,100%,80%,.85);}
 .sidemenu li .fa-upload { color: hsla(0,100%,80%,.85);}
 
@@ -689,7 +689,7 @@ padding-left: 2px ;
 .sidemenu li.selected .fa-volume-up { color: hsla(135,100%,70%,1);}
 .sidemenu li.selected .fa-music { color: hsla(180,100%,70%,1);}
 .sidemenu li.selected .fa-book { color: hsla(225,100%,70%,1);}
-.sidemenu li.selected .fa-server { color: hsla(270,100%,70%,1);}
+.sidemenu li.selected .fa-sync { color: hsla(270,100%,70%,1);}
 .sidemenu li.selected .fa-cogs { color: hsla(315,100%,70%,1);}
 .sidemenu li.selected .fa-upload { color: hsla(0,100%,70%,1);}
 
@@ -700,7 +700,7 @@ padding-left: 2px ;
 .sidemenu li#menuitem-sounds.selected { width: 56px ; border-left: solid 4px hsl(135,50%,50%) ; }
 .sidemenu li#menuitem-music.selected { width: 56px ; border-left: solid 4px hsl(180,50%,50%) ; }
 .sidemenu li#menuitem-doc.selected { width: 56px ; border-left: solid 4px hsl(225,50%,50%) ; }
-.sidemenu li#menuitem-server.selected { width: 56px ; border-left: solid 4px hsl(270,50%,50%) ; }
+.sidemenu li#menuitem-sync.selected { width: 56px ; border-left: solid 4px hsl(270,50%,50%) ; }
 .sidemenu li#menuitem-options.selected { width: 56px ; border-left: solid 4px hsl(315,50%,50%) ; }
 .sidemenu li#menuitem-publish.selected { width: 56px ; border-left: solid 4px hsl(0,50%,50%) ; }
 

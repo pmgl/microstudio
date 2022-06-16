@@ -14,6 +14,12 @@ class @ProjectManager
       return true if link.accepted and (link.user == user)
     false
 
+  canReadProject:(user,project)->
+    return true if user == project.owner or project.public
+    for link in project.users
+      return true if link.accepted and (link.user == user)
+    false
+
   canWrite:(user)->
     return true if user == @project.owner
     for link in @project.users
@@ -367,6 +373,7 @@ class @ProjectManager
       if content?
         @project.content.files.write dest,content,()=>
           @setFileProperties data.dest,@getFileProperties(data.source)
+          @setFileVersion data.dest,@getFileVersion(data.source)
           @project.deleteFileInfo(data.source)
           @setFileSize data.dest,content.length
           @project.touch()
@@ -463,6 +470,68 @@ class @ProjectManager
           funk()
       else
         callback()
+    funk()
+
+  syncFiles:(session,data,source)->
+    ops = data.ops
+    return if not @canWrite session.user
+    return if not Array.isArray ops
+
+    syncFile = (f,callback)=>
+      file = "#{source.owner.id}/#{source.id}/#{f}"
+
+      source.content.files.read file,"binary",(content)=>
+        if content?
+          file = "#{@project.owner.id}/#{@project.id}/#{f}"
+          @project.content.files.write file,content,()=>
+            callback() if callback?
+
+          if f.startsWith("assets/") or f.startsWith("sounds/") or f.startsWith("music/")
+            th = f.split("/")
+            th[0] += "_th"
+            th[1] = th[1].split(".")[0]+".png"
+            f = th.join("/")
+
+            file = "#{source.owner.id}/#{source.id}/#{f}"
+            source.content.files.read file,"binary",(content)=>
+              if content?
+                file = "#{@project.owner.id}/#{@project.id}/#{f}"
+                @project.content.files.write file,content,()=>
+
+        else
+          callback() if callback?
+
+    funk = ()=>
+      if ops.length > 0
+        op = ops.splice(0,1)[0]
+
+        return if not (op.file? and op.file.path? and op.file.version? and op.file.size?)
+
+        if op.op == "sync"
+          f = op.file
+          syncFile f.path,()=>
+            @setFileVersion f.path,f.version
+            @setFileSize f.path,f.size
+            if f.properties?
+              @setFileProperties f.path,f.properties
+            funk()
+            @propagateFileChange null,f.path,f.version,undefined,f.properties or {}
+        else if op.op == "delete"
+          f = op.file
+          file = "#{@project.owner.id}/#{@project.id}/#{f.path}"
+
+          @project.content.files.delete file,()=>
+            @project.deleteFileInfo(f.path)
+            funk()
+            @propagateFileDeleted null,f.path
+      else
+        session.send
+          name: "sync_project_files"
+          status: "done"
+          request_id: data.request_id
+
+        @project.touch()
+
     funk()
 
 module.exports = @ProjectManager

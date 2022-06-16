@@ -68,6 +68,7 @@ this.Project = (function() {
       this.tabs = data.tabs;
       this.plugins = data.plugins;
       this.libraries = data.libraries;
+      this.properties = data.properties || {};
       this.type = data.type || "app";
       this.users = [];
       this.comments = new Comments(this, data.comments);
@@ -181,6 +182,15 @@ this.Project = (function() {
       delete this.flags[flag];
     }
     return this.set("flags", this.flags);
+  };
+
+  Project.prototype.setProperty = function(prop, value) {
+    if (value != null) {
+      this.properties[prop] = value;
+    } else {
+      delete this.properties[prop];
+    }
+    return this.set("properties", this.properties);
   };
 
   Project.prototype.saveUsers = function() {

@@ -4,7 +4,7 @@ AppUI = (function() {
   function AppUI(app1) {
     var advanced, fn, fn1, j, k, len, len1, ref, ref1, s;
     this.app = app1;
-    this.sections = ["code", "sprites", "maps", "assets", "sounds", "music", "doc", "options", "publish", "tabs"];
+    this.sections = ["code", "sprites", "maps", "assets", "sounds", "music", "doc", "sync", "options", "publish", "tabs"];
     this.menuoptions = ["home", "explore", "projects", "help", "tutorials", "about", "usersettings"];
     ref = this.sections;
     fn = (function(_this) {
@@ -456,6 +456,9 @@ AppUI = (function() {
     }
     if (section === "assets") {
       this.app.assets_manager.update();
+    }
+    if (section === "sync") {
+      this.app.sync.update();
     }
     if (section === "options") {
       this.app.options.update();

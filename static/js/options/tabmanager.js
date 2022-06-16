@@ -384,6 +384,7 @@ this.TabManager = (function() {
     sounds: true,
     music: true,
     assets: false,
+    sync: false,
     doc: true,
     publish: true
   };

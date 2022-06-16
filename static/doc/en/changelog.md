@@ -1,5 +1,14 @@
 ## Changelog
 
+### Update 2022-06-16
+* New project synchronization feature, accessible from the new project tab "Sync" (needs to be enabled)
+  * You have a public project A that you consider "released" but want to update from time to time.
+  * Clone your project A ; let's call the clone B
+  * work on project B without worrying to break anything in your public project A (which remains untouched for now)
+  * once you have a solid new version of B, open project A and activate the tab "Sync"
+  * in tab Sync (of project A), select B as synchronization source
+  * review the list of changes and proceed ; your project A has pulled all the changes you made to B
+
 ### Update 2022-06-14
 * `screen.setDrawRotation()` and `screen.setDrawScale()` do not affect `screen.drawLine()`, `screen.drawPolyline()`,
 `screen.drawPolygon()` and `screen.fillPolygon()` anymore.

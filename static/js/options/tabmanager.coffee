@@ -306,5 +306,6 @@ class @TabManager
     sounds: true
     music: true
     assets: false
+    sync: false
     doc: true
     publish: true

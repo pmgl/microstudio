@@ -1,0 +1,76 @@
+.top-section-border {
+  border-top: solid 10px hsl(200,30%,30%);
+}
+
+.padding40 {
+  padding: 40px ;
+}
+
+.padding80 {
+  padding: 80px ;
+}
+
+.select1 {
+  font-size: 16px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  border: none;
+  padding: 2px;
+  border-radius: 5px ;
+  height: 30px;
+  font-family: "Source Sans Pro",Verdana ;
+}
+
+.select1 option {
+  background-color: hsl(200,50%,10%);
+  padding: 2px ;
+}
+
+.select1:focus {
+  outline: none ;
+  background: rgba(255,255,255,.4);
+}
+
+.input1 {
+  border: none ;
+  border-radius: 3px ;
+  font-size: 16px ;
+  padding: 5px ;
+  background: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  margin: 5px 20px 5px 0px ;
+  font-family: "Source Sans Pro",Verdana ;
+}
+
+.input1:focus {
+  outline: none ;
+  background: rgba(255,255,255,.3);
+}
+.input1::placeholder {
+  color: rgba(0,0,0,.2) ;
+}
+
+
+.button1 {
+  cursor: pointer ;
+  display: inline-block ;
+  padding: 5px 10px ;
+  border-radius: 5px ;
+  background: hsl(200,50%,50%) ;
+  color: #FFF ;
+}
+
+.button1 i {
+  margin-right: 5px ;
+}
+
+.betapill {
+  font-size: 12px ;
+  background: hsl(0,50%,50%) ;
+  color: #FFF ;
+  border-radius: 20px ;
+  padding: 3px 8px ;
+  position: absolute ;
+  right: -40px ;
+  top: -10px ;
+}

@@ -4,8 +4,8 @@ var FILE_TYPES,
 FILE_TYPES = require(__dirname + "/../file_types.js");
 
 this.ProjectManager = (function() {
-  function ProjectManager(project) {
-    this.project = project;
+  function ProjectManager(project1) {
+    this.project = project1;
     this.importFiles = bind(this.importFiles, this);
     this.users = [];
     this.listeners = [];
@@ -20,6 +20,21 @@ this.ProjectManager = (function() {
       return true;
     }
     ref = this.project.users;
+    for (i = 0, len = ref.length; i < len; i++) {
+      link = ref[i];
+      if (link.accepted && (link.user === user)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  ProjectManager.prototype.canReadProject = function(user, project) {
+    var i, len, link, ref;
+    if (user === project.owner || project["public"]) {
+      return true;
+    }
+    ref = project.users;
     for (i = 0, len = ref.length; i < len; i++) {
       link = ref[i];
       if (link.accepted && (link.user === user)) {
@@ -547,6 +562,7 @@ this.ProjectManager = (function() {
         if (content != null) {
           return _this.project.content.files.write(dest, content, function() {
             _this.setFileProperties(data.dest, _this.getFileProperties(data.source));
+            _this.setFileVersion(data.dest, _this.getFileVersion(data.source));
             _this.project.deleteFileInfo(data.source);
             _this.setFileSize(data.dest, content.length);
             _this.project.touch();
@@ -673,6 +689,90 @@ this.ProjectManager = (function() {
           }
         } else {
           return callback();
+        }
+      };
+    })(this);
+    return funk();
+  };
+
+  ProjectManager.prototype.syncFiles = function(session, data, source) {
+    var funk, ops, syncFile;
+    ops = data.ops;
+    if (!this.canWrite(session.user)) {
+      return;
+    }
+    if (!Array.isArray(ops)) {
+      return;
+    }
+    syncFile = (function(_this) {
+      return function(f, callback) {
+        var file;
+        file = source.owner.id + "/" + source.id + "/" + f;
+        return source.content.files.read(file, "binary", function(content) {
+          var th;
+          if (content != null) {
+            file = _this.project.owner.id + "/" + _this.project.id + "/" + f;
+            _this.project.content.files.write(file, content, function() {
+              if (callback != null) {
+                return callback();
+              }
+            });
+            if (f.startsWith("assets/") || f.startsWith("sounds/") || f.startsWith("music/")) {
+              th = f.split("/");
+              th[0] += "_th";
+              th[1] = th[1].split(".")[0] + ".png";
+              f = th.join("/");
+              file = source.owner.id + "/" + source.id + "/" + f;
+              return source.content.files.read(file, "binary", function(content) {
+                if (content != null) {
+                  file = _this.project.owner.id + "/" + _this.project.id + "/" + f;
+                  return _this.project.content.files.write(file, content, function() {});
+                }
+              });
+            }
+          } else {
+            if (callback != null) {
+              return callback();
+            }
+          }
+        });
+      };
+    })(this);
+    funk = (function(_this) {
+      return function() {
+        var f, file, op;
+        if (ops.length > 0) {
+          op = ops.splice(0, 1)[0];
+          if (!((op.file != null) && (op.file.path != null) && (op.file.version != null) && (op.file.size != null))) {
+            return;
+          }
+          if (op.op === "sync") {
+            f = op.file;
+            return syncFile(f.path, function() {
+              _this.setFileVersion(f.path, f.version);
+              _this.setFileSize(f.path, f.size);
+              if (f.properties != null) {
+                _this.setFileProperties(f.path, f.properties);
+              }
+              funk();
+              return _this.propagateFileChange(null, f.path, f.version, void 0, f.properties || {});
+            });
+          } else if (op.op === "delete") {
+            f = op.file;
+            file = _this.project.owner.id + "/" + _this.project.id + "/" + f.path;
+            return _this.project.content.files["delete"](file, function() {
+              _this.project.deleteFileInfo(f.path);
+              funk();
+              return _this.propagateFileDeleted(null, f.path);
+            });
+          }
+        } else {
+          session.send({
+            name: "sync_project_files",
+            status: "done",
+            request_id: data.request_id
+          });
+          return _this.project.touch();
         }
       };
     })(this);

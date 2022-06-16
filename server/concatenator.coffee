@@ -149,11 +149,13 @@ class @Concatenator
       "/css/publish.css"
       "/css/explore.css"
       "/css/options.css"
+      "/css/sync.css"
       "/css/user.css"
       "/css/media.css"
       "/css/terminal.css"
       "/css/tutorial.css"
       "/css/md.css"
+      "/css/common.css"
     ]
 
     @webapp_js = [
@@ -193,6 +195,8 @@ class @Concatenator
       "/js/options/options.js"
       "/js/options/tabmanager.js"
       "/js/options/pluginview.js"
+
+      "/js/sync/sync.js"
 
       "/js/publish/publish.js"
       "/js/publish/appbuild.js"

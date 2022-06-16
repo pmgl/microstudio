@@ -1,0 +1,13 @@
+h1(style="position: relative ; display: inline-block") #{translator.get("Project Synchronization")}
+  div.betapill BETA
+p #{translator.get("Select the project you want to use as synchronization source. New files and changes will be copied from the selected source project, to the project which is currently opened.")}
+select.select1#project-sync-source
+  option(disabled selected) Select source
+  option() Project 1
+  option() Project 2
+
+div#project-sync-list
+div#project-sync-proceed
+  p #{translator.get("If you have reviewed the synchronization details above and wish to proceed, type SYNC NOW in the text field below and then click the button to proceed.")}
+  input.input1(placeholder="SYNC NOW" value="")
+  div.proceed.button1 <i class="fa fa-check" ></i> PROCEED

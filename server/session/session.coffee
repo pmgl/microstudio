@@ -59,6 +59,7 @@ class @Session
     @register "create_project",(msg)=>@createProject(msg)
     @register "import_project",(msg)=>@importProject(msg)
     @register "set_project_option",(msg)=>@setProjectOption(msg)
+    @register "set_project_property",(msg)=>@setProjectProperty(msg)
     @register "set_project_public",(msg)=>@setProjectPublic(msg)
     @register "set_project_tags",(msg)=>@setProjectTags(msg)
     @register "delete_project",(msg)=>@deleteProject(msg)
@@ -74,6 +75,7 @@ class @Session
     @register "read_public_project_file",(msg)=>@readPublicProjectFile(msg)
     @register "listen_to_project",(msg)=>@listenToProject(msg)
     @register "get_file_versions",(msg)=>@getFileVersions(msg)
+    @register "sync_project_files",(msg)=>@syncProjectFiles(msg)
 
     @register "invite_to_project",(msg)=>@inviteToProject(msg)
     @register "accept_invite",(msg)=>@acceptInvite(msg)
@@ -416,6 +418,23 @@ class @Session
       error: error
       request_id: request_id
 
+  syncProjectFiles:(data)->
+    return @sendError("Bad request") if not data.request_id?
+    return @sendError("not connected",data.request_id) if not @user?
+    return @sendError("bad request",data.request_id) if not data.source?
+    return @sendError("bad request",data.request_id) if not data.dest?
+    return @sendError("bad request",data.request_id) if not data.ops?
+
+    dest = @content.projects[data.dest]
+    if dest?
+      @setCurrentProject dest
+      source = @content.projects[data.source]
+      if source?
+        if not dest.manager.canReadProject @user,source
+          return @sendError("access denied",data.request_id)
+
+        dest.manager.syncFiles @,data,source
+
   importProject:(data)->
     return @sendError("Bad request") if not data.request_id?
     return @sendError("not connected",data.request_id) if not @user?
@@ -720,6 +739,16 @@ class @Session
 
       project.touch()
 
+
+  setProjectProperty:(data)->
+    return @sendError("not connected") if not @user?
+    return @sendError("no project") if not data.project?
+    return @sendError("no property") if not data.property?
+
+    project = @user.findProject(data.project)
+    if project?
+      project.setProperty data.property,data.value
+
   deleteProject:(data)->
     return @sendError("not connected") if not @user?
 
@@ -761,6 +790,7 @@ class @Session
           tabs: p.tabs
           plugins: p.plugins
           libraries: p.libraries
+          properties: p.properties
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public

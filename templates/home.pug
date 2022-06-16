@@ -363,7 +363,7 @@ html(lang=language)
               li(id="menuitem-sounds") <i class="fa fa-volume-up"></i><br /> #{translator.get("Sounds")}
               li(id="menuitem-music") <i class="fa fa-music"></i><br /> #{translator.get("Music")}
               li(id="menuitem-doc") <i class="fas fa-book"></i><br /> #{translator.get("Doc")}
-              // li(id="menuitem-server") <i class="fa fa-server"></i><br /> #{translator.get("Server")}
+              li(id="menuitem-sync") <i class="fas fa-sync"></i><br /> #{translator.get("Sync")}
               li(id="menuitem-options") <i class="fa fa-cogs"></i><br /> #{translator.get("Settings")}
               li(id="menuitem-publish") <i class="fa fa-upload"></i><br /> #{translator.get("Publish")}
               li.menuitem-plugin(id="menuitem-plugin-gilles-pixelify")
@@ -399,8 +399,8 @@ html(lang=language)
             div.section#doc-section
               include doc.pug
 
-            div.section#server-section
-              include server.pug
+            div.section.top-section-border.padding80#sync-section
+              include sync.pug
 
             div.section#settings-section.
               Settings section here

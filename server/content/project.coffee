@@ -52,6 +52,7 @@ class @Project
       @tabs = data.tabs
       @plugins = data.plugins
       @libraries = data.libraries
+      @properties = data.properties or {}
       @type = data.type or "app"
       @users = []
       @comments = new Comments @,data.comments
@@ -134,6 +135,13 @@ class @Project
       delete @flags[flag]
     @set "flags",@flags
 
+  setProperty:(prop,value)->
+    if value?
+      @properties[prop] = value
+    else
+      delete @properties[prop]
+    @set "properties",@properties
+    
   saveUsers:()->
     data = []
     for link in @users

@@ -8,7 +8,7 @@ class AppUI
       "sounds"
       "music"
       "doc"
-#      "server"
+      "sync"
       "options"
       "publish"
       "tabs"
@@ -353,6 +353,9 @@ class AppUI
 
     if section == "assets"
       @app.assets_manager.update()
+
+    if section == "sync"
+      @app.sync.update()
 
     if section == "options"
       @app.options.update()

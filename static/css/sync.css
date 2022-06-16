@@ -1,0 +1,33 @@
+#sync-section {
+  overflow: auto ;
+}
+
+#project-sync-list {
+  padding: 40px 0 ;
+}
+#project-sync-list i {
+  margin-right: 10px ;
+  color: rgba(255,255,255,.7) ;
+}
+
+#project-sync-list > div {
+  margin: 2px ;
+  padding: 7px ;
+  background: rgba(255,255,255,.1) ;
+  border: solid 1px rgba(255,255,255,.1) ;
+}
+
+#project-sync-list > div.create { background: hsla(160,50%,50%,.5) ; }
+#project-sync-list .create i::before { content: "\f055" ; }
+
+#project-sync-list > div.upgrade { background: hsla(200,50%,50%,.5) ; }
+#project-sync-list .upgrade i::before { content: "\f062" ; }
+
+#project-sync-list > div.downgrade { background: hsla(30,100%,50%,.5) ; }
+#project-sync-list .downgrade i::before { content: "\f063" ; }
+
+#project-sync-list > div.sync { background: hsla(270,50%,50%,.5) ; }
+#project-sync-list .sync i::before { content: "\f021" ; }
+
+#project-sync-list > div.delete { background: hsla(0,100%,50%,.5) ; font-weight: bold }
+#project-sync-list .delete i::before { content: "\f00d" ; }

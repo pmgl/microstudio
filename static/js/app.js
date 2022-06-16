@@ -36,6 +36,7 @@ App = (function() {
     this.options = new Options(this);
     this.tab_manager = new TabManager(this);
     this.lib_manager = new LibManager(this);
+    this.sync = new Sync(this);
     this.publish = new Publish(this);
     this.user_settings = new UserSettings(this);
     this.connected = false;
@@ -314,6 +315,7 @@ App = (function() {
     this.options.projectOpened();
     this.tab_manager.projectOpened();
     this.lib_manager.projectOpened();
+    this.sync.projectOpened();
     this.publish.loadProject(this.project);
     this.project.load();
     if (!this.tutorial.shown) {
