@@ -1,7 +1,7 @@
 ## Changelog
 
 ### Update 2022-06-16
-* New project synchronization feature, accessible from the new project tab "Sync" (needs to be enabled)
+* New project synchronization feature, accessible from the new project tab "Sync"
   * You have a public project A that you consider "released" but want to update from time to time.
   * Clone your project A ; let's call the clone B
   * work on project B without worrying to break anything in your public project A (which remains untouched for now)
