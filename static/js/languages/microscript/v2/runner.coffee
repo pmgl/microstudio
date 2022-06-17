@@ -230,6 +230,11 @@ class @Runner
       t.repeat = repeat
       t.delay = delay
     @system.threads.push t.interface
+
+    for i in [0..routine.import_values.length-1] by 1
+      if routine.import_values[i] == routine
+        routine.import_values[i] = t.interface
+
     t.interface
 
   sleep:(value)->

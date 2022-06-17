@@ -83,13 +83,19 @@ Compiler = (function() {
   };
 
   Compiler.prototype.compileAssignment = function(statement) {
-    var f, i, index, j, ref;
+    var arg_index, f, i, index, j, ref;
     if (statement.local) {
       if (statement.field instanceof Program.Variable) {
         if (statement.expression instanceof Program.Function) {
           index = this.locals.register(statement.field.identifier);
           this.compile(statement.expression);
           this.routine.arg1[this.routine.arg1.length - 1].import_self = index;
+          return this.routine.STORE_LOCAL(index, statement);
+        } else if (statement.expression instanceof Program.After || statement.expression instanceof Program.Do || statement.expression instanceof Program.Every) {
+          index = this.locals.register(statement.field.identifier);
+          arg_index = this.routine.arg1.length;
+          this.compile(statement.expression);
+          this.routine.arg1[arg_index].import_self = index;
           return this.routine.STORE_LOCAL(index, statement);
         } else {
           this.compile(statement.expression);

@@ -273,7 +273,7 @@ this.Runner = (function() {
   };
 
   Runner.prototype.createThread = function(routine, delay, repeat) {
-    var t;
+    var i, j, ref, t;
     t = new Thread(this);
     t.routine = routine;
     this.threads.push(t);
@@ -283,6 +283,11 @@ this.Runner = (function() {
       t.delay = delay;
     }
     this.system.threads.push(t["interface"]);
+    for (i = j = 0, ref = routine.import_values.length - 1; j <= ref; i = j += 1) {
+      if (routine.import_values[i] === routine) {
+        routine.import_values[i] = t["interface"];
+      }
+    }
     return t["interface"];
   };
 

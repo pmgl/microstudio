@@ -87,6 +87,14 @@ class Compiler
           @compile(statement.expression) ## then compile function which may refer to itself
           @routine.arg1[@routine.arg1.length-1].import_self = index
           @routine.STORE_LOCAL index,statement
+        else if statement.expression instanceof Program.After or
+                  statement.expression instanceof Program.Do or
+                  statement.expression instanceof Program.Every
+          index = @locals.register(statement.field.identifier) ## register thread locally first
+          arg_index = @routine.arg1.length ## thread main routine will land here
+          @compile(statement.expression) ## then compile function which may refer to itself
+          @routine.arg1[arg_index].import_self = index
+          @routine.STORE_LOCAL index,statement
         else
           @compile(statement.expression) ## first compile expression which may refer to another local with same name
           index = @locals.register(statement.field.identifier) ## then register a local for that name
