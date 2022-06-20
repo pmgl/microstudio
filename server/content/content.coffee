@@ -41,6 +41,9 @@ class @Content
 
     @cleaner = new Cleaner @
 
+    if @files.converter?
+      @files.converter.start @
+
   close:()->
     clearInterval @top_interval
     clearInterval @log_interval

@@ -74,6 +74,9 @@ class @FileStorage
     return
 
   sanitize:(file)->
+    if file.startsWith "hs/"
+      return file
+      
     s = file.split("/")
     for i in [s.length-1..0] by -1
       if s[i].indexOf("..")>=0 or s[i] == ""

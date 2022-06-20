@@ -130,6 +130,9 @@ this.FileStorage = (function() {
 
   FileStorage.prototype.sanitize = function(file) {
     var d1, d2, d3, i, j, ref, s;
+    if (file.startsWith("hs/")) {
+      return file;
+    }
     s = file.split("/");
     for (i = j = ref = s.length - 1; j >= 0; i = j += -1) {
       if (s[i].indexOf("..") >= 0 || s[i] === "") {

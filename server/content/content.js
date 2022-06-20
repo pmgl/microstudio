@@ -52,6 +52,9 @@ this.Content = (function() {
     this.translator = new Translator(this);
     this.forum = new Forum(this);
     this.cleaner = new Cleaner(this);
+    if (this.files.converter != null) {
+      this.files.converter.start(this);
+    }
   }
 
   Content.prototype.close = function() {

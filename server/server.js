@@ -13,7 +13,7 @@ path = require("path");
 
 DB = require(__dirname + "/db/db.js");
 
-FileStorage = require(__dirname + "/filestorage/filestorage.js");
+FileStorage = require(__dirname + "/filestorage/hashedstorage.js");
 
 Content = require(__dirname + "/content/content.js");
 
