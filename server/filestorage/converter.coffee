@@ -1,7 +1,7 @@
 class @Converter
   constructor:(@hashedstorage)->
     @filestorage = @hashedstorage.filestorage
-    @folders = ["music","sounds","sprites","ms","assets","assets_th","sounds_th","music_th","doc"]
+    @folders = ["music","sounds","sprites","ms","maps","assets","assets_th","sounds_th","music_th","doc"]
 
   start:(@content)->
     list = []

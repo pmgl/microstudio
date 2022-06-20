@@ -2,7 +2,7 @@ this.Converter = (function() {
   function Converter(hashedstorage) {
     this.hashedstorage = hashedstorage;
     this.filestorage = this.hashedstorage.filestorage;
-    this.folders = ["music", "sounds", "sprites", "ms", "assets", "assets_th", "sounds_th", "music_th", "doc"];
+    this.folders = ["music", "sounds", "sprites", "ms", "maps", "assets", "assets_th", "sounds_th", "music_th", "doc"];
   }
 
   Converter.prototype.start = function(content1) {
