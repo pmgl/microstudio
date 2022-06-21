@@ -27,6 +27,7 @@ class @Runtime
 
     @time_machine = new TimeMachine @
     @createDropFeature()
+    window.ms_async_load = false
 
   updateSource:(file,src,reinit=false)->
     return false if not @vm?
@@ -69,6 +70,9 @@ class @Runtime
         return false
 
   start:()->
+    if window.ms_async_load
+      @startReady()
+
     for i in @resources.images
       s = LoadSprite @url+"sprites/"+i.file+"?v="+i.version,i.properties,()=>
         @updateMaps()
@@ -113,17 +117,40 @@ class @Runtime
     return
 
   checkStartReady:()->
-    if not @start_ready
-      for key,value of @sprites
-        return if not value.ready
+    count = 0
+    ready = 0
 
-      for key,value of @maps
-        return if not value.ready
+    for key,value of @sprites
+      count += 1
+      if value.ready
+        ready += 1
 
-      @start_ready = true
+    for key,value of @maps
+      count += 1
+      if value.ready
+        ready += 1
+
+    if ready < count
+      if not @loading_bar_time? or Date.now()>@loading_bar_time+16
+        @loading_bar_time = Date.now()
+        @screen.clear()
+        @screen.drawRect 0,0,100,10,"#DDD"
+        progress = ready/count
+        @screen.fillRect -(1-progress)*48,0,progress*96,6,"#DDD"
+        if window.ms_async_load and @vm?
+          @vm.context.global.system.loading = Math.floor(ready/count*100)
+
+      if not window.ms_async_load
+        return
+    else
+      if window.ms_async_load and @vm?
+        @vm.context.global.system.loading = 100
+
+    if not @started
       @startReady()
 
   startReady:()->
+    @started = true
     meta =
       print: (text)=>
         if (typeof text == "object" or typeof text == "function") and @vm?
@@ -174,6 +201,9 @@ class @Runtime
 
     @vm.context.global.system.exit = ()=>
       @exit()
+
+    if not window.ms_async_load
+      @vm.context.global.system.loading = 100
 
     @vm.context.global.system.file = System.file
     @vm.context.global.system.javascript = System.javascript

@@ -31,6 +31,7 @@ this.Runtime = (function() {
     this.update_memory = {};
     this.time_machine = new TimeMachine(this);
     this.createDropFeature();
+    window.ms_async_load = false;
   }
 
   Runtime.prototype.updateSource = function(file, src, reinit) {
@@ -87,6 +88,9 @@ this.Runtime = (function() {
 
   Runtime.prototype.start = function() {
     var a, i, j, k, key, l, len1, len2, len3, len4, len5, m, n, name, o, ref, ref1, ref2, ref3, ref4, ref5, s, value;
+    if (window.ms_async_load) {
+      this.startReady();
+    }
     ref = this.resources.images;
     for (j = 0, len1 = ref.length; j < len1; j++) {
       i = ref[j];
@@ -149,29 +153,52 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.checkStartReady = function() {
-    var key, ref, ref1, value;
-    if (!this.start_ready) {
-      ref = this.sprites;
-      for (key in ref) {
-        value = ref[key];
-        if (!value.ready) {
-          return;
+    var count, key, progress, ready, ref, ref1, value;
+    count = 0;
+    ready = 0;
+    ref = this.sprites;
+    for (key in ref) {
+      value = ref[key];
+      count += 1;
+      if (value.ready) {
+        ready += 1;
+      }
+    }
+    ref1 = this.maps;
+    for (key in ref1) {
+      value = ref1[key];
+      count += 1;
+      if (value.ready) {
+        ready += 1;
+      }
+    }
+    if (ready < count) {
+      if ((this.loading_bar_time == null) || Date.now() > this.loading_bar_time + 16) {
+        this.loading_bar_time = Date.now();
+        this.screen.clear();
+        this.screen.drawRect(0, 0, 100, 10, "#DDD");
+        progress = ready / count;
+        this.screen.fillRect(-(1 - progress) * 48, 0, progress * 96, 6, "#DDD");
+        if (window.ms_async_load && (this.vm != null)) {
+          this.vm.context.global.system.loading = Math.floor(ready / count * 100);
         }
       }
-      ref1 = this.maps;
-      for (key in ref1) {
-        value = ref1[key];
-        if (!value.ready) {
-          return;
-        }
+      if (!window.ms_async_load) {
+        return;
       }
-      this.start_ready = true;
+    } else {
+      if (window.ms_async_load && (this.vm != null)) {
+        this.vm.context.global.system.loading = 100;
+      }
+    }
+    if (!this.started) {
       return this.startReady();
     }
   };
 
   Runtime.prototype.startReady = function() {
     var err, file, global, init, j, len1, lib, meta, namespace, ref, ref1, src;
+    this.started = true;
     meta = {
       print: (function(_this) {
         return function(text) {
@@ -237,6 +264,9 @@ this.Runtime = (function() {
         return _this.exit();
       };
     })(this);
+    if (!window.ms_async_load) {
+      this.vm.context.global.system.loading = 100;
+    }
     this.vm.context.global.system.file = System.file;
     this.vm.context.global.system.javascript = System.javascript;
     if (window.ms_in_editor) {

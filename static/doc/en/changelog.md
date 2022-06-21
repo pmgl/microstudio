@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2022-06-21
+* New variable `global` in embedded JavaScript snippets, holding the microScript global context
+* Generic progress bar is displayed when the project is loading
+* thread stored in local variable can reflect on itself #129
+
 ### Update 2022-06-16
 * New project synchronization feature, accessible from the new project tab "Sync"
   * You have a public project A that you consider "released" but want to update from time to time.
