@@ -5,6 +5,16 @@ class @UserProgress
     @target_xp = 0
     @xp = 0
 
+  init:()->
+    if @app.user?
+      document.getElementById("header-progress-summary").classList.remove "hidden"
+
+      level = @app.user.info.stats.level or 0
+      xp = @app.user.info.stats.xp or 0
+      document.getElementById("header-progress-level").innerText = @app.translator.get("Level %NUM%").replace("%NUM%",level)
+
+      @target_xp = xp
+    
   update:()->
     if @app.user?
       document.getElementById("header-progress-summary").classList.remove "hidden"

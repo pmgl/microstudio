@@ -414,7 +414,7 @@ App = (function() {
     this.appui.userConnected(nick);
     this.updateProjectList();
     this.user_settings.update();
-    return this.user_progress.update();
+    return this.user_progress.init();
   };
 
   App.prototype.disconnect = function() {

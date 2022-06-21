@@ -118,6 +118,7 @@ class @UserSettings
         document.getElementById("usersettings-#{s}").style.display = "none"
 
     if @current == "progress"
+      @app.user_progress.update()
       @app.user_progress.updateStatsPage()
     return
 

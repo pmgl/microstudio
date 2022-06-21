@@ -13,6 +13,17 @@ this.UserProgress = (function() {
     this.xp = 0;
   }
 
+  UserProgress.prototype.init = function() {
+    var level, xp;
+    if (this.app.user != null) {
+      document.getElementById("header-progress-summary").classList.remove("hidden");
+      level = this.app.user.info.stats.level || 0;
+      xp = this.app.user.info.stats.xp || 0;
+      document.getElementById("header-progress-level").innerText = this.app.translator.get("Level %NUM%").replace("%NUM%", level);
+      return this.target_xp = xp;
+    }
+  };
+
   UserProgress.prototype.update = function() {
     var level, xp;
     if (this.app.user != null) {

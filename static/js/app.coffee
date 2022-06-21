@@ -303,7 +303,7 @@ class App
     @appui.userConnected(nick)
     @updateProjectList()
     @user_settings.update()
-    @user_progress.update()
+    @user_progress.init()
 
   disconnect:()->
     if not @user.email? or @user.flags.guest

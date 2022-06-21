@@ -177,6 +177,7 @@ this.UserSettings = (function() {
       }
     }
     if (this.current === "progress") {
+      this.app.user_progress.update();
       this.app.user_progress.updateStatsPage();
     }
   };
