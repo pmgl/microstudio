@@ -785,8 +785,8 @@ loadFile = (file,callback)->
 @System =
   javascript:(s)->
     try
-      f = eval("res = function() { #{s} }" )
-      res = f.call(player.runtime.vm.context.global)
+      f = eval("res = function(global) { #{s} }" )
+      res = f.call(player.runtime.vm.context.global,player.runtime.vm.context.global)
     catch err
       console.error err
 

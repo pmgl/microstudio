@@ -1056,8 +1056,8 @@ this.System = {
   javascript: function(s) {
     var err, f, res;
     try {
-      f = eval("res = function() { " + s + " }");
-      res = f.call(player.runtime.vm.context.global);
+      f = eval("res = function(global) { " + s + " }");
+      res = f.call(player.runtime.vm.context.global, player.runtime.vm.context.global);
     } catch (error) {
       err = error;
       console.error(err);
