@@ -118,7 +118,8 @@ this.WebApp = (function() {
             title: translator.get("%PROJECT% - by %USER%").replace("%PROJECT%", project.title).replace("%USER%", user.nick),
             description: project.description,
             long_description: project.description,
-            poster: (project.files != null) && (project.files["sprites/poster.png"] != null) ? "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/poster.png" : "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/icon.png"
+            poster: (project.files != null) && (project.files["sprites/poster.png"] != null) ? "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/poster.png" : "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/icon.png",
+            project_moderation: _this.server.config.project_moderation === true
           });
           return res.send(page);
         } else if ((_this.home_page[lang] == null) || !_this.server.use_cache) {
@@ -137,7 +138,8 @@ this.WebApp = (function() {
             title: "microStudio - " + translator.get("Learn programming, create games"),
             description: translator.get("Learn programming, create video games - microStudio is a free game engine online."),
             long_description: translator.get("microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything."),
-            poster: "https://microstudio.dev/img/microstudio.jpg"
+            poster: "https://microstudio.dev/img/microstudio.jpg",
+            project_moderation: _this.server.config.project_moderation === true
           });
         }
         return res.send(_this.home_page[lang]);

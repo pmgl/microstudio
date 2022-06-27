@@ -106,6 +106,7 @@ class @WebApp
           description: project.description
           long_description: project.description
           poster: if project.files? and project.files["sprites/poster.png"]? then "https://microstudio.io/#{user.nick}/#{project.slug}/sprites/poster.png" else "https://microstudio.io/#{user.nick}/#{project.slug}/sprites/icon.png"
+          project_moderation: @server.config.project_moderation == true
 
         return res.send page
       else if not @home_page[lang]? or not @server.use_cache
@@ -126,6 +127,7 @@ class @WebApp
           description: translator.get("Learn programming, create video games - microStudio is a free game engine online.")
           long_description: translator.get("microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything.")
           poster: "https://microstudio.dev/img/microstudio.jpg"
+          project_moderation: @server.config.project_moderation == true
 
       res.send @home_page[lang]
 

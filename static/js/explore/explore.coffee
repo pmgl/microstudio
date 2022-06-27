@@ -229,7 +229,7 @@ class @Explore
 
       element.appendChild label
 
-    if not p.flags.approved and not p.owner_info.approved
+    if not p.flags.approved and not p.owner_info.approved and window.ms_project_moderation
       awaiting = document.createElement "div"
       awaiting.classList.add "awaiting-label"
       awaiting.innerHTML = """Awaiting approval"""
@@ -343,7 +343,7 @@ class @Explore
                   tags: p.tags
                 },(msg)=>
                   @openProject p
-    if @app.user? and (@app.user.flags.admin or @app.user.flags.moderator)
+    if @app.user? and (@app.user.flags.admin or @app.user.flags.moderator) and window.ms_project_moderation
       if p.owner_info.approved
         document.getElementById("project-details-description").appendChild @createModerationParagraph "User approved, project visible to everyone"
         document.getElementById("project-details-description").appendChild @createModerationButton "Remove user approval",()=>
@@ -461,7 +461,7 @@ class @Explore
     mod = @app.user? and (@app.user.flags.admin or @app.user.flags.moderator)
     for i in [pos..@projects.length-1] by 1
       p = @projects[i]
-      if mod or (p.flags.approved or p.owner_info.approved)
+      if mod or (p.flags.approved or p.owner_info.approved or not window.ms_project_moderation)
         contents.appendChild @createProjectBox p
     return
 

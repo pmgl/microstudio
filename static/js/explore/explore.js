@@ -290,7 +290,7 @@ this.Explore = (function() {
       }
       element.appendChild(label);
     }
-    if (!p.flags.approved && !p.owner_info.approved) {
+    if (!p.flags.approved && !p.owner_info.approved && window.ms_project_moderation) {
       awaiting = document.createElement("div");
       awaiting.classList.add("awaiting-label");
       awaiting.innerHTML = "Awaiting approval";
@@ -429,7 +429,7 @@ this.Explore = (function() {
         })(this)(t);
       }
     }
-    if ((this.app.user != null) && (this.app.user.flags.admin || this.app.user.flags.moderator)) {
+    if ((this.app.user != null) && (this.app.user.flags.admin || this.app.user.flags.moderator) && window.ms_project_moderation) {
       if (p.owner_info.approved) {
         document.getElementById("project-details-description").appendChild(this.createModerationParagraph("User approved, project visible to everyone"));
         document.getElementById("project-details-description").appendChild(this.createModerationButton("Remove user approval", (function(_this) {
@@ -597,7 +597,7 @@ this.Explore = (function() {
     mod = (this.app.user != null) && (this.app.user.flags.admin || this.app.user.flags.moderator);
     for (i = j = ref = pos, ref1 = this.projects.length - 1; j <= ref1; i = j += 1) {
       p = this.projects[i];
-      if (mod || (p.flags.approved || p.owner_info.approved)) {
+      if (mod || (p.flags.approved || p.owner_info.approved || !window.ms_project_moderation)) {
         contents.appendChild(this.createProjectBox(p));
       }
     }
