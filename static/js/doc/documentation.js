@@ -266,7 +266,7 @@ this.Documentation = (function() {
   };
 
   Documentation.prototype.findSuggestMatch = function(line, position) {
-    var best, i, index, j, k, key, l, len, len1, len2, m, n, r, ref1, ref2, ref3, ref4, res, value, within;
+    var best, err, i, index, j, k, key, known_prefixes, l, len, len1, len2, len3, len4, m, n, o, p, prefixes, q, r, ref1, ref2, ref3, ref4, ref5, res, s, split, table, v, value, within;
     if (position == null) {
       position = 0;
     }
@@ -278,6 +278,9 @@ this.Documentation = (function() {
       for (len = j = ref2 = key.length; j >= 3; len = j += -1) {
         index = line.indexOf(key.substring(0, len));
         if (index >= 0) {
+          if (index > 0 && line.charAt(index - 1) !== " ") {
+            continue;
+          }
           best = Math.max(best, len);
           res.push({
             ref: key,
@@ -316,6 +319,34 @@ this.Documentation = (function() {
       r = res[i];
       if (r.radix.length < best) {
         res.splice(i, 1);
+      }
+    }
+    if (res.length > 20) {
+      try {
+        known_prefixes = ["set", "get", "draw", "fill"];
+        prefixes = {};
+        for (o = 0, len3 = res.length; o < len3; o++) {
+          v = res[o];
+          split = v.ref.split(".");
+          for (q = 0, len4 = known_prefixes.length; q < len4; q++) {
+            p = known_prefixes[q];
+            if ((split[1] != null) && split[1].startsWith(p)) {
+              v.ref = split[0] + "." + p + "...";
+            }
+          }
+        }
+        table = {};
+        for (i = s = ref5 = res.length - 1; s >= 0; i = s += -1) {
+          v = res[i];
+          if (table[v.ref] != null) {
+            res.splice(i, 1);
+          } else {
+            table[v.ref] = v;
+          }
+        }
+      } catch (error) {
+        err = error;
+        console.error(err);
       }
     }
     return res;

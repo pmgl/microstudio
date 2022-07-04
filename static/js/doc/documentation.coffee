@@ -195,6 +195,7 @@ class @Documentation
       for len in [key.length..3] by -1
         index = line.indexOf(key.substring(0,len))
         if index >= 0
+          continue if index > 0 and line.charAt(index-1) != " "
           best = Math.max(best,len)
           res.push
             ref: key
@@ -223,8 +224,30 @@ class @Documentation
 
     for i in [res.length-1..0] by -1
       r = res[i]
-      if r.radix.length<best
+      if r.radix.length < best
         res.splice(i,1)
+
+    if res.length > 20
+      try
+        known_prefixes = ["set","get","draw","fill"]
+        prefixes = {}
+        for v in res
+          split = v.ref.split(".")
+          for p in known_prefixes
+            if split[1]? and split[1].startsWith p
+              v.ref = "#{split[0]}.#{p}..."
+
+        table = {}
+        for i in [res.length-1..0] by -1
+          v = res[i]
+          if table[v.ref]?
+            res.splice i,1
+          else
+            table[v.ref] = v
+
+      catch err
+        console.error err
+
     res
 
   findHelpMatch:(line)->
