@@ -169,14 +169,15 @@ this.RunWindow = (function() {
   };
 
   RunWindow.prototype.run = function() {
-    var code, device, src, url;
+    var code, device, origin, src, url;
     src = this.app.editor.editor.getValue();
     device = document.getElementById("device");
     code = this.app.project["public"] ? "" : this.app.project.code + "/";
     url = (location.origin.replace(".dev", ".io")) + "/" + this.app.project.owner.nick + "/" + this.app.project.slug + "/" + code;
+    origin = "" + (location.origin.replace(".dev", ".io"));
     return this.app.project.savePendingChanges((function(_this) {
       return function() {
-        device.innerHTML = "<iframe id='runiframe' allow='autoplay;gamepad' src='" + url + "?debug'></iframe>";
+        device.innerHTML = "<iframe id='runiframe' allow='autoplay " + origin + "; gamepad " + origin + "; midi " + origin + "' src='" + url + "?debug'></iframe>";
         _this.windowResized();
         return document.getElementById("take-picture-button").style.display = "inline-block";
       };

@@ -110,9 +110,10 @@ class @RunWindow
     device = document.getElementById("device")
     code = if @app.project.public then "" else "#{@app.project.code}/"
     url = "#{location.origin.replace(".dev",".io")}/#{@app.project.owner.nick}/#{@app.project.slug}/#{code}"
+    origin = "#{location.origin.replace(".dev",".io")}"
 
     @app.project.savePendingChanges ()=>
-      device.innerHTML = "<iframe id='runiframe' allow='autoplay;gamepad' src='#{url}?debug'></iframe>"
+      device.innerHTML = "<iframe id='runiframe' allow='autoplay #{origin}; gamepad #{origin}; midi #{origin}' src='#{url}?debug'></iframe>"
       #document.getElementById("runiframe").focus()
       @windowResized()
       document.getElementById("take-picture-button").style.display = "inline-block"
@@ -226,7 +227,7 @@ class @RunWindow
       @error_check = null
       if @terminal.error_lines > 0
         @terminal.clear()
-        
+
       for err in @error_buffer
         @logError err
 

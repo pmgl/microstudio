@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2022-07-04
+* reduced the number of lines in live help suggestions
+* attempt at providing correct permissions for autoplay, gamepad and midi for run window iframe
+* Project moderation was made a global config option
+* HTML cleanup
+
 ### Update 2022-06-21
 * New variable `global` in embedded JavaScript snippets, holding the microScript global context
 * Generic progress bar is displayed when the project is loading
