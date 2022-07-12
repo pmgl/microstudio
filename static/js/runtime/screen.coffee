@@ -13,12 +13,19 @@ class @Screen
       right: 0
       wheel: 0
 
+    @alpha = 1
+    @pixelated = 1
+    @line_width = 1
+
     @translation_x = 0
     @translation_y = 0
     @rotation = 0
     @scale_x = 1
     @scale_y = 1
     @screen_transform = false
+    @object_rotation = 0
+    @object_scale_x = 1
+    @object_scale_y = 1
 
     @anchor_x = 0
     @anchor_y = 0
@@ -67,12 +74,6 @@ class @Screen
     @context.scale ratio,ratio
     @width = @canvas.width/ratio
     @height = @canvas.height/ratio
-    @alpha = 1
-    @pixelated = 1
-    @line_width = 1
-    @object_rotation = 0
-    @object_scale_x = 1
-    @object_scale_y = 1
 
     # @translation_x = 0
     # @translation_y = 0
