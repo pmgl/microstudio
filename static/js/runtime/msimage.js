@@ -50,7 +50,7 @@ this.msImage = (function() {
       this.pixeldata.data[0] = r.R;
       this.pixeldata.data[1] = r.G;
       this.pixeldata.data[2] = r.B;
-      this.pixeldata.data[2] = r.A != null ? r.A : 255;
+      this.pixeldata.data[3] = r.A != null ? r.A : 255;
     } else {
       this.pixeldata.data[0] = r;
       this.pixeldata.data[1] = g;

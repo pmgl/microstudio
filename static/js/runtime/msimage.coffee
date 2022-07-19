@@ -38,7 +38,7 @@ class @msImage
       @pixeldata.data[0] = r.R
       @pixeldata.data[1] = r.G
       @pixeldata.data[2] = r.B
-      @pixeldata.data[2] = if r.A? then r.A else 255
+      @pixeldata.data[3] = if r.A? then r.A else 255
     else
       @pixeldata.data[0] = r
       @pixeldata.data[1] = g
