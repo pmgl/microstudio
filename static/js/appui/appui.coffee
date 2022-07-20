@@ -120,6 +120,9 @@ class AppUI
       @setMainSection("projects")
 
     document.getElementById("create-project-overlay").addEventListener "mousedown",(event)=>
+      if event.target != document.getElementById("create-project-overlay")
+        return true
+        
       b = document.getElementById("create-project-window").getBoundingClientRect()
       if event.clientX<b.x or event.clientX>b.x+b.width or event.clientY<b.y or event.clientY>b.y+b.height
         @hide "create-project-overlay"

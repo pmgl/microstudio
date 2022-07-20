@@ -141,6 +141,9 @@ AppUI = (function() {
     document.getElementById("create-project-overlay").addEventListener("mousedown", (function(_this) {
       return function(event) {
         var b;
+        if (event.target !== document.getElementById("create-project-overlay")) {
+          return true;
+        }
         b = document.getElementById("create-project-window").getBoundingClientRect();
         if (event.clientX < b.x || event.clientX > b.x + b.width || event.clientY < b.y || event.clientY > b.y + b.height) {
           _this.hide("create-project-overlay");
