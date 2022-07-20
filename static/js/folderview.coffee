@@ -3,14 +3,25 @@ class @FolderView
     @editable = true
     @app = @manager.app
 
+  isDroppable:(event)->
+    for i in event.dataTransfer.items
+      if i.kind == "file"
+        return true
+      else if i.kind == "string"
+        if i.type != "application/json"
+          return false
+        else
+          return true
+    false
+
   init:()->
     @panel.addEventListener "mousedown",()=>
       @setSelectedFolder(null)
 
     if @editable and @manager.fileDropped?
       @panel.addEventListener "dragover",(event)=>
-        event.preventDefault()
-        #console.info "dragover"
+        if @isDroppable(event)
+          event.preventDefault()
 
       @panel.addEventListener "drop",(event)=>
         event.preventDefault()
@@ -117,7 +128,7 @@ class @FolderView
     element.draggable = if item.canBeRenamed? then item.canBeRenamed() else true
     element.addEventListener "dragstart",(event)=>
       @drag_file = item
-      event.dataTransfer.setData "text/plain",JSON.stringify
+      event.dataTransfer.setData "application/json",JSON.stringify
         type: @manager.item
         id: item.name
 
@@ -180,7 +191,7 @@ class @FolderView
           title.draggable = true
           title.addEventListener "dragstart",(event)=>
             @drag_folder = f
-            event.dataTransfer.setData "text/plain",JSON.stringify
+            event.dataTransfer.setData "application/json",JSON.stringify
               type: "folder"
               id: f.getFullDashPath()
 
@@ -226,7 +237,8 @@ class @FolderView
                 delete f.open_timeout
 
           fdiv.addEventListener "dragover",(event)=>
-            event.preventDefault()
+            if @isDroppable event
+              event.preventDefault()
 
           fdiv.addEventListener "drop",(event)=>
             event.preventDefault()

@@ -8,6 +8,24 @@ this.FolderView = (function() {
     this.app = this.manager.app;
   }
 
+  FolderView.prototype.isDroppable = function(event) {
+    var i, j, len, ref;
+    ref = event.dataTransfer.items;
+    for (j = 0, len = ref.length; j < len; j++) {
+      i = ref[j];
+      if (i.kind === "file") {
+        return true;
+      } else if (i.kind === "string") {
+        if (i.type !== "application/json") {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   FolderView.prototype.init = function() {
     var count;
     this.panel.addEventListener("mousedown", (function(_this) {
@@ -18,7 +36,9 @@ this.FolderView = (function() {
     if (this.editable && (this.manager.fileDropped != null)) {
       this.panel.addEventListener("dragover", (function(_this) {
         return function(event) {
-          return event.preventDefault();
+          if (_this.isDroppable(event)) {
+            return event.preventDefault();
+          }
         };
       })(this));
       this.panel.addEventListener("drop", (function(_this) {
@@ -164,7 +184,7 @@ this.FolderView = (function() {
     element.addEventListener("dragstart", (function(_this) {
       return function(event) {
         _this.drag_file = item;
-        return event.dataTransfer.setData("text/plain", JSON.stringify({
+        return event.dataTransfer.setData("application/json", JSON.stringify({
           type: _this.manager.item,
           id: item.name
         }));
@@ -215,7 +235,7 @@ this.FolderView = (function() {
           title.draggable = true;
           title.addEventListener("dragstart", function(event) {
             _this.drag_folder = f;
-            return event.dataTransfer.setData("text/plain", JSON.stringify({
+            return event.dataTransfer.setData("application/json", JSON.stringify({
               type: "folder",
               id: f.getFullDashPath()
             }));
@@ -268,7 +288,9 @@ this.FolderView = (function() {
             }
           });
           fdiv.addEventListener("dragover", function(event) {
-            return event.preventDefault();
+            if (_this.isDroppable(event)) {
+              return event.preventDefault();
+            }
           });
           return fdiv.addEventListener("drop", function(event) {
             var err, ext, file, i, k, len1, list, ref1;

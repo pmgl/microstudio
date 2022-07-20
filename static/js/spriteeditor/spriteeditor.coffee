@@ -5,7 +5,7 @@ class @SpriteEditor extends Manager
     @list_change_event = "spritelist"
     @get_item = "getSprite"
     @use_thumbnails = false
-    @extensions = ["png"]
+    @extensions = ["png","jpg","jpeg"]
     @update_list = "updateSpriteList"
 
     @init()

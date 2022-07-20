@@ -12,7 +12,7 @@ this.SpriteEditor = (function(superClass) {
     this.list_change_event = "spritelist";
     this.get_item = "getSprite";
     this.use_thumbnails = false;
-    this.extensions = ["png"];
+    this.extensions = ["png", "jpg", "jpeg"];
     this.update_list = "updateSpriteList";
     this.init();
     this.spriteview = new SpriteView(this);
