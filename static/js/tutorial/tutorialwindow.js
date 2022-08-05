@@ -96,9 +96,9 @@ this.TutorialWindow = (function() {
   };
 
   TutorialWindow.prototype.openProject = function() {
-    var i, len, p, project, ref, slug;
+    var err, i, i1, i2, len, options, p, project, ref, slug;
     if (this.tutorial.project_title != null) {
-      slug = RegexLib.slugify(this.tutorial.project_title);
+      slug = RegexLib.slugify(this.tutorial.project_title.split("{")[0]);
       project = null;
       ref = this.app.projects;
       for (i = 0, len = ref.length; i < len; i++) {
@@ -112,12 +112,30 @@ this.TutorialWindow = (function() {
         }
       }
       if (project == null) {
-        this.app.createProject(this.tutorial.project_title, slug, (function(_this) {
-          return function() {
-            return _this.start(_this.tutorial);
-          };
-        })(this));
-        return;
+        i1 = this.tutorial.project_title.indexOf("{");
+        i2 = this.tutorial.project_title.lastIndexOf("}");
+        if (i1 > 0 && i2 > i1) {
+          options = {};
+          try {
+            options = JSON.parse(this.tutorial.project_title.substring(i1, i2 + 1));
+          } catch (error) {
+            err = error;
+            console.error(err);
+          }
+          this.app.createProject(this.tutorial.project_title.substring(0, i1).trim(), slug, options, (function(_this) {
+            return function() {
+              return _this.start(_this.tutorial);
+            };
+          })(this));
+          return;
+        } else {
+          this.app.createProject(this.tutorial.project_title, slug, (function(_this) {
+            return function() {
+              return _this.start(_this.tutorial);
+            };
+          })(this));
+          return;
+        }
       }
       this.app.setProjectTutorial(slug, this.tutorial.link);
       return this.app.appui.setMainSection("projects");

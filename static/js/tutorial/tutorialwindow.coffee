@@ -53,7 +53,7 @@ class @TutorialWindow
 
   openProject:()->
     if @tutorial.project_title?
-      slug = RegexLib.slugify @tutorial.project_title
+      slug = RegexLib.slugify @tutorial.project_title.split("{")[0]
       project = null
       for p in @app.projects
         if p.slug == slug
@@ -63,9 +63,23 @@ class @TutorialWindow
           break
 
       if not project?
-        @app.createProject @tutorial.project_title,slug,()=>
-          @start @tutorial
-        return
+        i1 = @tutorial.project_title.indexOf("{")
+        i2 = @tutorial.project_title.lastIndexOf("}")
+
+        if i1 > 0 and i2>i1
+          options = {}
+          try
+            options = JSON.parse(@tutorial.project_title.substring(i1,i2+1))
+          catch err
+            console.error err
+
+          @app.createProject @tutorial.project_title.substring(0,i1).trim(),slug,options,()=>
+            @start @tutorial
+          return
+        else
+          @app.createProject @tutorial.project_title,slug,()=>
+            @start @tutorial
+          return
 
       @app.setProjectTutorial(slug,@tutorial.link)
       @app.appui.setMainSection("projects")
