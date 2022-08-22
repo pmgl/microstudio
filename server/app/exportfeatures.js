@@ -245,7 +245,11 @@ this.ExportFeatures = (function() {
         };
         if (project.language === "microscript_v2") {
           wrapsource = function(s) {
-            return "\nfunction()\n" + s + "\nend()\n";
+            if (/^\s*\/\/\s*javascript\s*\n/.test(s)) {
+              return '\nsystem.javascript("""\n\n' + s.replace(/\\/g, "\\\\") + '\n\n""")\n';
+            } else {
+              return "\nfunction()\n" + s + "\nend()\n";
+            }
           };
         }
         libs = [];

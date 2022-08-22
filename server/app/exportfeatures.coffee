@@ -191,7 +191,11 @@ class @ExportFeatures
 
       wrapsource = (s)->s
       if project.language == "microscript_v2" # this is to prevent local variables contamination between files
-        wrapsource = (s)->"\nfunction()\n#{s}\nend()\n"
+        wrapsource = (s)->
+          if /^\s*\/\/\s*javascript\s*\n/.test s
+            '\nsystem.javascript("""\n\n'+ s.replace(/\\/g,"\\\\") + '\n\n""")\n'
+          else
+            "\nfunction()\n#{s}\nend()\n"
 
       libs = []
       if project.graphics? and typeof project.graphics == "string"
