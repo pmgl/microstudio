@@ -49,21 +49,32 @@ this.MicroMap = (function() {
   };
 
   MicroMap.prototype.draw = function(context, x, y, w, h) {
-    var a, c, k, len, len1, ref1, time;
-    context.drawImage(this.getCanvas(), x, y, w, h);
+    var a, c, ctx, k, len, len1, ref1, time;
     if ((this.animated != null) && this.animated.length > 0) {
       time = Date.now();
+      if ((this.buffer == null) || this.buffer.width !== this.block_width * this.width || this.buffer.height !== this.block_height * this.height) {
+        console.info("creating buffer");
+        this.buffer = document.createElement("canvas");
+        this.buffer.width = this.block_width * this.width;
+        this.buffer.height = this.block_height * this.height;
+      }
+      ctx = this.buffer.getContext("2d");
+      ctx.clearRect(0, 0, this.buffer.width, this.buffer.height);
+      ctx.drawImage(this.getCanvas(), 0, 0);
       ref1 = this.animated;
       for (k = 0, len1 = ref1.length; k < len1; k++) {
         a = ref1[k];
         len = a.sprite.frames.length;
         c = a.sprite.frames[Math.floor(time / 1000 * a.sprite.fps) % len].canvas;
         if (a.tx != null) {
-          context.drawImage(c, a.tx, a.ty, this.block_width, this.block_height, x + w * a.x, y + h * a.y, a.w * w, a.h * h);
+          ctx.drawImage(c, a.tx, a.ty, this.block_width, this.block_height, a.x, a.y, this.block_width, this.block_height);
         } else {
-          context.drawImage(c, x + w * a.x, y + h * a.y, a.w * w, a.h * h);
+          ctx.drawImage(c, a.x, a.y, this.block_width, this.block_height);
         }
       }
+      context.drawImage(this.buffer, x, y, w, h);
+    } else {
+      context.drawImage(this.getCanvas(), x, y, w, h);
     }
   };
 
@@ -93,10 +104,10 @@ this.MicroMap = (function() {
           if ((sprite != null) && (sprite.frames[0] != null)) {
             if (sprite.frames.length > 1) {
               a = {
-                x: this.block_width * i / this.canvas.width,
-                y: this.block_height * j / this.canvas.height,
-                w: this.block_width / this.canvas.width,
-                h: this.block_height / this.canvas.height,
+                x: this.block_width * i,
+                y: this.block_height * j,
+                w: this.block_width,
+                h: this.block_height,
                 sprite: sprite
               };
               if (s[1] != null) {

@@ -33,16 +33,27 @@ class @MicroMap
     @canvas
 
   draw:(context,x,y,w,h)->
-    context.drawImage @getCanvas(),x,y,w,h
     if @animated? and @animated.length>0
       time = Date.now()
+      if not @buffer? or @buffer.width != @block_width*@width or @buffer.height != @block_height*@height
+        console.info "creating buffer"
+        @buffer = document.createElement "canvas"
+        @buffer.width = @block_width*@width
+        @buffer.height = @block_height*@height
+      ctx = @buffer.getContext "2d"
+      ctx.clearRect 0,0,@buffer.width,@buffer.height
+      ctx.drawImage @getCanvas(),0,0
+
       for a in @animated
         len = a.sprite.frames.length
         c = a.sprite.frames[Math.floor(time/1000*a.sprite.fps)%len].canvas
         if a.tx?
-          context.drawImage c,a.tx,a.ty,@block_width,@block_height,x+w*a.x,y+h*a.y,a.w*w,a.h*h
+          ctx.drawImage c,a.tx,a.ty,@block_width,@block_height,a.x,a.y,@block_width,@block_height
         else
-          context.drawImage c,x+w*a.x,y+h*a.y,a.w*w,a.h*h
+          ctx.drawImage c,a.x,a.y,@block_width,@block_height
+      context.drawImage @buffer,x,y,w,h
+    else
+      context.drawImage @getCanvas(),x,y,w,h
 
     return
 
@@ -72,10 +83,10 @@ class @MicroMap
           if sprite? and sprite.frames[0]?
             if sprite.frames.length>1
               a =
-                x: @block_width*i/@canvas.width
-                y: @block_height*j/@canvas.height
-                w: @block_width/@canvas.width
-                h: @block_height/@canvas.height
+                x: @block_width*i
+                y: @block_height*j
+                w: @block_width
+                h: @block_height
                 sprite: sprite
 
               if s[1]?
