@@ -1,5 +1,16 @@
 ## Changelog
 
+### Update 2022-08-25
+* added change password feature
+* fixed animated sprites outline in maps, closes #153
+* Correct export of embedded JS, fixes #146
+* also fixed in previous hot updates:
+  * do not reset object transform on resize #148
+  * fixed typo in image.setRGBA
+  * file view rejects drop of plain text, fixes #152
+  * fixed ui bug on FireFox, closes #150
+  * allowing to set options to project created by tutorial
+
 ### Update 2022-07-04
 * reduced the number of lines in live help suggestions
 * attempt at providing correct permissions for autoplay, gamepad and midi for run window iframe
