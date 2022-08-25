@@ -31,6 +31,22 @@ this.UserSettings = (function() {
         return _this.closeTranslationApp();
       };
     })(this));
+    if (window.ms_standalone) {
+      this.hideChangePassword();
+    } else {
+      document.getElementById("usersetting-change-password").addEventListener("click", (function(_this) {
+        return function() {
+          return _this.changePasswordClick();
+        };
+      })(this));
+      document.getElementById("usersetting-password-new2").addEventListener("keyup", (function(_this) {
+        return function(event) {
+          if (event.keyCode === 13) {
+            return _this.changePasswordClick();
+          }
+        };
+      })(this));
+    }
     this.nick_validator = new InputValidator(document.getElementById("usersetting-nick"), document.getElementById("usersetting-nick-button"), document.getElementById("usersetting-nick-error"), (function(_this) {
       return function(value) {
         var nick;
@@ -162,8 +178,21 @@ this.UserSettings = (function() {
     return results;
   };
 
+  UserSettings.prototype.isSectionAllowed = function(section) {
+    if (this.app.user.flags.guest) {
+      return section === "progress";
+    } else if (window.ms_standalone) {
+      return section === "progress";
+    } else {
+      return true;
+    }
+  };
+
   UserSettings.prototype.setSection = function(section) {
     var j, len, ref, s;
+    if (!this.isSectionAllowed(section)) {
+      section = "progress";
+    }
     this.current = section;
     ref = this.sections;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -180,10 +209,16 @@ this.UserSettings = (function() {
       this.app.user_progress.update();
       this.app.user_progress.updateStatsPage();
     }
+    this.resetChangePassword();
   };
 
   UserSettings.prototype.update = function() {
     var account_type, div, icon, key, ref, span, translator, value;
+    if (this.app.user.flags.guest) {
+      this.hideChangePassword();
+      document.getElementById("usersettings-menu-settings").style.display = "none";
+      document.getElementById("usersettings-menu-profile").style.display = "none";
+    }
     document.getElementById("subscribe-newsletter").checked = this.app.user.flags["newsletter"] === true;
     document.getElementById("experimental-features").checked = this.app.user.flags["experimental"] === true;
     document.getElementById("experimental-features-setting").style.display = this.app.user.flags.validated ? "block" : "none";
@@ -226,7 +261,8 @@ this.UserSettings = (function() {
     }
     this.updateStorage();
     this.updateProfileImage();
-    return document.getElementById("usersettings-profile-description").value = this.app.user.info.description;
+    document.getElementById("usersettings-profile-description").value = this.app.user.info.description;
+    return this.resetChangePassword();
   };
 
   UserSettings.prototype.updateStorage = function() {
@@ -382,6 +418,64 @@ this.UserSettings = (function() {
       document.querySelector("#login-info i").style.display = "inline-block";
       return document.querySelector("#usersettings-profile-image .fa-times-circle").style.display = "none";
     }
+  };
+
+  UserSettings.prototype.resetChangePassword = function() {
+    return this.setChangePasswordOpen(false);
+  };
+
+  UserSettings.prototype.setChangePasswordOpen = function(open) {
+    var view;
+    view = document.getElementById("usersetting-change-password-view");
+    if (open) {
+      view.style.height = "260px";
+    } else {
+      view.style.height = "0px";
+    }
+    document.getElementById("usersetting-password-current").value = "";
+    document.getElementById("usersetting-password-new1").value = "";
+    document.getElementById("usersetting-password-new2").value = "";
+    return document.getElementById("usersetting-password-error").innerText = "";
+  };
+
+  UserSettings.prototype.changePasswordClick = function() {
+    var current, open, pw1, pw2, view;
+    view = document.getElementById("usersetting-change-password-view");
+    open = view.getBoundingClientRect().height > 0;
+    if (open) {
+      current = document.getElementById("usersetting-password-current");
+      pw1 = document.getElementById("usersetting-password-new1");
+      pw2 = document.getElementById("usersetting-password-new2");
+      if (current.value.length > 0 && pw1.value.length > 0 && pw2.value.length > 0) {
+        if (pw1.value === pw2.value) {
+          return this.app.client.sendRequest({
+            name: "change_password",
+            current: current.value,
+            "new": pw1.value
+          }, (function(_this) {
+            return function(msg) {
+              console.info(msg);
+              if (msg.name === "error") {
+                return document.getElementById("usersetting-password-error").innerText = _this.app.translator.get("Wrong Password");
+              } else {
+                _this.resetChangePassword();
+                return _this.app.appui.showNotification(_this.app.translator.get("You have changed your password!"));
+              }
+            };
+          })(this));
+        } else {
+          return document.getElementById("usersetting-password-error").innerText = this.app.translator.get("Passwords do not match");
+        }
+      } else {
+        return this.resetChangePassword();
+      }
+    } else {
+      return this.setChangePasswordOpen(true);
+    }
+  };
+
+  UserSettings.prototype.hideChangePassword = function() {
+    return document.getElementById("usersetting-change-password").style.display = "none";
   };
 
   return UserSettings;

@@ -46,6 +46,7 @@ class @Session
     @register "send_password_recovery",(msg)=>@sendPasswordRecovery(msg)
     @register "token",(msg)=>@checkToken(msg)
     @register "delete_guest",(msg)=>@deleteGuest(msg)
+    @register "change_password",(msg)=>@changePassword(msg)
 
     @register "send_validation_mail",(msg)=>@sendValidationMail(msg)
     @register "change_email",(msg)=>@changeEmail(msg)
@@ -353,6 +354,31 @@ class @Session
         @sendError "wrong password",data.request_id
     else
       @sendError "unknown user",data.request_id
+
+  createHashedPassword:(password)->
+    salt = ""
+    chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    for i in [0..15] by 1
+      salt += chars.charAt(Math.floor(Math.random()*chars.length))
+
+    salt+"|"+SHA256(salt+password)
+
+  changePassword:(data)->
+    return if not @user? or not @user.hash?
+    return if not data.current?
+    return if not data.new?
+
+    hash = @user.hash
+    s = hash.split("|")
+    h = SHA256(s[0]+data.current)
+    if h.toString() == s[1]
+      hash = @createHashedPassword data.new
+      @user.set "hash",hash
+      @send
+        request_id: data.request_id
+        name: "password_changed"
+    else
+      @sendError "wrong password",data.request_id
 
   getUserInfo:()->
     return

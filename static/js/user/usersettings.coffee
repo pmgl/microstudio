@@ -10,6 +10,14 @@ class @UserSettings
     document.getElementById("open-translation-app").addEventListener "click",()=>@openTranslationApp()
     document.getElementById("translation-app-back-button").addEventListener "click",()=>@closeTranslationApp()
 
+    if window.ms_standalone
+      @hideChangePassword()
+    else
+      document.getElementById("usersetting-change-password").addEventListener "click",()=>@changePasswordClick()
+      document.getElementById("usersetting-password-new2").addEventListener "keyup",(event)=>
+        if event.keyCode == 13
+          @changePasswordClick()
+
     @nick_validator = new InputValidator document.getElementById("usersetting-nick"),
       document.getElementById("usersetting-nick-button"),
       document.getElementById("usersetting-nick-error"),
@@ -106,8 +114,18 @@ class @UserSettings
             when "profile" then @app.openUserProfile()
             when "progress" then @app.openUserProgress()
 
+  isSectionAllowed:(section)->
+    if @app.user.flags.guest
+      section == "progress"
+    else if window.ms_standalone
+      section == "progress"
+    else
+      true
 
   setSection:(section)->
+    if not @isSectionAllowed(section)
+      section = "progress"
+      
     @current = section
     for s in @sections
       if s == section
@@ -120,9 +138,16 @@ class @UserSettings
     if @current == "progress"
       @app.user_progress.update()
       @app.user_progress.updateStatsPage()
+
+    @resetChangePassword()
     return
 
   update:()->
+    if @app.user.flags.guest
+      @hideChangePassword()
+      document.getElementById("usersettings-menu-settings").style.display = "none"
+      document.getElementById("usersettings-menu-profile").style.display = "none"
+
     document.getElementById("subscribe-newsletter").checked = @app.user.flags["newsletter"] == true
     document.getElementById("experimental-features").checked = @app.user.flags["experimental"] == true
     document.getElementById("experimental-features-setting").style.display = if @app.user.flags.validated then "block" else "none"
@@ -168,6 +193,8 @@ class @UserSettings
     @updateProfileImage()
 
     document.getElementById("usersettings-profile-description").value = @app.user.info.description
+
+    @resetChangePassword()
 
   updateStorage:()->
     percent = Math.floor(@app.user.info.size/@app.user.info.max_storage*100)
@@ -288,3 +315,48 @@ class @UserSettings
       document.querySelector("#login-info img").style.display = "none"
       document.querySelector("#login-info i").style.display = "inline-block"
       document.querySelector("#usersettings-profile-image .fa-times-circle").style.display = "none"
+
+  resetChangePassword:()->
+    @setChangePasswordOpen false
+
+  setChangePasswordOpen:(open)->
+    view = document.getElementById("usersetting-change-password-view")
+    if open
+      view.style.height = "260px"
+    else
+      view.style.height = "0px"
+
+    document.getElementById("usersetting-password-current").value = ""
+    document.getElementById("usersetting-password-new1").value = ""
+    document.getElementById("usersetting-password-new2").value = ""
+    document.getElementById("usersetting-password-error").innerText = ""
+
+  changePasswordClick:()->
+    view = document.getElementById("usersetting-change-password-view")
+    open = view.getBoundingClientRect().height > 0
+    if open
+      current = document.getElementById("usersetting-password-current")
+      pw1 = document.getElementById("usersetting-password-new1")
+      pw2 = document.getElementById("usersetting-password-new2")
+      if current.value.length>0 and pw1.value.length>0 and pw2.value.length>0
+        if pw1.value == pw2.value
+          @app.client.sendRequest {
+            name: "change_password"
+            current: current.value
+            new: pw1.value
+          },(msg)=>
+            console.info msg
+            if msg.name == "error"
+              document.getElementById("usersetting-password-error").innerText = @app.translator.get "Wrong Password"
+            else
+              @resetChangePassword()
+              @app.appui.showNotification @app.translator.get "You have changed your password!"
+        else
+          document.getElementById("usersetting-password-error").innerText = @app.translator.get "Passwords do not match"
+      else
+        @resetChangePassword()
+    else
+      @setChangePasswordOpen true
+
+  hideChangePassword:()->
+    document.getElementById("usersetting-change-password").style.display = "none"

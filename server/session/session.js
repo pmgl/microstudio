@@ -88,6 +88,11 @@ this.Session = (function() {
         return _this.deleteGuest(msg);
       };
     })(this));
+    this.register("change_password", (function(_this) {
+      return function(msg) {
+        return _this.changePassword(msg);
+      };
+    })(this));
     this.register("send_validation_mail", (function(_this) {
       return function(msg) {
         return _this.sendValidationMail(msg);
@@ -670,6 +675,42 @@ this.Session = (function() {
       }
     } else {
       return this.sendError("unknown user", data.request_id);
+    }
+  };
+
+  Session.prototype.createHashedPassword = function(password) {
+    var chars, i, j, salt;
+    salt = "";
+    chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (i = j = 0; j <= 15; i = j += 1) {
+      salt += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return salt + "|" + SHA256(salt + password);
+  };
+
+  Session.prototype.changePassword = function(data) {
+    var h, hash, s;
+    if ((this.user == null) || (this.user.hash == null)) {
+      return;
+    }
+    if (data.current == null) {
+      return;
+    }
+    if (data["new"] == null) {
+      return;
+    }
+    hash = this.user.hash;
+    s = hash.split("|");
+    h = SHA256(s[0] + data.current);
+    if (h.toString() === s[1]) {
+      hash = this.createHashedPassword(data["new"]);
+      this.user.set("hash", hash);
+      return this.send({
+        request_id: data.request_id,
+        name: "password_changed"
+      });
+    } else {
+      return this.sendError("wrong password", data.request_id);
     }
   };
 

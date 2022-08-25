@@ -45,9 +45,16 @@
   margin-left: 10px ;
 }
 
+#usersetting-change-password-view {
+  transition-property: height ;
+  transition-duration: .5s ;
+  height: 0px ;
+  overflow: hidden ;
+}
 
-
-
+#usersetting-password-error {
+  color: hsl(0,50%,70%) ;
+}
 
 
 #usersettings {

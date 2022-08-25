@@ -8,7 +8,7 @@ div.usersettings#usersettings
     br
     div#usersettings-menu-progress #{translator.get("Stats & Achievements")}
       i.fas.fa-chart-bar
-    
+
   div.usersettings-page#usersettings-settings
     h1 #{translator.get("User Settings")}
     div.usersetting#usersetting-block-nickname
@@ -26,6 +26,25 @@ div.usersettings#usersettings
         div.validate-button <i class="fa fa-check"></i> #{translator.get("Change e-mail")}
       div.error#usersetting-email-error
       br
+
+    div.usersetting#usersetting-password
+      div#usersetting-change-password-view
+        h3 #{translator.get("Change Password")}
+        div(style="margin:10px 0px")
+          input#usersetting-password-current(type="password")
+          div.tip #{translator.get("Current Password")}
+        div(style="margin:10px 0px")
+          input#usersetting-password-new1(type="password")
+          div.tip #{translator.get("New Password")}
+        div(style="margin:10px 0px")
+          input#usersetting-password-new2(type="password")
+          div.tip #{translator.get("Repeat New Password")}
+
+        div#usersetting-password-error
+
+      div.button#usersetting-change-password
+        i.fas.fa-key
+        span #{translator.get("Change password")}
 
     div.usersetting#email-not-validated
       p #{translator.get("Your e-mail address is not validated yet. Check your e-mails and click on the validation link we sent to you. In case you did not receive the validation e-mail yet, use the button below to resend:")}
@@ -50,14 +69,14 @@ div.usersettings#usersettings
     div.usersetting#usersetting-block-storage
       h3 #{translator.get("Storage")}
       span#usersettings-storage
-        
+
     div.usersetting#experimental-features-setting
       h3 #{translator.get("Experimental features")}
       input(type="checkbox" id="experimental-features")
       label(for="experimental-features") #{translator.get("Enable experimental features")}
       br
       span.tip #{translator.get("Experimental features can change, break or be removed anytime. You are warned!")}
-      
+
 
     div.usersetting#advanced
       div.button#open-translation-app <i class="fa fa-globe"></i> #{translator.get("Open translation tool")}
@@ -65,21 +84,21 @@ div.usersettings#usersettings
 
   div.usersettings-page#usersettings-profile(style="display: none")
     h1 #{translator.get("Your Profile")}
-    
+
     div.usersetting
       h3 #{translator.get("User Description")}
       textarea#usersettings-profile-description
       div.tip #{translator.get("Tell us more about yourself (only if you wish to). This text will be displayed on your public page.")}
-      
+
     div.usersetting
       h3 #{translator.get("Profile Image")}
       div#usersettings-profile-image
         i.fas.fa-user-circle
         img(style="display:none")
         i.fas.fa-times-circle(title=translator.get("Remove Profile Image"))
-          
+
       div.tip #{translator.get("Drop your image here. This image will be displayed publicly, along with your nickname.")}
-      
+
     div.usersetting
       h3 #{translator.get("Check your public page")}
       a#user-public-page(target="_blank") microstudio.io/
@@ -88,14 +107,14 @@ div.usersettings#usersettings
 
   div.usersettings-page#usersettings-progress(style="display: none")
     h1 #{translator.get("Your Progress")}
-  
+
     div#user-progress-level
-  
+
     h2 #{translator.get("Statistics")}
     div#user-progress-statistics
-  
+
     h2 #{translator.get("Achievements")}
-      span#number-of-achievements 
+      span#number-of-achievements
     div#user-progress-achievements
 
 div.usersettings#translation-app
