@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2022-08-30
+* Fixed bug with locals in if/else (microScript 2.0) #156
+* Fixed bug with captured outer locals being overwritten by block locals (microScript 2.0) #151
+* Added warning when using a variable assignment in a condition (e.g. `if i=1 then ...`) #154
+
 ### Update 2022-08-25
 * added change password feature
 * fixed animated sprites outline in maps, closes #153
