@@ -653,11 +653,15 @@ Compiler = (function() {
       c = chain[i];
       this.compile(c.condition);
       this.routine.JUMPN(condition_next);
+      this.locals.push();
       this.compileSequence(c.sequence);
+      this.locals.pop();
       this.routine.JUMP(condition_end, condition);
       this.routine.setLabel(condition_next);
       if (i === chain.length - 1 && (c["else"] != null)) {
+        this.locals.push();
         this.compileSequence(c["else"]);
+        this.locals.pop();
       }
     }
     this.routine.setLabel(condition_end);

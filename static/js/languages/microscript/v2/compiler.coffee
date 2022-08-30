@@ -569,11 +569,15 @@ class Compiler
       c = chain[i]
       @compile c.condition
       @routine.JUMPN condition_next
+      @locals.push()
       @compileSequence(c.sequence)
+      @locals.pop()
       @routine.JUMP condition_end,condition
       @routine.setLabel condition_next
       if i==chain.length-1 and c.else?
+        @locals.push()
         @compileSequence(c.else)
+        @locals.pop()
 
     @routine.setLabel condition_end
     return
