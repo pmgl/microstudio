@@ -584,7 +584,7 @@ this.Runtime = (function() {
   };
 
   Runtime.prototype.reportWarnings = function() {
-    var key, ref, ref1, ref2, ref3, value;
+    var key, ref, ref1, ref2, ref3, ref4, value;
     if (this.vm != null) {
       ref = this.vm.context.warnings.invoking_non_function;
       for (key in ref) {
@@ -640,6 +640,20 @@ this.Runtime = (function() {
             error: "",
             type: "assigning_api_variable",
             expression: value.expression,
+            line: value.line,
+            column: value.column,
+            file: value.file
+          });
+        }
+      }
+      ref4 = this.vm.context.warnings.assignment_as_condition;
+      for (key in ref4) {
+        value = ref4[key];
+        if (!value.reported) {
+          value.reported = true;
+          this.listener.reportError({
+            error: "",
+            type: "assignment_as_condition",
             line: value.line,
             column: value.column,
             file: value.file

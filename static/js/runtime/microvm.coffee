@@ -137,6 +137,7 @@ class @MicroVM
       assigning_field_to_undefined: {}
       invoking_non_function: {}
       assigning_api_variable: {}
+      assignment_as_condition: {}
 
   setMeta:(key,value)->
     @context.meta[key] = value

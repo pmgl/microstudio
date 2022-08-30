@@ -486,6 +486,16 @@ class @Runtime
             column: value.column
             file: value.file
 
+      for key,value of @vm.context.warnings.assignment_as_condition
+        if not value.reported
+          value.reported = true
+          @listener.reportError
+            error: ""
+            type: "assignment_as_condition"
+            line: value.line
+            column: value.column
+            file: value.file
+
       return
 
   updateControls:()->

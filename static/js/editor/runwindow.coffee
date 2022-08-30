@@ -344,6 +344,9 @@ class @RunWindow
       when "assigning_api_variable"
         error = @app.translator.get("Warning: overwriting global API variable '%EXP%'").replace("%EXP%",err.expression)
         @annotateWarning(error,err)
+      when "assignment_as_condition"
+        error = @app.translator.get("Warning: assignment as condition ; to check equality, use '=='")
+        @annotateWarning(error,err)
 
     if err.line?
       if err.file

@@ -209,7 +209,8 @@ this.MicroVM = (function() {
       using_undefined_variable: {},
       assigning_field_to_undefined: {},
       invoking_non_function: {},
-      assigning_api_variable: {}
+      assigning_api_variable: {},
+      assignment_as_condition: {}
     };
   };
 

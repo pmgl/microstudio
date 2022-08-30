@@ -448,6 +448,10 @@ this.RunWindow = (function() {
       case "assigning_api_variable":
         error = this.app.translator.get("Warning: overwriting global API variable '%EXP%'").replace("%EXP%", err.expression);
         this.annotateWarning(error, err);
+        break;
+      case "assignment_as_condition":
+        error = this.app.translator.get("Warning: assignment as condition ; to check equality, use '=='");
+        this.annotateWarning(error, err);
     }
     if (err.line != null) {
       if (err.file) {

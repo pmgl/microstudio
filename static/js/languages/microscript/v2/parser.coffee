@@ -376,11 +376,20 @@ class @Parser
 
     return
 
+  warningAssignmentCondition:(expression)->
+    if expression instanceof Program.Assignment
+      @warnings.push
+        type: "assignment_as_condition"
+        line: expression.token.line
+        column: expression.token.column
+
   parseIf:(iftoken)->
     @addTerminable iftoken
     current =
       condition: @assertExpression()
       sequence: []
+
+    @warningAssignmentCondition current.condition
 
     chain = []
     token = @nextToken()
@@ -394,6 +403,9 @@ class @Parser
         current =
           condition: @assertExpression()
           sequence: []
+
+        @warningAssignmentCondition current.condition
+
         @assert(Token.TYPE_THEN,"Expected 'then'")
       else if token.type == Token.TYPE_ELSE
         current.else = []

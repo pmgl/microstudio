@@ -108,13 +108,25 @@ this.Runner = (function() {
       for (j = 0, len = ref.length; j < len; j++) {
         w = ref[j];
         id = filename + "-" + w.line + "-" + w.column;
-        if (this.microvm.context.warnings.assigning_api_variable[id] == null) {
-          this.microvm.context.warnings.assigning_api_variable[id] = {
-            file: filename,
-            line: w.line,
-            column: w.column,
-            expression: w.identifier
-          };
+        switch (w.type) {
+          case "assigning_api_variable":
+            if (this.microvm.context.warnings.assigning_api_variable[id] == null) {
+              this.microvm.context.warnings.assigning_api_variable[id] = {
+                file: filename,
+                line: w.line,
+                column: w.column,
+                expression: w.identifier
+              };
+            }
+            break;
+          case "assignment_as_condition":
+            if (this.microvm.context.warnings.assignment_as_condition[id] == null) {
+              this.microvm.context.warnings.assignment_as_condition[id] = {
+                file: filename,
+                line: w.line,
+                column: w.column
+              };
+            }
         }
       }
     }

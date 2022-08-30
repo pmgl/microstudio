@@ -460,6 +460,16 @@ this.Parser = (function() {
     }
   };
 
+  Parser.prototype.warningAssignmentCondition = function(expression) {
+    if (expression instanceof Program.Assignment) {
+      return this.warnings.push({
+        type: "assignment_as_condition",
+        line: expression.token.line,
+        column: expression.token.column
+      });
+    }
+  };
+
   Parser.prototype.parseIf = function(iftoken) {
     var chain, current, line, token;
     this.addTerminable(iftoken);
@@ -467,6 +477,7 @@ this.Parser = (function() {
       condition: this.assertExpression(),
       sequence: []
     };
+    this.warningAssignmentCondition(current.condition);
     chain = [];
     token = this.nextToken();
     if (token.type !== Token.TYPE_THEN) {
@@ -480,6 +491,7 @@ this.Parser = (function() {
           condition: this.assertExpression(),
           sequence: []
         };
+        this.warningAssignmentCondition(current.condition);
         this.assert(Token.TYPE_THEN, "Expected 'then'");
       } else if (token.type === Token.TYPE_ELSE) {
         current["else"] = [];
