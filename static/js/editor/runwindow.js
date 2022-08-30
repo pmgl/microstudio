@@ -114,12 +114,20 @@ this.RunWindow = (function() {
         return localStorage.setItem("console_warning_assign", _this.warning_assign);
       };
     })(this));
+    document.getElementById("console-options-warning-condition").addEventListener("change", (function(_this) {
+      return function() {
+        _this.warning_condition = document.getElementById("console-options-warning-condition").checked;
+        return localStorage.setItem("console_warning_condition", _this.warning_condition);
+      };
+    })(this));
     this.warning_undefined = localStorage.getItem("console_warning_undefined") === "true" || false;
     this.warning_nonfunction = localStorage.getItem("console_warning_nonfunction") !== "false";
     this.warning_assign = localStorage.getItem("console_warning_assign") !== "false";
+    this.warning_condition = localStorage.getItem("console_warning_condition") !== "false";
     document.getElementById("console-options-warning-undefined").checked = this.warning_undefined;
     document.getElementById("console-options-warning-nonfunction").checked = this.warning_nonfunction;
-    return document.getElementById("console-options-warning-assign").checked = this.warning_assign;
+    document.getElementById("console-options-warning-assign").checked = this.warning_assign;
+    return document.getElementById("console-options-warning-condition").checked = this.warning_condition;
   };
 
   RunWindow.prototype.detach = function() {
@@ -283,8 +291,8 @@ this.RunWindow = (function() {
     var div;
     div = document.getElementById("console-options");
     if (div.getBoundingClientRect().height <= 41) {
-      div.style.height = "115px";
-      document.getElementById("terminal-view").style.top = "155px";
+      div.style.height = "145px";
+      document.getElementById("terminal-view").style.top = "185px";
     } else {
       div.style.height = "0px";
       document.getElementById("terminal-view").style.top = "40px";
@@ -450,7 +458,10 @@ this.RunWindow = (function() {
         this.annotateWarning(error, err);
         break;
       case "assignment_as_condition":
-        error = this.app.translator.get("Warning: assignment as condition ; to check equality, use '=='");
+        if (!this.warning_condition) {
+          return;
+        }
+        error = this.app.translator.get("Warning: assignment in a condition ; to check equality, use '=='");
         this.annotateWarning(error, err);
     }
     if (err.line != null) {

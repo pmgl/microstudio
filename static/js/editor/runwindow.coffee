@@ -56,13 +56,19 @@ class @RunWindow
       @warning_assign = document.getElementById("console-options-warning-assign").checked
       localStorage.setItem "console_warning_assign", @warning_assign
 
+    document.getElementById("console-options-warning-condition").addEventListener "change",()=>
+      @warning_condition = document.getElementById("console-options-warning-condition").checked
+      localStorage.setItem "console_warning_condition", @warning_condition
+
     @warning_undefined = localStorage.getItem("console_warning_undefined") == "true" or false
     @warning_nonfunction = localStorage.getItem("console_warning_nonfunction") != "false"
     @warning_assign = localStorage.getItem("console_warning_assign") != "false"
+    @warning_condition = localStorage.getItem("console_warning_condition") != "false"
 
     document.getElementById("console-options-warning-undefined").checked = @warning_undefined
     document.getElementById("console-options-warning-nonfunction").checked = @warning_nonfunction
     document.getElementById("console-options-warning-assign").checked = @warning_assign
+    document.getElementById("console-options-warning-condition").checked = @warning_condition
 
   detach:()->
     if @detached
@@ -211,8 +217,8 @@ class @RunWindow
   toggleConsoleOptions:()->
     div = document.getElementById("console-options")
     if div.getBoundingClientRect().height<= 41
-      div.style.height = "115px"
-      document.getElementById("terminal-view").style.top = "155px"
+      div.style.height = "145px"
+      document.getElementById("terminal-view").style.top = "185px"
     else
       div.style.height = "0px"
       document.getElementById("terminal-view").style.top = "40px"
@@ -345,7 +351,8 @@ class @RunWindow
         error = @app.translator.get("Warning: overwriting global API variable '%EXP%'").replace("%EXP%",err.expression)
         @annotateWarning(error,err)
       when "assignment_as_condition"
-        error = @app.translator.get("Warning: assignment as condition ; to check equality, use '=='")
+        return if not @warning_condition
+        error = @app.translator.get("Warning: assignment in a condition ; to check equality, use '=='")
         @annotateWarning(error,err)
 
     if err.line?
