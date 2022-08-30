@@ -847,7 +847,6 @@ this.Locals = (function() {
   };
 
   Locals.prototype.pop = function() {
-    this.index = this.layers[this.layers.length - 1].start_index;
     return this.layers.splice(this.layers.length - 1, 1);
   };
 

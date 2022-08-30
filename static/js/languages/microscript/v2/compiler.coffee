@@ -744,7 +744,9 @@ class @Locals
     @layers.push new LocalLayer @
 
   pop:()->
-    @index = @layers[@layers.length-1].start_index
+    # resetting the @index below was causing erasure of outer locals
+    # when used after the block ; such reset is not needed
+    #@index = @layers[@layers.length-1].start_index
     @layers.splice(@layers.length-1,1)
 
   register:(name)->

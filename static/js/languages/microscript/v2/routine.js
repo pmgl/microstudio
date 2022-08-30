@@ -381,7 +381,7 @@ this.Routine = (function() {
     for (i = j = 0, len = ref1.length; j < len; i = ++j) {
       op = ref1[i];
       s += OPCODES[op];
-      if (this.arg1[i]) {
+      if (this.arg1[i] != null) {
         s += " " + this.arg1[i];
       }
       s += "\n";

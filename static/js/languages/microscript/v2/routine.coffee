@@ -156,7 +156,7 @@ class @Routine
     s = ""
     for op,i in @opcodes
       s += OPCODES[op]
-      if @arg1[i]
+      if @arg1[i]?
         #if typeof @arg1[i] != "function"
           s += " #{@arg1[i]}"
       s += "\n"
