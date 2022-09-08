@@ -195,7 +195,7 @@ this.TimeMachine = (function() {
       if (key === "keyboard" || key === "gamepad" || key === "touch" || key === "mouse") {
         continue;
       }
-      if (!(value instanceof Program.Function) && typeof value !== "function" && (value.classname == null)) {
+      if (((typeof Routine === "undefined" || Routine === null) || !(value instanceof Routine)) && !(value instanceof Program.Function) && typeof value !== "function" && (value.classname == null)) {
         dest[key] = value;
       }
     }

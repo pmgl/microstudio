@@ -154,7 +154,7 @@ class @TimeMachine
   copyGlobal:(source,dest)->
     for key,value of source
       continue if key in ["keyboard","gamepad","touch","mouse"]
-      if value not instanceof Program.Function and typeof value != "function" and not value.classname?
+      if (not Routine? or value not instanceof Routine) and value not instanceof Program.Function and typeof value != "function" and not value.classname?
         dest[key] = value
 
     for key of dest
