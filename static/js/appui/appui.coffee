@@ -122,7 +122,7 @@ class AppUI
     document.getElementById("create-project-overlay").addEventListener "mousedown",(event)=>
       if event.target != document.getElementById("create-project-overlay")
         return true
-        
+
       b = document.getElementById("create-project-window").getBoundingClientRect()
       if event.clientX<b.x or event.clientX>b.x+b.width or event.clientY<b.y or event.clientY>b.y+b.height
         @hide "create-project-overlay"
@@ -210,7 +210,7 @@ class AppUI
 
     setInterval (()=>@checkActivity()),10000
 
-    @reboot_date = 1622710800000
+    @reboot_date = 1663054200000
     @checkRebootMessage()
 
   checkRebootMessage:()->
@@ -222,7 +222,7 @@ class AppUI
         minutes = Math.max(0,@reboot_date-Date.now())/60000
         if minutes>=120
           hours = Math.floor(minutes/60)
-          div.innerHTML = "<i class='fas fa-info-circle'></i> "+@app.translator.get("microStudio is getting a new server! Migration planned on %DATE% at %TIME%. Downtime will last 1 hour.").replace("%DATE%",new Date(@reboot_date).toLocaleDateString()).replace("%TIME%",new Date(@reboot_date).toLocaleTimeString())
+          div.innerHTML = "<i class='fas fa-info-circle'></i> "+@app.translator.get("microStudio will be down for maintenance on %DATE% at %TIME%. Downtime will last a few minutes.").replace("%DATE%",new Date(@reboot_date).toLocaleDateString()).replace("%TIME%",new Date(@reboot_date).toLocaleTimeString())
         else if minutes>=2
           minutes = Math.floor(minutes)
           div.innerHTML = "<i class='fas fa-exclamation-circle'></i> "+@app.translator.get("Downtime will start in %MINUTES% minutes").replace("%MINUTES%",minutes)

@@ -271,7 +271,7 @@ AppUI = (function() {
         return _this.checkActivity();
       };
     })(this)), 10000);
-    this.reboot_date = 1622710800000;
+    this.reboot_date = 1663054200000;
     this.checkRebootMessage();
   }
 
@@ -287,7 +287,7 @@ AppUI = (function() {
           minutes = Math.max(0, _this.reboot_date - Date.now()) / 60000;
           if (minutes >= 120) {
             hours = Math.floor(minutes / 60);
-            return div.innerHTML = "<i class='fas fa-info-circle'></i> " + _this.app.translator.get("microStudio is getting a new server! Migration planned on %DATE% at %TIME%. Downtime will last 1 hour.").replace("%DATE%", new Date(_this.reboot_date).toLocaleDateString()).replace("%TIME%", new Date(_this.reboot_date).toLocaleTimeString());
+            return div.innerHTML = "<i class='fas fa-info-circle'></i> " + _this.app.translator.get("microStudio will be down for maintenance on %DATE% at %TIME%. Downtime will last a few minutes.").replace("%DATE%", new Date(_this.reboot_date).toLocaleDateString()).replace("%TIME%", new Date(_this.reboot_date).toLocaleTimeString());
           } else if (minutes >= 2) {
             minutes = Math.floor(minutes);
             return div.innerHTML = "<i class='fas fa-exclamation-circle'></i> " + _this.app.translator.get("Downtime will start in %MINUTES% minutes").replace("%MINUTES%", minutes);
