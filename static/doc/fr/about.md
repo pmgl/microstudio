@@ -32,11 +32,13 @@ Créé par Gilles Pommereuil à Strasbourg, France
 
 Edité par :
 
-Neuronality SARL<br/>
-2 Chemin des Rochers<br/>
-67120 MOLSHEIM<br/>
+![microStudio](/img/microstudiologo.svg "microStudio")<br/>
+2 rue Schwilgué<br/>
+67000 Strasbourg<br/>
 FRANCE
 
-Siret: R.C.S. Saverne TI 808 517 858<br/>
+SIRET 423 577 634 00037<br/>
+
+Sponsor :
 
 [![Neuronality](/img/neuronality.svg "Neuronality")](https://www.neuronality.com)

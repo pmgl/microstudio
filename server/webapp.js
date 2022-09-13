@@ -70,10 +70,12 @@ this.WebApp = (function() {
     console.info("home_exp = " + home_exp);
     this.app.get(new RegExp(home_exp), (function(_this) {
       return function(req, res) {
-        var l, lang, len2, n, page, project, ref3, s, translator, user;
+        var dev_domain, l, lang, len2, n, page, project, ref3, run_domain, s, translator, user;
         if (_this.ensureDevArea(req, res)) {
           return;
         }
+        dev_domain = _this.server.config.dev_domain ? "'" + _this.server.config.dev_domain + "'" : "location.origin";
+        run_domain = _this.server.config.run_domain ? "'" + _this.server.config.run_domain + "'" : "location.origin.replace('.dev','.io')";
         lang = _this.getLanguage(req);
         ref3 = _this.languages;
         for (n = 0, len2 = ref3.length; n < len2; n++) {
@@ -119,7 +121,9 @@ this.WebApp = (function() {
             description: project.description,
             long_description: project.description,
             poster: (project.files != null) && (project.files["sprites/poster.png"] != null) ? "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/poster.png" : "https://microstudio.io/" + user.nick + "/" + project.slug + "/sprites/icon.png",
-            project_moderation: _this.server.config.project_moderation === true
+            project_moderation: _this.server.config.project_moderation === true,
+            dev_domain: dev_domain,
+            run_domain: run_domain
           });
           return res.send(page);
         } else if ((_this.home_page[lang] == null) || !_this.server.use_cache) {
@@ -139,7 +143,9 @@ this.WebApp = (function() {
             description: translator.get("Learn programming, create video games - microStudio is a free game engine online."),
             long_description: translator.get("microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything."),
             poster: "https://microstudio.dev/img/microstudio.jpg",
-            project_moderation: _this.server.config.project_moderation === true
+            project_moderation: _this.server.config.project_moderation === true,
+            dev_domain: dev_domain,
+            run_domain: run_domain
           });
         }
         return res.send(_this.home_page[lang]);

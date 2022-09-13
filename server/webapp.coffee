@@ -62,6 +62,9 @@ class @WebApp
     @app.get new RegExp(home_exp), (req,res)=>
       return if @ensureDevArea(req,res)
 
+      dev_domain = if @server.config.dev_domain then "'#{@server.config.dev_domain}'" else "location.origin"
+      run_domain = if @server.config.run_domain then "'#{@server.config.run_domain}'" else "location.origin.replace('.dev','.io')"
+
       lang = @getLanguage(req)
       for l in @languages
         if req.path == "/#{l}" or req.path == "/#{l}/"
@@ -107,6 +110,8 @@ class @WebApp
           long_description: project.description
           poster: if project.files? and project.files["sprites/poster.png"]? then "https://microstudio.io/#{user.nick}/#{project.slug}/sprites/poster.png" else "https://microstudio.io/#{user.nick}/#{project.slug}/sprites/icon.png"
           project_moderation: @server.config.project_moderation == true
+          dev_domain: dev_domain
+          run_domain: run_domain
 
         return res.send page
       else if not @home_page[lang]? or not @server.use_cache
@@ -128,6 +133,8 @@ class @WebApp
           long_description: translator.get("microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything.")
           poster: "https://microstudio.dev/img/microstudio.jpg"
           project_moderation: @server.config.project_moderation == true
+          dev_domain: dev_domain
+          run_domain: run_domain
 
       res.send @home_page[lang]
 

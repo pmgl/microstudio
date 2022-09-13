@@ -431,6 +431,7 @@ header .username span {
 .about img {
   width: 150px ;
   vertical-align: middle ;
+  margin-bottom: 6px ;
 }
 .about a {
   text-decoration: none ;
