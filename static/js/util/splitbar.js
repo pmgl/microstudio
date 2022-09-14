@@ -1,7 +1,7 @@
-this.SplitBar = (function() {
-  function SplitBar(id, type) {
+this.SplitBar = class SplitBar {
+  constructor(id, type = "horizontal") {
     this.id = id;
-    this.type = type != null ? type : "horizontal";
+    this.type = type;
     this.element = document.getElementById(this.id);
     this.side1 = this.element.childNodes[0];
     this.splitbar = this.element.childNodes[1];
@@ -10,54 +10,38 @@ this.SplitBar = (function() {
     this.closed1 = false;
     this.closed2 = false;
     this.splitbar_size = 10;
-    this.splitbar.addEventListener("touchstart", (function(_this) {
-      return function(event) {
-        if ((event.touches != null) && (event.touches[0] != null)) {
-          return _this.startDrag(event.touches[0]);
-        }
-      };
-    })(this));
-    document.addEventListener("touchmove", (function(_this) {
-      return function(event) {
-        if ((event.touches != null) && (event.touches[0] != null)) {
-          return _this.drag(event.touches[0]);
-        }
-      };
-    })(this));
-    document.addEventListener("touchend", (function(_this) {
-      return function(event) {
-        return _this.stopDrag();
-      };
-    })(this));
-    document.addEventListener("touchcancel", (function(_this) {
-      return function(event) {
-        return _this.stopDrag();
-      };
-    })(this));
-    this.splitbar.addEventListener("mousedown", (function(_this) {
-      return function(event) {
-        return _this.startDrag(event);
-      };
-    })(this));
-    document.addEventListener("mousemove", (function(_this) {
-      return function(event) {
-        return _this.drag(event);
-      };
-    })(this));
-    document.addEventListener("mouseup", (function(_this) {
-      return function(event) {
-        return _this.stopDrag(event);
-      };
-    })(this));
-    window.addEventListener("resize", (function(_this) {
-      return function(event) {
-        return _this.update();
-      };
-    })(this));
+    this.splitbar.addEventListener("touchstart", (event) => {
+      if ((event.touches != null) && (event.touches[0] != null)) {
+        return this.startDrag(event.touches[0]);
+      }
+    });
+    document.addEventListener("touchmove", (event) => {
+      if ((event.touches != null) && (event.touches[0] != null)) {
+        return this.drag(event.touches[0]);
+      }
+    });
+    document.addEventListener("touchend", (event) => {
+      return this.stopDrag();
+    });
+    document.addEventListener("touchcancel", (event) => {
+      return this.stopDrag();
+    });
+    this.splitbar.addEventListener("mousedown", (event) => {
+      return this.startDrag(event);
+    });
+    document.addEventListener("mousemove", (event) => {
+      return this.drag(event);
+    });
+    document.addEventListener("mouseup", (event) => {
+      return this.stopDrag(event);
+    });
+    window.addEventListener("resize", (event) => {
+      return this.update();
+    });
     this.update();
   }
 
-  SplitBar.prototype.startDrag = function(event) {
+  startDrag(event) {
     var e, i, len, list;
     this.dragging = true;
     this.drag_start_x = event.clientX;
@@ -68,9 +52,9 @@ this.SplitBar = (function() {
       e = list[i];
       e.classList.add("ignoreMouseEvents");
     }
-  };
+  }
 
-  SplitBar.prototype.drag = function(event) {
+  drag(event) {
     var dx, dy, ns;
     if (this.dragging) {
       switch (this.type) {
@@ -93,9 +77,9 @@ this.SplitBar = (function() {
           }
       }
     }
-  };
+  }
 
-  SplitBar.prototype.stopDrag = function() {
+  stopDrag() {
     var e, i, len, list;
     this.dragging = false;
     list = document.getElementsByTagName("iframe");
@@ -103,37 +87,34 @@ this.SplitBar = (function() {
       e = list[i];
       e.classList.remove("ignoreMouseEvents");
     }
-  };
+  }
 
-  SplitBar.prototype.initPosition = function(default_position) {
+  initPosition(default_position = 50) {
     var load;
-    if (default_position == null) {
-      default_position = 50;
-    }
-    load = localStorage.getItem("splitbar-" + this.id);
+    load = localStorage.getItem(`splitbar-${this.id}`);
     if ((load != null) && load >= 0 && load <= 100) {
+      if (load >= 98 || load <= 2) {
+        load = default_position;
+      }
       return this.setPosition(load * 1, false);
     } else {
       return this.setPosition(default_position, false);
     }
-  };
+  }
 
-  SplitBar.prototype.setPosition = function(position, save) {
+  setPosition(position, save = true) {
     this.position = position;
-    if (save == null) {
-      save = true;
-    }
     this.update();
     if (save) {
       return this.savePosition();
     }
-  };
+  }
 
-  SplitBar.prototype.savePosition = function() {
-    return localStorage.setItem("splitbar-" + this.id, this.position);
-  };
+  savePosition() {
+    return localStorage.setItem(`splitbar-${this.id}`, this.position);
+  }
 
-  SplitBar.prototype.update = function() {
+  update() {
     var h, h1, h2, h3, w, w1, w2, w3;
     if (this.element.clientWidth === 0 || this.element.clientHeight === 0) {
       return;
@@ -165,8 +146,6 @@ this.SplitBar = (function() {
         this.splitbar.style.top = h1 + "px";
         return this.side2.style.height = h3 + "px";
     }
-  };
+  }
 
-  return SplitBar;
-
-})();
+};

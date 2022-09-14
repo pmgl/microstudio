@@ -63,6 +63,8 @@ class @SplitBar
   initPosition:( default_position = 50 )->
     load = localStorage.getItem("splitbar-#{@id}")
     if load? and load >= 0 and load <= 100
+      if load >= 98 or load <= 2
+        load = default_position
       @setPosition(load*1,false)
     else
       @setPosition(default_position,false)
