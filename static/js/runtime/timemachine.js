@@ -1,5 +1,5 @@
-this.TimeMachine = (function() {
-  function TimeMachine(runtime) {
+this.TimeMachine = class TimeMachine {
+  constructor(runtime) {
     this.runtime = runtime;
     this.history = [];
     this.record_index = 0;
@@ -10,7 +10,7 @@ this.TimeMachine = (function() {
     this.loop_length = 60 * 4;
   }
 
-  TimeMachine.prototype.step = function() {
+  step() {
     var end, err, histo, i, index, j, ref, ref1, start;
     if (this.recording) {
       try {
@@ -41,9 +41,9 @@ this.TimeMachine = (function() {
         return console.error(err);
       }
     }
-  };
+  }
 
-  TimeMachine.prototype.messageReceived = function(data) {
+  messageReceived(data) {
     var pos;
     switch (data.command) {
       case "start_recording":
@@ -87,25 +87,23 @@ this.TimeMachine = (function() {
       case "stop_looping":
         return this.stopLooping();
     }
-  };
+  }
 
-  TimeMachine.prototype.stopLooping = function() {
+  stopLooping() {
     if (this.looping) {
       this.looping = false;
       this.replay_position = this.loop_start;
       return this.sendStatus();
     }
-  };
+  }
 
-  TimeMachine.prototype.loop = function() {
+  loop() {
     if (!this.looping) {
       return;
     }
-    requestAnimationFrame((function(_this) {
-      return function() {
-        return _this.loop();
-      };
-    })(this));
+    requestAnimationFrame(() => {
+      return this.loop();
+    });
     if (this.loop_index === 0) {
       this.replay_position = this.loop_start;
       this.replay(true);
@@ -119,15 +117,13 @@ this.TimeMachine = (function() {
       this.replayControls();
       this.runtime.updateCall();
       this.runtime.drawCall();
-      if (this.runtime.watching_variables) {
-        this.runtime.watchStep();
-      }
+      this.runtime.watchStep();
       this.resetControls();
     }
     return this.sendStatus();
-  };
+  }
 
-  TimeMachine.prototype.stepBackward = function() {
+  stepBackward() {
     if (this.replay_position + 1 >= this.record_length) {
       return;
     }
@@ -135,9 +131,9 @@ this.TimeMachine = (function() {
     this.replay_position += 1;
     this.replay();
     return this.sendStatus();
-  };
+  }
 
-  TimeMachine.prototype.stepForward = function() {
+  stepForward() {
     if (this.replay_position <= 1) {
       return;
     }
@@ -145,9 +141,9 @@ this.TimeMachine = (function() {
     this.replay_position--;
     this.replay();
     return this.sendStatus();
-  };
+  }
 
-  TimeMachine.prototype.replayControls = function() {
+  replayControls() {
     var index;
     if (this.replay_position >= this.record_length) {
       return;
@@ -160,9 +156,9 @@ this.TimeMachine = (function() {
     this.copyGlobal(this.history[index].gamepad, this.runtime.vm.context.global.gamepad);
     this.copyGlobal(this.history[index].touch, this.runtime.vm.context.global.touch);
     return this.copyGlobal(this.history[index].mouse, this.runtime.vm.context.global.mouse);
-  };
+  }
 
-  TimeMachine.prototype.resetControls = function() {
+  resetControls() {
     var mouse, touch;
     this.runtime.keyboard.reset();
     touch = this.runtime.vm.context.global.touch;
@@ -173,22 +169,21 @@ this.TimeMachine = (function() {
     mouse.left = 0;
     mouse.right = 0;
     return mouse.middle = 0;
-  };
+  }
 
-  TimeMachine.prototype.replay = function(clone) {
+  replay(clone = false) {
     var index;
-    if (clone == null) {
-      clone = false;
-    }
     index = (this.record_index - this.replay_position + this.max_length) % this.max_length;
     this.copyGlobal((clone ? this.storableHistory(this.history[index]) : this.history[index]), this.runtime.vm.context.global);
+    //@runtime.vm.context.global = if clone then @storableHistory(@history[index]) else @history[index]
+    //@runtime.vm.context.meta.global = @runtime.vm.context.global
+    //@runtime.vm.context.object = @runtime.vm.context.global
+    //@runtime.vm.context.local = @runtime.vm.context.global
     this.runtime.vm.call("draw");
-    if (this.runtime.watching_variables) {
-      return this.runtime.watchStep();
-    }
-  };
+    return this.runtime.watchStep();
+  }
 
-  TimeMachine.prototype.copyGlobal = function(source, dest) {
+  copyGlobal(source, dest) {
     var key, value;
     for (key in source) {
       value = source[key];
@@ -204,9 +199,9 @@ this.TimeMachine = (function() {
         delete dest[key];
       }
     }
-  };
+  }
 
-  TimeMachine.prototype.sendStatus = function() {
+  sendStatus() {
     return this.runtime.listener.postMessage({
       name: "time_machine",
       command: "status",
@@ -214,13 +209,32 @@ this.TimeMachine = (function() {
       head: this.record_length - this.replay_position,
       max: this.max_length
     });
-  };
+  }
 
-  TimeMachine.prototype.storableHistory = function(value) {
+  storableHistory(value) {
     var clones, global, refs;
     global = this.runtime.vm.context.global;
-    this.excluded = [global.screen, global.system, global.audio, global.sprites, global.maps, global.sounds, global.music, global.assets, global.asset_manager, global.fonts, global.storage, window];
+    this.excluded = [
+      global.screen,
+      global.system,
+      //global.keyboard
+      global.audio,
+      //global.gamepad
+      //global.touch
+      //global.mouse
+      global.sprites,
+      global.maps,
+      global.sounds,
+      global.music,
+      global.assets,
+      global.asset_manager,
+      global.fonts,
+      global.storage,
+      window
+    ];
     if (global.PIXI != null) {
+      // for key,value of window
+      //   @excluded.push value
       this.excluded.push(global.PIXI);
     }
     if (global.BABYLON != null) {
@@ -259,9 +273,9 @@ this.TimeMachine = (function() {
     refs = [];
     clones = [];
     return this.makeStorableObject(value, refs, clones);
-  };
+  }
 
-  TimeMachine.prototype.makeStorableObject = function(value, refs, clones) {
+  makeStorableObject(value, refs, clones) {
     var i, index, j, key, len, res, v;
     if (value == null) {
       return value;
@@ -310,8 +324,6 @@ this.TimeMachine = (function() {
     } else {
       return value;
     }
-  };
+  }
 
-  return TimeMachine;
-
-})();
+};

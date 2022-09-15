@@ -250,7 +250,11 @@ class @WebApp
 
       manager = @getProjectManager(project)
 
-      jsfiles = @concatenator.getPlayerJSFiles(project.graphics)
+      if req.query? and req.query.server?
+        jsfiles = @concatenator.getServerJSFiles()
+      else
+        jsfiles = @concatenator.getPlayerJSFiles(project.graphics)
+
       for lib in project.libs
         if @concatenator.optional_libs[lib]?
           jsfiles.push @concatenator.optional_libs[lib].lib
@@ -281,17 +285,27 @@ class @WebApp
                     assets: assets
 
                   resources = "var resources = #{resources};\n"
-                  if not @play_funk? or not @server.use_cache
-                    @play_funk = pug.compileFile "../templates/play/play.pug"
 
-                  res.send @play_funk
+                  if req.query? and req.query.server?
+                    if not @server_funk? or not @server.use_cache
+                      @server_funk = pug.compileFile "../templates/play/server.pug"
+                    pf = @server_funk
+                  else
+                    if not @play_funk? or not @server.use_cache
+                      @play_funk = pug.compileFile "../templates/play/play.pug"
+                    pf = @play_funk
+
+                  res.send pf
                     user: user
                     javascript_files: jsfiles
                     fonts: @fonts.fonts
                     debug: req.query? and req.query.debug?
+                    server: req.query? and req.query.server?
                     language: project.language
+                    translator: @server.content.translator.getTranslator(@getLanguage(req))
                     game:
                       name: project.slug
+                      pathcode: pathcode
                       title: project.title
                       author: user.nick
                       resources: resources

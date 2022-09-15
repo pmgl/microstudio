@@ -1,71 +1,35 @@
 doctype html
 html
   head
-    title #{game.title}
+    title Server [#{game.title}]
     meta(http-equiv='content-type', content='text/html; charset=UTF-8')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui=1')
     meta(charset='UTF-8')
-    meta(name='mobile-web-app-capable', content='yes')
-    meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='description', content=game.description)
 
-    meta(property="og:title" content=game.title)
-    meta(property="og:site_name" content="microStudio")
-    meta(property="og:url" content="https://microstudio.io/"+game.author+"/"+game.pathcode+"/")
-    meta(property="og:image" content=game.poster)
-    meta(property="og:image:type" content="image/png")
-    meta(property="og:description" content=game.description)
-
-    meta(name="twitter:card" content="summary_large_image")
-    meta(name="twitter:site" content="@microStudio")
-    meta(name="twitter:title" content=game.title)
-    meta(name="twitter:description" content=game.description)
-    meta(name="twitter:image" content=game.poster)
-
-    if !debug
-      link(rel="manifest" href="manifest.json")
     link(rel='icon', type='image/png', href="/"+game.author+"/"+game.pathcode+"/icon64.png")
     link(rel="apple-touch-icon" sizes="180x180" href="/"+game.author+"/"+game.pathcode+"/icon180.png")
     link(rel="icon" type="image/png" sizes="32x32" href="/"+game.author+"/"+game.pathcode+"/icon32.png")
     link(rel="icon" type="image/png" sizes="16x16" href="/"+game.author+"/"+game.pathcode+"/icon16.png")
 
-    style.
-      html,body {
-        margin: 0;
-        padding: 0;
-        background-color: #000;
-        overflow:hidden;
-        font-family: Verdana;
-      }
-      body {
-        touch-action: none ;
-      }
-      .noselect {
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
-      #canvaswrapper {
-        text-align: center ;
-      }
-
-    style.
-      @font-face {
-        font-family: "Bit Cell";
-        src: url("/fonts/bit_cell.ttf") format("truetype");
-      }
-    each font in fonts
-      style @font-face { font-family: "#{font}" ; src: url("/fonts/#{font}.ttf") format("truetype"); }
-
-    script window.fonts = !{JSON.stringify(fonts)}
+    link(rel="stylesheet" href="/lib/fontlib/fontawesome/css/all.css")
+    link(rel="stylesheet" href="/css/server.css")
 
   body.noselect.custom-cursor(oncontextmenu='return false;')
-    #canvaswrapper
+    #header 
+      img.logo#logo(src="/img/microstudiologo.svg" alt="microStudio" title="microStudio")
+      span #{translator.get("SERVER")} - #{game.title}
 
-    if debug
+    div#terminal
+      div#terminal-view
+        div#terminal-lines
+      div#terminal-input-line
+        div#terminal-input-gt
+          i.fa.fa-angle-right
+        div#terminal-input-container
+          input#terminal-input(autocomplete="off" name="terminalinput")
+
+    if debug || server
       script(type="text/javascript").
         window.skip_service_worker = true ;
         if (navigator.serviceWorker != null) {

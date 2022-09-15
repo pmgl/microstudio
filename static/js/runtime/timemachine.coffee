@@ -99,8 +99,7 @@ class @TimeMachine
       @replayControls()
       @runtime.updateCall()
       @runtime.drawCall()
-      if @runtime.watching_variables
-        @runtime.watchStep()
+      @runtime.watchStep()
       @resetControls()
     @sendStatus()
 
@@ -148,8 +147,7 @@ class @TimeMachine
     #@runtime.vm.context.object = @runtime.vm.context.global
     #@runtime.vm.context.local = @runtime.vm.context.global
     @runtime.vm.call("draw")
-    if @runtime.watching_variables
-      @runtime.watchStep()
+    @runtime.watchStep()
 
   copyGlobal:(source,dest)->
     for key,value of source

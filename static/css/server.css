@@ -1,0 +1,171 @@
+html,body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  overflow:hidden;
+  font-family: Verdana;
+}
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+div::-webkit-scrollbar {
+  width: 10px;
+  height: 10px ;
+}
+
+div::-webkit-scrollbar-track {
+background: rgba(255,255,255,.15);
+border-radius: 5px;
+margin: 4px 2px;
+}
+
+div::-webkit-scrollbar-thumb {
+background-color: rgba(255,255,255,.3);
+border-radius: 5px;
+margin: 4px 1px;
+}
+
+#header {
+  position: fixed ;
+  top: 5px ;
+  left: 5px ;
+  right: 5px ;
+  box-sizing: border-box ;
+  height: 40px ;
+  color: #CCC ;
+  font-size: 10px ;
+  vertical-align: middle;
+  padding: 6px 5px 6px 18px ;
+}
+
+#logo {
+  width: 185px ;
+  margin-right: 10px ;
+}
+
+#terminal {
+  position: fixed ;
+  top: 50px ;
+  left: 5px ;
+  right: 5px ;
+  bottom: 5px ;
+  background: hsl(200,100%,15%) ;
+  border-radius: 5px ;
+  overflow: hidden ;
+}
+
+#terminal-debug-container {
+  position: absolute ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  top: 2px ;
+  overflow: hidden ;
+}
+
+#open-debugger-button {
+  position: absolute;
+  right: -8px;
+  top: 4px;
+  bottom: 5px;
+  padding: 7px 16px 7px 11px;
+  background: hsl(300,30%,40%);
+  cursor: pointer;
+  border-radius: 10px;
+  box-shadow: 0 0 3px #000;
+}
+
+#terminal-view {
+  position: absolute ;
+  top: 0px ;
+  left: 0 ;
+  right: 0 ;
+  bottom: 40px ;
+  font-family: monospace;
+  font-size: 14px;
+  overflow: auto ;
+/*  box-shadow: 0 0 200px 0 rgba(0,0,0,1) inset;*/
+}
+
+#terminal-input-line {
+  position: absolute ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  height: 40px ;
+  background: rgba(0,0,0,.25);
+}
+#terminal-input-gt {
+  position: absolute ;
+  left: 0 ;
+  width: 10px ;
+  top: 0 ;
+  bottom: 0 ;
+  font-family: monospace;
+  font-size: 20px;
+  color: hsl(200,100%,80%);
+  padding: 11px 10px ;
+}
+#terminal-input-container {
+  position: absolute ;
+  bottom: 0 ;
+  left: 30px ;
+  right: 0 ;
+  height: 40px ;
+  border: none ;
+}
+#terminal-input {
+  position: absolute ;
+  bottom: 0 ;
+  left: 0 ;
+  right: 0 ;
+  top: 0 ;
+  bottom: 0 ;
+  height: 40px ;
+  border: none ;
+  width: 100% ;
+  background: none;
+  font-family: monospace;
+  font-size: 14px;
+  color: hsl(200,100%,80%);
+  outline: none ;
+  padding: 0 0 0 0 ;
+}
+#terminal-lines {
+  padding: 5px ;
+  font-family: monospace;
+  font-size: 14px;
+  color: hsl(200,100%,80%);
+  user-select: text ;
+}
+#terminal-lines div div {
+  padding: 0 4px 0 18px ;
+  white-space: pre-wrap ;
+  line-height: 22px ;
+}
+#terminal-lines div div.error {
+  color: hsl(10,100%,80%);
+}
+#terminal-lines div div.input {
+  background: rgba(0,0,0,.2) ;
+  border-radius: 3px ;
+  padding: 0 4px ;
+}
+#terminal-lines div div.input i {
+  opacity: .25 ;
+}
+.fa-ellipsis-v {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}

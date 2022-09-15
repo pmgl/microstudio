@@ -22,11 +22,16 @@ class @Concatenator
       else
         res.send @audioengine_js_concat
 
+    @webapp.app.get /^\/server.js$/, (req,res)=>
+      res.setHeader("Content-Type", "text/javascript")
+      res.send @server_js_concat
+
     @alt_player_base = [
       '/js/util/canvas2d.js'
       "/js/languages/microscript/random.js"
       "/js/runtime/microvm.js"
       '/js/runtime/runtime.js'
+      '/js/runtime/watcher.js'
       '/js/runtime/projectinterface.js'
       '/js/runtime/timemachine.js'
       '/js/runtime/assetmanager.js'
@@ -277,6 +282,7 @@ class @Concatenator
       "/js/languages/microscript/random.js"
       "/js/runtime/microvm.js"
       '/js/runtime/runtime.js'
+      '/js/runtime/watcher.js'
       '/js/runtime/projectinterface.js'
       '/js/runtime/timemachine.js'
       '/js/runtime/screen.js'
@@ -294,6 +300,20 @@ class @Concatenator
       '/js/play/playerclient.js'
     ]
 
+    @server_js = [
+      "/js/languages/microscript/random.js"
+      "/js/runtime/microvm.js"
+      '/js/runtime/watcher.js'
+      '/js/runtime/assetmanager.js'
+      '/js/runtime/runtime_server.js'
+      '/js/runtime/watcher.js'
+      '/js/runtime/map.js'
+      '/js/terminal/terminal.js'
+      '/js/debug/watch.js'
+      '/js/play/server.js'
+      '/js/play/serverclient.js'
+    ]
+ 
     for key,value of @alt_players
       @["#{key}_js"] = @alt_player_base.concat(value.scripts)
 
@@ -313,6 +333,7 @@ class @Concatenator
   refresh:()->
     @concat(@webapp_js,"webapp_js_concat")
     @concat(@player_js,"player_js_concat")
+    @concat(@server_js,"server_js_concat")
     for key,value of @alt_players
       @concat(@["#{key}_js"],"#{key}_js_concat")
     @concat(@webapp_css,"webapp_css_concat")
@@ -343,6 +364,12 @@ class @Concatenator
         ["/play.js"]
       else
         @player_js
+
+  getServerJSFiles:()->
+    if @webapp.server.use_cache and @server_js_concat?
+      ["/server.js"]
+    else
+      @server_js
 
   getEngineExport:(graphics)->
     if graphics? and typeof graphics == "string" and @alt_players[graphics.toLowerCase()]

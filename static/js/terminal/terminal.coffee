@@ -1,5 +1,6 @@
 class @Terminal
   constructor:(@runwindow)->
+    @localStorage = localStorage
     @commands =
       clear: ()=>@clear()
 
@@ -11,12 +12,12 @@ class @Terminal
   loadHistory:()->
     @history = []
     try
-      if localStorage.getItem("console_history")?
-        @history = JSON.parse localStorage.getItem("console_history")
+      if @localStorage.getItem("console_history")?
+        @history = JSON.parse @localStorage.getItem("console_history")
     catch err
 
   saveHistory:()->
-    localStorage.setItem("console_history",JSON.stringify(@history))
+    @localStorage.setItem("console_history",JSON.stringify(@history))
 
   start:()->
     return if @started
