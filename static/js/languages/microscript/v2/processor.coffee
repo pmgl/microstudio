@@ -833,7 +833,9 @@ class @Processor
           index = locals[locals_offset+iterator+2] += 1
           v = locals[locals_offset+iterator+1]
           if index < v.length
-            locals[locals_offset+iterator] = v[index]
+            value = v[index]
+            # value could be undefined if the array is sparse
+            locals[locals_offset+iterator] = if value? then value else 0
             op_index = arg1[op_index][1]
           else
             op_index++

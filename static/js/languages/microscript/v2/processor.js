@@ -945,7 +945,8 @@ this.Processor = (function() {
           index = locals[locals_offset + iterator + 2] += 1;
           v = locals[locals_offset + iterator + 1];
           if (index < v.length) {
-            locals[locals_offset + iterator] = v[index];
+            value = v[index];
+            locals[locals_offset + iterator] = value != null ? value : 0;
             op_index = arg1[op_index][1];
           } else {
             op_index++;
