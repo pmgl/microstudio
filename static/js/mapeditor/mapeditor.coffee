@@ -1,5 +1,6 @@
 class @MapEditor extends Manager
-  constructor:(@app)->
+  constructor:(app)->
+    super(app)
     @folder = "maps"
     @item = "map"
     @list_change_event = "maplist"
@@ -294,8 +295,11 @@ class @MapEditor extends Manager
       bh = Number.parseFloat(bh)
     catch err
 
-    if Number.isInteger(w) and Number.isInteger(h) and w>0 and h>0 and w<129 and h<129 and @selected_map? and (w != @mapview.map.width or h != @mapview.map.height or bw != @mapview.map.block_width or bh != @mapview.map.block_height) and Number.isInteger(bw) and Number.isInteger(bh) and bw>0 and bh>0 and bw<65 and bh<65
+    if Number.isInteger(w) and Number.isInteger(h) and w > 0 and h > 0 and w < 129 and h < 129 and @selected_map? and (w != @mapview.map.width or h != @mapview.map.height or bw != @mapview.map.block_width or bh != @mapview.map.block_height) and Number.isInteger(bw) and Number.isInteger(bh) and bw > 0 and bh > 0 and bw < 65 and bh < 65
+      @mapview.map.undo = new Undo() if not @mapview.map.undo?
+      @mapview.map.undo.pushState @mapview.map.clone() if @mapview.map.undo.empty()
       @mapview.map.resize(w,h,bw,bh)
+      @mapview.map.undo.pushState @mapview.map.clone()
       @mapview.windowResized()
       @mapview.update()
       @mapChanged()
