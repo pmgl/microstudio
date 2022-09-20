@@ -12,17 +12,33 @@ class @DrawTool
     else
       1
 
-  start:(sprite,x,y,button)->
+  start:(sprite,x,y,button,shiftkey)->
     @pixels = {}
+    if not shiftkey
+      @last_x = x
+      @last_y = y
     @move(sprite,x,y,button)
 
   move:(sprite,x,y,button,pass=0)->
+    if Math.abs(x-@last_x) < 2 and Math.abs(y-@last_y) < 2
+      @domove(sprite,x,y,button,pass)
+    else
+      d = Math.max(Math.abs(x-@last_x),Math.abs(y-@last_y))
+      for i in [1..d] by 1
+        xx = Math.round(@last_x + (x-@last_x)*i/d)
+        yy = Math.round(@last_y + (y-@last_y)*i/d)
+        @domove(sprite,xx,yy,button,pass)
+
+    @last_x = x
+    @last_y = y
+
+  domove:(sprite,x,y,button,pass=0)->
     if pass<1 and @vsymmetry
       nx = sprite.width-1-x
-      @move(sprite,nx,y,button,1)
+      @domove(sprite,nx,y,button,1)
     if pass<2 and @hsymmetry
       ny = sprite.height-1-y
-      @move(sprite,x,ny,button,2)
+      @domove(sprite,x,ny,button,2)
 
     size = @getSize(sprite)
     d = (size-1)/2

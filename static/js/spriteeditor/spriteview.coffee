@@ -475,7 +475,7 @@ class @SpriteView
     @editor.tool.tile = @tile
     @editor.tool.vsymmetry = @vsymmetry
     @editor.tool.hsymmetry = @hsymmetry
-    @editor.tool.start(@getFrame(),x,y,event.button)
+    @editor.tool.start(@getFrame(),x,y,event.button,event.shiftKey)
     @pixels_drawn += 1
     @mouse_x = x
     @mouse_y = y

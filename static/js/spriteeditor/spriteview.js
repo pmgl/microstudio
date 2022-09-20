@@ -1,68 +1,48 @@
-this.SpriteView = (function() {
-  function SpriteView(editor) {
+this.SpriteView = class SpriteView {
+  constructor(editor) {
     this.editor = editor;
     this.canvas = document.querySelector("#spriteeditor canvas");
     this.canvas.width = 400;
     this.canvas.height = 400;
     this.sprite = new Sprite(32, 32);
-    this.canvas.addEventListener("touchstart", (function(_this) {
-      return function(event) {
-        if ((event.touches != null) && (event.touches[0] != null)) {
-          event.preventDefault();
-          event.touches[0].stopPropagation = function() {
-            return event.stopPropagation();
-          };
-          return _this.mouseDown(event.touches[0]);
-        }
-      };
-    })(this));
-    document.addEventListener("touchmove", (function(_this) {
-      return function(event) {
-        if ((event.touches != null) && (event.touches[0] != null)) {
-          return _this.mouseMove(event.touches[0]);
-        }
-      };
-    })(this));
-    document.addEventListener("touchend", (function(_this) {
-      return function(event) {
-        return _this.mouseUp();
-      };
-    })(this));
-    this.canvas.addEventListener("touchcancel", (function(_this) {
-      return function(event) {
-        return _this.mouseOut();
-      };
-    })(this));
-    this.canvas.addEventListener("mousedown", (function(_this) {
-      return function(event) {
-        return _this.mouseDown(event);
-      };
-    })(this));
-    document.addEventListener("mousemove", (function(_this) {
-      return function(event) {
-        return _this.mouseMove(event);
-      };
-    })(this));
-    this.canvas.addEventListener("mouseout", (function(_this) {
-      return function(event) {
-        return _this.mouseOut(event);
-      };
-    })(this));
-    document.addEventListener("mouseup", (function(_this) {
-      return function(event) {
-        return _this.mouseUp(event);
-      };
-    })(this));
-    this.canvas.addEventListener("contextmenu", (function(_this) {
-      return function(event) {
-        return event.preventDefault();
-      };
-    })(this));
-    this.canvas.addEventListener("mouseenter", (function(_this) {
-      return function(event) {
-        return _this.mouseEnter(event);
-      };
-    })(this));
+    this.canvas.addEventListener("touchstart", (event) => {
+      if ((event.touches != null) && (event.touches[0] != null)) {
+        event.preventDefault(); // prevents a mousedown event from being triggered
+        event.touches[0].stopPropagation = function() {
+          return event.stopPropagation();
+        };
+        return this.mouseDown(event.touches[0]);
+      }
+    });
+    document.addEventListener("touchmove", (event) => {
+      if ((event.touches != null) && (event.touches[0] != null)) {
+        return this.mouseMove(event.touches[0]);
+      }
+    });
+    document.addEventListener("touchend", (event) => {
+      return this.mouseUp();
+    });
+    this.canvas.addEventListener("touchcancel", (event) => {
+      return this.mouseOut();
+    });
+    this.canvas.addEventListener("mousedown", (event) => {
+      return this.mouseDown(event);
+    });
+    document.addEventListener("mousemove", (event) => {
+      return this.mouseMove(event);
+    });
+    this.canvas.addEventListener("mouseout", (event) => {
+      return this.mouseOut(event);
+    });
+    document.addEventListener("mouseup", (event) => {
+      return this.mouseUp(event);
+    });
+    this.canvas.addEventListener("contextmenu", (event) => {
+      return event.preventDefault();
+    });
+    this.canvas.addEventListener("mouseenter", (event) => {
+      return this.mouseEnter(event);
+    });
     this.brush_opacity = 1;
     this.brush_type = "paint";
     this.brush_size = 1;
@@ -70,74 +50,58 @@ this.SpriteView = (function() {
     this.mouse_x = 0;
     this.mouse_y = 0;
     this.pixels_drawn = 0;
-    window.addEventListener("resize", (function(_this) {
-      return function() {
-        return _this.windowResized();
-      };
-    })(this));
+    window.addEventListener("resize", () => {
+      return this.windowResized();
+    });
     this.editable = false;
     this.tile = false;
     this.vsymmetry = false;
     this.hsymmetry = false;
     this.zoom = 1;
-    document.getElementById("spriteeditor").addEventListener("mousewheel", ((function(_this) {
-      return function(e) {
-        return _this.mouseWheel(e);
-      };
-    })(this)), false);
-    document.getElementById("spriteeditor").addEventListener("DOMMouseScroll", ((function(_this) {
-      return function(e) {
-        return _this.mouseWheel(e);
-      };
-    })(this)), false);
-    document.getElementById("spriteeditor").addEventListener("mousedown", (function(_this) {
-      return function() {
-        if (_this.selection != null) {
-          _this.selection = null;
-          return _this.update();
-        }
-      };
-    })(this));
-    document.getElementById("spriteeditor").addEventListener("keydown", (function(_this) {
-      return function(e) {
-        if (e.keyCode === 32) {
-          _this.space_pressed = true;
-          _this.canvas.style.cursor = "grab";
-          e.preventDefault();
-          return document.getElementById("sprite-grab-info").classList.add("active");
-        } else if (e.keyCode === 18) {
-          return document.getElementById("selection-hint-clone").classList.add("active");
-        } else if (e.keyCode === 16) {
-          return document.getElementById("selection-hint-move").classList.add("active");
-        }
-      };
-    })(this));
-    document.addEventListener("keyup", (function(_this) {
-      return function(e) {
-        if (e.keyCode === 32) {
-          _this.space_pressed = false;
-          _this.canvas.style.cursor = "crosshair";
-          return document.getElementById("sprite-grab-info").classList.remove("active");
-        } else if (e.keyCode === 18) {
-          return document.getElementById("selection-hint-clone").classList.remove("active");
-        } else if (e.keyCode === 16) {
-          return document.getElementById("selection-hint-move").classList.remove("active");
-        }
-      };
-    })(this));
-    document.getElementById("sprite-zoom-plus").addEventListener("click", (function(_this) {
-      return function() {
-        return _this.scaleZoom(1.1);
-      };
-    })(this));
-    document.getElementById("sprite-zoom-minus").addEventListener("click", (function(_this) {
-      return function() {
-        return _this.scaleZoom(1 / 1.100001);
-      };
-    })(this));
+    document.getElementById("spriteeditor").addEventListener("mousewheel", ((e) => {
+      return this.mouseWheel(e);
+    }), false);
+    document.getElementById("spriteeditor").addEventListener("DOMMouseScroll", ((e) => {
+      return this.mouseWheel(e);
+    }), false);
+    document.getElementById("spriteeditor").addEventListener("mousedown", () => {
+      if (this.selection != null) {
+        this.selection = null;
+        return this.update();
+      }
+    });
+    document.getElementById("spriteeditor").addEventListener("keydown", (e) => {
+      if (e.keyCode === 32) {
+        this.space_pressed = true;
+        this.canvas.style.cursor = "grab";
+        e.preventDefault();
+        return document.getElementById("sprite-grab-info").classList.add("active");
+      } else if (e.keyCode === 18) { // Alt
+        return document.getElementById("selection-hint-clone").classList.add("active");
+      } else if (e.keyCode === 16) { // Shift
+        return document.getElementById("selection-hint-move").classList.add("active");
+      }
+    });
+    document.addEventListener("keyup", (e) => {
+      if (e.keyCode === 32) {
+        this.space_pressed = false;
+        this.canvas.style.cursor = "crosshair";
+        return document.getElementById("sprite-grab-info").classList.remove("active");
+      } else if (e.keyCode === 18) { // Alt
+        return document.getElementById("selection-hint-clone").classList.remove("active");
+      } else if (e.keyCode === 16) { // Shift
+        return document.getElementById("selection-hint-move").classList.remove("active");
+      }
+    });
+    document.getElementById("sprite-zoom-plus").addEventListener("click", () => {
+      return this.scaleZoom(1.1);
+    });
+    document.getElementById("sprite-zoom-minus").addEventListener("click", () => {
+      return this.scaleZoom(1 / 1.100001);
+    });
   }
 
-  SpriteView.prototype.setSprite = function(sprite) {
+  setSprite(sprite) {
     if (sprite !== this.sprite) {
       if (this.sprite != null) {
         this.saveZoom();
@@ -152,20 +116,20 @@ this.SpriteView = (function() {
       this.selection = this.sprite.selection || null;
       return this.floating_selection = null;
     }
-  };
+  }
 
-  SpriteView.prototype.setCurrentFrame = function(index) {
+  setCurrentFrame(index) {
     if (index !== this.sprite.current_frame) {
       this.sprite.setCurrentFrame(index);
       return this.selection = null;
     }
-  };
+  }
 
-  SpriteView.prototype.getFrame = function() {
+  getFrame() {
     return this.sprite.frames[this.sprite.current_frame];
-  };
+  }
 
-  SpriteView.prototype.mouseWheel = function(e) {
+  mouseWheel(e) {
     e.preventDefault();
     if (this.next_wheel_action == null) {
       this.next_wheel_action = Date.now();
@@ -179,9 +143,9 @@ this.SpriteView = (function() {
     } else {
       return this.scaleZoom(1.1, e);
     }
-  };
+  }
 
-  SpriteView.prototype.scaleZoom = function(scale, e) {
+  scaleZoom(scale, e) {
     var b, max_zoom, scroll_x, scroll_y, view, x, y;
     view = document.getElementById("spriteeditor").getBoundingClientRect();
     max_zoom = 4096 / Math.max(view.width, view.height);
@@ -206,9 +170,9 @@ this.SpriteView = (function() {
     } else {
       return document.getElementById("sprite-grab-info").style.display = "none";
     }
-  };
+  }
 
-  SpriteView.prototype.saveZoom = function() {
+  saveZoom() {
     var view;
     if (this.sprite != null) {
       view = document.getElementById("spriteeditor");
@@ -218,18 +182,18 @@ this.SpriteView = (function() {
         top: view.scrollTop
       };
     }
-  };
+  }
 
-  SpriteView.prototype.restoreZoom = function() {
+  restoreZoom() {
     var view;
     if (this.sprite.zoom != null) {
       view = document.getElementById("spriteeditor");
       this.scaleZoom(this.sprite.zoom.zoom / this.zoom);
       return view.scrollTo(this.sprite.zoom.left, this.sprite.zoom.top);
     }
-  };
+  }
 
-  SpriteView.prototype.addPattern = function() {
+  addPattern() {
     var c, context, data, i, k, l, line, ref, ref1, value;
     if (this.pattern != null) {
       return;
@@ -250,12 +214,12 @@ this.SpriteView = (function() {
       context.putImageData(data, 0, line);
     }
     this.pattern = c.toDataURL();
-    document.querySelector(".spriteeditor canvas").style["background-image"] = "url(" + this.pattern + ")";
+    document.querySelector(".spriteeditor canvas").style["background-image"] = `url(${this.pattern})`;
     document.querySelector(".spriteeditor canvas").style["background-repeat"] = "repeat";
     return this.updateBackgroundColor();
-  };
+  }
 
-  SpriteView.prototype.updateBackgroundColor = function() {
+  updateBackgroundColor() {
     var c;
     if (this.editor.background_color_picker != null) {
       c = this.editor.background_color_picker.color;
@@ -263,13 +227,13 @@ this.SpriteView = (function() {
     } else {
       return document.querySelector(".spriteeditor canvas").style["background-color"] = "#000";
     }
-  };
+  }
 
-  SpriteView.prototype.setColor = function(color) {
+  setColor(color) {
     this.color = color;
-  };
+  }
 
-  SpriteView.prototype.windowResized = function() {
+  windowResized() {
     var c, h, ratio, w;
     c = this.canvas.parentElement;
     if (c == null) {
@@ -290,14 +254,14 @@ this.SpriteView = (function() {
     }
     h = Math.max(40, (c.clientHeight - h) / 2);
     return this.canvas.style["margin-top"] = h + "px";
-  };
+  }
 
-  SpriteView.prototype.showBrushSize = function() {
+  showBrushSize() {
     this.show_brush_size = Date.now() + 2000;
     return this.update();
-  };
+  }
 
-  SpriteView.prototype.drawGrid = function(ctx) {
+  drawGrid(ctx) {
     var context, hblock, hoffset, i, k, l, lw, m, modulo, n, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, wblock, woffset;
     if ((this.grid_buffer == null) || this.grid_buffer.width !== this.canvas.width || this.grid_buffer.height !== this.canvas.height || this.tile !== this.grid_tile || this.grid_sw !== this.sprite.width || this.grid_sh !== this.sprite.height) {
       if (this.grid_buffer == null) {
@@ -324,7 +288,7 @@ this.SpriteView = (function() {
       if (wblock < 3) {
         return;
       }
-      for (i = k = 0, ref = this.canvas.width, ref1 = wblock; ref1 > 0 ? k <= ref : k >= ref; i = k += ref1) {
+      for (i = k = 0, ref = this.canvas.width, ref1 = wblock; ref1 !== 0 && (ref1 > 0 ? k <= ref : k >= ref); i = k += ref1) {
         lw = Math.round(i / hblock) % modulo === 0 ? 2 : 1;
         context.lineWidth = lw;
         context.beginPath();
@@ -332,7 +296,7 @@ this.SpriteView = (function() {
         context.lineTo(i + .25 * lw + woffset, this.canvas.height);
         context.stroke();
       }
-      for (i = l = 0, ref2 = this.canvas.height, ref3 = hblock; ref3 > 0 ? l <= ref2 : l >= ref2; i = l += ref3) {
+      for (i = l = 0, ref2 = this.canvas.height, ref3 = hblock; ref3 !== 0 && (ref3 > 0 ? l <= ref2 : l >= ref2); i = l += ref3) {
         lw = Math.round(i / hblock) % modulo === 0 ? 2 : 1;
         context.lineWidth = lw;
         context.beginPath();
@@ -341,7 +305,7 @@ this.SpriteView = (function() {
         context.stroke();
       }
       context.strokeStyle = "rgba(255,255,255,.1)";
-      for (i = m = 0, ref4 = this.canvas.width, ref5 = wblock; ref5 > 0 ? m <= ref4 : m >= ref4; i = m += ref5) {
+      for (i = m = 0, ref4 = this.canvas.width, ref5 = wblock; ref5 !== 0 && (ref5 > 0 ? m <= ref4 : m >= ref4); i = m += ref5) {
         lw = Math.round(i / hblock) % modulo === 0 ? 2 : 1;
         context.lineWidth = lw;
         context.beginPath();
@@ -349,7 +313,7 @@ this.SpriteView = (function() {
         context.lineTo(i - .25 * lw + woffset, this.canvas.height);
         context.stroke();
       }
-      for (i = n = 0, ref6 = this.canvas.height, ref7 = hblock; ref7 > 0 ? n <= ref6 : n >= ref6; i = n += ref7) {
+      for (i = n = 0, ref6 = this.canvas.height, ref7 = hblock; ref7 !== 0 && (ref7 > 0 ? n <= ref6 : n >= ref6); i = n += ref7) {
         lw = Math.round(i / hblock) % modulo === 0 ? 2 : 1;
         context.lineWidth = lw;
         context.beginPath();
@@ -359,9 +323,9 @@ this.SpriteView = (function() {
       }
     }
     return ctx.drawImage(this.grid_buffer, 0, 0);
-  };
+  }
 
-  SpriteView.prototype.update = function() {
+  update() {
     var bs, context, f, grd, h, hblock, hoffset, i, j, k, l, m, mx, my, n, w, wblock, woffset;
     this.brush_size = this.editor.tool.getSize(this.sprite);
     context = this.canvas.getContext("2d");
@@ -484,21 +448,21 @@ this.SpriteView = (function() {
       context.strokeRect(this.selection.x * wblock, this.selection.y * hblock, this.selection.w * wblock, this.selection.h * hblock);
       context.setLineDash([]);
       if (this.selection.w > 1 || this.selection.h > 1) {
-        context.font = (Math.max(12, wblock)) + "pt Ubuntu Mono";
+        context.font = `${Math.max(12, wblock)}pt Ubuntu Mono`;
         context.fillStyle = "#FFF";
         context.shadowBlur = 2;
         context.shadowColor = "#000";
         context.shadowOpacity = 1;
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillText(this.selection.w + " x " + this.selection.h, (this.selection.x + this.selection.w / 2) * wblock, (this.selection.y + this.selection.h / 2) * hblock);
+        context.fillText(`${this.selection.w} x ${this.selection.h}`, (this.selection.x + this.selection.w / 2) * wblock, (this.selection.y + this.selection.h / 2) * hblock);
         context.shadowBlur = 0;
       }
       return context.restore();
     }
-  };
+  }
 
-  SpriteView.prototype.mouseDown = function(event) {
+  mouseDown(event) {
     var b, bg, c, context, fg, min, x, y;
     event.stopPropagation();
     if (!this.editable || (this.sprite == null)) {
@@ -589,20 +553,20 @@ this.SpriteView = (function() {
     this.editor.tool.tile = this.tile;
     this.editor.tool.vsymmetry = this.vsymmetry;
     this.editor.tool.hsymmetry = this.hsymmetry;
-    this.editor.tool.start(this.getFrame(), x, y, event.button);
+    this.editor.tool.start(this.getFrame(), x, y, event.button, event.shiftKey);
     this.pixels_drawn += 1;
     this.mouse_x = x;
     this.mouse_y = y;
     this.update();
     this.editor.spriteChanged();
     return this.floating_selection = null;
-  };
+  }
 
-  SpriteView.prototype.mouseEnter = function(event) {
+  mouseEnter(event) {
     return document.getElementById("spriteeditor").focus();
-  };
+  }
 
-  SpriteView.prototype.mouseMove = function(event) {
+  mouseMove(event) {
     var b, context, dx, dy, min, view, x, y;
     if (this.grabbing) {
       dx = event.clientX - this.grab_x;
@@ -709,9 +673,9 @@ this.SpriteView = (function() {
       }
     }
     return false;
-  };
+  }
 
-  SpriteView.prototype.mouseUp = function(event) {
+  mouseUp(event) {
     if (this.grabbing) {
       this.grabbing = false;
     } else if (this.mousepressed && !this.editor.tool.selectiontool) {
@@ -730,15 +694,15 @@ this.SpriteView = (function() {
     }
     this.mousepressed = false;
     return this.editor.updateSelectionHints();
-  };
+  }
 
-  SpriteView.prototype.mouseOut = function(event) {
+  mouseOut(event) {
     this.mouse_over = false;
     this.update();
     return this.editor.setCoordinates(-1, -1);
-  };
+  }
 
-  SpriteView.prototype.flipSprite = function(direction) {
+  flipSprite(direction) {
     var bg, context, fg;
     if (this.editor.tool.selectiontool) {
       if (this.selection != null) {
@@ -785,9 +749,9 @@ this.SpriteView = (function() {
         return this.editor.spriteChanged();
       }
     }
-  };
+  }
 
-  SpriteView.prototype.rotateSprite = function(direction) {
+  rotateSprite(direction) {
     var bg, context, cx, cy, fg, nh, nw, nx, ny;
     if (this.editor.tool.selectiontool) {
       if (this.selection != null) {
@@ -843,8 +807,6 @@ this.SpriteView = (function() {
         return this.editor.spriteChanged();
       }
     }
-  };
+  }
 
-  return SpriteView;
-
-})();
+};
