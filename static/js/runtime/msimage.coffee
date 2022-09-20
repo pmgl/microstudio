@@ -488,7 +488,7 @@ class @msImage
     else
       @context.drawImage canvas,x-w/2-@anchor_x*w/2,y-h/2+@anchor_y*h/2,w,h
 
-  drawImagePart:(sprite,sx,sy,sw,sh,x,y,w,h)-> @drawImage(sprite,sx,sy,sw,sh,x,y,w,h)
+  drawImagePart:(sprite,sx,sy,sw,sh,x,y,w,h)-> @drawSpritePart(sprite,sx,sy,sw,sh,x,y,w,h)
   drawSpritePart:(sprite,sx,sy,sw,sh,x,y,w,h)->
     @initContext()
     canvas = @getSpriteFrame(sprite)
