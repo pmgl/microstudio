@@ -124,14 +124,14 @@ class AppUI
         return true
 
       b = document.getElementById("create-project-window").getBoundingClientRect()
-      if event.clientX<b.x or event.clientX>b.x+b.width or event.clientY<b.y or event.clientY>b.y+b.height
+      if event.clientX < b.x or event.clientX > b.x+b.width or event.clientY < b.y or event.clientY > b.y+b.height
         @hide "create-project-overlay"
       true
 
     @setAction "create-project-submit",()=>
       title = @get("create-project-title").value
       slug = RegexLib.slugify(title)
-      if title.length>0 and slug.length>0
+      if title.length > 0 and slug.length > 0
         libs = []
         if document.getElementById("create-project-option-lib-matterjs").checked
           libs.push "matterjs"
@@ -186,6 +186,7 @@ class AppUI
           ok = p.dataset.title.toLowerCase().indexOf(search)>=0
           ok |= p.dataset.description.toLowerCase().indexOf(search)>=0
           ok |= p.dataset.tags.toLowerCase().indexOf(search)>=0
+          ok |= p.dataset.public and "public".indexOf(search)>=0
           if ok
             p.style.display = "inline-block"
           else
@@ -617,7 +618,7 @@ class AppUI
       document.querySelector(".username").classList.remove("guest")
       @get("user-nick").innerHTML = nick
       if @project?
-        @get("project-name").innerHTML = @project.title
+        @updateProjectTitle()
         @get("project-icon").src = location.origin+"/#{@project.owner.nick}/#{@project.slug}/#{@project.code}/icon.png"
 
     @get("user-nick").style.display = "inline-block"
@@ -664,14 +665,22 @@ class AppUI
     element.dataset.title = p.title
     element.dataset.description = p.description
     element.dataset.tags = p.tags.join(",")
+    if p.public
+      element.dataset.public = p.public
 
     buttons = document.createElement "div"
     buttons.classList.add "buttons"
     element.appendChild buttons
 
+    if p.public
+      pill = document.createElement "div"
+      pill.innerHTML = """<i class="fa fa-eye"></i> """ + @app.translator.get "public"
+      pill.classList.add "pill","bg-purple","shadow5",'marginbottom10'
+      buttons.appendChild pill
+
     export_href = "/#{p.owner.nick}/#{p.slug}/#{p.code}/export/project/"
     export_button = document.createElement "div"
-    export_button.classList.add "export"
+    export_button.classList.add "button","export","shadow5"
     export_button.innerHTML = "<a href='#{export_href}' download='#{p.slug}_files.zip'><i class='fa fa-download'></i> #{@app.translator.get("Export")}</a>"
 
     buttons.appendChild export_button
@@ -681,7 +690,7 @@ class AppUI
       event.stopImmediatePropagation()
 
     clone_button = document.createElement "div"
-    clone_button.classList.add "clone"
+    clone_button.classList.add "button","clone","shadow5"
     clone_button.innerHTML = "<i class='fa fa-copy'></i> #{@app.translator.get("Clone")}"
 
     buttons.appendChild clone_button
@@ -693,7 +702,7 @@ class AppUI
         @app.cloneProject p
 
     delete_button = document.createElement "div"
-    delete_button.classList.add "delete"
+    delete_button.classList.add "button","delete","shadow5"
     if p.owner.nick == @app.nick
       delete_button.innerHTML = "<i class='fa fa-trash-alt'></i> #{@app.translator.get("Delete")}"
     else
@@ -811,7 +820,7 @@ class AppUI
     return
 
   setProject:(@project,useraction=true)->
-    @get("project-name").innerHTML = @project.title
+    @updateProjectTitle()
     @get("project-icon").src = location.origin+"/#{@project.owner.nick}/#{@project.slug}/#{@project.code}/icon.png"
     @setSection "code",useraction
     @show "projectview"
@@ -825,6 +834,13 @@ class AppUI
     @updateActiveUsers()
     @doc_splitbar.initPosition(50)
 
+  updateProjectTitle:()->
+    if @project?
+      html = @project.title
+      if @project.public
+        html += """ <div class="pill bg-purple shadow5 marginleft10"><i class="fa fa-eye"></i> #{@app.translator.get("public")}</div>"""
+      @get("project-name").innerHTML = html
+      
   projectUpdate:(change)->
     if change == "spritelist"
       icon = @project.getSprite "icon"
@@ -834,8 +850,8 @@ class AppUI
         img = document.querySelector "#project-box-#{@project.slug} img"
         if img?
           icon.addImage img,144
-    else if change == "title"
-      @get("project-name").innerHTML = @project.title
+    else if change == "title" or change == "public"
+      @updateProjectTitle()
     else if change == "locks"
       @updateActiveUsers()
 

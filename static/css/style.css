@@ -45,6 +45,31 @@ h1 {
 .bg-blue { background: hsl(200,40%,40%) ;}
 .bg-purple { background: hsl(300,30%,40%) ;}
 
+.pill {
+  border-radius: 20px ;
+  color: #FFF ;
+  font-size: 11px ;
+  padding: 2px 6px ;
+  display: inline-block ;
+  text-align: center ;
+}
+
+.pill i {
+  margin-right: 5px ;
+}
+
+.shadow5 {
+  box-shadow: 0 0 5px #000 ;
+}
+
+.marginbottom10 {
+  margin-bottom: 10px ;
+}
+
+.marginleft10 {
+  margin-left: 10px ;
+}
+
 header {
   position: fixed;
   top: 0 ;
@@ -1061,29 +1086,31 @@ padding-left: 2px ;
   position: absolute ;
   bottom: 10px ;
   right: 10px ;
+  text-align: right ;
 }
 
-.project-box .buttons div {
+.project-box .buttons .button {
   padding: 4px 12px ;
   background: hsl(0,50%,40%);
   border-radius: 2px ;
   font-size: 14px ;
   margin-top: 8px ;
+  text-align: left ;
 }
 
-.project-box .buttons div.clone {
+.project-box .buttons .button.clone {
   background: hsl(160,50%,40%);
 }
 
-.project-box .buttons div.export {
+.project-box .buttons .button.export {
   background: hsl(200,50%,40%);
 }
-.project-box .buttons div.export a {
+.project-box .buttons .button.export a {
   text-decoration: none ;
   color: #FFF ;
 }
 
-.project-box .buttons div i {
+.project-box .buttons .button i {
   margin-right: 5px ;
 }
 
