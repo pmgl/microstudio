@@ -88,22 +88,16 @@ html
   script(id="code" type="text/x-project-code").
     !{game.code}
 
-
-  script(type="text/javascript").
-    window.addEventListener("load",function() {
-      window.player = new Player() ;
-      document.body.focus() ;
-    }) ;
-
   if language == "python"
     script(type="text/python").
       from browser import window
       import traceback
       import sys
 
-      def execute(str):
+      def execute(str,filename):
         try:
-          return exec(str,globals())
+          code = compile(str,filename,"exec")
+          return exec(code,globals())
         except BaseException as err:
           exp = traceback.format_exception(err)
           sys.stderr.write(exp)
@@ -113,6 +107,20 @@ html
 
       window.python = execute
       window.glob = globals()
+      window.pythonLoaded()
 
     script.
-      brython()
+      window.pythonLoaded = function() {
+        window.player = new Player() ;
+        document.body.focus() ;
+      }
+      window.addEventListener("load",function() {
+        brython() ;
+      }) ;
+  else
+    script(type="text/javascript").
+      window.addEventListener("load",function() {
+        window.player = new Player() ;
+        document.body.focus() ;
+      }) ;
+

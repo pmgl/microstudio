@@ -1,90 +1,60 @@
-this.RunWindow = (function() {
-  function RunWindow(app) {
+this.RunWindow = class RunWindow {
+  constructor(app) {
     this.app = app;
-    this.app.appui.setAction("run-button", (function(_this) {
-      return function() {
-        return _this.play();
-      };
-    })(this));
-    this.app.appui.setAction("pause-button", (function(_this) {
-      return function() {
-        return _this.pause();
-      };
-    })(this));
-    this.app.appui.setAction("reload-button", (function(_this) {
-      return function() {
-        return _this.reload();
-      };
-    })(this));
-    this.app.appui.setAction("run-button-win", (function(_this) {
-      return function() {
-        return _this.play();
-      };
-    })(this));
-    this.app.appui.setAction("pause-button-win", (function(_this) {
-      return function() {
-        return _this.pause();
-      };
-    })(this));
-    this.app.appui.setAction("reload-button-win", (function(_this) {
-      return function() {
-        return _this.reload();
-      };
-    })(this));
-    this.app.appui.setAction("detach-button", (function(_this) {
-      return function() {
-        return _this.detach();
-      };
-    })(this));
-    this.app.appui.setAction("qrcode-button", (function(_this) {
-      return function() {
-        return _this.showQRCode();
-      };
-    })(this));
-    this.app.appui.setAction("take-picture-button", (function(_this) {
-      return function() {
-        return _this.takePicture();
-      };
-    })(this));
-    this.app.appui.setAction("step-forward-button", (function(_this) {
-      return function() {
-        return _this.stepForward();
-      };
-    })(this));
-    this.app.appui.setAction("step-forward-button-win", (function(_this) {
-      return function() {
-        return _this.stepForward();
-      };
-    })(this));
+    this.app.appui.setAction("run-button", () => {
+      return this.play();
+    });
+    this.app.appui.setAction("pause-button", () => {
+      return this.pause();
+    });
+    this.app.appui.setAction("reload-button", () => {
+      return this.reload();
+    });
+    this.app.appui.setAction("run-button-win", () => {
+      return this.play();
+    });
+    this.app.appui.setAction("pause-button-win", () => {
+      return this.pause();
+    });
+    this.app.appui.setAction("reload-button-win", () => {
+      return this.reload();
+    });
+    this.app.appui.setAction("detach-button", () => {
+      return this.detach();
+    });
+    this.app.appui.setAction("qrcode-button", () => {
+      return this.showQRCode();
+    });
+    this.app.appui.setAction("take-picture-button", () => {
+      return this.takePicture();
+    });
+    this.app.appui.setAction("step-forward-button", () => {
+      return this.stepForward();
+    });
+    this.app.appui.setAction("step-forward-button-win", () => {
+      return this.stepForward();
+    });
     if (window.ms_standalone) {
       document.getElementById("qrcode-button").style.display = "none";
     }
-    this.app.appui.setAction("clear-button", (function(_this) {
-      return function() {
-        return _this.clear();
-      };
-    })(this));
-    this.app.appui.setAction("console-options-button", (function(_this) {
-      return function() {
-        return _this.toggleConsoleOptions();
-      };
-    })(this));
+    this.app.appui.setAction("clear-button", () => {
+      return this.clear();
+    });
+    this.app.appui.setAction("console-options-button", () => {
+      return this.toggleConsoleOptions();
+    });
     this.rulercanvas = new RulerCanvas(this.app);
-    window.addEventListener("resize", (function(_this) {
-      return function() {
-        return _this.windowResized();
-      };
-    })(this));
+    window.addEventListener("resize", () => {
+      return this.windowResized();
+    });
     this.terminal = new Terminal(this);
-    window.addEventListener("message", (function(_this) {
-      return function(msg) {
-        var iframe;
-        iframe = document.getElementById("runiframe");
-        if ((iframe != null) && msg.source === iframe.contentWindow) {
-          return _this.messageReceived(msg.data);
-        }
-      };
-    })(this));
+    window.addEventListener("message", (msg) => {
+      var iframe;
+      iframe = document.getElementById("runiframe");
+      if ((iframe != null) && msg.source === iframe.contentWindow) {
+        return this.messageReceived(msg.data);
+      }
+    });
     this.command_table = {};
     this.command_id = 0;
     this.floating_window = new FloatingWindow(this.app, "run-window", this);
@@ -95,31 +65,23 @@ this.RunWindow = (function() {
     this.project_access = new ProjectAccess(this.app, null, this);
   }
 
-  RunWindow.prototype.initWarnings = function() {
-    document.getElementById("console-options-warning-undefined").addEventListener("change", (function(_this) {
-      return function() {
-        _this.warning_undefined = document.getElementById("console-options-warning-undefined").checked;
-        return localStorage.setItem("console_warning_undefined", _this.warning_undefined);
-      };
-    })(this));
-    document.getElementById("console-options-warning-nonfunction").addEventListener("change", (function(_this) {
-      return function() {
-        _this.warning_nonfunction = document.getElementById("console-options-warning-nonfunction").checked;
-        return localStorage.setItem("console_warning_nonfunction", _this.warning_nonfunction);
-      };
-    })(this));
-    document.getElementById("console-options-warning-assign").addEventListener("change", (function(_this) {
-      return function() {
-        _this.warning_assign = document.getElementById("console-options-warning-assign").checked;
-        return localStorage.setItem("console_warning_assign", _this.warning_assign);
-      };
-    })(this));
-    document.getElementById("console-options-warning-condition").addEventListener("change", (function(_this) {
-      return function() {
-        _this.warning_condition = document.getElementById("console-options-warning-condition").checked;
-        return localStorage.setItem("console_warning_condition", _this.warning_condition);
-      };
-    })(this));
+  initWarnings() {
+    document.getElementById("console-options-warning-undefined").addEventListener("change", () => {
+      this.warning_undefined = document.getElementById("console-options-warning-undefined").checked;
+      return localStorage.setItem("console_warning_undefined", this.warning_undefined);
+    });
+    document.getElementById("console-options-warning-nonfunction").addEventListener("change", () => {
+      this.warning_nonfunction = document.getElementById("console-options-warning-nonfunction").checked;
+      return localStorage.setItem("console_warning_nonfunction", this.warning_nonfunction);
+    });
+    document.getElementById("console-options-warning-assign").addEventListener("change", () => {
+      this.warning_assign = document.getElementById("console-options-warning-assign").checked;
+      return localStorage.setItem("console_warning_assign", this.warning_assign);
+    });
+    document.getElementById("console-options-warning-condition").addEventListener("change", () => {
+      this.warning_condition = document.getElementById("console-options-warning-condition").checked;
+      return localStorage.setItem("console_warning_condition", this.warning_condition);
+    });
     this.warning_undefined = localStorage.getItem("console_warning_undefined") === "true" || false;
     this.warning_nonfunction = localStorage.getItem("console_warning_nonfunction") !== "false";
     this.warning_assign = localStorage.getItem("console_warning_assign") !== "false";
@@ -128,9 +90,9 @@ this.RunWindow = (function() {
     document.getElementById("console-options-warning-nonfunction").checked = this.warning_nonfunction;
     document.getElementById("console-options-warning-assign").checked = this.warning_assign;
     return document.getElementById("console-options-warning-condition").checked = this.warning_condition;
-  };
+  }
 
-  RunWindow.prototype.detach = function() {
+  detach() {
     var b, device, wincontent;
     if (this.detached) {
       return this.floating_window.close();
@@ -151,13 +113,13 @@ this.RunWindow = (function() {
         return document.getElementById("runtime").style.display = "none";
       }
     }
-  };
+  }
 
-  RunWindow.prototype.floatingWindowResized = function() {
+  floatingWindowResized() {
     return this.windowResized();
-  };
+  }
 
-  RunWindow.prototype.floatingWindowClosed = function() {
+  floatingWindowClosed() {
     var container, device;
     if (!this.detached) {
       return;
@@ -174,25 +136,24 @@ this.RunWindow = (function() {
       document.getElementById("runtime").style.display = "block";
       return this.windowResized();
     }
-  };
+  }
 
-  RunWindow.prototype.run = function() {
+  run() {
     var code, device, origin, src, url;
     src = this.app.editor.editor.getValue();
     device = document.getElementById("device");
-    code = this.app.project["public"] ? "" : this.app.project.code + "/";
-    url = (location.origin.replace(".dev", ".io")) + "/" + this.app.project.owner.nick + "/" + this.app.project.slug + "/" + code;
-    origin = "" + (location.origin.replace(".dev", ".io"));
-    return this.app.project.savePendingChanges((function(_this) {
-      return function() {
-        device.innerHTML = "<iframe id='runiframe' allow='autoplay " + origin + "; gamepad " + origin + "; midi " + origin + "' src='" + url + "?debug'></iframe>";
-        _this.windowResized();
-        return document.getElementById("take-picture-button").style.display = "inline-block";
-      };
-    })(this));
-  };
+    code = this.app.project.public ? "" : `${this.app.project.code}/`;
+    url = `${location.origin.replace(".dev", ".io")}/${this.app.project.owner.nick}/${this.app.project.slug}/${code}`;
+    origin = `${location.origin.replace(".dev", ".io")}`;
+    return this.app.project.savePendingChanges(() => {
+      device.innerHTML = `<iframe id='runiframe' allow='autoplay ${origin}; gamepad ${origin}; midi ${origin}' src='${url}?debug'></iframe>`;
+      //document.getElementById("runiframe").focus()
+      this.windowResized();
+      return document.getElementById("take-picture-button").style.display = "inline-block";
+    });
+  }
 
-  RunWindow.prototype.reload = function() {
+  reload() {
     this.terminal.clear();
     this.run();
     document.getElementById("run-button").classList.add("selected");
@@ -204,9 +165,9 @@ this.RunWindow = (function() {
     document.getElementById("step-forward-button").style.display = "none";
     document.getElementById("step-forward-button-win").style.display = "none";
     return this.propagate("reload");
-  };
+  }
 
-  RunWindow.prototype.play = function() {
+  play() {
     if (document.getElementById("runiframe") != null) {
       return this.resume();
     } else {
@@ -221,9 +182,9 @@ this.RunWindow = (function() {
       document.getElementById("step-forward-button-win").style.display = "none";
       return this.propagate("play");
     }
-  };
+  }
 
-  RunWindow.prototype.pause = function() {
+  pause() {
     var e;
     e = document.getElementById("runiframe");
     if (e != null) {
@@ -240,19 +201,19 @@ this.RunWindow = (function() {
     document.getElementById("step-forward-button").style.display = "inline-block";
     document.getElementById("step-forward-button-win").style.display = "inline-block";
     return this.propagate("pause");
-  };
+  }
 
-  RunWindow.prototype.isPaused = function() {
+  isPaused() {
     return document.getElementById("pause-button").classList.contains("selected") || document.getElementById("pause-button-win").classList.contains("selected");
-  };
+  }
 
-  RunWindow.prototype.stepForward = function() {
+  stepForward() {
     return this.postMessage({
       name: "step_forward"
     });
-  };
+  }
 
-  RunWindow.prototype.resume = function() {
+  resume() {
     var e;
     e = document.getElementById("runiframe");
     if (e != null) {
@@ -270,9 +231,9 @@ this.RunWindow = (function() {
     document.getElementById("step-forward-button").style.display = "none";
     document.getElementById("step-forward-button-win").style.display = "none";
     return this.propagate("resume");
-  };
+  }
 
-  RunWindow.prototype.resetButtons = function() {
+  resetButtons() {
     document.getElementById("run-button").classList.remove("selected");
     document.getElementById("pause-button").classList.add("selected");
     document.getElementById("reload-button").classList.add("selected");
@@ -281,13 +242,13 @@ this.RunWindow = (function() {
     document.getElementById("reload-button-win").classList.add("selected");
     document.getElementById("step-forward-button").style.display = "none";
     return document.getElementById("step-forward-button-win").style.display = "none";
-  };
+  }
 
-  RunWindow.prototype.clear = function() {
+  clear() {
     return this.terminal.clear();
-  };
+  }
 
-  RunWindow.prototype.toggleConsoleOptions = function() {
+  toggleConsoleOptions() {
     var div;
     div = document.getElementById("console-options");
     if (div.getBoundingClientRect().height <= 41) {
@@ -297,35 +258,31 @@ this.RunWindow = (function() {
       div.style.height = "0px";
       document.getElementById("terminal-view").style.top = "40px";
     }
-    return setTimeout(((function(_this) {
-      return function() {
-        return _this.app.appui.runtime_splitbar.update();
-      };
-    })(this)), 600);
-  };
+    return setTimeout((() => {
+      return this.app.appui.runtime_splitbar.update();
+    }), 600);
+  }
 
-  RunWindow.prototype.updateCode = function(file, src) {
+  updateCode(file, src) {
     var iframe;
     if (this.error_check != null) {
       clearTimeout(this.error_check);
     }
     this.error_buffer = [];
-    this.error_check = setTimeout(((function(_this) {
-      return function() {
-        var err, i, len, ref, results;
-        _this.error_check = null;
-        if (_this.terminal.error_lines > 0) {
-          _this.terminal.clear();
-        }
-        ref = _this.error_buffer;
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-          err = ref[i];
-          results.push(_this.logError(err));
-        }
-        return results;
-      };
-    })(this)), 3000);
+    this.error_check = setTimeout((() => {
+      var err, i, len, ref, results;
+      this.error_check = null;
+      if (this.terminal.error_lines > 0) {
+        this.terminal.clear();
+      }
+      ref = this.error_buffer;
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        err = ref[i];
+        results.push(this.logError(err));
+      }
+      return results;
+    }), 3000);
     src = this.app.editor.editor.getValue();
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -335,9 +292,9 @@ this.RunWindow = (function() {
         code: src
       }), "*");
     }
-  };
+  }
 
-  RunWindow.prototype.updateSprite = function(name) {
+  updateSprite(name) {
     var data, iframe, properties, sprite;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -356,9 +313,9 @@ this.RunWindow = (function() {
         }), "*");
       }
     }
-  };
+  }
 
-  RunWindow.prototype.updateMap = function(name) {
+  updateMap(name) {
     var data, iframe, map;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -372,9 +329,9 @@ this.RunWindow = (function() {
         }), "*");
       }
     }
-  };
+  }
 
-  RunWindow.prototype.windowResized = function() {
+  windowResized() {
     var c, ch, cw, h, r, ratio, w;
     r = document.getElementById("device");
     c = document.getElementById("device").firstChild;
@@ -389,6 +346,8 @@ this.RunWindow = (function() {
       "2x1": 2 / 1,
       "1x1": 1 / 1
     }[this.app.project.aspect];
+    //if not ratio? and @app.project.orientation in ["portrait","landscape"]
+    //  ratio = 16/9
     if (ratio != null) {
       switch (this.app.project.orientation) {
         case "portrait":
@@ -417,14 +376,14 @@ this.RunWindow = (function() {
       h = ch;
     }
     if (c != null) {
-      c.style["margin-top"] = "0px";
+      c.style["margin-top"] = "0px"; //{}Math.round((ch-h)/2)+"px"
       c.style.width = Math.round(cw) + "px";
       c.style.height = Math.round(ch) + "px";
     }
     return this.rulercanvas.resize(Math.round(w), Math.round(h), Math.round((ch - h) / 2));
-  };
+  }
 
-  RunWindow.prototype.logError = function(err) {
+  logError(err) {
     var error, text;
     if (this.error_check != null) {
       this.error_buffer.push(err);
@@ -465,7 +424,8 @@ this.RunWindow = (function() {
         this.annotateWarning(error, err);
     }
     if (err.line != null) {
-      if (err.file) {
+      if (err.file && typeof err.file === "string") {
+        err.file = err.file.replace(/\-/g, "/");
         text = this.app.translator.get("%ERROR%, in file \"%FILE%\" at line %LINE%");
         if (err.column) {
           text += ", column %COLUMN%";
@@ -475,12 +435,13 @@ this.RunWindow = (function() {
         return this.terminal.error(error);
       }
     } else {
-      return this.terminal.error("" + error);
+      return this.terminal.error(`${error}`);
     }
-  };
+  }
 
-  RunWindow.prototype.annotateWarning = function(warning, info) {
+  annotateWarning(warning, info) {
     var source;
+    //    if @app.editor.selected_source == info.file
     source = this.app.project.getSource(info.file);
     if (source != null) {
       if (source.annotations == null) {
@@ -494,9 +455,9 @@ this.RunWindow = (function() {
       });
       return this.app.project.notifyListeners("annotations");
     }
-  };
+  }
 
-  RunWindow.prototype.messageReceived = function(msg) {
+  messageReceived(msg) {
     var c, e, err, iframe, source;
     try {
       msg = JSON.parse(msg);
@@ -524,6 +485,7 @@ this.RunWindow = (function() {
           source = this.app.project.getSource(msg.file);
           if (source != null) {
             if ((source.annotations != null) && source.annotations.length > 0) {
+              // @terminal.clear()
               source.annotations = [];
               return this.app.project.notifyListeners("annotations");
             }
@@ -583,9 +545,9 @@ this.RunWindow = (function() {
     } catch (error1) {
       err = error1;
     }
-  };
+  }
 
-  RunWindow.prototype.runCommand = function(command, output_callback) {
+  runCommand(command, output_callback) {
     var iframe, parser;
     this.nesting = 0;
     if (command.trim().length === 0) {
@@ -629,18 +591,18 @@ this.RunWindow = (function() {
       };
       return this.play();
     }
-  };
+  }
 
-  RunWindow.prototype.projectOpened = function() {
+  projectOpened() {
     var iframe;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
       iframe.parentElement.removeChild(iframe);
     }
     return this.terminal.clear();
-  };
+  }
 
-  RunWindow.prototype.projectClosed = function() {
+  projectClosed() {
     var iframe;
     this.floating_window.close();
     iframe = document.getElementById("runiframe");
@@ -649,16 +611,16 @@ this.RunWindow = (function() {
     }
     document.getElementById("take-picture-button").style.display = "none";
     return this.hideAll();
-  };
+  }
 
-  RunWindow.prototype.hideQRCode = function() {
+  hideQRCode() {
     if (this.qrcode != null) {
       document.body.removeChild(this.qrcode);
       return this.qrcode = null;
     }
-  };
+  }
 
-  RunWindow.prototype.showQRCode = function() {
+  showQRCode() {
     var qrcode, url;
     if (this.app.project != null) {
       if (this.qrcode != null) {
@@ -667,38 +629,36 @@ this.RunWindow = (function() {
         url = location.origin.replace(".dev", ".io") + "/";
         url += this.app.project.owner.nick + "/";
         url += this.app.project.slug + "/";
-        if (!this.app.project["public"]) {
+        if (!this.app.project.public) {
           url += this.app.project.code + "/";
         }
         return qrcode = QRCode.toDataURL(url, {
           margin: 2,
           scale: 8
-        }, (function(_this) {
-          return function(err, url) {
-            var img;
-            if ((err == null) && (url != null)) {
-              img = new Image;
-              img.src = url;
-              return img.onload = function() {
-                var b;
-                b = document.getElementById("qrcode-button").getBoundingClientRect();
-                img.style.position = "absolute";
-                img.style.top = (b.y + b.height + 20) + "px";
-                img.style.left = (Math.min(b.x + b.width / 2 - 132, window.innerWidth - img.width - 10)) + "px";
-                _this.qrcode = img;
-                _this.qrcode.addEventListener("click", function() {
-                  return _this.showQRCode();
-                });
-                return document.body.appendChild(_this.qrcode);
-              };
-            }
-          };
-        })(this));
+        }, (err, url) => {
+          var img;
+          if ((err == null) && (url != null)) {
+            img = new Image;
+            img.src = url;
+            return img.onload = () => {
+              var b;
+              b = document.getElementById("qrcode-button").getBoundingClientRect();
+              img.style.position = "absolute";
+              img.style.top = `${b.y + b.height + 20}px`;
+              img.style.left = `${Math.min(b.x + b.width / 2 - 132, window.innerWidth - img.width - 10)}px`;
+              this.qrcode = img;
+              this.qrcode.addEventListener("click", () => {
+                return this.showQRCode();
+              });
+              return document.body.appendChild(this.qrcode);
+            };
+          }
+        });
       }
     }
-  };
+  }
 
-  RunWindow.prototype.takePicture = function() {
+  takePicture() {
     var iframe;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -706,24 +666,24 @@ this.RunWindow = (function() {
         name: "take_picture"
       }), "*");
     }
-  };
+  }
 
-  RunWindow.prototype.hidePicture = function() {
+  hidePicture() {
     if (this.picture != null) {
       document.body.removeChild(this.picture);
       return this.picture = null;
     }
-  };
+  }
 
-  RunWindow.prototype.showPicture = function(data) {
+  showPicture(data) {
     var b, button, div, img, save_button, set_button;
     this.hidePicture();
     this.picture = div = document.createElement("div");
     div.classList.add("show-picture");
     div.style.position = "absolute";
     b = document.getElementById("take-picture-button").getBoundingClientRect();
-    div.style.top = (b.y + b.height + 20) + "px";
-    div.style.left = (Math.min(b.x + b.width / 2 - 180, window.innerWidth - 360 - 10)) + "px";
+    div.style.top = `${b.y + b.height + 20}px`;
+    div.style.left = `${Math.min(b.x + b.width / 2 - 180, window.innerWidth - 360 - 10)}px`;
     document.body.appendChild(div);
     img = new Image;
     img.src = data;
@@ -733,96 +693,88 @@ this.RunWindow = (function() {
     save_button = document.createElement("div");
     save_button.innerText = this.app.translator.get("Save");
     save_button.classList.add("save");
-    save_button.addEventListener("click", (function(_this) {
-      return function() {
-        return _this.savePicture(data, save_button);
-      };
-    })(this));
+    save_button.addEventListener("click", () => {
+      return this.savePicture(data, save_button);
+    });
     div.appendChild(save_button);
     div.appendChild(document.createElement("br"));
     set_button = document.createElement("div");
     set_button.innerText = this.app.translator.get("Set as project poster image");
-    set_button.addEventListener("click", (function(_this) {
-      return function() {
-        return _this.setAsPoster(data, set_button);
-      };
-    })(this));
+    set_button.addEventListener("click", () => {
+      return this.setAsPoster(data, set_button);
+    });
     div.appendChild(set_button);
     div.appendChild(document.createElement("br"));
     button = document.createElement("div");
     button.innerText = this.app.translator.get("Close");
     button.classList.add("close");
-    button.addEventListener("click", (function(_this) {
-      return function() {
-        return _this.hidePicture();
-      };
-    })(this));
+    button.addEventListener("click", () => {
+      return this.hidePicture();
+    });
     return div.appendChild(button);
-  };
+  }
 
-  RunWindow.prototype.savePicture = function(data, button) {
+  savePicture(data, button) {
     var link;
     link = document.createElement("a");
     link.setAttribute("href", data);
-    link.setAttribute("download", this.app.project.slug + ".png");
+    link.setAttribute("download", `${this.app.project.slug}.png`);
     link.click();
     return button.style.display = "none";
-  };
+  }
 
-  RunWindow.prototype.setAsPoster = function(data, button) {
+  setAsPoster(data, button) {
     var img;
     button.style.display = "none";
     img = new Image;
     img.src = data;
-    return img.onload = (function(_this) {
-      return function() {
-        var canvas, h, ih, iw, poster, r, w;
-        canvas = document.createElement("canvas");
-        iw = img.width;
-        ih = img.height;
-        if (iw < ih) {
-          h = Math.min(360, ih);
-          r = h / ih * 1.2;
-          canvas.width = w = h / 9 * 16;
-          canvas.height = h;
-          canvas.getContext("2d").fillStyle = "#000";
-          canvas.getContext("2d").fillRect(0, 0, canvas.width, canvas.height);
-          canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
-        } else {
-          w = Math.min(640, iw, ih / 9 * 16);
-          h = w / 16 * 9;
-          r = Math.max(w / img.width, h / img.height);
-          canvas.width = w;
-          canvas.height = h;
-          canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
+    return img.onload = () => {
+      var canvas, h, ih, iw, poster, r, w;
+      canvas = document.createElement("canvas");
+      iw = img.width;
+      ih = img.height;
+      if (iw < ih) {
+        h = Math.min(360, ih);
+        r = h / ih * 1.2;
+        canvas.width = w = h / 9 * 16;
+        canvas.height = h;
+        canvas.getContext("2d").fillStyle = "#000";
+        canvas.getContext("2d").fillRect(0, 0, canvas.width, canvas.height);
+        canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
+      } else {
+        w = Math.min(640, iw, ih / 9 * 16);
+        h = w / 16 * 9;
+        r = Math.max(w / img.width, h / img.height);
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
+      }
+      data = canvas.toDataURL().split(",")[1];
+      poster = this.app.project.getSprite("poster");
+      return this.app.client.sendRequest({
+        name: "write_project_file",
+        project: this.app.project.id,
+        file: "sprites/poster.png",
+        properties: {
+          frames: 1,
+          fps: 5
+        },
+        content: data
+      }, (msg) => {
+        this.app.project.updateSpriteList();
+        if (poster != null) {
+          return poster.reload();
         }
-        data = canvas.toDataURL().split(",")[1];
-        poster = _this.app.project.getSprite("poster");
-        return _this.app.client.sendRequest({
-          name: "write_project_file",
-          project: _this.app.project.id,
-          file: "sprites/poster.png",
-          properties: {
-            frames: 1,
-            fps: 5
-          },
-          content: data
-        }, function(msg) {
-          _this.app.project.updateSpriteList();
-          if (poster != null) {
-            return poster.reload();
-          }
-        });
-      };
-    })(this);
-  };
+      });
+    };
+  }
 
-  RunWindow.prototype.hideAll = function() {
+  hideAll() {
     this.hideQRCode();
     return this.hidePicture();
-  };
+  }
 
-  RunWindow.prototype.exit = function() {
+  exit() {
     this.projectClosed();
     document.getElementById("run-button").classList.remove("selected");
     document.getElementById("pause-button").classList.remove("selected");
@@ -831,25 +783,25 @@ this.RunWindow = (function() {
     document.getElementById("pause-button-win").classList.remove("selected");
     document.getElementById("reload-button-win").classList.remove("selected");
     return this.propagate("exit");
-  };
+  }
 
-  RunWindow.prototype.postMessage = function(data) {
+  postMessage(data) {
     var iframe;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
       return iframe.contentWindow.postMessage(JSON.stringify(data), "*");
     }
-  };
+  }
 
-  RunWindow.prototype.addMessageListener = function(name, callback) {
+  addMessageListener(name, callback) {
     return this.message_listeners[name] = callback;
-  };
+  }
 
-  RunWindow.prototype.addListener = function(callback) {
+  addListener(callback) {
     return this.listeners.push(callback);
-  };
+  }
 
-  RunWindow.prototype.propagate = function(event) {
+  propagate(event) {
     var i, l, len, ref, results;
     ref = this.listeners;
     results = [];
@@ -858,8 +810,6 @@ this.RunWindow = (function() {
       results.push(l(event));
     }
     return results;
-  };
+  }
 
-  return RunWindow;
-
-})();
+};

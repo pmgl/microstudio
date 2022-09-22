@@ -356,7 +356,8 @@ class @RunWindow
         @annotateWarning(error,err)
 
     if err.line?
-      if err.file
+      if err.file and typeof err.file == "string"
+        err.file = err.file.replace(/\-/g,"/")
         text = @app.translator.get("%ERROR%, in file \"%FILE%\" at line %LINE%")
         if err.column
           text += ", column %COLUMN%"

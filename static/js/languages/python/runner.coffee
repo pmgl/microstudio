@@ -18,14 +18,20 @@ class @Runner
       write:(text)=>
         if Array.isArray(text)
           line = 1
+          file = ""
           for t in text
+            f = t.split("File")
+            if f[1]?
+              f = f[1].split('"')
+              if f[1]? and f[1].length > 0
+                file = f[1]
             t = t.split(" line ")
             if t[1]?
               line = t[1].split("\n")[0].split(",")[0]
 
           @microvm.context.location =
             token:
-              #file: "main"
+              file: file
               line: line
               column: 0
           throw text[text.length-1].replace("\n","")
@@ -58,7 +64,7 @@ def __reportError(err):
        console.info(error)
 
     try
-      res = python(program)
+      res = python(program,name)
 
       program = """
 import traceback
@@ -101,7 +107,7 @@ if "init" in globals():
   window.init = __init
       """
 
-      python(program)
+      python(program,"__init__")
 
       return res
     catch err
