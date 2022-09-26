@@ -9,6 +9,7 @@
 * Fixed bug with `for in` when array is sparse (microScript 2.0)
 * Prepared server mode window + refactoring
 * Prevent splitbars from remembering their position when they are closed
+* Updated `marked` lib to 4.1.0
 
 ### Update 2022-09-13
 * Fixed time machine recording function values, preventing live code updates in ms 2.0
