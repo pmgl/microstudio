@@ -824,7 +824,9 @@ class @Processor
           if v.length == 0
             op_index = arg1[op_index][1]
           else
-            locals[locals_offset+arg1[op_index][0]] = v[0]
+            value = v[0]
+            # value could be undefined if the array is sparse
+            locals[locals_offset+arg1[op_index][0]] = if value? then value else 0
             locals[locals_offset+iterator+2] = 0
             op_index++
 
