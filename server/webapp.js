@@ -1,4 +1,4 @@
-var API, Concatenator, ExportFeatures, Fonts, ForumApp, Jimp, ProjectManager, SHA256, allowedTags, fs, marked, pug, sanitizeHTML,
+var API, Concatenator, ExportFeatures, Fonts, ForumApp, Jimp, ProjectManager, SHA256, allowedTags, fs, pug, sanitizeHTML,
   indexOf = [].indexOf;
 
 SHA256 = require("crypto-js/sha256");
@@ -21,7 +21,7 @@ ForumApp = require(__dirname + "/forum/forumapp.js");
 
 API = require(__dirname + "/api.js");
 
-marked = require("marked");
+const { marked } = require("marked");
 
 sanitizeHTML = require("sanitize-html");
 

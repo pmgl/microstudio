@@ -9,7 +9,8 @@ ExportFeatures = require __dirname+"/app/exportfeatures.js"
 ForumApp = require __dirname+"/forum/forumapp.js"
 API = require __dirname+"/api.js"
 
-marked = require "marked"
+`const { marked } = require("marked")`
+
 sanitizeHTML = require "sanitize-html"
 allowedTags = sanitizeHTML.defaults.allowedTags.concat ["img"]
 

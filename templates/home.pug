@@ -66,6 +66,9 @@ html(lang=language)
     script(src="/lib/qrcode/qrcode.js")
 
     script.
+      marked = marked.marked ;
+
+    script.
       window.ms_languages = !{JSON.stringify(languages)};
       window.ms_standalone = !{standalone} ;
       window.ms_project_moderation = !{project_moderation} ;

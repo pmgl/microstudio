@@ -24,6 +24,9 @@ html(lang=language)
     script(src="/lib/marked/marked.js")
 
     script.
+      marked = marked.marked ;
+
+    script.
       window.post = !{JSON.stringify(post_info)} ;
       window.community = !{JSON.stringify(community)} ;
       window.translation = !{translation};

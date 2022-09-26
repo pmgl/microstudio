@@ -1,5 +1,19 @@
 ## Changelog
 
+### Update 2022-09-26
+* Public projects are marked in projects list and project workspace
+* Sprite editor: continuous strokes #163, draw straight lines with `Shift`
+* Fixed image.drawImagePart #164
+* Undo / redo map resize, fixes #162
+* Prepared Python support for Brython's upcoming update, allowing better info on runtime error
+* Fixed bug with `for in` when array is sparse (microScript 2.0)
+* Prepared server mode window + refactoring
+* Prevent splitbars from remembering their position when they are closed
+
+### Update 2022-09-13
+* Fixed time machine recording function values, preventing live code updates in ms 2.0
+* standalone visibility fixes
+
 ### Update 2022-08-30
 * Fixed bug with locals in if/else (microScript 2.0) #156
 * Fixed bug with captured outer locals being overwritten by block locals (microScript 2.0) #151

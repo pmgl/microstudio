@@ -93,7 +93,7 @@ class @TabManager
       desc = desc.substring(0,300)+" (...)"
     div.innerHTML = """
     <img class="pixelated icon" src="#{location.origin}#{path}/sprites/icon.png"/>
-    <div class="description">
+    <div class="description md dark">
       <div class="plugin-author"></div>
       <h4>#{project.title}</h4>
       <p>#{DOMPurify.sanitize marked desc}</p>

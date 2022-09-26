@@ -1,4 +1,4 @@
-marked = require "marked"
+`const { marked } = require("marked")`
 sanitizeHTML = require "sanitize-html"
 allowedTags = sanitizeHTML.defaults.allowedTags.concat ["img"]
 
