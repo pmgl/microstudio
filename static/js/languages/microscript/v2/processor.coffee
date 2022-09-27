@@ -819,7 +819,7 @@ class @Processor
           else if typeof v == "string"
             v = locals[locals_offset+iterator+1] = v.split("")
           else
-            v = locals[locals_offset+iterator+1] = [v]
+            v = locals[locals_offset+iterator+1] = []
 
           if v.length == 0
             op_index = arg1[op_index][1]
