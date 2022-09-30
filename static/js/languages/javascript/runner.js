@@ -1,17 +1,15 @@
-this.Runner = (function() {
-  function Runner(microvm) {
+this.Runner = class Runner {
+  constructor(microvm) {
     this.microvm = microvm;
   }
 
-  Runner.prototype.init = function() {
+  init() {
     var kd, key, src;
     this.initialized = true;
     window.ctx = this.microvm.context.global;
-    window.ctx.print = (function(_this) {
-      return function(text) {
-        return _this.microvm.context.meta.print(text);
-      };
-    })(this);
+    window.ctx.print = (text) => {
+      return this.microvm.context.meta.print(text);
+    };
     src = "";
     for (key in this.microvm.context.global) {
       kd = key;
@@ -21,22 +19,19 @@ this.Runner = (function() {
       if (key === "Map") {
         kd = "msMap";
       }
-      src += kd + " =  window.ctx." + key + ";\n";
+      src += `${kd} =  window.ctx.${key};\n`;
     }
     return this.run(src);
-  };
+  }
 
-  Runner.prototype.run = function(program, name) {
+  run(program, name = "") {
     var err, file, line;
-    if (name == null) {
-      name = "";
-    }
     if (!this.initialized) {
       this.init();
     }
-    program += "\n//# sourceURL=" + name + ".js";
+    program += `\n//# sourceURL=${name}.js`;
     try {
-      return eval(program);
+      return window.eval(program);
     } catch (error) {
       err = error;
       if (err.stack != null) {
@@ -61,9 +56,9 @@ this.Runner = (function() {
       }
       throw err.message;
     }
-  };
+  }
 
-  Runner.prototype.call = function(name, args) {
+  call(name, args) {
     var err, file, line;
     try {
       if (window[name] != null) {
@@ -94,16 +89,14 @@ this.Runner = (function() {
       }
       throw err.message;
     }
-  };
+  }
 
-  Runner.prototype.toString = function(obj) {
+  toString(obj) {
     if (obj != null) {
       return obj.toString();
     } else {
       return "null";
     }
-  };
+  }
 
-  return Runner;
-
-})();
+};

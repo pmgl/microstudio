@@ -20,7 +20,7 @@ class @Runner
     program += "\n//# sourceURL=#{name}.js"
 
     try
-      eval(program)
+      window.eval(program)
     catch err
       if err.stack?
         line = err.stack.split(".js:")
