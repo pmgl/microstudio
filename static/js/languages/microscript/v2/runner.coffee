@@ -279,7 +279,7 @@ class @Thread
         program = parser.program
         compiler = new Compiler(program)
         @processor.load compiler.routine
-        if f == "update()" and @runner.updateControls?
+        if (f == "update()" or f == "serverUpdate()") and @runner.updateControls?
           @runner.updateControls()
       true
     else

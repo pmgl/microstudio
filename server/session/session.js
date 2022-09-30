@@ -1,5 +1,4 @@
-var ForumSession, JSZip, ProjectManager, RegexLib, SHA256,
-  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var ForumSession, JSZip, ProjectManager, RegexLib, RelayService, SHA256;
 
 SHA256 = require("crypto-js/sha256");
 
@@ -11,13 +10,16 @@ ForumSession = require(__dirname + "/../forum/forumsession.js");
 
 JSZip = require("jszip");
 
-this.Session = (function() {
-  function Session(server, socket) {
+RelayService = require(__dirname + "/../relay/relayservice.js");
+
+this.Session = class Session {
+  constructor(server, socket) {
     var j, len1, plugin, ref;
+    this.uploadRequest = this.uploadRequest.bind(this);
+    this.bufferReceived = this.bufferReceived.bind(this);
     this.server = server;
     this.socket = socket;
-    this.bufferReceived = bind(this.bufferReceived, this);
-    this.uploadRequest = bind(this.uploadRequest, this);
+    //console.info "new session"
     this.content = this.server.content;
     if (this.content == null) {
       return this.socket.close();
@@ -27,342 +29,217 @@ this.Session = (function() {
     this.token = null;
     this.checkCookie();
     this.last_active = Date.now();
-    this.socket.on("message", (function(_this) {
-      return function(msg) {
-        _this.messageReceived(msg);
-        return _this.last_active = Date.now();
-      };
-    })(this));
-    this.socket.on("close", (function(_this) {
-      return function() {
-        _this.server.sessionClosed(_this);
-        return _this.disconnected();
-      };
-    })(this));
-    this.socket.on("error", (function(_this) {
-      return function(err) {
-        if (_this.user) {
-          console.error("WS ERROR for user " + _this.user.id + " - " + _this.user.nick);
-        } else {
-          console.error("WS ERROR");
-        }
-        return console.error(err);
-      };
-    })(this));
+    this.socket.on("message", (msg) => {
+      //console.info "received msg: #{msg}"
+      this.messageReceived(msg);
+      return this.last_active = Date.now();
+    });
+    this.socket.on("close", () => {
+      this.server.sessionClosed(this);
+      return this.disconnected();
+    });
+    this.socket.on("error", (err) => {
+      if (this.user) {
+        console.error(`WS ERROR for user ${this.user.id} - ${this.user.nick}`);
+      } else {
+        console.error("WS ERROR");
+      }
+      return console.error(err);
+    });
     this.commands = {};
-    this.register("ping", (function(_this) {
-      return function(msg) {
-        _this.send({
-          name: "pong"
-        });
-        return _this.checkUpdates();
-      };
-    })(this));
-    this.register("create_account", (function(_this) {
-      return function(msg) {
-        return _this.createAccount(msg);
-      };
-    })(this));
-    this.register("create_guest", (function(_this) {
-      return function(msg) {
-        return _this.createGuestAccount(msg);
-      };
-    })(this));
-    this.register("login", (function(_this) {
-      return function(msg) {
-        return _this.login(msg);
-      };
-    })(this));
-    this.register("send_password_recovery", (function(_this) {
-      return function(msg) {
-        return _this.sendPasswordRecovery(msg);
-      };
-    })(this));
-    this.register("token", (function(_this) {
-      return function(msg) {
-        return _this.checkToken(msg);
-      };
-    })(this));
-    this.register("delete_guest", (function(_this) {
-      return function(msg) {
-        return _this.deleteGuest(msg);
-      };
-    })(this));
-    this.register("change_password", (function(_this) {
-      return function(msg) {
-        return _this.changePassword(msg);
-      };
-    })(this));
-    this.register("send_validation_mail", (function(_this) {
-      return function(msg) {
-        return _this.sendValidationMail(msg);
-      };
-    })(this));
-    this.register("change_email", (function(_this) {
-      return function(msg) {
-        return _this.changeEmail(msg);
-      };
-    })(this));
-    this.register("change_nick", (function(_this) {
-      return function(msg) {
-        return _this.changeNick(msg);
-      };
-    })(this));
-    this.register("change_password", (function(_this) {
-      return function(msg) {
-        return _this.changePassword(msg);
-      };
-    })(this));
-    this.register("change_newsletter", (function(_this) {
-      return function(msg) {
-        return _this.changeNewsletter(msg);
-      };
-    })(this));
-    this.register("change_experimental", (function(_this) {
-      return function(msg) {
-        return _this.changeExperimental(msg);
-      };
-    })(this));
-    this.register("set_user_setting", (function(_this) {
-      return function(msg) {
-        return _this.setUserSetting(msg);
-      };
-    })(this));
-    this.register("set_user_profile", (function(_this) {
-      return function(msg) {
-        return _this.setUserProfile(msg);
-      };
-    })(this));
-    this.register("create_project", (function(_this) {
-      return function(msg) {
-        return _this.createProject(msg);
-      };
-    })(this));
-    this.register("import_project", (function(_this) {
-      return function(msg) {
-        return _this.importProject(msg);
-      };
-    })(this));
-    this.register("set_project_option", (function(_this) {
-      return function(msg) {
-        return _this.setProjectOption(msg);
-      };
-    })(this));
-    this.register("set_project_property", (function(_this) {
-      return function(msg) {
-        return _this.setProjectProperty(msg);
-      };
-    })(this));
-    this.register("set_project_public", (function(_this) {
-      return function(msg) {
-        return _this.setProjectPublic(msg);
-      };
-    })(this));
-    this.register("set_project_tags", (function(_this) {
-      return function(msg) {
-        return _this.setProjectTags(msg);
-      };
-    })(this));
-    this.register("delete_project", (function(_this) {
-      return function(msg) {
-        return _this.deleteProject(msg);
-      };
-    })(this));
-    this.register("get_project_list", (function(_this) {
-      return function(msg) {
-        return _this.getProjectList(msg);
-      };
-    })(this));
-    this.register("update_code", (function(_this) {
-      return function(msg) {
-        return _this.updateCode(msg);
-      };
-    })(this));
-    this.register("lock_project_file", (function(_this) {
-      return function(msg) {
-        return _this.lockProjectFile(msg);
-      };
-    })(this));
-    this.register("write_project_file", (function(_this) {
-      return function(msg) {
-        return _this.writeProjectFile(msg);
-      };
-    })(this));
-    this.register("read_project_file", (function(_this) {
-      return function(msg) {
-        return _this.readProjectFile(msg);
-      };
-    })(this));
-    this.register("rename_project_file", (function(_this) {
-      return function(msg) {
-        return _this.renameProjectFile(msg);
-      };
-    })(this));
-    this.register("delete_project_file", (function(_this) {
-      return function(msg) {
-        return _this.deleteProjectFile(msg);
-      };
-    })(this));
-    this.register("list_project_files", (function(_this) {
-      return function(msg) {
-        return _this.listProjectFiles(msg);
-      };
-    })(this));
-    this.register("list_public_project_files", (function(_this) {
-      return function(msg) {
-        return _this.listPublicProjectFiles(msg);
-      };
-    })(this));
-    this.register("read_public_project_file", (function(_this) {
-      return function(msg) {
-        return _this.readPublicProjectFile(msg);
-      };
-    })(this));
-    this.register("listen_to_project", (function(_this) {
-      return function(msg) {
-        return _this.listenToProject(msg);
-      };
-    })(this));
-    this.register("get_file_versions", (function(_this) {
-      return function(msg) {
-        return _this.getFileVersions(msg);
-      };
-    })(this));
-    this.register("sync_project_files", (function(_this) {
-      return function(msg) {
-        return _this.syncProjectFiles(msg);
-      };
-    })(this));
-    this.register("invite_to_project", (function(_this) {
-      return function(msg) {
-        return _this.inviteToProject(msg);
-      };
-    })(this));
-    this.register("accept_invite", (function(_this) {
-      return function(msg) {
-        return _this.acceptInvite(msg);
-      };
-    })(this));
-    this.register("remove_project_user", (function(_this) {
-      return function(msg) {
-        return _this.removeProjectUser(msg);
-      };
-    })(this));
-    this.register("get_public_projects", (function(_this) {
-      return function(msg) {
-        return _this.getPublicProjects(msg);
-      };
-    })(this));
-    this.register("get_public_plugins", (function(_this) {
-      return function(msg) {
-        return _this.getPublicPlugins(msg);
-      };
-    })(this));
-    this.register("get_public_libraries", (function(_this) {
-      return function(msg) {
-        return _this.getPublicLibraries(msg);
-      };
-    })(this));
-    this.register("get_public_project", (function(_this) {
-      return function(msg) {
-        return _this.getPublicProject(msg);
-      };
-    })(this));
-    this.register("clone_project", (function(_this) {
-      return function(msg) {
-        return _this.cloneProject(msg);
-      };
-    })(this));
-    this.register("clone_public_project", (function(_this) {
-      return function(msg) {
-        return _this.clonePublicProject(msg);
-      };
-    })(this));
-    this.register("toggle_like", (function(_this) {
-      return function(msg) {
-        return _this.toggleLike(msg);
-      };
-    })(this));
-    this.register("get_language", (function(_this) {
-      return function(msg) {
-        return _this.getLanguage(msg);
-      };
-    })(this));
-    this.register("get_translation_list", (function(_this) {
-      return function(msg) {
-        return _this.getTranslationList(msg);
-      };
-    })(this));
-    this.register("set_translation", (function(_this) {
-      return function(msg) {
-        return _this.setTranslation(msg);
-      };
-    })(this));
-    this.register("add_translation", (function(_this) {
-      return function(msg) {
-        return _this.addTranslation(msg);
-      };
-    })(this));
-    this.register("get_project_comments", (function(_this) {
-      return function(msg) {
-        return _this.getProjectComments(msg);
-      };
-    })(this));
-    this.register("add_project_comment", (function(_this) {
-      return function(msg) {
-        return _this.addProjectComment(msg);
-      };
-    })(this));
-    this.register("delete_project_comment", (function(_this) {
-      return function(msg) {
-        return _this.deleteProjectComment(msg);
-      };
-    })(this));
-    this.register("edit_project_comment", (function(_this) {
-      return function(msg) {
-        return _this.editProjectComment(msg);
-      };
-    })(this));
-    this.register("build_project", (function(_this) {
-      return function(msg) {
-        return _this.buildProject(msg);
-      };
-    })(this));
-    this.register("get_build_status", (function(_this) {
-      return function(msg) {
-        return _this.getBuildStatus(msg);
-      };
-    })(this));
-    this.register("start_builder", (function(_this) {
-      return function(msg) {
-        return _this.startBuilder(msg);
-      };
-    })(this));
-    this.register("backup_complete", (function(_this) {
-      return function(msg) {
-        return _this.backupComplete(msg);
-      };
-    })(this));
-    this.register("upload_request", (function(_this) {
-      return function(msg) {
-        return _this.uploadRequest(msg);
-      };
-    })(this));
-    this.register("tutorial_completed", (function(_this) {
-      return function(msg) {
-        return _this.tutorialCompleted(msg);
-      };
-    })(this));
-    this.register("set_project_approved", (function(_this) {
-      return function(msg) {
-        return _this.setProjectApproved(msg);
-      };
-    })(this));
-    this.register("set_user_approved", (function(_this) {
-      return function(msg) {
-        return _this.setUserApproved(msg);
-      };
-    })(this));
+    this.register("ping", (msg) => {
+      this.send({
+        name: "pong"
+      });
+      return this.checkUpdates();
+    });
+    this.register("create_account", (msg) => {
+      return this.createAccount(msg);
+    });
+    this.register("create_guest", (msg) => {
+      return this.createGuestAccount(msg);
+    });
+    this.register("login", (msg) => {
+      return this.login(msg);
+    });
+    this.register("send_password_recovery", (msg) => {
+      return this.sendPasswordRecovery(msg);
+    });
+    this.register("token", (msg) => {
+      return this.checkToken(msg);
+    });
+    this.register("delete_guest", (msg) => {
+      return this.deleteGuest(msg);
+    });
+    this.register("change_password", (msg) => {
+      return this.changePassword(msg);
+    });
+    this.register("send_validation_mail", (msg) => {
+      return this.sendValidationMail(msg);
+    });
+    this.register("change_email", (msg) => {
+      return this.changeEmail(msg);
+    });
+    this.register("change_nick", (msg) => {
+      return this.changeNick(msg);
+    });
+    this.register("change_password", (msg) => {
+      return this.changePassword(msg);
+    });
+    this.register("change_newsletter", (msg) => {
+      return this.changeNewsletter(msg);
+    });
+    this.register("change_experimental", (msg) => {
+      return this.changeExperimental(msg);
+    });
+    this.register("set_user_setting", (msg) => {
+      return this.setUserSetting(msg);
+    });
+    this.register("set_user_profile", (msg) => {
+      return this.setUserProfile(msg);
+    });
+    this.register("create_project", (msg) => {
+      return this.createProject(msg);
+    });
+    this.register("import_project", (msg) => {
+      return this.importProject(msg);
+    });
+    this.register("set_project_option", (msg) => {
+      return this.setProjectOption(msg);
+    });
+    this.register("set_project_property", (msg) => {
+      return this.setProjectProperty(msg);
+    });
+    this.register("set_project_public", (msg) => {
+      return this.setProjectPublic(msg);
+    });
+    this.register("set_project_tags", (msg) => {
+      return this.setProjectTags(msg);
+    });
+    this.register("delete_project", (msg) => {
+      return this.deleteProject(msg);
+    });
+    this.register("get_project_list", (msg) => {
+      return this.getProjectList(msg);
+    });
+    this.register("update_code", (msg) => {
+      return this.updateCode(msg);
+    });
+    this.register("lock_project_file", (msg) => {
+      return this.lockProjectFile(msg);
+    });
+    this.register("write_project_file", (msg) => {
+      return this.writeProjectFile(msg);
+    });
+    this.register("read_project_file", (msg) => {
+      return this.readProjectFile(msg);
+    });
+    this.register("rename_project_file", (msg) => {
+      return this.renameProjectFile(msg);
+    });
+    this.register("delete_project_file", (msg) => {
+      return this.deleteProjectFile(msg);
+    });
+    this.register("list_project_files", (msg) => {
+      return this.listProjectFiles(msg);
+    });
+    this.register("list_public_project_files", (msg) => {
+      return this.listPublicProjectFiles(msg);
+    });
+    this.register("read_public_project_file", (msg) => {
+      return this.readPublicProjectFile(msg);
+    });
+    this.register("listen_to_project", (msg) => {
+      return this.listenToProject(msg);
+    });
+    this.register("get_file_versions", (msg) => {
+      return this.getFileVersions(msg);
+    });
+    this.register("sync_project_files", (msg) => {
+      return this.syncProjectFiles(msg);
+    });
+    this.register("invite_to_project", (msg) => {
+      return this.inviteToProject(msg);
+    });
+    this.register("accept_invite", (msg) => {
+      return this.acceptInvite(msg);
+    });
+    this.register("remove_project_user", (msg) => {
+      return this.removeProjectUser(msg);
+    });
+    this.register("get_public_projects", (msg) => {
+      return this.getPublicProjects(msg);
+    });
+    this.register("get_public_plugins", (msg) => {
+      return this.getPublicPlugins(msg);
+    });
+    this.register("get_public_libraries", (msg) => {
+      return this.getPublicLibraries(msg);
+    });
+    this.register("get_public_project", (msg) => {
+      return this.getPublicProject(msg);
+    });
+    this.register("clone_project", (msg) => {
+      return this.cloneProject(msg);
+    });
+    this.register("clone_public_project", (msg) => {
+      return this.clonePublicProject(msg);
+    });
+    this.register("toggle_like", (msg) => {
+      return this.toggleLike(msg);
+    });
+    this.register("get_language", (msg) => {
+      return this.getLanguage(msg);
+    });
+    this.register("get_translation_list", (msg) => {
+      return this.getTranslationList(msg);
+    });
+    this.register("set_translation", (msg) => {
+      return this.setTranslation(msg);
+    });
+    this.register("add_translation", (msg) => {
+      return this.addTranslation(msg);
+    });
+    this.register("get_project_comments", (msg) => {
+      return this.getProjectComments(msg);
+    });
+    this.register("add_project_comment", (msg) => {
+      return this.addProjectComment(msg);
+    });
+    this.register("delete_project_comment", (msg) => {
+      return this.deleteProjectComment(msg);
+    });
+    this.register("edit_project_comment", (msg) => {
+      return this.editProjectComment(msg);
+    });
+    this.register("build_project", (msg) => {
+      return this.buildProject(msg);
+    });
+    this.register("get_build_status", (msg) => {
+      return this.getBuildStatus(msg);
+    });
+    this.register("start_builder", (msg) => {
+      return this.startBuilder(msg);
+    });
+    this.register("backup_complete", (msg) => {
+      return this.backupComplete(msg);
+    });
+    this.register("upload_request", (msg) => {
+      return this.uploadRequest(msg);
+    });
+    this.register("tutorial_completed", (msg) => {
+      return this.tutorialCompleted(msg);
+    });
+    // moderation
+    this.register("set_project_approved", (msg) => {
+      return this.setProjectApproved(msg);
+    });
+    this.register("set_user_approved", (msg) => {
+      return this.setUserApproved(msg);
+    });
+    if (this.server.config.run_relay_service) {
+      this.relay_service = new RelayService(this);
+    }
     ref = this.server.plugins;
     for (j = 0, len1 = ref.length; j < len1; j++) {
       plugin = ref[j];
@@ -385,7 +262,7 @@ this.Session = (function() {
     };
   }
 
-  Session.prototype.checkCookie = function() {
+  checkCookie() {
     var cookie, error;
     try {
       cookie = this.socket.request.headers.cookie;
@@ -415,9 +292,9 @@ this.Session = (function() {
       error = error1;
       return console.error(error);
     }
-  };
+  }
 
-  Session.prototype.logActiveUser = function() {
+  logActiveUser() {
     if (this.user == null) {
       return;
     }
@@ -426,13 +303,13 @@ this.Session = (function() {
     } else {
       return this.server.stats.unique("active_users", this.user.id);
     }
-  };
+  }
 
-  Session.prototype.register = function(name, callback) {
+  register(name, callback) {
     return this.commands[name] = callback;
-  };
+  }
 
-  Session.prototype.disconnected = function() {
+  disconnected() {
     var err;
     try {
       if ((this.project != null) && (this.project.manager != null)) {
@@ -446,9 +323,9 @@ this.Session = (function() {
       err = error1;
       return console.error(err);
     }
-  };
+  }
 
-  Session.prototype.setCurrentProject = function(project) {
+  setCurrentProject(project) {
     if (project !== this.project || (this.project.manager == null)) {
       if ((this.project != null) && (this.project.manager != null)) {
         this.project.manager.removeSession(this);
@@ -459,14 +336,15 @@ this.Session = (function() {
       }
       return this.project.manager.addUser(this);
     }
-  };
+  }
 
-  Session.prototype.messageReceived = function(msg) {
+  messageReceived(msg) {
     var c, err;
     if (typeof msg !== "string") {
       return this.bufferReceived(msg);
     }
     try {
+      //console.info msg
       msg = JSON.parse(msg);
       if (msg.name != null) {
         c = this.commands[msg.name];
@@ -482,17 +360,17 @@ this.Session = (function() {
     if (this.user != null) {
       return this.logActiveUser();
     }
-  };
+  }
 
-  Session.prototype.sendCodeUpdated = function(file, code) {
+  sendCodeUpdated(file, code) {
     this.send({
       name: "code_updated",
       file: file,
       code: code
     });
-  };
+  }
 
-  Session.prototype.sendProjectFileUpdated = function(type, file, version, data, properties) {
+  sendProjectFileUpdated(type, file, version, data, properties) {
     return this.send({
       name: "project_file_updated",
       type: type,
@@ -501,17 +379,17 @@ this.Session = (function() {
       data: data,
       properties: properties
     });
-  };
+  }
 
-  Session.prototype.sendProjectFileDeleted = function(type, file) {
+  sendProjectFileDeleted(type, file) {
     return this.send({
       name: "project_file_deleted",
       type: type,
       file: file
     });
-  };
+  }
 
-  Session.prototype.createGuestAccount = function(data) {
+  createGuestAccount(data) {
     var chars, i, j, nick;
     if (!this.server.rate_limiter.accept("create_account_ip", this.socket.remoteAddress)) {
       return;
@@ -547,19 +425,19 @@ this.Session = (function() {
       request_id: data.request_id
     });
     return this.logActiveUser();
-  };
+  }
 
-  Session.prototype.deleteGuest = function(data) {
+  deleteGuest(data) {
     if ((this.user != null) && this.user.flags.guest) {
-      this.user["delete"]();
+      this.user.delete();
       return this.send({
         name: "guest_deleted",
         request_id: data.request_id
       });
     }
-  };
+  }
 
-  Session.prototype.createAccount = function(data) {
+  createAccount(data) {
     var chars, hash, i, j, salt;
     if (data.email == null) {
       return this.sendError(this.translator.get("email not specified"), data.request_id);
@@ -633,9 +511,9 @@ this.Session = (function() {
     });
     this.sendValidationMail();
     return this.logActiveUser();
-  };
+  }
 
-  Session.prototype.login = function(data) {
+  login(data) {
     var h, hash, s, user;
     if (data.nick == null) {
       return;
@@ -654,6 +532,9 @@ this.Session = (function() {
       hash = user.hash;
       s = hash.split("|");
       h = SHA256(s[0] + data.password);
+      //console.info "salt: #{s[0]}"
+      //console.info "hash: #{h}"
+      //console.info "recorded hash: #{s[1]}"
       if (h.toString() === s[1]) {
         this.user = user;
         this.user.addListener(this);
@@ -676,9 +557,9 @@ this.Session = (function() {
     } else {
       return this.sendError("unknown user", data.request_id);
     }
-  };
+  }
 
-  Session.prototype.createHashedPassword = function(password) {
+  createHashedPassword(password) {
     var chars, i, j, salt;
     salt = "";
     chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -686,9 +567,9 @@ this.Session = (function() {
       salt += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return salt + "|" + SHA256(salt + password);
-  };
+  }
 
-  Session.prototype.changePassword = function(data) {
+  changePassword(data) {
     var h, hash, s;
     if ((this.user == null) || (this.user.hash == null)) {
       return;
@@ -696,14 +577,14 @@ this.Session = (function() {
     if (data.current == null) {
       return;
     }
-    if (data["new"] == null) {
+    if (data.new == null) {
       return;
     }
     hash = this.user.hash;
     s = hash.split("|");
     h = SHA256(s[0] + data.current);
     if (h.toString() === s[1]) {
-      hash = this.createHashedPassword(data["new"]);
+      hash = this.createHashedPassword(data.new);
       this.user.set("hash", hash);
       return this.send({
         request_id: data.request_id,
@@ -712,9 +593,9 @@ this.Session = (function() {
     } else {
       return this.sendError("wrong password", data.request_id);
     }
-  };
+  }
 
-  Session.prototype.getUserInfo = function() {
+  getUserInfo() {
     return {
       size: this.user.getTotalSize(),
       early_access: this.user.early_access,
@@ -723,9 +604,9 @@ this.Session = (function() {
       stats: this.user.progress.exportStats(),
       achievements: this.user.progress.exportAchievements()
     };
-  };
+  }
 
-  Session.prototype.sendPasswordRecovery = function(data) {
+  sendPasswordRecovery(data) {
     var user;
     if (data.email != null) {
       user = this.content.findUserByEmail(data.email);
@@ -739,9 +620,9 @@ this.Session = (function() {
       name: "send_password_recovery",
       request_id: data.request_id
     });
-  };
+  }
 
-  Session.prototype.checkToken = function(data) {
+  checkToken(data) {
     var token;
     if (this.server.config.standalone && this.content.user_count === 1) {
       this.user = this.server.content.users[0];
@@ -780,21 +661,21 @@ this.Session = (function() {
     } else {
       return this.sendError("invalid token", data.request_id);
     }
-  };
+  }
 
-  Session.prototype.send = function(data) {
+  send(data) {
     return this.socket.send(JSON.stringify(data));
-  };
+  }
 
-  Session.prototype.sendError = function(error, request_id) {
+  sendError(error, request_id) {
     return this.send({
       name: "error",
       error: error,
       request_id: request_id
     });
-  };
+  }
 
-  Session.prototype.syncProjectFiles = function(data) {
+  syncProjectFiles(data) {
     var dest, source;
     if (data.request_id == null) {
       return this.sendError("Bad request");
@@ -822,9 +703,9 @@ this.Session = (function() {
         return dest.manager.syncFiles(this, data, source);
       }
     }
-  };
+  }
 
-  Session.prototype.importProject = function(data) {
+  importProject(data) {
     var buffer, projectFileName, zip;
     if (data.request_id == null) {
       return this.sendError("Bad request");
@@ -838,70 +719,68 @@ this.Session = (function() {
     if (!this.server.rate_limiter.accept("import_project_user", this.user.id)) {
       return this.sendError("Rate limited", data.request_id);
     }
-    buffer = data.data;
+    //return @sendError("wrong data") if not data.zip_data? or typeof data.zip_data != "string"
+
+    //split = data.zip_data.split(",")
+    //return @sendError("unrecognized data") if not split[1]?
+    buffer = data.data; //Buffer.from(split[1],'base64')
     if (buffer.byteLength > this.user.max_storage - this.user.getTotalSize()) {
       return this.sendError("storage space exceeded", data.request_id);
     }
     zip = new JSZip;
     projectFileName = "project.json";
-    return zip.loadAsync(buffer).then(((function(_this) {
-      return function(contents) {
-        if (zip.file(projectFileName) == null) {
-          _this.sendError("[ZIP] Missing " + projectFileName + "; import aborted", data.request_id);
-          console.log("[ZIP] Missing " + projectFileName + "; import aborted");
+    return zip.loadAsync(buffer).then(((contents) => {
+      if (zip.file(projectFileName) == null) {
+        this.sendError(`[ZIP] Missing ${projectFileName}; import aborted`, data.request_id);
+        console.log(`[ZIP] Missing ${projectFileName}; import aborted`);
+        return;
+      }
+      return zip.file(projectFileName).async("string").then(((text) => {
+        var err, projectInfo;
+        try {
+          projectInfo = JSON.parse(text);
+        } catch (error1) {
+          err = error1;
+          this.sendError("Incorrect JSON data", data.request_id);
+          console.error(err);
           return;
         }
-        return zip.file(projectFileName).async("string").then((function(text) {
-          var err, projectInfo;
-          try {
-            projectInfo = JSON.parse(text);
-          } catch (error1) {
-            err = error1;
-            _this.sendError("Incorrect JSON data", data.request_id);
-            console.error(err);
-            return;
-          }
-          return _this.content.createProject(_this.user, projectInfo, (function(project) {
-            _this.setCurrentProject(project);
-            return project.manager.importFiles(contents, function() {
-              project.set("files", projectInfo.files || {});
-              return _this.send({
-                name: "project_imported",
-                id: project.id,
-                request_id: data.request_id
-              });
+        return this.content.createProject(this.user, projectInfo, ((project) => {
+          this.setCurrentProject(project);
+          return project.manager.importFiles(contents, () => {
+            project.set("files", projectInfo.files || {});
+            return this.send({
+              name: "project_imported",
+              id: project.id,
+              request_id: data.request_id
             });
-          }), true);
-        }), function() {
-          return _this.sendError("Malformed ZIP file", data.request_id);
-        });
-      };
-    })(this)), (function(_this) {
-      return function() {
-        return _this.sendError("Malformed ZIP file", data.request_id);
-      };
-    })(this));
-  };
+          });
+        }), true);
+      }), () => {
+        return this.sendError("Malformed ZIP file", data.request_id);
+      });
+    }), () => {
+      return this.sendError("Malformed ZIP file", data.request_id);
+    });
+  }
 
-  Session.prototype.createProject = function(data) {
+  createProject(data) {
     if (this.user == null) {
       return this.sendError("not connected");
     }
     if (!this.server.rate_limiter.accept("create_project_user", this.user.id)) {
       return;
     }
-    return this.content.createProject(this.user, data, (function(_this) {
-      return function(project) {
-        return _this.send({
-          name: "project_created",
-          id: project.id,
-          request_id: data.request_id
-        });
-      };
-    })(this));
-  };
+    return this.content.createProject(this.user, data, (project) => {
+      return this.send({
+        name: "project_created",
+        id: project.id,
+        request_id: data.request_id
+      });
+    });
+  }
 
-  Session.prototype.clonePublicProject = function(data) {
+  clonePublicProject(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -913,64 +792,62 @@ this.Session = (function() {
       return this.sendError("");
     }
     project = this.server.content.projects[data.project];
-    if ((project != null) && project["public"]) {
+    if ((project != null) && project.public) {
       return this.content.createProject(this.user, {
         title: project.title,
         slug: project.slug,
-        "public": false
-      }, ((function(_this) {
-        return function(clone) {
-          var files, folders, funk, man;
-          clone.setType(project.type);
-          clone.setOrientation(project.orientation);
-          clone.setAspect(project.aspect);
-          clone.set("language", project.language);
-          clone.setGraphics(project.graphics);
-          clone.set("libs", project.libs);
-          clone.set("tabs", project.tabs);
-          clone.set("plugins", project.plugins);
-          clone.set("libraries", project.libraries);
-          clone.set("files", JSON.parse(JSON.stringify(project.files)));
-          man = _this.getProjectManager(project);
-          folders = ["ms", "sprites", "maps", "sounds", "sounds_th", "music", "music_th", "assets", "assets_th", "doc"];
-          files = [];
-          funk = function() {
-            var dest, f, folder, src;
-            if (folders.length > 0) {
-              folder = folders.splice(0, 1)[0];
-              return man.listFiles(folder, function(list) {
-                var f, j, len1;
-                for (j = 0, len1 = list.length; j < len1; j++) {
-                  f = list[j];
-                  files.push({
-                    file: f.file,
-                    folder: folder
-                  });
-                }
-                return funk();
-              });
-            } else if (files.length > 0) {
-              f = files.splice(0, 1)[0];
-              src = project.owner.id + "/" + project.id + "/" + f.folder + "/" + f.file;
-              dest = clone.owner.id + "/" + clone.id + "/" + f.folder + "/" + f.file;
-              return _this.server.content.files.copy(src, dest, function() {
-                return funk();
-              });
-            } else {
-              return _this.send({
-                name: "project_created",
-                id: clone.id,
-                request_id: data.request_id
-              });
-            }
-          };
-          return funk();
+        public: false
+      }, ((clone) => {
+        var files, folders, funk, man;
+        clone.setType(project.type);
+        clone.setOrientation(project.orientation);
+        clone.setAspect(project.aspect);
+        clone.set("language", project.language);
+        clone.setGraphics(project.graphics);
+        clone.set("libs", project.libs);
+        clone.set("tabs", project.tabs);
+        clone.set("plugins", project.plugins);
+        clone.set("libraries", project.libraries);
+        clone.set("files", JSON.parse(JSON.stringify(project.files)));
+        man = this.getProjectManager(project);
+        folders = ["ms", "sprites", "maps", "sounds", "sounds_th", "music", "music_th", "assets", "assets_th", "doc"];
+        files = [];
+        funk = () => {
+          var dest, f, folder, src;
+          if (folders.length > 0) {
+            folder = folders.splice(0, 1)[0];
+            return man.listFiles(folder, (list) => {
+              var f, j, len1;
+              for (j = 0, len1 = list.length; j < len1; j++) {
+                f = list[j];
+                files.push({
+                  file: f.file,
+                  folder: folder
+                });
+              }
+              return funk();
+            });
+          } else if (files.length > 0) {
+            f = files.splice(0, 1)[0];
+            src = `${project.owner.id}/${project.id}/${f.folder}/${f.file}`;
+            dest = `${clone.owner.id}/${clone.id}/${f.folder}/${f.file}`;
+            return this.server.content.files.copy(src, dest, () => {
+              return funk();
+            });
+          } else {
+            return this.send({
+              name: "project_created",
+              id: clone.id,
+              request_id: data.request_id
+            });
+          }
         };
-      })(this)), true);
+        return funk();
+      }), true);
     }
-  };
+  }
 
-  Session.prototype.cloneProject = function(data) {
+  cloneProject(data) {
     var manager, project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -988,84 +865,82 @@ this.Session = (function() {
         return this.content.createProject(this.user, {
           title: data.title || project.title,
           slug: project.slug,
-          "public": false
-        }, ((function(_this) {
-          return function(clone) {
-            var files, folders, funk, man;
-            clone.setType(project.type);
-            clone.setOrientation(project.orientation);
-            clone.setAspect(project.aspect);
-            clone.set("language", project.language);
-            clone.setGraphics(project.graphics);
-            clone.set("libs", project.libs);
-            clone.set("tabs", project.tabs);
-            clone.set("plugins", project.plugins);
-            clone.set("libraries", project.libraries);
-            clone.set("files", JSON.parse(JSON.stringify(project.files)));
-            man = _this.getProjectManager(project);
-            folders = ["ms", "sprites", "maps", "sounds", "sounds_th", "music", "music_th", "assets", "assets_th", "doc"];
-            files = [];
-            funk = function() {
-              var dest, f, folder, src;
-              if (folders.length > 0) {
-                folder = folders.splice(0, 1)[0];
-                return man.listFiles(folder, function(list) {
-                  var f, j, len1;
-                  for (j = 0, len1 = list.length; j < len1; j++) {
-                    f = list[j];
-                    files.push({
-                      file: f.file,
-                      folder: folder
-                    });
-                  }
-                  return funk();
-                });
-              } else if (files.length > 0) {
-                f = files.splice(0, 1)[0];
-                src = project.owner.id + "/" + project.id + "/" + f.folder + "/" + f.file;
-                dest = clone.owner.id + "/" + clone.id + "/" + f.folder + "/" + f.file;
-                return _this.server.content.files.copy(src, dest, function() {
-                  return funk();
-                });
-              } else {
-                return _this.send({
-                  name: "project_created",
-                  id: clone.id,
-                  request_id: data.request_id
-                });
-              }
-            };
-            return funk();
+          public: false
+        }, ((clone) => {
+          var files, folders, funk, man;
+          clone.setType(project.type);
+          clone.setOrientation(project.orientation);
+          clone.setAspect(project.aspect);
+          clone.set("language", project.language);
+          clone.setGraphics(project.graphics);
+          clone.set("libs", project.libs);
+          clone.set("tabs", project.tabs);
+          clone.set("plugins", project.plugins);
+          clone.set("libraries", project.libraries);
+          clone.set("files", JSON.parse(JSON.stringify(project.files)));
+          man = this.getProjectManager(project);
+          folders = ["ms", "sprites", "maps", "sounds", "sounds_th", "music", "music_th", "assets", "assets_th", "doc"];
+          files = [];
+          funk = () => {
+            var dest, f, folder, src;
+            if (folders.length > 0) {
+              folder = folders.splice(0, 1)[0];
+              return man.listFiles(folder, (list) => {
+                var f, j, len1;
+                for (j = 0, len1 = list.length; j < len1; j++) {
+                  f = list[j];
+                  files.push({
+                    file: f.file,
+                    folder: folder
+                  });
+                }
+                return funk();
+              });
+            } else if (files.length > 0) {
+              f = files.splice(0, 1)[0];
+              src = `${project.owner.id}/${project.id}/${f.folder}/${f.file}`;
+              dest = `${clone.owner.id}/${clone.id}/${f.folder}/${f.file}`;
+              return this.server.content.files.copy(src, dest, () => {
+                return funk();
+              });
+            } else {
+              return this.send({
+                name: "project_created",
+                id: clone.id,
+                request_id: data.request_id
+              });
+            }
           };
-        })(this)), true);
+          return funk();
+        }), true);
       }
     }
-  };
+  }
 
-  Session.prototype.getProjectManager = function(project) {
+  getProjectManager(project) {
     if (project.manager == null) {
       new ProjectManager(project);
     }
     return project.manager;
-  };
+  }
 
-  Session.prototype.setProjectPublic = function(data) {
+  setProjectPublic(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
     }
-    if (data["public"] && !this.user.flags["validated"]) {
+    if (data.public && !this.user.flags["validated"]) {
       return;
     }
     if (data.project == null) {
       if (this.user.flags.admin && data.id) {
         project = this.content.projects[data.id];
         if (project != null) {
-          this.content.setProjectPublic(project, data["public"]);
+          this.content.setProjectPublic(project, data.public);
           return this.send({
             name: "set_project_public",
             id: project.id,
-            "public": project["public"],
+            public: project.public,
             request_id: data.request_id
           });
         }
@@ -1073,18 +948,18 @@ this.Session = (function() {
     } else {
       project = this.user.findProject(data.project);
       if (project != null) {
-        this.content.setProjectPublic(project, data["public"]);
+        this.content.setProjectPublic(project, data.public);
         return this.send({
           name: "set_project_public",
           id: project.id,
-          "public": project["public"],
+          public: project.public,
           request_id: data.request_id
         });
       }
     }
-  };
+  }
 
-  Session.prototype.setProjectApproved = function(data) {
+  setProjectApproved(data) {
     var project;
     if (this.user == null) {
       return;
@@ -1104,9 +979,9 @@ this.Session = (function() {
         });
       }
     }
-  };
+  }
 
-  Session.prototype.setUserApproved = function(data) {
+  setUserApproved(data) {
     var user;
     if (this.user == null) {
       return;
@@ -1126,14 +1001,14 @@ this.Session = (function() {
         });
       }
     }
-  };
+  }
 
-  Session.prototype.setProjectTags = function(data) {
+  setProjectTags(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
     }
-    if (data["public"] && !this.user.flags["validated"]) {
+    if (data.public && !this.user.flags["validated"]) {
       return;
     }
     if (data.project == null) {
@@ -1152,9 +1027,9 @@ this.Session = (function() {
         request_id: data.request_id
       });
     }
-  };
+  }
 
-  Session.prototype.setProjectOption = function(data) {
+  setProjectOption(data) {
     var j, len1, project, ref, v;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1258,9 +1133,9 @@ this.Session = (function() {
       }
       return project.touch();
     }
-  };
+  }
 
-  Session.prototype.setProjectProperty = function(data) {
+  setProjectProperty(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1275,9 +1150,9 @@ this.Session = (function() {
     if (project != null) {
       return project.setProperty(data.property, data.value);
     }
-  };
+  }
 
-  Session.prototype.deleteProject = function(data) {
+  deleteProject(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1291,9 +1166,9 @@ this.Session = (function() {
         request_id: data.request_id
       });
     }
-  };
+  }
 
-  Session.prototype.getProjectList = function(data) {
+  getProjectList(data) {
     var j, k, len1, len2, link, list, p, source;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1330,7 +1205,7 @@ this.Session = (function() {
           properties: p.properties,
           date_created: p.date_created,
           last_modified: p.last_modified,
-          "public": p["public"],
+          public: p.public,
           unlisted: p.unlisted,
           size: p.getSize(),
           users: p.listUsers()
@@ -1369,7 +1244,7 @@ this.Session = (function() {
           libraries: p.libraries,
           date_created: p.date_created,
           last_modified: p.last_modified,
-          "public": p["public"],
+          public: p.public,
           unlisted: p.unlisted,
           users: p.listUsers()
         });
@@ -1380,23 +1255,24 @@ this.Session = (function() {
       list: list,
       request_id: data != null ? data.request_id : void 0
     });
-  };
+  }
 
-  Session.prototype.lockProjectFile = function(data) {
+  lockProjectFile(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
     }
     if (data.project != null) {
+      //console.info JSON.stringify data
       project = this.content.projects[data.project];
     }
     if (project != null) {
       this.setCurrentProject(project);
       return project.manager.lockFile(this, data.file);
     }
-  };
+  }
 
-  Session.prototype.writeProjectFile = function(data) {
+  writeProjectFile(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1432,9 +1308,9 @@ this.Session = (function() {
         }
       }
     }
-  };
+  }
 
-  Session.prototype.renameProjectFile = function(data) {
+  renameProjectFile(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1446,9 +1322,9 @@ this.Session = (function() {
       this.setCurrentProject(project);
       return project.manager.renameProjectFile(this, data);
     }
-  };
+  }
 
-  Session.prototype.deleteProjectFile = function(data) {
+  deleteProjectFile(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1460,11 +1336,12 @@ this.Session = (function() {
       this.setCurrentProject(project);
       return project.manager.deleteProjectFile(this, data);
     }
-  };
+  }
 
-  Session.prototype.readProjectFile = function(data) {
+  readProjectFile(data) {
     var project;
     if (this.user == null) {
+      //console.info "session.readProjectFile "+JSON.stringify data
       return this.sendError("not connected");
     }
     if (data.project != null) {
@@ -1474,9 +1351,9 @@ this.Session = (function() {
       this.setCurrentProject(project);
       return project.manager.readProjectFile(this, data);
     }
-  };
+  }
 
-  Session.prototype.listProjectFiles = function(data) {
+  listProjectFiles(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1488,9 +1365,9 @@ this.Session = (function() {
       this.setCurrentProject(project);
       return project.manager.listProjectFiles(this, data);
     }
-  };
+  }
 
-  Session.prototype.listPublicProjectFiles = function(data) {
+  listPublicProjectFiles(data) {
     var manager, project;
     if (data.project != null) {
       project = this.content.projects[data.project];
@@ -1499,20 +1376,20 @@ this.Session = (function() {
       manager = this.getProjectManager(project);
       return manager.listProjectFiles(this, data);
     }
-  };
+  }
 
-  Session.prototype.readPublicProjectFile = function(data) {
+  readPublicProjectFile(data) {
     var manager, project;
     if (data.project != null) {
       project = this.content.projects[data.project];
     }
-    if ((project != null) && project["public"]) {
+    if ((project != null) && project.public) {
       manager = this.getProjectManager(project);
       return project.manager.readProjectFile(this, data);
     }
-  };
+  }
 
-  Session.prototype.listenToProject = function(data) {
+  listenToProject(data) {
     var project, user;
     user = data.user;
     project = data.project;
@@ -1532,9 +1409,9 @@ this.Session = (function() {
         }
       }
     }
-  };
+  }
 
-  Session.prototype.getFileVersions = function(data) {
+  getFileVersions(data) {
     var project, user;
     user = data.user;
     project = data.project;
@@ -1546,21 +1423,19 @@ this.Session = (function() {
           if (project.manager == null) {
             new ProjectManager(project);
           }
-          return project.manager.getFileVersions((function(_this) {
-            return function(res) {
-              return _this.send({
-                name: "project_file_versions",
-                data: res,
-                request_id: data.request_id
-              });
-            };
-          })(this));
+          return project.manager.getFileVersions((res) => {
+            return this.send({
+              name: "project_file_versions",
+              data: res,
+              request_id: data.request_id
+            });
+          });
         }
       }
     }
-  };
+  }
 
-  Session.prototype.getPublicProjects = function(data) {
+  getPublicProjects(data) {
     var found, i, j, k, l, len1, len2, len3, list, m, offset, p, ref, ref1, ref2, ref3, search, source, t, tags, type;
     switch (data.ranking) {
       case "new":
@@ -1584,7 +1459,7 @@ this.Session = (function() {
         break;
       }
       offset = i + 1;
-      if (p["public"] && !p.deleted && !p.owner.flags.censored) {
+      if (p.public && !p.deleted && !p.owner.flags.censored) {
         if (search) {
           found = false;
           found |= p.title.toLowerCase().includes(search);
@@ -1660,15 +1535,15 @@ this.Session = (function() {
       offset: offset,
       request_id: data.request_id
     });
-  };
+  }
 
-  Session.prototype.getPublicPlugins = function(data) {
+  getPublicPlugins(data) {
     var j, len1, list, p, source;
     source = this.content.plugin_projects;
     list = [];
     for (j = 0, len1 = source.length; j < len1; j++) {
       p = source[j];
-      if (p["public"] && !p.deleted && !p.owner.flags.censored) {
+      if (p.public && !p.deleted && !p.owner.flags.censored) {
         list.push({
           id: p.id,
           title: p.title,
@@ -1702,15 +1577,15 @@ this.Session = (function() {
       list: list,
       request_id: data.request_id
     });
-  };
+  }
 
-  Session.prototype.getPublicLibraries = function(data) {
+  getPublicLibraries(data) {
     var j, len1, list, p, source;
     source = this.content.library_projects;
     list = [];
     for (j = 0, len1 = source.length; j < len1; j++) {
       p = source[j];
-      if (p["public"] && !p.deleted && !p.owner.flags.censored) {
+      if (p.public && !p.deleted && !p.owner.flags.censored) {
         list.push({
           id: p.id,
           title: p.title,
@@ -1744,9 +1619,9 @@ this.Session = (function() {
       list: list,
       request_id: data.request_id
     });
-  };
+  }
 
-  Session.prototype.getPublicProject = function(msg) {
+  getPublicProject(msg) {
     var owner, p, project, res;
     owner = msg.owner;
     project = msg.project;
@@ -1754,7 +1629,7 @@ this.Session = (function() {
       owner = this.content.findUserByNick(owner);
       if (owner != null) {
         p = owner.findProjectBySlug(project);
-        if ((p != null) && p["public"]) {
+        if ((p != null) && p.public) {
           res = {
             id: p.id,
             title: p.title,
@@ -1789,9 +1664,9 @@ this.Session = (function() {
         }
       }
     }
-  };
+  }
 
-  Session.prototype.toggleLike = function(data) {
+  toggleLike(data) {
     var project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1818,9 +1693,9 @@ this.Session = (function() {
         request_id: data.request_id
       });
     }
-  };
+  }
 
-  Session.prototype.inviteToProject = function(data) {
+  inviteToProject(data) {
     var project, user;
     if (this.user == null) {
       return this.sendError("not connected", data.request_id);
@@ -1835,9 +1710,9 @@ this.Session = (function() {
     }
     this.setCurrentProject(project);
     return project.manager.inviteUser(this, user);
-  };
+  }
 
-  Session.prototype.acceptInvite = function(data) {
+  acceptInvite(data) {
     var j, k, len1, len2, li, link, ref, ref1;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1858,9 +1733,9 @@ this.Session = (function() {
         }
       }
     }
-  };
+  }
 
-  Session.prototype.removeProjectUser = function(data) {
+  removeProjectUser(data) {
     var j, k, len1, len2, li, link, nick, project, ref, ref1, user;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -1904,9 +1779,9 @@ this.Session = (function() {
         }
       }
     }
-  };
+  }
 
-  Session.prototype.sendValidationMail = function(data) {
+  sendValidationMail(data) {
     if (this.user == null) {
       return this.sendError("not connected");
     }
@@ -1919,9 +1794,9 @@ this.Session = (function() {
         });
       }
     }
-  };
+  }
 
-  Session.prototype.changeNick = function(data) {
+  changeNick(data) {
     if (this.user == null) {
       return;
     }
@@ -1950,9 +1825,9 @@ this.Session = (function() {
         });
       }
     }
-  };
+  }
 
-  Session.prototype.changeEmail = function(data) {
+  changeEmail(data) {
     if (this.user == null) {
       return;
     }
@@ -1984,9 +1859,9 @@ this.Session = (function() {
         });
       }
     }
-  };
+  }
 
-  Session.prototype.changeNewsletter = function(data) {
+  changeNewsletter(data) {
     if (this.user == null) {
       return;
     }
@@ -1996,9 +1871,9 @@ this.Session = (function() {
       newsletter: data.newsletter,
       request_id: data.request_id
     });
-  };
+  }
 
-  Session.prototype.changeExperimental = function(data) {
+  changeExperimental(data) {
     if ((this.user == null) || !this.user.flags.validated) {
       return;
     }
@@ -2008,9 +1883,9 @@ this.Session = (function() {
       experimental: data.experimental,
       request_id: data.request_id
     });
-  };
+  }
 
-  Session.prototype.setUserSetting = function(data) {
+  setUserSetting(data) {
     if (this.user == null) {
       return;
     }
@@ -2018,9 +1893,9 @@ this.Session = (function() {
       return;
     }
     return this.user.setSetting(data.setting, data.value);
-  };
+  }
 
-  Session.prototype.setUserProfile = function(data) {
+  setUserProfile(data) {
     var content, file;
     if (this.user == null) {
       return;
@@ -2029,17 +1904,15 @@ this.Session = (function() {
       if (data.image === 0) {
         this.user.setFlag("profile_image", false);
       } else {
-        file = this.user.id + "/profile_image.png";
+        file = `${this.user.id}/profile_image.png`;
         content = new Buffer(data.image, "base64");
-        this.server.content.files.write(file, content, (function(_this) {
-          return function() {
-            _this.user.setFlag("profile_image", true);
-            return _this.send({
-              name: "set_user_profile",
-              request_id: data.request_id
-            });
-          };
-        })(this));
+        this.server.content.files.write(file, content, () => {
+          this.user.setFlag("profile_image", true);
+          return this.send({
+            name: "set_user_profile",
+            request_id: data.request_id
+          });
+        });
         return;
       }
     }
@@ -2050,31 +1923,31 @@ this.Session = (function() {
       name: "set_user_profile",
       request_id: data.request_id
     });
-  };
+  }
 
-  Session.prototype.getLanguage = function(msg) {
+  getLanguage(msg) {
     var lang;
     if (msg.language == null) {
       return;
     }
     lang = this.server.content.translator.languages[msg.language];
-    lang = lang != null ? lang["export"]() : "{}";
+    lang = lang != null ? lang.export() : "{}";
     return this.send({
       name: "get_language",
       language: lang,
       request_id: msg.request_id
     });
-  };
+  }
 
-  Session.prototype.getTranslationList = function(msg) {
+  getTranslationList(msg) {
     return this.send({
       name: "get_translation_list",
       list: this.server.content.translator.list,
       request_id: msg.request_id
     });
-  };
+  }
 
-  Session.prototype.setTranslation = function(msg) {
+  setTranslation(msg) {
     var lang, source, translation;
     if (this.user == null) {
       return;
@@ -2089,18 +1962,19 @@ this.Session = (function() {
       this.server.content.translator.createLanguage(lang);
     }
     return this.server.content.translator.languages[lang].set(this.user.id, source, translation);
-  };
+  }
 
-  Session.prototype.addTranslation = function(msg) {
+  addTranslation(msg) {
     var source;
     if (this.user == null) {
       return;
     }
+    //return if not @user.flags.admin
     source = msg.source;
     return this.server.content.translator.reference(source);
-  };
+  }
 
-  Session.prototype.getProjectComments = function(data) {
+  getProjectComments(data) {
     var project;
     if (data.project == null) {
       return;
@@ -2108,16 +1982,16 @@ this.Session = (function() {
     if (data.project != null) {
       project = this.content.projects[data.project];
     }
-    if ((project != null) && project["public"]) {
+    if ((project != null) && project.public) {
       return this.send({
         name: "project_comments",
         request_id: data.request_id,
         comments: project.comments.getAll()
       });
     }
-  };
+  }
 
-  Session.prototype.addProjectComment = function(data) {
+  addProjectComment(data) {
     var project;
     if (data.project == null) {
       return;
@@ -2128,7 +2002,7 @@ this.Session = (function() {
     if (data.project != null) {
       project = this.content.projects[data.project];
     }
-    if ((project != null) && project["public"]) {
+    if ((project != null) && project.public) {
       if ((this.user != null) && this.user.flags.validated && !this.user.flags.banned && !this.user.flags.censored) {
         if (!this.server.rate_limiter.accept("post_comment_user", this.user.id)) {
           return;
@@ -2140,9 +2014,9 @@ this.Session = (function() {
         });
       }
     }
-  };
+  }
 
-  Session.prototype.deleteProjectComment = function(data) {
+  deleteProjectComment(data) {
     var c, project;
     if (data.project == null) {
       return;
@@ -2153,7 +2027,7 @@ this.Session = (function() {
     if (data.project != null) {
       project = this.content.projects[data.project];
     }
-    if ((project != null) && project["public"]) {
+    if ((project != null) && project.public) {
       if (this.user != null) {
         c = project.comments.get(data.id);
         if ((c != null) && (c.user === this.user || this.user.flags.admin)) {
@@ -2165,9 +2039,9 @@ this.Session = (function() {
         }
       }
     }
-  };
+  }
 
-  Session.prototype.editProjectComment = function(data) {
+  editProjectComment(data) {
     var c, project;
     if (data.project == null) {
       return;
@@ -2181,7 +2055,7 @@ this.Session = (function() {
     if (data.project != null) {
       project = this.content.projects[data.project];
     }
-    if ((project != null) && project["public"]) {
+    if ((project != null) && project.public) {
       if (this.user != null) {
         c = project.comments.get(data.id);
         if ((c != null) && c.user === this.user) {
@@ -2193,9 +2067,9 @@ this.Session = (function() {
         }
       }
     }
-  };
+  }
 
-  Session.prototype.tutorialCompleted = function(msg) {
+  tutorialCompleted(msg) {
     if (this.user == null) {
       return;
     }
@@ -2207,9 +2081,9 @@ this.Session = (function() {
     }
     this.user.progress.unlockAchievement(msg.id);
     return this.checkUpdates();
-  };
+  }
 
-  Session.prototype.checkUpdates = function() {
+  checkUpdates() {
     if (this.user != null) {
       if (this.user.progress.achievements_update !== this.achievements_update) {
         this.achievements_update = this.user.progress.achievements_update;
@@ -2220,9 +2094,9 @@ this.Session = (function() {
         return this.sendUserStats();
       }
     }
-  };
+  }
 
-  Session.prototype.sendAchievements = function() {
+  sendAchievements() {
     if (this.user == null) {
       return;
     }
@@ -2230,9 +2104,9 @@ this.Session = (function() {
       name: "achievements",
       achievements: this.user.progress.exportAchievements()
     });
-  };
+  }
 
-  Session.prototype.sendUserStats = function() {
+  sendUserStats() {
     if (this.user == null) {
       return;
     }
@@ -2240,9 +2114,9 @@ this.Session = (function() {
       name: "user_stats",
       stats: this.user.progress.exportStats()
     });
-  };
+  }
 
-  Session.prototype.buildProject = function(msg) {
+  buildProject(msg) {
     var build, project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -2262,12 +2136,12 @@ this.Session = (function() {
       return this.send({
         name: "build_project",
         request_id: msg.request_id,
-        build: build != null ? build["export"]() : null
+        build: build != null ? build.export() : null
       });
     }
-  };
+  }
 
-  Session.prototype.getBuildStatus = function(msg) {
+  getBuildStatus(msg) {
     var build, project;
     if (this.user == null) {
       return this.sendError("not connected");
@@ -2287,14 +2161,14 @@ this.Session = (function() {
       return this.send({
         name: "build_project",
         request_id: msg.request_id,
-        build: build != null ? build["export"]() : null,
+        build: build != null ? build.export() : null,
         active_target: this.server.build_manager.hasBuilder(msg.target)
       });
     }
-  };
+  }
 
-  Session.prototype.timeCheck = function() {
-    if (Date.now() > this.last_active + 5 * 60000) {
+  timeCheck() {
+    if (Date.now() > this.last_active + 5 * 60000) { // 5 minutes prevents breaking large assets uploads
       this.socket.close();
       this.server.sessionClosed(this);
       this.socket.terminate();
@@ -2303,25 +2177,25 @@ this.Session = (function() {
       this.upload_request_id = -1;
       return this.upload_request_buffers = [];
     }
-  };
+  }
 
-  Session.prototype.startBuilder = function(msg) {
+  startBuilder(msg) {
     if (msg.target != null) {
       if (msg.key === this.server.config["builder-key"]) {
         this.server.sessionClosed(this);
         return this.server.build_manager.registerBuilder(this, msg.target);
       }
     }
-  };
+  }
 
-  Session.prototype.backupComplete = function(msg) {
+  backupComplete(msg) {
     if (msg.key === this.server.config["backup-key"]) {
       this.server.sessionClosed(this);
       return this.server.last_backup_time = Date.now();
     }
-  };
+  }
 
-  Session.prototype.uploadRequest = function(msg) {
+  uploadRequest(msg) {
     if (this.user == null) {
       return;
     }
@@ -2337,7 +2211,7 @@ this.Session = (function() {
     if (!this.server.rate_limiter.accept("file_upload_user", this.user.id)) {
       return this.sendError("Rate limited", msg.request_id);
     }
-    if (msg.size > 100000000) {
+    if (msg.size > 100000000) { // 100 Mb max
       return this.sendError("File size limit exceeded");
     }
     this.upload_request_id = msg.request_id;
@@ -2350,9 +2224,9 @@ this.Session = (function() {
       name: "upload_request",
       request_id: msg.request_id
     });
-  };
+  }
 
-  Session.prototype.bufferReceived = function(buffer) {
+  bufferReceived(buffer) {
     var b, buf, c, count, error, id, j, len, len1, msg, ref;
     if (buffer.byteLength >= 4) {
       id = buffer.readInt32LE(0);
@@ -2396,10 +2270,8 @@ this.Session = (function() {
         }
       }
     }
-  };
+  }
 
-  return Session;
-
-})();
+};
 
 module.exports = this.Session;

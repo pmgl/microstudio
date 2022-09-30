@@ -15,6 +15,10 @@ class @Runtime
       @listener.log text
 
     @update_memory = {}
+    @servers = []
+
+  addServer:(server)->
+    @servers.push server
 
   updateSource:(file,src,reinit=false)->
     return false if not @vm?
@@ -37,13 +41,13 @@ class @Runtime
         return false
 
       if @vm.runner.getFunctionSource?
-        init = @vm.runner.getFunctionSource "init"
+        init = @vm.runner.getFunctionSource "serverInit"
         if init? and init != @previous_init and reinit
           @previous_init = init
-          @vm.call("init")
+          @vm.call("serverInit")
           if @vm.error_info?
             err = @vm.error_info
-            err.type = "init"
+            err.type = "serverInit"
             @listener.reportError err
 
       return true
@@ -119,6 +123,7 @@ class @Runtime
 
     namespace = location.pathname
     @vm = new MicroVM(meta,global,namespace,location.hash == "#transpiler")
+    @vm.context.global.Server = MPServer
     @vm.context.global.system.pause = ()=>
       @listener.codePaused()
 
@@ -155,7 +160,7 @@ class @Runtime
     @last_time = Date.now()
     @current_frame = 0
     @floating_frame = 0
-    requestAnimationFrame(()=>@timer())
+    @clock_interval = setInterval (()=>@clock()),16
     @watcher = new Watcher @
     @listener.postMessage
       name: "started"
@@ -241,22 +246,26 @@ class @Runtime
 
   stop:()->
     @stopped = true
+    clearInterval @clock_interval
     @audio.cancelBeeps()
 
   stepForward:()->
     if @stopped
       @updateCall()
-      @drawCall()
       @watcher.update()
 
   resume:()->
     if @stopped
       @stopped = false
-      requestAnimationFrame(()=>@timer())
+      @clock_interval = setInterval (()=>@clock()),16
+
+  clock:()->
+    if Date.now() - @last_time > 17
+      @timer()
 
   timer:()->
     return if @stopped
-    requestAnimationFrame(()=>@timer())
+    
     time = Date.now()
     if Math.abs(time-@last_time)>160
       @last_time = time-16
@@ -287,8 +296,19 @@ class @Runtime
     #if @current_frame%60 == 0
     #  console.info("fps: #{Math.round(1000/@dt)}")
 
+  updateControls:()->
+    for s in @servers
+      s.update()
+
   updateCall:()->
+    if @vm.runner.triggers_controls_update
+      if not @vm.runner.updateControls?
+        @vm.runner.updateControls = ()=> @updateControls()
+    else
+      @updateControls()
+
     try
+
       @vm.call("serverUpdate")
 
       @reportWarnings()

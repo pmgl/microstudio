@@ -28,6 +28,10 @@ class @Runtime
     @time_machine = new TimeMachine @
     @createDropFeature()
     window.ms_async_load = false
+    @connections = []
+
+  addConnection:(connection)->
+    @connections.push connection
 
   updateSource:(file,src,reinit=false)->
     return false if not @vm?
@@ -196,6 +200,9 @@ class @Runtime
 
     namespace = location.pathname
     @vm = new MicroVM(meta,global,namespace,location.hash == "#transpiler")
+    if window.ms_use_server
+      @vm.context.global.ServerConnection = MPServerConnection
+
     @vm.context.global.system.pause = ()=>
       @listener.codePaused()
 
@@ -498,6 +505,9 @@ class @Runtime
       return
 
   updateControls:()->
+    for c in @connections
+      c.update()
+
     touches = Object.keys(@screen.touches)
     @touch.touching = if touches.length>0 then 1 else 0
     @touch.touches = []

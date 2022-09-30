@@ -30,6 +30,7 @@ class @Concatenator
       '/js/util/canvas2d.js'
       "/js/languages/microscript/random.js"
       "/js/runtime/microvm.js"
+      "/js/runtime/mpserverconnection.js"
       '/js/runtime/runtime.js'
       '/js/runtime/watcher.js'
       '/js/runtime/projectinterface.js'
@@ -280,6 +281,7 @@ class @Concatenator
       '/js/util/canvas2d.js'
 
       "/js/languages/microscript/random.js"
+      "/js/runtime/mpserverconnection.js"
       "/js/runtime/microvm.js"
       '/js/runtime/runtime.js'
       '/js/runtime/watcher.js'
@@ -305,6 +307,7 @@ class @Concatenator
       "/js/runtime/microvm.js"
       '/js/runtime/watcher.js'
       '/js/runtime/assetmanager.js'
+      "/js/runtime/mpserver.js"
       '/js/runtime/runtime_server.js'
       '/js/runtime/watcher.js'
       '/js/runtime/map.js'

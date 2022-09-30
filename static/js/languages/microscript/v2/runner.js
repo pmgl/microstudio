@@ -349,7 +349,7 @@ this.Thread = class Thread {
         program = parser.program;
         compiler = new Compiler(program);
         this.processor.load(compiler.routine);
-        if (f === "update()" && (this.runner.updateControls != null)) {
+        if ((f === "update()" || f === "serverUpdate()") && (this.runner.updateControls != null)) {
           this.runner.updateControls();
         }
       }

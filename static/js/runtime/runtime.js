@@ -30,6 +30,11 @@ this.Runtime = class Runtime {
     this.time_machine = new TimeMachine(this);
     this.createDropFeature();
     window.ms_async_load = false;
+    this.connections = [];
+  }
+
+  addConnection(connection) {
+    return this.connections.push(connection);
   }
 
   updateSource(file, src, reinit = false) {
@@ -243,6 +248,9 @@ this.Runtime = class Runtime {
     }
     namespace = location.pathname;
     this.vm = new MicroVM(meta, global, namespace, location.hash === "#transpiler");
+    if (window.ms_use_server) {
+      this.vm.context.global.ServerConnection = MPServerConnection;
+    }
     this.vm.context.global.system.pause = () => {
       return this.listener.codePaused();
     };
@@ -634,12 +642,17 @@ this.Runtime = class Runtime {
   }
 
   updateControls() {
-    var err, j, key, len1, t, touches;
+    var c, err, j, k, key, len1, len2, ref, t, touches;
+    ref = this.connections;
+    for (j = 0, len1 = ref.length; j < len1; j++) {
+      c = ref[j];
+      c.update();
+    }
     touches = Object.keys(this.screen.touches);
     this.touch.touching = touches.length > 0 ? 1 : 0;
     this.touch.touches = [];
-    for (j = 0, len1 = touches.length; j < len1; j++) {
-      key = touches[j];
+    for (k = 0, len2 = touches.length; k < len2; k++) {
+      key = touches[k];
       t = this.screen.touches[key];
       this.touch.x = t.x;
       this.touch.y = t.y;

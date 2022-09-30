@@ -1,5 +1,5 @@
-this.Runtime = (function() {
-  function Runtime(url1, sources, resources, listener) {
+this.Runtime = class Runtime {
+  constructor(url1, sources, resources, listener) {
     this.url = url1;
     this.sources = sources;
     this.resources = resources;
@@ -12,19 +12,19 @@ this.Runtime = (function() {
     this.asset_manager = new AssetManager(this);
     this.previous_init = null;
     this.report_errors = true;
-    this.log = (function(_this) {
-      return function(text) {
-        return _this.listener.log(text);
-      };
-    })(this);
+    this.log = (text) => {
+      return this.listener.log(text);
+    };
     this.update_memory = {};
+    this.servers = [];
   }
 
-  Runtime.prototype.updateSource = function(file, src, reinit) {
+  addServer(server) {
+    return this.servers.push(server);
+  }
+
+  updateSource(file, src, reinit = false) {
     var err, init;
-    if (reinit == null) {
-      reinit = false;
-    }
     if (this.vm == null) {
       return false;
     }
@@ -47,13 +47,13 @@ this.Runtime = (function() {
         return false;
       }
       if (this.vm.runner.getFunctionSource != null) {
-        init = this.vm.runner.getFunctionSource("init");
+        init = this.vm.runner.getFunctionSource("serverInit");
         if ((init != null) && init !== this.previous_init && reinit) {
           this.previous_init = init;
-          this.vm.call("init");
+          this.vm.call("serverInit");
           if (this.vm.error_info != null) {
             err = this.vm.error_info;
-            err.type = "init";
+            err.type = "serverInit";
             this.listener.reportError(err);
           }
         }
@@ -68,9 +68,9 @@ this.Runtime = (function() {
         return false;
       }
     }
-  };
+  }
 
-  Runtime.prototype.start = function() {
+  start() {
     var j, key, len, m, name, ref, ref1, value;
     if (window.ms_async_load) {
       this.startReady();
@@ -80,11 +80,9 @@ this.Runtime = (function() {
       for (j = 0, len = ref.length; j < len; j++) {
         m = ref[j];
         name = m.file.split(".")[0].replace(/-/g, "/");
-        this.maps[name] = LoadMap(this.url + ("maps/" + m.file + "?v=" + m.version), (function(_this) {
-          return function() {
-            return _this.checkStartReady();
-          };
-        })(this));
+        this.maps[name] = LoadMap(this.url + `maps/${m.file}?v=${m.version}`, () => {
+          return this.checkStartReady();
+        });
         this.maps[name].name = name;
       }
     } else if (this.resources.maps != null) {
@@ -98,9 +96,9 @@ this.Runtime = (function() {
       }
     }
     this.checkStartReady();
-  };
+  }
 
-  Runtime.prototype.checkStartReady = function() {
+  checkStartReady() {
     var count, key, ready, ref, value;
     count = 0;
     ready = 0;
@@ -124,20 +122,18 @@ this.Runtime = (function() {
     if (!this.started) {
       return this.startReady();
     }
-  };
+  }
 
-  Runtime.prototype.startReady = function() {
+  startReady() {
     var err, file, global, init, j, len, lib, meta, namespace, ref, ref1, src;
     this.started = true;
     meta = {
-      print: (function(_this) {
-        return function(text) {
-          if ((typeof text === "object" || typeof text === "function") && (_this.vm != null)) {
-            text = _this.vm.runner.toString(text);
-          }
-          return _this.listener.log(text);
-        };
-      })(this)
+      print: (text) => {
+        if ((typeof text === "object" || typeof text === "function") && (this.vm != null)) {
+          text = this.vm.runner.toString(text);
+        }
+        return this.listener.log(text);
+      }
     };
     global = {
       sprites: this.sprites,
@@ -161,16 +157,13 @@ this.Runtime = (function() {
     }
     namespace = location.pathname;
     this.vm = new MicroVM(meta, global, namespace, location.hash === "#transpiler");
-    this.vm.context.global.system.pause = (function(_this) {
-      return function() {
-        return _this.listener.codePaused();
-      };
-    })(this);
-    this.vm.context.global.system.exit = (function(_this) {
-      return function() {
-        return _this.exit();
-      };
-    })(this);
+    this.vm.context.global.Server = MPServer;
+    this.vm.context.global.system.pause = () => {
+      return this.listener.codePaused();
+    };
+    this.vm.context.global.system.exit = () => {
+      return this.exit();
+    };
     if (!window.ms_async_load) {
       this.vm.context.global.system.loading = 100;
     }
@@ -204,27 +197,25 @@ this.Runtime = (function() {
     this.last_time = Date.now();
     this.current_frame = 0;
     this.floating_frame = 0;
-    requestAnimationFrame((function(_this) {
-      return function() {
-        return _this.timer();
-      };
-    })(this));
+    this.clock_interval = setInterval((() => {
+      return this.clock();
+    }), 16);
     this.watcher = new Watcher(this);
     return this.listener.postMessage({
       name: "started"
     });
-  };
+  }
 
-  Runtime.prototype.updateMaps = function() {
+  updateMaps() {
     var key, map, ref;
     ref = this.maps;
     for (key in ref) {
       map = ref[key];
       map.needs_update = true;
     }
-  };
+  }
 
-  Runtime.prototype.runCommand = function(command, callback) {
+  runCommand(command, callback) {
     var err, res, warnings;
     try {
       warnings = this.vm.context.warnings;
@@ -248,27 +239,27 @@ this.Runtime = (function() {
       err = error;
       return this.listener.reportError(err);
     }
-  };
+  }
 
-  Runtime.prototype.projectFileUpdated = function(type, file, version, data, properties) {
+  projectFileUpdated(type, file, version, data, properties) {
     switch (type) {
       case "maps":
         return this.updateMap(file, version, data);
       case "ms":
         return this.updateCode(file, version, data);
     }
-  };
+  }
 
-  Runtime.prototype.projectFileDeleted = function(type, file) {
+  projectFileDeleted(type, file) {
     switch (type) {
       case "maps":
         return delete this.maps[file.substring(0, file.length - 5).replace(/-/g, "/")];
     }
-  };
+  }
 
-  Runtime.prototype.projectOptionsUpdated = function(msg) {};
+  projectOptionsUpdated(msg) {}
 
-  Runtime.prototype.updateMap = function(name, version, data) {
+  updateMap(name, version, data) {
     var m, url;
     name = name.replace(/-/g, "/");
     if (data != null) {
@@ -283,7 +274,7 @@ this.Runtime = (function() {
         return this.maps[name].name = name;
       }
     } else {
-      url = this.url + ("maps/" + name + ".json?v=" + version);
+      url = this.url + `maps/${name}.json?v=${version}`;
       m = this.maps[name];
       if (m != null) {
         return m.loadFile(url);
@@ -292,9 +283,9 @@ this.Runtime = (function() {
         return this.maps[name].name = name;
       }
     }
-  };
+  }
 
-  Runtime.prototype.updateCode = function(name, version, data) {
+  updateCode(name, version, data) {
     var req, url;
     if (data != null) {
       this.sources[name] = data;
@@ -303,57 +294,54 @@ this.Runtime = (function() {
       }
       return this.updateSource(name, data, true);
     } else {
-      url = this.url + ("ms/" + name + ".ms?v=" + version);
+      url = this.url + `ms/${name}.ms?v=${version}`;
       req = new XMLHttpRequest();
-      req.onreadystatechange = (function(_this) {
-        return function(event) {
-          if (req.readyState === XMLHttpRequest.DONE) {
-            if (req.status === 200) {
-              _this.sources[name] = req.responseText;
-              return _this.updateSource(name, _this.sources[name], true);
-            }
+      req.onreadystatechange = (event) => {
+        if (req.readyState === XMLHttpRequest.DONE) {
+          if (req.status === 200) {
+            this.sources[name] = req.responseText;
+            return this.updateSource(name, this.sources[name], true);
           }
-        };
-      })(this);
+        }
+      };
       req.open("GET", url);
       return req.send();
     }
-  };
+  }
 
-  Runtime.prototype.stop = function() {
+  stop() {
     this.stopped = true;
+    clearInterval(this.clock_interval);
     return this.audio.cancelBeeps();
-  };
+  }
 
-  Runtime.prototype.stepForward = function() {
+  stepForward() {
     if (this.stopped) {
       this.updateCall();
-      this.drawCall();
       return this.watcher.update();
     }
-  };
+  }
 
-  Runtime.prototype.resume = function() {
+  resume() {
     if (this.stopped) {
       this.stopped = false;
-      return requestAnimationFrame((function(_this) {
-        return function() {
-          return _this.timer();
-        };
-      })(this));
+      return this.clock_interval = setInterval((() => {
+        return this.clock();
+      }), 16);
     }
-  };
+  }
 
-  Runtime.prototype.timer = function() {
+  clock() {
+    if (Date.now() - this.last_time > 17) {
+      return this.timer();
+    }
+  }
+
+  timer() {
     var ds, dt, fps, i, j, ref, time;
     if (this.stopped) {
       return;
     }
-    requestAnimationFrame((function(_this) {
-      return function() {
-        return _this.timer();
-      };
-    })(this));
     time = Date.now();
     if (Math.abs(time - this.last_time) > 160) {
       this.last_time = time - 16;
@@ -365,6 +353,7 @@ this.Runtime = (function() {
     this.floating_frame += this.dt * 60 / 1000;
     ds = Math.min(10, Math.round(this.floating_frame - this.current_frame));
     if ((ds === 0 || ds === 2) && Math.abs(fps - 60) < 2) {
+      //console.info "INCORRECT DS: "+ds+ " floating = "+@floating_frame+" current = "+@current_frame
       ds = 1;
       this.floating_frame = this.current_frame + 1;
     }
@@ -375,10 +364,34 @@ this.Runtime = (function() {
     if (ds > 0) {
       return this.watcher.update();
     }
-  };
+  }
 
-  Runtime.prototype.updateCall = function() {
+  //if ds != 1
+  //  console.info "frame missed"
+  //if @current_frame%60 == 0
+  //  console.info("fps: #{Math.round(1000/@dt)}")
+  updateControls() {
+    var j, len, ref, results, s;
+    ref = this.servers;
+    results = [];
+    for (j = 0, len = ref.length; j < len; j++) {
+      s = ref[j];
+      results.push(s.update());
+    }
+    return results;
+  }
+
+  updateCall() {
     var err;
+    if (this.vm.runner.triggers_controls_update) {
+      if (this.vm.runner.updateControls == null) {
+        this.vm.runner.updateControls = () => {
+          return this.updateControls();
+        };
+      }
+    } else {
+      this.updateControls();
+    }
     try {
       this.vm.call("serverUpdate");
       this.reportWarnings();
@@ -393,9 +406,9 @@ this.Runtime = (function() {
         return this.listener.reportError(err);
       }
     }
-  };
+  }
 
-  Runtime.prototype.reportWarnings = function() {
+  reportWarnings() {
     var key, ref, ref1, ref2, ref3, value;
     if (this.vm != null) {
       ref = this.vm.context.warnings.invoking_non_function;
@@ -459,17 +472,19 @@ this.Runtime = (function() {
         }
       }
     }
-  };
+  }
 
-  Runtime.prototype.exit = function() {
+  exit() {
     var err;
     this.stop();
     try {
+      // microStudio embedded exit
       this.listener.exit();
     } catch (error) {
       err = error;
     }
     try {
+      // TODO: Cordova exit, this might work
       if ((navigator.app != null) && (navigator.app.exitApp != null)) {
         navigator.app.exitApp();
       }
@@ -477,21 +492,22 @@ this.Runtime = (function() {
       err = error;
     }
     try {
+      // TODO: Electron exit, may already be covered by window.close()
+
+      // Windowed mode exit
       return window.close();
     } catch (error) {
       err = error;
     }
-  };
+  }
 
-  return Runtime;
-
-})();
+};
 
 this.System = {
   javascript: function(s) {
     var err, f, res;
     try {
-      f = eval("res = function(global) { " + s + " }");
+      f = eval(`res = function(global) { ${s} }`);
       res = f.call(player.runtime.vm.context.global, player.runtime.vm.context.global);
     } catch (error) {
       err = error;

@@ -3,6 +3,7 @@ ProjectManager = require __dirname+"/projectmanager.js"
 RegexLib = require __dirname+"/../../static/js/util/regexlib.js"
 ForumSession = require __dirname+"/../forum/forumsession.js"
 JSZip = require "jszip"
+RelayService = require __dirname + "/../relay/relayservice.js"
 
 class @Session
   constructor:(@server,@socket)->
@@ -113,6 +114,9 @@ class @Session
     # moderation
     @register "set_project_approved",(msg)=>@setProjectApproved msg
     @register "set_user_approved",(msg)=>@setUserApproved msg
+
+    if @server.config.run_relay_service
+      @relay_service = new RelayService @
 
     for plugin in @server.plugins
       if plugin.registerSessionMessages?
