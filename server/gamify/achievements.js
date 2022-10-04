@@ -1,5 +1,5 @@
-this.Achievement = (function() {
-  function _Class(props) {
+this.Achievement = class {
+  constructor(props) {
     this.id = props.id;
     this.name = props.name;
     this.description = props.description;
@@ -9,18 +9,16 @@ this.Achievement = (function() {
     this.xp = props.xp || 0;
   }
 
-  return _Class;
+};
 
-})();
-
-this.Achievements = new ((function() {
-  function _Class() {
+this.Achievements = new class {
+  constructor() {
     this.list = [];
     this.by_stat = {};
     this.by_id = {};
   }
 
-  _Class.prototype.add = function(a) {
+  add(a) {
     var by_stat;
     this.list.push(a);
     this.by_id[a.id] = a;
@@ -31,12 +29,12 @@ this.Achievements = new ((function() {
       }
       return by_stat.push(a);
     }
-  };
+  }
 
-  return _Class;
+};
 
-})());
-
+// Code achievements
+//#########################
 this.Achievements.add(new this.Achievement({
   id: "code/al_khwarizmi",
   name: "Al Khwarizmi",
@@ -157,6 +155,8 @@ this.Achievements.add(new this.Achievement({
   xp: 6000
 }));
 
+// Art achievements
+//#########################
 this.Achievements.add(new this.Achievement({
   id: "art/cave_art",
   name: "Cave Art",
@@ -247,6 +247,8 @@ this.Achievements.add(new this.Achievement({
   xp: 5000
 }));
 
+// Level design achievements
+//##########################
 this.Achievements.add(new this.Achievement({
   id: "level_design/level1",
   name: "Level Design Rookie",
@@ -346,6 +348,8 @@ this.Achievements.add(new this.Achievement({
   xp: 5500
 }));
 
+// Tutorial achievements
+//##########################
 this.Achievements.add(new this.Achievement({
   id: "tutorials/tutorial_tour",
   name: "microStudio Tourist",
@@ -374,6 +378,8 @@ this.Achievements.add(new this.Achievement({
   xp: 2000
 }));
 
+// Community achievements
+//#########################
 this.Achievements.add(new this.Achievement({
   id: "community/5_likes",
   name: "Recognition",
@@ -442,6 +448,34 @@ this.Achievements.add(new this.Achievement({
   name: "Game Jam Bronze",
   description: "You won the third prize in a microStudio Game Jam!",
   xp: 2500
+}));
+
+this.Achievements.add(new this.Achievement({
+  id: "community/game_jam3_contender",
+  name: "Game Jam Contender",
+  description: "You made a submission to microStudio game jam #3",
+  xp: 2000
+}));
+
+this.Achievements.add(new this.Achievement({
+  id: "community/game_jam3_n1",
+  name: "Game Jam Winner",
+  description: "You won the first prize in microStudio jam #3!",
+  xp: 20000
+}));
+
+this.Achievements.add(new this.Achievement({
+  id: "community/game_jam3_n2",
+  name: "Game Jam Silver",
+  description: "You won the second prize in microStudio jam #3!",
+  xp: 10000
+}));
+
+this.Achievements.add(new this.Achievement({
+  id: "community/game_jam3_n3",
+  name: "Game Jam Bronze",
+  description: "You won the third prize in microStudio jam #3!",
+  xp: 5000
 }));
 
 this.Achievements.add(new this.Achievement({

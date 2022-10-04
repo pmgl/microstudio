@@ -401,6 +401,30 @@
   xp: 2500
 
 @Achievements.add new @Achievement
+  id:"community/game_jam3_contender"
+  name: "Game Jam Contender"
+  description: "You made a submission to microStudio game jam #3"
+  xp: 2000
+
+@Achievements.add new @Achievement
+  id:"community/game_jam3_n1"
+  name: "Game Jam Winner"
+  description: "You won the first prize in microStudio jam #3!"
+  xp: 20000
+
+@Achievements.add new @Achievement
+  id:"community/game_jam3_n2"
+  name: "Game Jam Silver"
+  description: "You won the second prize in microStudio jam #3!"
+  xp: 10000
+
+@Achievements.add new @Achievement
+  id:"community/game_jam3_n3"
+  name: "Game Jam Bronze"
+  description: "You won the third prize in microStudio jam #3!"
+  xp: 5000
+
+@Achievements.add new @Achievement
   id:"community/github"
   name: "Github contributor"
   description: "You made microStudio better by contributing code to the project on Github!"
