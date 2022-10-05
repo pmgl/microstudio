@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2022-10-05
+* Fixed `for in` wrong behavior on number / zero (ms 2.0)
+* JavaScript execution change unlocks the VM JIT
+* Networking core functions implemented and working (but not useable yet ;-))
+* Added achievements for Jam \#3
+
 ### Update 2022-09-26
 * Public projects are marked in projects list and project workspace
 * Sprite editor: continuous strokes #163, draw straight lines with `Shift`
