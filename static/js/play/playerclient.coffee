@@ -49,6 +49,10 @@ class @PlayerClient
       user = location.pathname.split("/")[1]
       project = location.pathname.split("/")[2]
 
+      if @buffer?
+        for m in @buffer
+          @send m
+
       @send
         name: "listen_to_project"
         user: user
@@ -95,7 +99,12 @@ class @PlayerClient
       @reconnect_delay += 1000
 
   send:(data)->
-    @socket.send JSON.stringify data
+    if @socket.readyState != 1
+      if not @buffer?
+        @buffer = []
+      @buffer.push data
+    else
+      @socket.send JSON.stringify data
 
   sendRequest:(msg,callback)->
     msg.request_id = @request_id++
