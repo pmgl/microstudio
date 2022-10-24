@@ -28,8 +28,6 @@
   left: 5px ;
   background: hsl(0,50%,50%);
 }
-.publish-box p {
-}
 
 .publish-box .action-box {
   float:right ;
@@ -169,7 +167,7 @@
 .publish-box img.title {
   float:left ;
   margin: 0 40px 40px 0 ;
-  width: 100px ;5
+  width: 100px ;
 }
 
 .clear {
