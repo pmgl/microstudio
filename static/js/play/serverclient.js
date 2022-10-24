@@ -67,6 +67,7 @@ this.PlayerClient = class PlayerClient {
           m = ref[i];
           this.send(m);
         }
+        delete this.buffer;
       }
       this.send({
         name: "listen_to_project",

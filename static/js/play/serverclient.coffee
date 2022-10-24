@@ -53,6 +53,8 @@ class @PlayerClient
         for m in @buffer
           @send m
 
+        delete @buffer
+
       @send
         name: "listen_to_project"
         user: user

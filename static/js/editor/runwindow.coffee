@@ -802,13 +802,14 @@ class @ServerWatcher
       console.info "received: "+msg.data
       try
         msg = JSON.parse msg.data
-        if msg.running
-          @server_bar.setStatus "running",@app.translator.get("Running")
-        else
-          @server_bar.setStatus "stopped",@app.translator.get("Server is not running")
+        if msg.name == "mp_server_status"
+          if msg.running
+            @server_bar.setStatus "running",@app.translator.get("Running")
+          else
+            @server_bar.setStatus "stopped",@app.translator.get("Server is not running")
+          @socket.close()
       catch err
         console.error err
-      @socket.close()
 
     @socket.onopen = ()=>
       @socket.send JSON.stringify

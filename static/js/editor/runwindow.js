@@ -983,16 +983,18 @@ this.ServerWatcher = class ServerWatcher {
       console.info("received: " + msg.data);
       try {
         msg = JSON.parse(msg.data);
-        if (msg.running) {
-          this.server_bar.setStatus("running", this.app.translator.get("Running"));
-        } else {
-          this.server_bar.setStatus("stopped", this.app.translator.get("Server is not running"));
+        if (msg.name === "mp_server_status") {
+          if (msg.running) {
+            this.server_bar.setStatus("running", this.app.translator.get("Running"));
+          } else {
+            this.server_bar.setStatus("stopped", this.app.translator.get("Server is not running"));
+          }
+          return this.socket.close();
         }
       } catch (error1) {
         err = error1;
-        console.error(err);
+        return console.error(err);
       }
-      return this.socket.close();
     };
     return this.socket.onopen = () => {
       return this.socket.send(JSON.stringify({
