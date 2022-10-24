@@ -736,7 +736,11 @@ this.WebApp = class WebApp {
       this.serverbox_funk = pug.compileFile("../templates/play/serverbox.pug");
     }
     host = req.get("host").replace(".dev", ".io");
-    server_url = req.protocol + '://' + host + req.url.replace("?server", "?srv");
+    if (this.server.config.run_domain != null) {
+      server_url = this.server.config.run_domain + req.path + "?srv";
+    } else {
+      server_url = req.protocol + '://' + host + req.url.replace("?server", "?srv");
+    }
     return res.send(this.serverbox_funk({
       user: user,
       server_url: server_url,

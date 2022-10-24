@@ -631,7 +631,10 @@ class @WebApp
       @serverbox_funk = pug.compileFile "../templates/play/serverbox.pug"
 
     host = req.get("host").replace(".dev",".io")
-    server_url = req.protocol+'://' + host + req.url.replace "?server", "?srv"
+    if @server.config.run_domain?
+      server_url = @server.config.run_domain + req.path + "?srv"
+    else
+      server_url = req.protocol+'://' + host + req.url.replace "?server", "?srv"
 
     res.send @serverbox_funk
       user: user
