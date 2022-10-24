@@ -892,7 +892,7 @@ this.ServerBar = class ServerBar {
     var iframe, parent, url;
     this.forced_stop = false;
     if (this.app.project != null) {
-      url = run_domain + "/";
+      url = dev_domain + "/";
       url += this.app.project.owner.nick + "/";
       url += this.app.project.slug + "/";
       if (!this.app.project.public) {

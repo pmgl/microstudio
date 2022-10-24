@@ -733,7 +733,7 @@ class @ServerBar
   startServer:(embedded)->
     @forced_stop = false
     if @app.project?
-      url = run_domain+"/"
+      url = dev_domain+"/"
       url += @app.project.owner.nick+"/"
       url += @app.project.slug+"/"
       if not @app.project.public
