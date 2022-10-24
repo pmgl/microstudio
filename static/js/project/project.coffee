@@ -22,6 +22,7 @@ class @Project
     @tabs = data.tabs
     @plugins = data.plugins
     @libraries = data.libraries
+    @networking = data.networking
     @properties = data.properties or {}
     @flags = data.flags or {}
 

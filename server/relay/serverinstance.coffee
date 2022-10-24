@@ -1,5 +1,5 @@
 class @ServerInstance
-  constructor:(@session)->
+  constructor:(@relay,@id,@session)->
     @connected_clients = {}
     @interval = setInterval (()=>@timer()),8
     @start_time = Date.now()
@@ -7,7 +7,11 @@ class @ServerInstance
     @client_id = 1
 
     @session.register "mp_server_message",(msg)=>@message(msg)
-
+    @session.disconnected = ()=>
+      @relay.serverDisconnected @
+      @stop()
+      for key,client of @connected_clients
+        client.socket.close()
 
   message:(msg)->
     client = @connected_clients[msg.client_id]

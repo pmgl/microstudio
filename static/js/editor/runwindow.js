@@ -63,6 +63,7 @@ this.RunWindow = class RunWindow {
     this.message_listeners = {};
     this.listeners = [];
     this.project_access = new ProjectAccess(this.app, null, this);
+    this.server_bar = new ServerBar(this.app);
   }
 
   initWarnings() {
@@ -94,6 +95,9 @@ this.RunWindow = class RunWindow {
 
   detach() {
     var b, device, wincontent;
+    if (this.app.project.networking) {
+      return new FloatingRunWindow(this.app);
+    }
     if (this.detached) {
       return this.floating_window.close();
     } else {
@@ -599,18 +603,44 @@ this.RunWindow = class RunWindow {
     if (iframe != null) {
       iframe.parentElement.removeChild(iframe);
     }
-    return this.terminal.clear();
+    this.terminal.clear();
+    this.updateServerBar();
+    this.app.appui.server_splitbar.update();
+    return this.app.appui.debug_splitbar.update();
+  }
+
+  updateServerBar() {
+    if ((this.app.project != null) && this.app.project.networking) {
+      document.getElementById("runtime").classList.add("server-open");
+      document.querySelector("#detach-button i").classList.remove("fa-window-restore");
+      document.querySelector("#detach-button i").classList.add("fa-table");
+    } else {
+      document.getElementById("runtime").classList.remove("server-open");
+      document.querySelector("#detach-button i").classList.add("fa-window-restore");
+      document.querySelector("#detach-button i").classList.remove("fa-table");
+    }
+    return this.server_bar.update(this.app.project);
   }
 
   projectClosed() {
-    var iframe;
+    var i, iframe, len, list, w;
     this.floating_window.close();
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
       iframe.parentElement.removeChild(iframe);
     }
     document.getElementById("take-picture-button").style.display = "none";
-    return this.hideAll();
+    this.hideAll();
+    this.server_bar.update(null);
+    list = document.querySelectorAll(".fw-run");
+    for (i = 0, len = list.length; i < len; i++) {
+      w = list[i];
+      if (w.parentNode != null) {
+        w.parentNode.removeChild(w);
+      }
+    }
+    document.querySelector("#runtime-server-view").innerHTML = "";
+    this.app.appui.server_splitbar.closed1 = true;
   }
 
   hideQRCode() {
@@ -646,6 +676,7 @@ this.RunWindow = class RunWindow {
               img.style.position = "absolute";
               img.style.top = `${b.y + b.height + 20}px`;
               img.style.left = `${Math.min(b.x + b.width / 2 - 132, window.innerWidth - img.width - 10)}px`;
+              img.style["z-index"] = 20;
               this.qrcode = img;
               this.qrcode.addEventListener("click", () => {
                 return this.showQRCode();
@@ -810,6 +841,209 @@ this.RunWindow = class RunWindow {
       results.push(l(event));
     }
     return results;
+  }
+
+};
+
+this.ServerBar = class ServerBar {
+  constructor(app) {
+    this.app = app;
+    document.getElementById("start-server-button").addEventListener("click", () => {
+      return this.startServer(true);
+    });
+    document.getElementById("start-server-tab-button").addEventListener("click", () => {
+      return this.startServer(false);
+    });
+    document.getElementById("stop-server-button").addEventListener("click", () => {
+      return this.stopServer();
+    });
+  }
+
+  update(project) {
+    this.project = project;
+    if ((this.project != null) && this.project.networking) {
+      if (this.watcher != null) {
+        this.watcher.stop();
+      }
+      this.watcher = new ServerWatcher(this.app, this);
+    } else if (this.watcher != null) {
+      this.watcher.stop();
+      delete this.watcher;
+    }
+    return this.forced_stop = false;
+  }
+
+  setStatus(status, message) {
+    if (status === "running" && !this.forced_stop) {
+      document.querySelector("#serverbar .status").classList.add("running");
+      document.getElementById("start-server-button").style.display = "none";
+      document.getElementById("start-server-tab-button").style.display = "none";
+      document.getElementById("stop-server-button").style.display = "inline-block";
+    } else {
+      document.querySelector("#serverbar .status").classList.remove("running");
+      document.getElementById("start-server-button").style.display = "inline-block";
+      document.getElementById("start-server-tab-button").style.display = "inline-block";
+      document.getElementById("stop-server-button").style.display = "none";
+    }
+    return document.querySelector("#serverbar .status-info").innerText = message;
+  }
+
+  startServer(embedded) {
+    var iframe, parent, url;
+    this.forced_stop = false;
+    if (this.app.project != null) {
+      url = run_domain + "/";
+      url += this.app.project.owner.nick + "/";
+      url += this.app.project.slug + "/";
+      if (!this.app.project.public) {
+        url += this.app.project.code + "/";
+      }
+      url += "?server";
+      if (!embedded) {
+        return this.server_tab = window.open(url);
+      } else {
+        parent = document.getElementById("runtime-server-view");
+        parent.style.overflow = "hidden";
+        iframe = `<iframe src="${url}" style="position: absolute ; top: 0 ; left: 0 ; width: 100% ; height: 100% ; border: none ;"></iframe>`;
+        parent.innerHTML = iframe;
+        this.app.appui.server_splitbar.closed1 = false;
+        this.app.appui.server_splitbar.update();
+        return this.app.appui.debug_splitbar.update();
+      }
+    }
+  }
+
+  stopServer() {
+    document.getElementById("runtime-server-view").innerHTML = "";
+    this.app.appui.server_splitbar.closed1 = true;
+    this.app.appui.server_splitbar.update();
+    this.app.appui.debug_splitbar.update();
+    if (this.server_tab != null) {
+      this.server_tab.close();
+      this.server_tab = null;
+    }
+    return this.forced_stop = true;
+  }
+
+};
+
+this.ServerWatcher = class ServerWatcher {
+  constructor(app, server_bar) {
+    this.app = app;
+    this.server_bar = server_bar;
+    this.project = this.app.project;
+    this.watch();
+    this.interval = setInterval((() => {
+      return this.watch();
+    }), 1000);
+  }
+
+  watch() {
+    return this.getRelay((address) => {
+      return this.connect(address);
+    });
+  }
+
+  getRelay(callback) {
+    if (this.relay != null) {
+      return callback(this.relay);
+    }
+    return this.app.client.sendRequest({
+      name: "get_relay_server"
+    }, (msg) => {
+      var address;
+      if (msg.name === "error") {
+        return this.server_bar.setStatus("error", msg.error);
+      } else {
+        address = msg.address;
+        if (address === "self") {
+          address = location.origin.replace("http", "ws");
+        }
+        return callback(this.relay = address);
+      }
+    });
+  }
+
+  stop() {
+    return clearInterval(this.interval);
+  }
+
+  connect(address) {
+    var err;
+    try {
+      this.socket = new WebSocket(address);
+    } catch (error1) {
+      err = error1;
+      this.server_bar.setStatus("error", this.app.translator.get("Relay service unreachable"));
+    }
+    this.socket.onerror = () => {
+      return this.server_bar.setStatus("error", this.app.translator.get("Relay service unreachable"));
+    };
+    this.socket.onmessage = (msg) => {
+      console.info("received: " + msg.data);
+      try {
+        msg = JSON.parse(msg.data);
+        if (msg.running) {
+          this.server_bar.setStatus("running", this.app.translator.get("Running"));
+        } else {
+          this.server_bar.setStatus("stopped", this.app.translator.get("Server is not running"));
+        }
+      } catch (error1) {
+        err = error1;
+        console.error(err);
+      }
+      return this.socket.close();
+    };
+    return this.socket.onopen = () => {
+      return this.socket.send(JSON.stringify({
+        name: "mp_server_status",
+        server_id: `${this.project.owner.nick}/${this.project.slug}`
+      }));
+    };
+  }
+
+};
+
+this.FloatingRunWindow = class FloatingRunWindow {
+  constructor(app) {
+    var bounds, code, div, height, id, left, origin, parent, top, url, width;
+    this.app = app;
+    code = this.app.project.public ? "" : `${this.app.project.code}/`;
+    url = `${location.origin.replace(".dev", ".io")}/${this.app.project.owner.nick}/${this.app.project.slug}/${code}`;
+    origin = `${location.origin.replace(".dev", ".io")}`;
+    bounds = document.querySelector("#device").getBoundingClientRect();
+    if (FloatingRunWindow.offset == null) {
+      FloatingRunWindow.offset = 0;
+      FloatingRunWindow.id = 1;
+    }
+    width = bounds.width / 2;
+    height = bounds.height / 2;
+    left = FloatingRunWindow.offset;
+    top = FloatingRunWindow.offset;
+    if (FloatingRunWindow.id < 5) {
+      id = FloatingRunWindow.id - 1;
+      left = (id % 2) * bounds.width / 2;
+      top = Math.floor(id / 2) * bounds.height / 2;
+    }
+    FloatingRunWindow.offset = (FloatingRunWindow.offset + 40) % 200;
+    div = document.createElement("div");
+    div.style = `top: ${top}px; left: ${left}px; width: ${width}px; height: ${height}px; display: block; z-index: 11;`;
+    div.classList.add("floating-window");
+    div.classList.add("fw-run");
+    div.style.position = "absolute";
+    div.id = id = "fw-run-" + FloatingRunWindow.id++;
+    div.innerHTML = `<div class="content" style="padding: 1px ; top: 0px ; bottom: 0px ; left: 0 ; right: 0 ;">\n  <iframe allow="autoplay ${origin}; gamepad ${origin}; midi ${origin}" src="${url}?debug" style="width: 100% ; height: 100% ; border: none ;" class=""></iframe>\n</div>\n<div class="titlebar" style="background: rgba(128,128,128,.25)">\n  <div class="title">Client ${FloatingRunWindow.id - 1}</div>\n  <i class="minify fas fa-times-circle" style="background:none;"></i>\n</div>\n<div class="navigation" style="background: none ; pointer-events: none ;"><i class="resize fa fa-grip-horizontal" style="pointer-events: auto ; color: rgba(255,255,255,.5) ; background: rgba(0,0,0,.25) ; border-radius: 40px ; right: -5px ; bottom: -5px ;"></i></div>`;
+    parent = document.querySelector("#runtime .devicecontainer");
+    parent.appendChild(div);
+    div.querySelector(".titlebar").addEventListener("mouseup", () => {
+      console.info("focusing window");
+      return div.querySelector("iframe").contentWindow.focus();
+    });
+    new FloatingWindow(this.app, id, {
+      floatingWindowClosed: () => {
+        return parent.removeChild(div);
+      }
+    });
   }
 
 };

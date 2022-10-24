@@ -43,6 +43,8 @@ class @RunWindow
     @listeners = []
     @project_access = new ProjectAccess @app,null,@
 
+    @server_bar = new ServerBar @app
+
   initWarnings:()->
     document.getElementById("console-options-warning-undefined").addEventListener "change",()=>
       @warning_undefined = document.getElementById("console-options-warning-undefined").checked
@@ -71,6 +73,9 @@ class @RunWindow
     document.getElementById("console-options-warning-condition").checked = @warning_condition
 
   detach:()->
+    if @app.project.networking
+      return new FloatingRunWindow(@app)
+
     if @detached
       @floating_window.close()
     else
@@ -501,6 +506,20 @@ class @RunWindow
     if iframe?
       iframe.parentElement.removeChild iframe
     @terminal.clear()
+    @updateServerBar()
+    @app.appui.server_splitbar.update()
+    @app.appui.debug_splitbar.update()
+
+  updateServerBar:()->
+    if @app.project? and @app.project.networking
+      document.getElementById("runtime").classList.add("server-open")
+      document.querySelector("#detach-button i").classList.remove "fa-window-restore"
+      document.querySelector("#detach-button i").classList.add "fa-table"
+    else
+      document.getElementById("runtime").classList.remove("server-open")
+      document.querySelector("#detach-button i").classList.add "fa-window-restore"
+      document.querySelector("#detach-button i").classList.remove "fa-table"
+    @server_bar.update @app.project
 
   projectClosed:()->
     @floating_window.close()
@@ -509,6 +528,16 @@ class @RunWindow
       iframe.parentElement.removeChild iframe
     document.getElementById("take-picture-button").style.display = "none"
     @hideAll()
+    @server_bar.update(null)
+    list = document.querySelectorAll ".fw-run"
+    for w in list
+      if w.parentNode?
+        w.parentNode.removeChild w
+        
+
+    document.querySelector("#runtime-server-view").innerHTML = ""
+    @app.appui.server_splitbar.closed1 = true
+    return
 
   hideQRCode:()->
     if @qrcode?
@@ -535,6 +564,7 @@ class @RunWindow
               img.style.position = "absolute"
               img.style.top = "#{b.y+b.height+20}px"
               img.style.left = "#{Math.min(b.x+b.width/2-132,window.innerWidth-img.width-10)}px"
+              img.style["z-index"] = 20
 
               @qrcode = img
               @qrcode.addEventListener "click",()=>@showQRCode()
@@ -667,3 +697,177 @@ class @RunWindow
   propagate:(event)->
     for l in @listeners
       l(event)
+
+
+class @ServerBar
+  constructor:(@app)->
+    document.getElementById("start-server-button").addEventListener "click",()=>@startServer(true)
+    document.getElementById("start-server-tab-button").addEventListener "click",()=>@startServer(false)
+    document.getElementById("stop-server-button").addEventListener "click",()=>@stopServer()
+
+  update:(@project)->
+    if @project? and @project.networking
+      if @watcher?
+        @watcher.stop()
+      @watcher = new ServerWatcher @app,@
+    else if @watcher?
+      @watcher.stop()
+      delete @watcher
+
+    @forced_stop = false
+
+  setStatus:(status,message)->
+    if status == "running" and not @forced_stop
+      document.querySelector("#serverbar .status").classList.add "running"
+      document.getElementById("start-server-button").style.display = "none"
+      document.getElementById("start-server-tab-button").style.display = "none"
+      document.getElementById("stop-server-button").style.display = "inline-block"
+    else
+      document.querySelector("#serverbar .status").classList.remove "running"
+      document.getElementById("start-server-button").style.display = "inline-block"
+      document.getElementById("start-server-tab-button").style.display = "inline-block"
+      document.getElementById("stop-server-button").style.display = "none"
+
+    document.querySelector("#serverbar .status-info").innerText = message
+
+  startServer:(embedded)->
+    @forced_stop = false
+    if @app.project?
+      url = run_domain+"/"
+      url += @app.project.owner.nick+"/"
+      url += @app.project.slug+"/"
+      if not @app.project.public
+        url += @app.project.code + "/"
+      url += "?server"
+      if not embedded
+        @server_tab = window.open url
+      else
+        parent = document.getElementById("runtime-server-view")
+        parent.style.overflow = "hidden"
+        iframe = """<iframe src="#{url}" style="position: absolute ; top: 0 ; left: 0 ; width: 100% ; height: 100% ; border: none ;"></iframe>"""
+        parent.innerHTML = iframe
+        @app.appui.server_splitbar.closed1 = false
+        @app.appui.server_splitbar.update()
+        @app.appui.debug_splitbar.update()
+
+  stopServer:()->
+    document.getElementById("runtime-server-view").innerHTML = ""
+    @app.appui.server_splitbar.closed1 = true
+    @app.appui.server_splitbar.update()
+    @app.appui.debug_splitbar.update()
+
+    if @server_tab?
+      @server_tab.close()
+      @server_tab = null
+
+    @forced_stop = true
+
+class @ServerWatcher
+  constructor:(@app,@server_bar)->
+    @project = @app.project
+    @watch()
+    @interval = setInterval (()=>@watch()),1000
+
+  watch:()->
+    @getRelay (address)=>@connect(address)
+
+  getRelay:(callback)->
+    if @relay?
+      return callback @relay
+
+    @app.client.sendRequest {
+      name: "get_relay_server"
+    },(msg)=>
+      if msg.name == "error"
+        @server_bar.setStatus "error",msg.error
+      else
+        address = msg.address
+        if address == "self"
+          address = location.origin.replace "http", "ws"
+        callback(@relay = address)
+
+  stop:()->
+    clearInterval @interval
+
+  connect:(address)->
+    try
+      @socket = new WebSocket(address)
+    catch err
+      @server_bar.setStatus "error",@app.translator.get("Relay service unreachable")
+
+    @socket.onerror = ()=>
+      @server_bar.setStatus "error",@app.translator.get("Relay service unreachable")
+
+    @socket.onmessage = (msg)=>
+      console.info "received: "+msg.data
+      try
+        msg = JSON.parse msg.data
+        if msg.running
+          @server_bar.setStatus "running",@app.translator.get("Running")
+        else
+          @server_bar.setStatus "stopped",@app.translator.get("Server is not running")
+      catch err
+        console.error err
+      @socket.close()
+
+    @socket.onopen = ()=>
+      @socket.send JSON.stringify
+        name: "mp_server_status"
+        server_id: """#{@project.owner.nick}/#{@project.slug}"""
+
+
+class @FloatingRunWindow
+  constructor:(@app)->
+    code = if @app.project.public then "" else "#{@app.project.code}/"
+    url = "#{location.origin.replace(".dev",".io")}/#{@app.project.owner.nick}/#{@app.project.slug}/#{code}"
+    origin = "#{location.origin.replace(".dev",".io")}"
+
+    bounds = document.querySelector("#device").getBoundingClientRect()
+    if not FloatingRunWindow.offset?
+      FloatingRunWindow.offset = 0
+      FloatingRunWindow.id = 1
+
+    width = bounds.width/2
+    height = bounds.height/2
+    left = FloatingRunWindow.offset
+    top = FloatingRunWindow.offset
+
+    if FloatingRunWindow.id < 5
+      id = FloatingRunWindow.id-1
+      left = (id%2)*bounds.width/2
+      top = Math.floor(id/2)*bounds.height/2
+
+    FloatingRunWindow.offset = (FloatingRunWindow.offset+40) % 200
+
+    div = document.createElement "div"
+    div.style = "top: #{top}px; left: #{left}px; width: #{width}px; height: #{height}px; display: block; z-index: 11;"
+    div.classList.add "floating-window"
+    div.classList.add "fw-run"
+    div.style.position = "absolute"
+    div.id = id = "fw-run-"+FloatingRunWindow.id++
+    div.innerHTML = """
+<div class="content" style="padding: 1px ; top: 0px ; bottom: 0px ; left: 0 ; right: 0 ;">
+  <iframe allow="autoplay #{origin}; gamepad #{origin}; midi #{origin}" src="#{url}?debug" style="width: 100% ; height: 100% ; border: none ;" class=""></iframe>
+</div>
+<div class="titlebar" style="background: rgba(128,128,128,.25)">
+  <div class="title">Client #{FloatingRunWindow.id-1}</div>
+  <i class="minify fas fa-times-circle" style="background:none;"></i>
+</div>
+<div class="navigation" style="background: none ; pointer-events: none ;"><i class="resize fa fa-grip-horizontal" style="pointer-events: auto ; color: rgba(255,255,255,.5) ; background: rgba(0,0,0,.25) ; border-radius: 40px ; right: -5px ; bottom: -5px ;"></i></div>
+"""
+    parent = document.querySelector "#runtime .devicecontainer"
+    parent.appendChild(div)
+    div.querySelector(".titlebar").addEventListener "mouseup",()=>
+      console.info "focusing window"
+      div.querySelector("iframe").contentWindow.focus()
+
+    new FloatingWindow @app,id,{
+      floatingWindowClosed:()=>
+        parent.removeChild div
+    }
+    
+
+
+        
+      
+    

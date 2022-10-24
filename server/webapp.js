@@ -272,6 +272,12 @@ this.WebApp = class WebApp {
     // /user/project[/code/]
     this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+\/?)?)?$/, (req, res) => {
       var access, encoding, file, jsfiles, len3, lib, manager, o, pathcode, poster, prog_lang, project, redir, ref4, user;
+      if ((req.query != null) && (req.query.server != null)) {
+        if (this.ensureDevArea(req, res)) {
+          return;
+        }
+        return this.serverBox(req, res);
+      }
       if (this.ensureIOArea(req, res)) {
         return;
       }
@@ -289,7 +295,7 @@ this.WebApp = class WebApp {
       file = `${user.id}/${project.id}/ms/main.ms`;
       encoding = "text";
       manager = this.getProjectManager(project);
-      if ((req.query != null) && (req.query.server != null)) {
+      if ((req.query != null) && (req.query.srv != null)) {
         jsfiles = this.concatenator.getServerJSFiles();
       } else {
         jsfiles = this.concatenator.getPlayerJSFiles(project.graphics);
@@ -324,7 +330,7 @@ this.WebApp = class WebApp {
                     assets: assets
                   });
                   resources = `var resources = ${resources};\n`;
-                  if ((req.query != null) && (req.query.server != null)) {
+                  if ((req.query != null) && (req.query.srv != null)) {
                     if ((this.server_funk == null) || !this.server.use_cache) {
                       this.server_funk = pug.compileFile("../templates/play/server.pug");
                     }
@@ -340,7 +346,7 @@ this.WebApp = class WebApp {
                     javascript_files: jsfiles,
                     fonts: this.fonts.fonts,
                     debug: (req.query != null) && (req.query.debug != null),
-                    server: (req.query != null) && (req.query.server != null),
+                    server: (req.query != null) && (req.query.srv != null),
                     language: project.language,
                     translator: this.server.content.translator.getTranslator(this.getLanguage(req)),
                     game: {
@@ -352,6 +358,7 @@ this.WebApp = class WebApp {
                       orientation: project.orientation,
                       aspect: project.aspect,
                       graphics: project.graphics,
+                      networking: project.networking || false,
                       libs: JSON.stringify(project.libs),
                       description: project.description,
                       poster: poster
@@ -714,6 +721,33 @@ this.WebApp = class WebApp {
     } else {
       return false;
     }
+  }
+
+  serverBox(req, res) {
+    var access, host, pathcode, project, server_url, user;
+    access = this.getProjectAccess(req, res);
+    if (access == null) {
+      return;
+    }
+    user = access.user;
+    project = access.project;
+    pathcode = project.public ? project.slug : `${project.slug}/${project.code}`;
+    if ((this.serverbox_funk == null) || !this.server.use_cache) {
+      this.serverbox_funk = pug.compileFile("../templates/play/serverbox.pug");
+    }
+    host = req.get("host").replace(".dev", ".io");
+    server_url = req.protocol + '://' + host + req.url.replace("?server", "?srv");
+    return res.send(this.serverbox_funk({
+      user: user,
+      server_url: server_url,
+      game: {
+        name: project.slug,
+        pathcode: pathcode,
+        title: project.title,
+        author: user.nick,
+        description: project.description
+      }
+    }));
   }
 
   getUserPublicPage(req, res) {

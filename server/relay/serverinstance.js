@@ -1,5 +1,7 @@
 this.ServerInstance = class ServerInstance {
-  constructor(session) {
+  constructor(relay, id, session) {
+    this.relay = relay;
+    this.id = id;
     this.session = session;
     this.connected_clients = {};
     this.interval = setInterval((() => {
@@ -11,6 +13,18 @@ this.ServerInstance = class ServerInstance {
     this.session.register("mp_server_message", (msg) => {
       return this.message(msg);
     });
+    this.session.disconnected = () => {
+      var client, key, ref, results;
+      this.relay.serverDisconnected(this);
+      this.stop();
+      ref = this.connected_clients;
+      results = [];
+      for (key in ref) {
+        client = ref[key];
+        results.push(client.socket.close());
+      }
+      return results;
+    };
   }
 
   message(msg) {

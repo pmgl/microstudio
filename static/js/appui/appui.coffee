@@ -84,6 +84,7 @@ class AppUI
       document.getElementById("createprojectoption-type").value = "app"
       document.getElementById("createprojectoption-language").value = "microscript_v2"
       document.getElementById("createprojectoption-graphics").value = "M1"
+      document.getElementById("createprojectoption-networking").checked = false
       document.getElementById("create-project-option-lib-matterjs").checked = false
       document.getElementById("create-project-option-lib-cannonjs").checked = false
       @hideAdvanced()
@@ -142,6 +143,7 @@ class AppUI
           type: document.getElementById("createprojectoption-type").value
           language: document.getElementById("createprojectoption-language").value
           graphics: document.getElementById("createprojectoption-graphics").value
+          networking: document.getElementById("createprojectoption-networking").checked
           libs: libs
 
         @hide "create-project-overlay"
@@ -151,6 +153,10 @@ class AppUI
     @code_splitbar = new SplitBar("code-section","horizontal")
     @runtime_splitbar = new SplitBar("runtime-container","vertical")
     @runtime_splitbar.initPosition(67)
+    @server_splitbar = new SplitBar "runtime-terminal","horizontal"
+    @server_splitbar.initPosition(50)
+    @server_splitbar.closed1 = true
+    
     @debug_splitbar = new SplitBar("terminal-debug-container","horizontal")
     @debug_splitbar.closed2 = true
     @debug_splitbar.splitbar_size = 12
@@ -331,6 +337,7 @@ class AppUI
 
     if section == "code"
       @code_splitbar.update()
+      @server_splitbar.update()
       @debug_splitbar.update()
       @runtime_splitbar.update()
       @app.runwindow.windowResized()
@@ -415,6 +422,7 @@ class AppUI
 
     if section == "projects"
       @code_splitbar.update()
+      @server_splitbar.update()
       @debug_splitbar.update()
       @runtime_splitbar.update()
       @app.runwindow.windowResized()
@@ -830,6 +838,7 @@ class AppUI
     @debug_splitbar.closed2 = true
     @debug_splitbar.update()
     @runtime_splitbar.initPosition(50)
+    @server_splitbar.initPosition(50)
     @app.runwindow.terminal.start()
     @updateActiveUsers()
     @doc_splitbar.initPosition(50)

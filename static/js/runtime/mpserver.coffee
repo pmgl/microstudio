@@ -1,7 +1,20 @@
 class @MPServer
   constructor:()->
     impl = new MPServerImpl @
-    @send = (data)-> impl.sendMessage(data)
+    @send = (data)->
+      try
+        impl.sendMessage(data)
+        return "sent"
+      catch err
+        console.error err
+        return err.toString()
+
+    @close = ()->
+      try
+        impl.close()
+      catch err
+        console.error err
+
     @new_connections = []
     @active_connections = []
     @closed_connections = []
@@ -16,12 +29,27 @@ class @MPServerImpl
     @clients_connected = []
     @clients_disconnected = {}
     try
-      @connect()
+      @getRelay (address) => @connect(address)
     catch err
       console.error err
 
-  connect:()->
-    @socket = new WebSocket("ws://localhost:8080")
+  getRelay:(callback)->
+    player.client.sendRequest {
+      name: "get_relay_server"
+    },(msg)=>
+      console.info "RELAY SERVER RECEIVED"
+      console.info msg
+      if msg.name == "error"
+        @interface.status = "error"
+        @interface.error = msg.error
+      else
+        address = msg.address
+        if address == "self"
+          address = location.origin.replace "http", "ws"
+        callback(address)
+
+  connect:(address)->
+    @socket = new WebSocket(address)
 
     @socket.onmessage = (msg)=>
       try
@@ -41,15 +69,18 @@ class @MPServerImpl
         console.error err
 
     @socket.onopen = ()=>
+      @interface.status = "running"
       @reconnect_delay = 1000
+
+      user = location.href
 
       @send
         name: "mp_start_server"
-        server_id: "user/project"
+        token: window.ms_server_token
+        server_id: ms_project_id
 
     @socket.onclose = ()=>
-      setTimeout (()=>@connect()),@reconnect_delay
-      @reconnect_delay += 1000
+      @interface.status = "disconnected"
 
   clientConnected:(msg)->
     return if not msg.client_id?
@@ -69,7 +100,6 @@ class @MPServerImpl
     delete @clients[msg.client_id]
     if client?
       @clients_disconnected[client.client_id] = true
-
 
   sendMessage:(data)->
     @send
@@ -109,6 +139,9 @@ class @MPServerImpl
 
     @interface.messages = messages
     return
+
+  close:()->
+    @socket.close()
     
 
 class @MPClient

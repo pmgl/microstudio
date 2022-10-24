@@ -4,27 +4,49 @@ class @MPServerConnection
     impl = new MPServerConnectionImpl @
 
     @send = (data)=>
-      impl.sendMessage data
+      try
+        impl.sendMessage data
+        return "sent"
+      catch err
+        console.error err
+        return err.toString()
+
+    @close = ()=>
+      try
+        impl.close()
+      catch err
+        console.error err
 
     @messages = []
 
 class @MPServerConnectionImpl
   constructor:(@interface)->
     @status = "connecting"
-    reconnect_delay = 1000
     try
-      @connect()
+      @getRelay (address) => @connect(address)
     catch err
       console.error err
 
     @messages = []
     player.runtime.addConnection @
 
-  connect:()->
-    @socket = new WebSocket("ws://localhost:8080")
+  getRelay:(callback)->
+    player.client.sendRequest {
+      name: "get_relay_server"
+    },(msg)=>
+      if msg.name == "error"
+        @interface.status = "error"
+        @interface.error = msg.error
+      else
+        address = msg.address
+        if address == "self"
+          address = location.origin.replace "http", "ws"
+        callback(address)
+
+  connect:(address)->
+    @socket = new WebSocket(address)
 
     @socket.onmessage = (msg)=>
-      console.info "received: "+msg.data
       try
         msg = JSON.parse msg.data
 
@@ -36,20 +58,18 @@ class @MPServerConnectionImpl
 
     @socket.onopen = ()=>
       @interface.status = "connected"
-      @reconnect_delay = 1000
 
       @send
         name: "mp_client_connection"
-        server_id: "user/project"
+        server_id: ms_project_id
 
     @socket.onclose = ()=>
-      @interface.status = "connecting"
-      setTimeout (()=>@connect()),@reconnect_delay
-      @reconnect_delay += 1000
+      @interface.status = "disconnected"
 
   update:()->
-    @interface.messages = @messages
-    @messages = []
+    if @messages.length > 0 or @interface.messages.length > 0
+      @interface.messages = @messages
+      @messages = []
 
   sendMessage:(data)->
     @send
@@ -58,3 +78,6 @@ class @MPServerConnectionImpl
 
   send:(data)->
     @socket.send JSON.stringify data
+
+  close:()->
+    @socket.close()

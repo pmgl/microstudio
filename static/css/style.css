@@ -32,6 +32,17 @@ div::-webkit-scrollbar-thumb {
   margin: 4px 1px;
 }
 
+input[type="checkbox"] {
+  accent-color: hsl(180,50%,40%) ;
+  width: 1.2em ;
+  height: 1.2em ;
+  vertical-align: middle ;
+}
+
+label {
+  vertical-align: middle ;
+}
+
 h1 {
   font-family: "Ubuntu",Verdana;
   margin: 0px ;
@@ -1039,7 +1050,7 @@ padding-left: 2px ;
   display: inline-block ;
   text-align: center ;
 }
-#create-project-window input {
+#create-project-title {
     font-size: 18px;
     padding: 5px;
     margin-bottom: 20px;
@@ -1722,4 +1733,16 @@ img.pixelated {
   top: 0 ;
   bottom: 0 ;
   padding: 10px 20px ;
+}
+
+.beta-pill {
+  border-radius: 10px ;
+  font-size: 12px ;
+  padding: 2px 8px ;
+  position: relative ;
+  bottom: 15px ;
+  left: 5px ;
+  color: rgba(255,255,255,.9) ;
+  background: hsl(0,50%,50%);
+  font-family: Ubuntu ;
 }

@@ -233,6 +233,10 @@ class @WebApp
 
     # /user/project[/code/]
     @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+\/?)?)?$/,(req,res)=>
+      if req.query? and req.query.server?
+        return if @ensureDevArea(req,res)
+        return @serverBox req,res
+
       return if @ensureIOArea(req,res)
       if req.path.charAt(req.path.length-1) != "/"
         redir = req.protocol+'://' + req.get("host") + req.url+"/"
@@ -251,7 +255,7 @@ class @WebApp
 
       manager = @getProjectManager(project)
 
-      if req.query? and req.query.server?
+      if req.query? and req.query.srv?
         jsfiles = @concatenator.getServerJSFiles()
       else
         jsfiles = @concatenator.getPlayerJSFiles(project.graphics)
@@ -287,7 +291,7 @@ class @WebApp
 
                   resources = "var resources = #{resources};\n"
 
-                  if req.query? and req.query.server?
+                  if req.query? and req.query.srv?
                     if not @server_funk? or not @server.use_cache
                       @server_funk = pug.compileFile "../templates/play/server.pug"
                     pf = @server_funk
@@ -301,7 +305,7 @@ class @WebApp
                     javascript_files: jsfiles
                     fonts: @fonts.fonts
                     debug: req.query? and req.query.debug?
-                    server: req.query? and req.query.server?
+                    server: req.query? and req.query.srv?
                     language: project.language
                     translator: @server.content.translator.getTranslator(@getLanguage(req))
                     game:
@@ -313,6 +317,7 @@ class @WebApp
                       orientation: project.orientation
                       aspect: project.aspect
                       graphics: project.graphics
+                      networking: project.networking or false
                       libs: JSON.stringify(project.libs)
                       description: project.description
                       poster: poster
@@ -613,6 +618,30 @@ class @WebApp
       true
     else
       false
+
+  serverBox:(req,res)->
+    access = @getProjectAccess req,res
+    return if not access?
+
+    user = access.user
+    project = access.project
+
+    pathcode = if project.public then project.slug else "#{project.slug}/#{project.code}"
+    if not @serverbox_funk? or not @server.use_cache
+      @serverbox_funk = pug.compileFile "../templates/play/serverbox.pug"
+
+    host = req.get("host").replace(".dev",".io")
+    server_url = req.protocol+'://' + host + req.url.replace "?server", "?srv"
+
+    res.send @serverbox_funk
+      user: user
+      server_url: server_url
+      game:
+        name: project.slug
+        pathcode: pathcode
+        title: project.title
+        author: user.nick
+        description: project.description
 
   getUserPublicPage:(req,res)->
     s = req.path.split("/")

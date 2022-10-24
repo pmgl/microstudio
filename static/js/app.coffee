@@ -147,6 +147,7 @@ class App
       type: options.type
       graphics: options.graphics
       language: options.language
+      networking: options.networking
       libs: options.libs
     },(msg)=>
       switch msg.name

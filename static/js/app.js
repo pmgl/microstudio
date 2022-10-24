@@ -6,8 +6,8 @@ window.addEventListener("load", function() {
   return app = new App();
 });
 
-App = (function() {
-  function App() {
+App = class App {
+  constructor() {
     this.languages = {
       microscript2: LANGUAGE_MICROSCRIPT2,
       microscript: LANGUAGE_MICROSCRIPT,
@@ -45,42 +45,40 @@ App = (function() {
     this.client.start();
   }
 
-  App.prototype.setToken = function(token, username) {
+  setToken(token, username) {
     this.token = token;
     this.username = username;
     return this.client.setToken(this.token);
-  };
+  }
 
-  App.prototype.createGuest = function() {
+  createGuest() {
     return this.client.sendRequest({
       name: "create_guest",
       language: window.navigator.language != null ? window.navigator.language.substring(0, 2) : "en"
-    }, (function(_this) {
-      return function(msg) {
-        switch (msg.name) {
-          case "error":
-            console.error(msg.error);
-            if (msg.error != null) {
-              return alert(_this.translator.get(msg.error));
-            }
-            break;
-          case "guest_created":
-            _this.setToken(msg.token);
-            _this.nick = msg.nick;
-            _this.user = {
-              nick: msg.nick,
-              flags: msg.flags,
-              settings: msg.settings,
-              info: msg.info
-            };
-            _this.connected = true;
-            return _this.userConnected(msg.nick);
-        }
-      };
-    })(this));
-  };
+    }, (msg) => {
+      switch (msg.name) {
+        case "error":
+          console.error(msg.error);
+          if (msg.error != null) {
+            return alert(this.translator.get(msg.error));
+          }
+          break;
+        case "guest_created":
+          this.setToken(msg.token);
+          this.nick = msg.nick;
+          this.user = {
+            nick: msg.nick,
+            flags: msg.flags,
+            settings: msg.settings,
+            info: msg.info
+          };
+          this.connected = true;
+          return this.userConnected(msg.nick);
+      }
+    });
+  }
 
-  App.prototype.createAccount = function(nick, email, password, newsletter) {
+  createAccount(nick, email, password, newsletter) {
     return this.client.sendRequest({
       name: "create_account",
       nick: nick,
@@ -88,91 +86,85 @@ App = (function() {
       password: password,
       newsletter: newsletter,
       language: window.navigator.language != null ? window.navigator.language.substring(0, 2) : "en"
-    }, (function(_this) {
-      return function(msg) {
-        switch (msg.name) {
-          case "error":
-            console.error(msg.error);
-            if (msg.error != null) {
-              return alert(_this.translator.get(msg.error));
-            }
-            break;
-          case "account_created":
-            _this.setToken(msg.token);
-            _this.nick = nick;
-            _this.user = {
-              nick: msg.nick,
-              email: msg.email,
-              flags: msg.flags,
-              settings: msg.settings,
-              info: msg.info
-            };
-            _this.connected = true;
-            return _this.userConnected(nick);
-        }
-      };
-    })(this));
-  };
+    }, (msg) => {
+      switch (msg.name) {
+        case "error":
+          console.error(msg.error);
+          if (msg.error != null) {
+            return alert(this.translator.get(msg.error));
+          }
+          break;
+        case "account_created":
+          this.setToken(msg.token);
+          this.nick = nick;
+          this.user = {
+            nick: msg.nick,
+            email: msg.email,
+            flags: msg.flags,
+            settings: msg.settings,
+            info: msg.info
+          };
+          this.connected = true;
+          return this.userConnected(nick);
+      }
+    });
+  }
 
-  App.prototype.login = function(nick, password) {
+  login(nick, password) {
     return this.client.sendRequest({
       name: "login",
       nick: nick,
       password: password
-    }, (function(_this) {
-      return function(msg) {
-        var i, len, n, ref;
-        switch (msg.name) {
-          case "error":
-            console.error(msg.error);
-            if (msg.error != null) {
-              return alert(_this.translator.get(msg.error));
+    }, (msg) => {
+      var i, len, n, ref;
+      switch (msg.name) {
+        case "error":
+          console.error(msg.error);
+          if (msg.error != null) {
+            return alert(this.translator.get(msg.error));
+          }
+          break;
+        case "logged_in":
+          this.setToken(msg.token);
+          this.nick = msg.nick;
+          this.user = {
+            nick: msg.nick,
+            email: msg.email,
+            flags: msg.flags,
+            settings: msg.settings,
+            info: msg.info
+          };
+          if ((msg.notifications != null) && msg.notifications.length > 0) {
+            ref = msg.notifications;
+            for (i = 0, len = ref.length; i < len; i++) {
+              n = ref[i];
+              this.appui.showNotification(n);
             }
-            break;
-          case "logged_in":
-            _this.setToken(msg.token);
-            _this.nick = msg.nick;
-            _this.user = {
-              nick: msg.nick,
-              email: msg.email,
-              flags: msg.flags,
-              settings: msg.settings,
-              info: msg.info
-            };
-            if ((msg.notifications != null) && msg.notifications.length > 0) {
-              ref = msg.notifications;
-              for (i = 0, len = ref.length; i < len; i++) {
-                n = ref[i];
-                _this.appui.showNotification(n);
-              }
-            }
-            _this.connected = true;
-            _this.userConnected(msg.nick);
-            return _this.appui.showNotification(_this.translator.get("Welcome back!"));
-        }
-      };
-    })(this));
-  };
+          }
+          this.connected = true;
+          this.userConnected(msg.nick);
+          return this.appui.showNotification(this.translator.get("Welcome back!"));
+      }
+    });
+  }
 
-  App.prototype.sendPasswordRecovery = function(email) {
+  sendPasswordRecovery(email) {
     if (!RegexLib.email.test(email)) {
       return alert(this.translator.get("incorrect email"));
     } else {
       return this.client.sendRequest({
         name: "send_password_recovery",
         email: email
-      }, (function(_this) {
-        return function(msg) {
-          document.getElementById("forgot-password-panel").innerHTML = _this.translator.get("Thank you. Please check your mail.");
-          return setTimeout((function() {
-            return _this.appui.hide("login-overlay");
-          }), 5000);
-        };
-      })(this));
+      }, (msg) => {
+        document.getElementById("forgot-password-panel").innerHTML = this.translator.get("Thank you. Please check your mail.");
+        return setTimeout((() => {
+          return this.appui.hide("login-overlay");
+        }), 5000);
+      });
     }
-  };
+  }
 
-  App.prototype.createProject = function(title, slug, options, callback) {
+  createProject(title, slug, options, callback) {
     if ((options != null) && typeof options === "function" && (callback == null)) {
       callback = options;
       options = {
@@ -186,121 +178,113 @@ App = (function() {
       type: options.type,
       graphics: options.graphics,
       language: options.language,
+      networking: options.networking,
       libs: options.libs
-    }, (function(_this) {
-      return function(msg) {
-        switch (msg.name) {
-          case "error":
-            console.error(msg.error);
-            if (msg.error != null) {
-              alert(_this.translator.get(msg.error));
-            }
-            break;
-          case "project_created":
-            _this.getProjectList(function(list) {
-              var i, len, p, results;
-              _this.projects = list;
-              _this.appui.updateProjects();
-              results = [];
-              for (i = 0, len = list.length; i < len; i++) {
-                p = list[i];
-                if (p.id === msg.id) {
-                  _this.openProject(p);
-                  if (callback != null) {
-                    results.push(callback());
-                  } else {
-                    results.push(void 0);
-                  }
+    }, (msg) => {
+      switch (msg.name) {
+        case "error":
+          console.error(msg.error);
+          if (msg.error != null) {
+            alert(this.translator.get(msg.error));
+          }
+          break;
+        case "project_created":
+          this.getProjectList((list) => {
+            var i, len, p, results;
+            this.projects = list;
+            this.appui.updateProjects();
+            results = [];
+            for (i = 0, len = list.length; i < len; i++) {
+              p = list[i];
+              if (p.id === msg.id) {
+                this.openProject(p);
+                if (callback != null) {
+                  results.push(callback());
                 } else {
                   results.push(void 0);
                 }
+              } else {
+                results.push(void 0);
               }
-              return results;
-            });
-        }
-      };
-    })(this));
-  };
+            }
+            return results;
+          });
+      }
+    });
+  }
 
-  App.prototype.importProject = function(file) {
+  importProject(file) {
     var reader;
     if (this.importing) {
       return;
     }
-    console.info("importing " + file.name);
+    console.info(`importing ${file.name}`);
     reader = new FileReader();
-    reader.addEventListener("load", (function(_this) {
-      return function() {
-        if (!file.name.toLowerCase().endsWith(".zip")) {
-          return;
+    reader.addEventListener("load", () => {
+      // return if not reader.result.startsWith("data:application/x-zip-compressed;base64,")
+      // mime-type returned by browser may vary ; let's just check ZIP extension
+      if (!file.name.toLowerCase().endsWith(".zip")) {
+        return;
+      }
+      this.importing = true;
+      return this.client.sendUpload({
+        name: "import_project"
+      }, reader.result, ((msg) => {
+        console.log(`[ZIP] ${msg.name}`);
+        switch (msg.name) {
+          case "error":
+            this.appui.showNotification(this.translator.get(msg.error));
+            this.appui.resetImportButton();
+            return this.importing = false;
+          case "project_imported":
+            this.updateProjectList(msg.id);
+            this.appui.showNotification(this.translator.get("Project imported successfully"));
+            this.appui.resetImportButton();
+            this.importing = false;
+            this.tab_manager.resetPlugins();
+            return this.lib_manager.resetLibs();
         }
-        _this.importing = true;
-        return _this.client.sendUpload({
-          name: "import_project"
-        }, reader.result, (function(msg) {
-          console.log("[ZIP] " + msg.name);
-          switch (msg.name) {
-            case "error":
-              _this.appui.showNotification(_this.translator.get(msg.error));
-              _this.appui.resetImportButton();
-              return _this.importing = false;
-            case "project_imported":
-              _this.updateProjectList(msg.id);
-              _this.appui.showNotification(_this.translator.get("Project imported successfully"));
-              _this.appui.resetImportButton();
-              _this.importing = false;
-              _this.tab_manager.resetPlugins();
-              return _this.lib_manager.resetLibs();
-          }
-        }), function(progress) {
-          return _this.appui.setImportProgress(progress);
-        });
-      };
-    })(this));
+      }), (progress) => {
+        return this.appui.setImportProgress(progress);
+      });
+    });
     return reader.readAsArrayBuffer(file);
-  };
+  }
 
-  App.prototype.updateProjectList = function(open_when_fetched) {
-    return this.getProjectList((function(_this) {
-      return function(list) {
-        var i, len, p, ref, results;
-        _this.projects = list;
-        _this.appui.updateProjects();
-        if (open_when_fetched != null) {
-          ref = _this.projects;
-          results = [];
-          for (i = 0, len = ref.length; i < len; i++) {
-            p = ref[i];
-            if (p.id === open_when_fetched) {
-              _this.openProject(p);
-              break;
-            } else {
-              results.push(void 0);
-            }
+  updateProjectList(open_when_fetched) {
+    return this.getProjectList((list) => {
+      var i, len, p, ref, results;
+      this.projects = list;
+      this.appui.updateProjects();
+      if (open_when_fetched != null) {
+        ref = this.projects;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          p = ref[i];
+          if (p.id === open_when_fetched) {
+            this.openProject(p);
+            break;
+          } else {
+            results.push(void 0);
           }
-          return results;
         }
-      };
-    })(this));
-  };
+        return results;
+      }
+    });
+  }
 
-  App.prototype.getProjectList = function(callback) {
+  getProjectList(callback) {
     return this.client.sendRequest({
       name: "get_project_list"
-    }, (function(_this) {
-      return function(msg) {
-        if (callback != null) {
-          return callback(msg.list);
-        }
-      };
-    })(this));
-  };
+    }, (msg) => {
+      if (callback != null) {
+        return callback(msg.list);
+      }
+    });
+  }
 
-  App.prototype.openProject = function(project, useraction) {
+  openProject(project, useraction = true) {
     var t, tuto;
-    if (useraction == null) {
-      useraction = true;
-    }
     this.project = new Project(this, project);
     this.appui.setProject(this.project, useraction);
     this.editor.setCode("");
@@ -322,25 +306,21 @@ App = (function() {
       tuto = this.getProjectTutorial(project.slug);
       if (tuto != null) {
         t = new Tutorial(tuto);
-        return t.load((function(_this) {
-          return function() {
-            return _this.tutorial.start(t);
-          };
-        })(this));
+        return t.load(() => {
+          return this.tutorial.start(t);
+        });
       }
     }
-  };
+  }
 
-  App.prototype.deleteProject = function(project) {
+  deleteProject(project) {
     if (project.owner.nick === this.nick) {
       return this.client.sendRequest({
         name: "delete_project",
         project: project.id
-      }, (function(_this) {
-        return function(msg) {
-          return _this.updateProjectList();
-        };
-      })(this));
+      }, (msg) => {
+        return this.updateProjectList();
+      });
     } else {
       return this.client.sendRequest({
         name: "remove_project_user",
@@ -348,9 +328,9 @@ App = (function() {
         user: this.nick
       });
     }
-  };
+  }
 
-  App.prototype.projectTitleExists = function(title) {
+  projectTitleExists(title) {
     var i, len, p, ref;
     if (!this.projects) {
       return false;
@@ -363,87 +343,84 @@ App = (function() {
       }
     }
     return false;
-  };
+  }
 
-  App.prototype.cloneProject = function(project) {
+  cloneProject(project) {
     var count, title;
-    title = project.title + (" (" + (this.translator.get("copy")) + ")");
+    title = project.title + ` (${this.translator.get("copy")})`;
     count = 1;
     while (this.projectTitleExists(title)) {
       count += 1;
-      title = project.title + (" (" + (this.translator.get("copy")) + " " + count + ")");
+      title = project.title + ` (${this.translator.get("copy")} ${count})`;
     }
     return this.client.sendRequest({
       name: "clone_project",
       project: project.id,
       title: title
-    }, (function(_this) {
-      return function(msg) {
-        _this.appui.setMainSection("projects");
-        _this.appui.backToProjectList();
-        _this.updateProjectList();
-        return _this.appui.showNotification(_this.translator.get("Project cloned! Here is your copy."));
-      };
-    })(this));
-  };
+    }, (msg) => {
+      this.appui.setMainSection("projects");
+      this.appui.backToProjectList();
+      this.updateProjectList();
+      return this.appui.showNotification(this.translator.get("Project cloned! Here is your copy."));
+    });
+  }
 
-  App.prototype.writeProjectFile = function(project_id, file, content, callback) {
+  writeProjectFile(project_id, file, content, callback) {
     return this.client.sendRequest({
       name: "write_project_file",
       project: project_id,
       file: file,
       content: content
-    }, (function(_this) {
-      return function(msg) {};
-    })(this));
-  };
+    }, (msg) => {});
+  }
 
-  App.prototype.readProjectFile = function(project_id, file, callback) {
+  readProjectFile(project_id, file, callback) {
     return this.client.sendRequest({
       name: "read_project_file",
       project: project_id,
       file: file
-    }, (function(_this) {
-      return function(msg) {
-        return callback(msg.content);
-      };
-    })(this));
-  };
+    }, (msg) => {
+      return callback(msg.content);
+    });
+  }
 
-  App.prototype.userConnected = function(nick) {
+  //listProjectFiles:(project_id,folder,callback)->
+  //  @client.sendRequest {
+  //    name:"list_project_files"
+  //    project: project_id
+  //    folder: folder
+  //  },(msg)=>
+  //    callback msg.content
+  userConnected(nick) {
     this.appui.userConnected(nick);
     this.updateProjectList();
     this.user_settings.update();
     return this.user_progress.init();
-  };
+  }
 
-  App.prototype.disconnect = function() {
+  disconnect() {
     if ((this.user.email == null) || this.user.flags.guest) {
       return this.client.sendRequest({
         name: "delete_guest"
-      }, (function(_this) {
-        return function(msg) {
-          _this.setToken(null);
-          return location.reload();
-        };
-      })(this));
+      }, (msg) => {
+        this.setToken(null);
+        return location.reload();
+      });
     } else {
       this.setToken(null);
       return location.reload();
     }
-  };
+  }
 
-  App.prototype.fetchPublicProjects = function() {
+  fetchPublicProjects() {
     return this.client.sendRequest({
       name: "get_public_projects",
       ranking: "hot",
       tags: []
-    }, (function(_this) {
-      return function(msg) {};
-    })(this));
-  };
+    }, (msg) => {});
+  }
 
-  App.prototype.serverMessage = function(msg) {
+  serverMessage(msg) {
     switch (msg.name) {
       case "project_user_list":
         return this.updateProjectUserList(msg);
@@ -486,24 +463,24 @@ App = (function() {
           return this.user_progress.checkAchievements();
         }
     }
-  };
+  }
 
-  App.prototype.updateProjectUserList = function(msg) {
+  updateProjectUserList(msg) {
     if ((this.project != null) && msg.project === this.project.id) {
       this.project.users = msg.users;
       return this.options.updateUserList();
     }
-  };
+  }
 
-  App.prototype.getUserSetting = function(setting) {
+  getUserSetting(setting) {
     if ((this.user != null) && (this.user.settings != null)) {
       return this.user.settings[setting];
     } else {
       return null;
     }
-  };
+  }
 
-  App.prototype.setUserSetting = function(setting, value) {
+  setUserSetting(setting, value) {
     if (this.user != null) {
       if (this.user.settings == null) {
         this.user.settings = {};
@@ -513,13 +490,11 @@ App = (function() {
         name: "set_user_setting",
         setting: setting,
         value: value
-      }, (function(_this) {
-        return function(msg) {};
-      })(this));
+      }, (msg) => {});
     }
-  };
+  }
 
-  App.prototype.setTutorialProgress = function(tutorial_id, progress) {
+  setTutorialProgress(tutorial_id, progress) {
     var tutorial_progress;
     tutorial_progress = this.getUserSetting("tutorial_progress");
     if (tutorial_progress == null) {
@@ -527,9 +502,9 @@ App = (function() {
     }
     tutorial_progress[tutorial_id] = progress;
     return this.setUserSetting("tutorial_progress", tutorial_progress);
-  };
+  }
 
-  App.prototype.getTutorialProgress = function(tutorial_id) {
+  getTutorialProgress(tutorial_id) {
     var tutorial_progress;
     tutorial_progress = this.getUserSetting("tutorial_progress");
     if (tutorial_progress == null) {
@@ -537,9 +512,9 @@ App = (function() {
     } else {
       return tutorial_progress[tutorial_id] || 0;
     }
-  };
+  }
 
-  App.prototype.setProjectTutorial = function(project_slug, tutorial_id) {
+  setProjectTutorial(project_slug, tutorial_id) {
     var project_tutorial;
     project_tutorial = this.getUserSetting("project_tutorial");
     if (project_tutorial == null) {
@@ -547,9 +522,9 @@ App = (function() {
     }
     project_tutorial[project_slug] = tutorial_id;
     return this.setUserSetting("project_tutorial", project_tutorial);
-  };
+  }
 
-  App.prototype.getProjectTutorial = function(slug) {
+  getProjectTutorial(slug) {
     var project_tutorial;
     project_tutorial = this.getUserSetting("project_tutorial");
     if (project_tutorial == null) {
@@ -557,19 +532,19 @@ App = (function() {
     } else {
       return project_tutorial[slug];
     }
-  };
+  }
 
-  App.prototype.setHomeState = function() {
+  setHomeState() {
     if (this.translator.lang !== "en") {
-      return history.replaceState(null, "microStudio", "/" + this.translator.lang + "/");
+      return history.replaceState(null, "microStudio", `/${this.translator.lang}/`);
     } else {
       return history.replaceState(null, "microStudio", "/");
     }
-  };
+  }
 
-  App.prototype.setState = function(state) {};
+  setState(state) {}
 
-  App.prototype.getTierName = function(tier) {
+  getTierName(tier) {
     switch (tier) {
       case "pixel_master":
         return "Pixel Master";
@@ -585,36 +560,34 @@ App = (function() {
         return "Standard";
     }
     return "";
-  };
+  }
 
-  App.prototype.openUserSettings = function() {
+  openUserSettings() {
     this.appui.setMainSection("usersettings");
     this.user_settings.setSection("settings");
     return this.app_state.pushState("user.settings", "/user/settings/");
-  };
+  }
 
-  App.prototype.openUserProfile = function() {
+  openUserProfile() {
     this.appui.setMainSection("usersettings");
     this.user_settings.setSection("profile");
     return this.app_state.pushState("user.profile", "/user/profile/");
-  };
+  }
 
-  App.prototype.openUserProgress = function() {
+  openUserProgress() {
     this.appui.setMainSection("usersettings");
     this.user_settings.setSection("progress");
     return this.app_state.pushState("user.progress", "/user/progress/");
-  };
+  }
 
-  return App;
-
-})();
+};
 
 if (navigator.serviceWorker != null) {
   navigator.serviceWorker.register("/app_sw.js", {
     scope: location.pathname
   }).then(function(reg) {
     return console.log('Registration succeeded. Scope is' + reg.scope);
-  })["catch"](function(error) {
+  }).catch(function(error) {
     return console.log('Registration failed with' + error);
   });
 }

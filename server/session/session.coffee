@@ -115,7 +115,13 @@ class @Session
     @register "set_project_approved",(msg)=>@setProjectApproved msg
     @register "set_user_approved",(msg)=>@setUserApproved msg
 
-    if @server.config.run_relay_service
+    # client / server
+    @register "relay_server_available",(msg) => @relayServerAvailable msg
+    @register "get_relay_server",(msg) => @getRelayServer msg
+    @register "get_server_token",(msg) => @getServerToken msg
+    @register "check_server_token",(msg) => @checkServerToken msg
+
+    if not @server.config.delegate_relay_service
       @relay_service = new RelayService @
 
     for plugin in @server.plugins
@@ -535,6 +541,7 @@ class @Session
         clone.setAspect project.aspect
         clone.set "language",project.language
         clone.setGraphics project.graphics
+        clone.set "networking",project.networking
         clone.set "libs",project.libs
         clone.set "tabs",project.tabs
         clone.set "plugins",project.plugins
@@ -587,6 +594,7 @@ class @Session
           clone.setAspect project.aspect
           clone.set "language",project.language
           clone.setGraphics project.graphics
+          clone.set "networking",project.networking
           clone.set "libs",project.libs
           clone.set "tabs",project.tabs
           clone.set "plugins",project.plugins
@@ -746,6 +754,9 @@ class @Session
           if typeof data.value == "object"
             project.set "libraries",data.value
 
+        when "networking"
+          project.set "networking", data.value? and data.value != false
+
         when "type"
           @content.setProjectType project,data.value if typeof data.value == "string"
 
@@ -820,6 +831,7 @@ class @Session
           tabs: p.tabs
           plugins: p.plugins
           libraries: p.libraries
+          networking: p.networking
           properties: p.properties
           date_created: p.date_created
           last_modified: p.last_modified
@@ -856,6 +868,7 @@ class @Session
           tabs: p.tabs
           plugins: p.plugins
           libraries: p.libraries
+          networking: p.networking
           date_created: p.date_created
           last_modified: p.last_modified
           public: p.public
@@ -1047,6 +1060,7 @@ class @Session
           tabs: p.tabs
           plugins: p.plugins
           libraries: p.libraries
+          networking: p.networking
 
     tags = []
     for t in @content.sorted_tags
@@ -1091,6 +1105,7 @@ class @Session
           tabs: p.tabs
           plugins: p.plugins
           libraries: p.libraries
+          networking: p.networking
 
     @send
       name: "public_plugins"
@@ -1127,6 +1142,7 @@ class @Session
           tabs: p.tabs
           plugins: p.plugins
           libraries: p.libraries
+          networking: p.networking
 
     @send
       name: "public_libraries"
@@ -1165,6 +1181,7 @@ class @Session
             tabs: p.tabs
             plugins: p.plugins
             libraries: p.libraries
+            networking: p.networking
 
           @send
             name: "get_public_project"
@@ -1519,6 +1536,103 @@ class @Session
     if msg.key == @server.config["backup-key"]
       @server.sessionClosed @
       @server.last_backup_time = Date.now()
+
+  relayServerAvailable:(msg)->
+    if msg.key == @server.config["relay-key"]
+      @server.relay_server =
+        address: msg.address
+        session: @
+        time: Date.now()
+
+      @disconnected = ()=>
+        if @server.relay_server? and @ == @server.relay_server.session
+          console.info "relay server disconnected: " + @server.relay_server.address
+          delete @server.relay_server
+
+      console.info "relay server available: "+msg.address
+
+  getRelayServer:(msg)->
+    if not @server.config.delegate_relay_service
+      @send
+        name: "get_relay_server"
+        address: "self"
+        request_id: msg.request_id
+    else
+      if @server.relay_server?
+        @send
+          name: "get_relay_server"
+          address: @server.relay_server.address
+          request_id: msg.request_id
+      else
+        @send
+          name: "error"
+          error: "Relay server not available"
+          request_id: msg.request_id
+
+  getServerToken:(msg)->
+    return if not msg.user_token
+    return if not msg.server_id
+
+    if @server.config.standalone and @content.user_count == 1
+      user = @server.content.users[0]
+    else
+      token = @content.findToken msg.user_token
+      if token? and token.user? and not token.user.flags.deleted
+        user = token.user
+
+    if user?
+      id = msg.server_id.split("/")
+      owner = @server.content.users_by_nick[id[0]]
+      if owner?
+        project = owner.findProjectBySlug id[1]
+        if project?
+          manager = new ProjectManager project
+          if manager.canWrite(user)
+            value = ""
+            chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+            for i in [0..31] by 1
+              value += chars.charAt(Math.floor(Math.random()*chars.length))
+
+            token =
+              value: value
+              time: Date.now()
+              server_id: msg.server_id
+
+            if not @server.server_tokens?
+              @server.server_tokens = {}
+
+            @server.server_tokens[value] = token
+
+            @send
+              name: "get_server_token"
+              token: value
+              request_id: msg.request_id
+
+  serverTokensCleanup:()->
+    if @server.server_tokens?
+      for key,value of @server.server_tokens
+        if value.time < Date.now()-60000
+          delete @server.server_tokens[key]
+ 
+    return
+
+  checkServerToken:(msg)->
+    @serverTokensCleanup()
+    return if not msg.token?
+    @serverTokenCheck msg.token,msg.server_id,()=>
+      @send
+        name: "check_server_token"
+        server_id: msg.server_id
+        token: msg.token
+        valid: true
+        request_id: msg.request_id
+
+  serverTokenCheck:(token,server_id,callback)->
+    if @server.server_tokens?
+      t = @server.server_tokens[token]
+      if t? and t.server_id == server_id
+        delete @server.server_tokens[token]
+        callback()
 
   uploadRequest:(msg)=>
     return if not @user?

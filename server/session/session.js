@@ -237,7 +237,20 @@ this.Session = class Session {
     this.register("set_user_approved", (msg) => {
       return this.setUserApproved(msg);
     });
-    if (this.server.config.run_relay_service) {
+    // client / server
+    this.register("relay_server_available", (msg) => {
+      return this.relayServerAvailable(msg);
+    });
+    this.register("get_relay_server", (msg) => {
+      return this.getRelayServer(msg);
+    });
+    this.register("get_server_token", (msg) => {
+      return this.getServerToken(msg);
+    });
+    this.register("check_server_token", (msg) => {
+      return this.checkServerToken(msg);
+    });
+    if (!this.server.config.delegate_relay_service) {
       this.relay_service = new RelayService(this);
     }
     ref = this.server.plugins;
@@ -804,6 +817,7 @@ this.Session = class Session {
         clone.setAspect(project.aspect);
         clone.set("language", project.language);
         clone.setGraphics(project.graphics);
+        clone.set("networking", project.networking);
         clone.set("libs", project.libs);
         clone.set("tabs", project.tabs);
         clone.set("plugins", project.plugins);
@@ -873,6 +887,7 @@ this.Session = class Session {
           clone.setAspect(project.aspect);
           clone.set("language", project.language);
           clone.setGraphics(project.graphics);
+          clone.set("networking", project.networking);
           clone.set("libs", project.libs);
           clone.set("tabs", project.tabs);
           clone.set("plugins", project.plugins);
@@ -1102,6 +1117,9 @@ this.Session = class Session {
             project.set("libraries", data.value);
           }
           break;
+        case "networking":
+          project.set("networking", (data.value != null) && data.value !== false);
+          break;
         case "type":
           if (typeof data.value === "string") {
             this.content.setProjectType(project, data.value);
@@ -1202,6 +1220,7 @@ this.Session = class Session {
           tabs: p.tabs,
           plugins: p.plugins,
           libraries: p.libraries,
+          networking: p.networking,
           properties: p.properties,
           date_created: p.date_created,
           last_modified: p.last_modified,
@@ -1242,6 +1261,7 @@ this.Session = class Session {
           tabs: p.tabs,
           plugins: p.plugins,
           libraries: p.libraries,
+          networking: p.networking,
           date_created: p.date_created,
           last_modified: p.last_modified,
           public: p.public,
@@ -1515,7 +1535,8 @@ this.Session = class Session {
           libs: p.libs,
           tabs: p.tabs,
           plugins: p.plugins,
-          libraries: p.libraries
+          libraries: p.libraries,
+          networking: p.networking
         });
       }
     }
@@ -1568,7 +1589,8 @@ this.Session = class Session {
           libs: p.libs,
           tabs: p.tabs,
           plugins: p.plugins,
-          libraries: p.libraries
+          libraries: p.libraries,
+          networking: p.networking
         });
       }
     }
@@ -1610,7 +1632,8 @@ this.Session = class Session {
           libs: p.libs,
           tabs: p.tabs,
           plugins: p.plugins,
-          libraries: p.libraries
+          libraries: p.libraries,
+          networking: p.networking
         });
       }
     }
@@ -1654,7 +1677,8 @@ this.Session = class Session {
             libs: p.libs,
             tabs: p.tabs,
             plugins: p.plugins,
-            libraries: p.libraries
+            libraries: p.libraries,
+            networking: p.networking
           };
           return this.send({
             name: "get_public_project",
@@ -2192,6 +2216,136 @@ this.Session = class Session {
     if (msg.key === this.server.config["backup-key"]) {
       this.server.sessionClosed(this);
       return this.server.last_backup_time = Date.now();
+    }
+  }
+
+  relayServerAvailable(msg) {
+    if (msg.key === this.server.config["relay-key"]) {
+      this.server.relay_server = {
+        address: msg.address,
+        session: this,
+        time: Date.now()
+      };
+      this.disconnected = () => {
+        if ((this.server.relay_server != null) && this === this.server.relay_server.session) {
+          console.info("relay server disconnected: " + this.server.relay_server.address);
+          return delete this.server.relay_server;
+        }
+      };
+      return console.info("relay server available: " + msg.address);
+    }
+  }
+
+  getRelayServer(msg) {
+    if (!this.server.config.delegate_relay_service) {
+      return this.send({
+        name: "get_relay_server",
+        address: "self",
+        request_id: msg.request_id
+      });
+    } else {
+      if (this.server.relay_server != null) {
+        return this.send({
+          name: "get_relay_server",
+          address: this.server.relay_server.address,
+          request_id: msg.request_id
+        });
+      } else {
+        return this.send({
+          name: "error",
+          error: "Relay server not available",
+          request_id: msg.request_id
+        });
+      }
+    }
+  }
+
+  getServerToken(msg) {
+    var chars, i, id, j, manager, owner, project, token, user, value;
+    if (!msg.user_token) {
+      return;
+    }
+    if (!msg.server_id) {
+      return;
+    }
+    if (this.server.config.standalone && this.content.user_count === 1) {
+      user = this.server.content.users[0];
+    } else {
+      token = this.content.findToken(msg.user_token);
+      if ((token != null) && (token.user != null) && !token.user.flags.deleted) {
+        user = token.user;
+      }
+    }
+    if (user != null) {
+      id = msg.server_id.split("/");
+      owner = this.server.content.users_by_nick[id[0]];
+      if (owner != null) {
+        project = owner.findProjectBySlug(id[1]);
+        if (project != null) {
+          manager = new ProjectManager(project);
+          if (manager.canWrite(user)) {
+            value = "";
+            chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            for (i = j = 0; j <= 31; i = j += 1) {
+              value += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            token = {
+              value: value,
+              time: Date.now(),
+              server_id: msg.server_id
+            };
+            if (this.server.server_tokens == null) {
+              this.server.server_tokens = {};
+            }
+            this.server.server_tokens[value] = token;
+            return this.send({
+              name: "get_server_token",
+              token: value,
+              request_id: msg.request_id
+            });
+          }
+        }
+      }
+    }
+  }
+
+  serverTokensCleanup() {
+    var key, ref, value;
+    if (this.server.server_tokens != null) {
+      ref = this.server.server_tokens;
+      for (key in ref) {
+        value = ref[key];
+        if (value.time < Date.now() - 60000) {
+          delete this.server.server_tokens[key];
+        }
+      }
+    }
+  }
+
+  checkServerToken(msg) {
+    this.serverTokensCleanup();
+    if (msg.token == null) {
+      return;
+    }
+    return this.serverTokenCheck(msg.token, msg.server_id, () => {
+      return this.send({
+        name: "check_server_token",
+        server_id: msg.server_id,
+        token: msg.token,
+        valid: true,
+        request_id: msg.request_id
+      });
+    });
+  }
+
+  serverTokenCheck(token, server_id, callback) {
+    var t;
+    if (this.server.server_tokens != null) {
+      t = this.server.server_tokens[token];
+      if ((t != null) && t.server_id === server_id) {
+        delete this.server.server_tokens[token];
+        return callback();
+      }
     }
   }
 

@@ -1,15 +1,13 @@
-var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-this.Project = (function() {
-  function Project(app, data) {
+this.Project = class Project {
+  constructor(app, data) {
     var f, k, len1, ref;
+    this.setSourceList = this.setSourceList.bind(this);
+    this.setSpriteList = this.setSpriteList.bind(this);
+    this.setMapList = this.setMapList.bind(this);
+    this.setSoundList = this.setSoundList.bind(this);
+    this.setMusicList = this.setMusicList.bind(this);
+    this.setAssetList = this.setAssetList.bind(this);
     this.app = app;
-    this.setAssetList = bind(this.setAssetList, this);
-    this.setMusicList = bind(this.setMusicList, this);
-    this.setSoundList = bind(this.setSoundList, this);
-    this.setMapList = bind(this.setMapList, this);
-    this.setSpriteList = bind(this.setSpriteList, this);
-    this.setSourceList = bind(this.setSourceList, this);
     this.id = data.id;
     this.owner = data.owner;
     this.accepted = data.accepted;
@@ -18,7 +16,7 @@ this.Project = (function() {
     this.title = data.title;
     this.description = data.description;
     this.tags = data.tags;
-    this["public"] = data["public"];
+    this.public = data.public;
     this.unlisted = data.unlisted;
     this.platforms = data.platforms;
     this.controls = data.controls;
@@ -32,52 +30,51 @@ this.Project = (function() {
     this.tabs = data.tabs;
     this.plugins = data.plugins;
     this.libraries = data.libraries;
+    this.networking = data.networking;
     this.properties = data.properties || {};
     this.flags = data.flags || {};
     this.file_types = ["source", "sprite", "map", "asset", "sound", "music"];
     ref = this.file_types;
     for (k = 0, len1 = ref.length; k < len1; k++) {
       f = ref[k];
-      this[f + "_list"] = [];
-      this[f + "_table"] = {};
-      this[f + "_folder"] = new ProjectFolder(null, f);
+      this[`${f}_list`] = [];
+      this[`${f}_table`] = {};
+      this[`${f}_folder`] = new ProjectFolder(null, f);
     }
     this.locks = {};
     this.lock_time = {};
     this.friends = {};
-    this.url = location.origin + ("/" + this.owner.nick + "/" + this.slug + "/");
+    this.url = location.origin + `/${this.owner.nick}/${this.slug}/`;
     this.listeners = [];
-    setInterval(((function(_this) {
-      return function() {
-        return _this.checkLocks();
-      };
-    })(this)), 1000);
+    setInterval((() => {
+      return this.checkLocks();
+    }), 1000);
     this.pending_changes = [];
     this.onbeforeunload = null;
   }
 
-  Project.prototype.getFullURL = function() {
-    if (this["public"]) {
+  getFullURL() {
+    if (this.public) {
       return this.url;
     } else {
-      return location.origin + ("/" + this.owner.nick + "/" + this.slug + "/" + this.code + "/");
+      return location.origin + `/${this.owner.nick}/${this.slug}/${this.code}/`;
     }
-  };
+  }
 
-  Project.prototype.addListener = function(lis) {
+  addListener(lis) {
     return this.listeners.push(lis);
-  };
+  }
 
-  Project.prototype.notifyListeners = function(change) {
+  notifyListeners(change) {
     var k, len1, lis, ref;
     ref = this.listeners;
     for (k = 0, len1 = ref.length; k < len1; k++) {
       lis = ref[k];
       lis.projectUpdate(change);
     }
-  };
+  }
 
-  Project.prototype.load = function() {
+  load() {
     this.updateSourceList();
     this.updateSpriteList();
     this.updateMapList();
@@ -85,80 +82,74 @@ this.Project = (function() {
     this.updateMusicList();
     this.updateAssetList();
     return this.loadDoc();
-  };
+  }
 
-  Project.prototype.loadDoc = function() {
+  loadDoc() {
     this.app.doc_editor.setDoc("");
-    return this.app.readProjectFile(this.id, "doc/doc.md", (function(_this) {
-      return function(content) {
-        return _this.app.doc_editor.setDoc(content);
-      };
-    })(this));
-  };
+    return this.app.readProjectFile(this.id, "doc/doc.md", (content) => {
+      return this.app.doc_editor.setDoc(content);
+    });
+  }
 
-  Project.prototype.updateFileList = function(folder, callback) {
+  updateFileList(folder, callback) {
     return this.app.client.sendRequest({
       name: "list_project_files",
       project: this.app.project.id,
       folder: folder
-    }, (function(_this) {
-      return function(msg) {
-        return _this[callback](msg.files);
-      };
-    })(this));
-  };
+    }, (msg) => {
+      return this[callback](msg.files);
+    });
+  }
 
-  Project.prototype.updateSourceList = function() {
+  updateSourceList() {
     return this.updateFileList("ms", "setSourceList");
-  };
+  }
 
-  Project.prototype.updateSpriteList = function() {
+  updateSpriteList() {
     return this.updateFileList("sprites", "setSpriteList");
-  };
+  }
 
-  Project.prototype.updateMapList = function() {
+  updateMapList() {
     return this.updateFileList("maps", "setMapList");
-  };
+  }
 
-  Project.prototype.updateSoundList = function() {
+  updateSoundList() {
     return this.updateFileList("sounds", "setSoundList");
-  };
+  }
 
-  Project.prototype.updateMusicList = function() {
+  updateMusicList() {
     return this.updateFileList("music", "setMusicList");
-  };
+  }
 
-  Project.prototype.updateAssetList = function() {
+  updateAssetList() {
     return this.updateFileList("assets", "setAssetList");
-  };
+  }
 
-  Project.prototype.lockFile = function(file) {
+  lockFile(file) {
     var lock;
     lock = this.lock_time[file];
     if ((lock != null) && Date.now() < lock) {
       return;
     }
     this.lock_time[file] = Date.now() + 2000;
-    console.info("locking file " + file);
+    console.info(`locking file ${file}`);
     return this.app.client.sendRequest({
       name: "lock_project_file",
       project: this.id,
       file: file
-    }, (function(_this) {
-      return function(msg) {};
-    })(this));
-  };
+    }, (msg) => {});
+  }
 
-  Project.prototype.fileLocked = function(msg) {
+  fileLocked(msg) {
     this.locks[msg.file] = {
       user: msg.user,
       time: Date.now() + 10000
     };
     this.friends[msg.user] = Date.now() + 120000;
     return this.notifyListeners("locks");
-  };
+  }
 
-  Project.prototype.isLocked = function(file) {
+  isLocked(file) {
     var lock;
     lock = this.locks[file];
     if ((lock != null) && Date.now() < lock.time) {
@@ -166,9 +157,9 @@ this.Project = (function() {
     } else {
       return false;
     }
-  };
+  }
 
-  Project.prototype.checkLocks = function() {
+  checkLocks() {
     var change, file, lock, ref, ref1, time, user;
     change = false;
     ref = this.locks;
@@ -190,9 +181,9 @@ this.Project = (function() {
     if (change) {
       return this.notifyListeners("locks");
     }
-  };
+  }
 
-  Project.prototype.changeSpriteName = function(old, name) {
+  changeSpriteName(old, name) {
     var changed, i, j, k, l, len1, map, n, ref, ref1, ref2, s;
     old = old.replace(/-/g, "/");
     ref = this.map_list;
@@ -219,21 +210,19 @@ this.Project = (function() {
         this.app.client.sendRequest({
           name: "write_project_file",
           project: this.app.project.id,
-          file: "maps/" + map.name + ".json",
+          file: `maps/${map.name}.json`,
           content: map.save()
-        }, (function(_this) {
-          return function(msg) {};
-        })(this));
+        }, (msg) => {});
       }
     }
-  };
+  }
 
-  Project.prototype.changeMapName = function(old, name) {
+  changeMapName(old, name) {
     this.map_table[name] = this.map_table[old];
     return delete this.map_table[old];
-  };
+  }
 
-  Project.prototype.fileUpdated = function(msg) {
+  fileUpdated(msg) {
     var name;
     if (msg.file.indexOf("ms/") === 0) {
       name = msg.file.substring("ms/".length, msg.file.indexOf(".ms"));
@@ -253,13 +242,11 @@ this.Project = (function() {
             this.sprite_table[name].fps = msg.properties.fps;
           }
         }
-        return this.sprite_table[name].reload((function(_this) {
-          return function() {
-            if (name === _this.app.sprite_editor.selected_sprite) {
-              return _this.app.sprite_editor.currentSpriteUpdated();
-            }
-          };
-        })(this));
+        return this.sprite_table[name].reload(() => {
+          if (name === this.app.sprite_editor.selected_sprite) {
+            return this.app.sprite_editor.currentSpriteUpdated();
+          }
+        });
       } else {
         return this.updateSpriteList();
       }
@@ -286,9 +273,9 @@ this.Project = (function() {
         return this.updateAssetList();
       }
     }
-  };
+  }
 
-  Project.prototype.fileDeleted = function(msg) {
+  fileDeleted(msg) {
     if (msg.file.indexOf("ms/") === 0) {
       return this.updateSourceList();
     } else if (msg.file.indexOf("sprites/") === 0) {
@@ -300,41 +287,38 @@ this.Project = (function() {
     } else if (msg.file.indexOf("music/") === 0) {
       return this.updateMusicList();
     }
-  };
+  }
 
-  Project.prototype.optionsUpdated = function(data) {
+  optionsUpdated(data) {
     this.slug = data.slug;
     this.title = data.title;
-    this["public"] = data["public"];
+    this.public = data.public;
     this.platforms = data.platforms;
     this.controls = data.controls;
     this.type = data.type;
     this.orientation = data.orientation;
     return this.aspect = data.aspect;
-  };
+  }
 
-  Project.prototype.addSprite = function(sprite) {
+  addSprite(sprite) {
     var s;
     s = new ProjectSprite(this, sprite.file, null, null, sprite.properties, sprite.size);
     this.sprite_table[s.name] = s;
     this.sprite_list.push(s);
     this.sprite_folder.push(s);
     return s;
-  };
+  }
 
-  Project.prototype.getSprite = function(name) {
+  getSprite(name) {
     return this.sprite_table[name];
-  };
+  }
 
-  Project.prototype.createSprite = function(width, height, name) {
+  createSprite(width, height, name = "sprite") {
     var count, filename, sprite;
-    if (name == null) {
-      name = "sprite";
-    }
     if (this.getSprite(name)) {
       count = 2;
       while (true) {
-        filename = "" + name + (count++);
+        filename = `${name}${count++}`;
         if (this.getSprite(filename) == null) {
           break;
         }
@@ -348,30 +332,27 @@ this.Project = (function() {
     this.sprite_folder.push(sprite);
     this.notifyListeners("spritelist");
     return sprite;
-  };
+  }
 
-  Project.prototype.addSource = function(file) {
+  addSource(file) {
     var s;
     s = new ProjectSource(this, file.file, file.size);
     this.source_table[s.name] = s;
     this.source_list.push(s);
     this.source_folder.push(s);
     return s;
-  };
+  }
 
-  Project.prototype.getSource = function(name) {
+  getSource(name) {
     return this.source_table[name];
-  };
+  }
 
-  Project.prototype.createSource = function(basename) {
+  createSource(basename = "source") {
     var count, filename, source;
-    if (basename == null) {
-      basename = "source";
-    }
     count = 2;
     filename = basename;
     while (this.getSource(filename) != null) {
-      filename = "" + basename + (count++);
+      filename = `${basename}${count++}`;
     }
     source = new ProjectSource(this, filename + ".ms");
     source.fetched = true;
@@ -380,9 +361,9 @@ this.Project = (function() {
     this.source_folder.push(source);
     this.notifyListeners("sourcelist");
     return source;
-  };
+  }
 
-  Project.prototype.getFullSource = function() {
+  getFullSource() {
     var k, len1, ref, res, s;
     res = "";
     ref = this.source_list;
@@ -391,9 +372,9 @@ this.Project = (function() {
       res += s + "\n";
     }
     return res;
-  };
+  }
 
-  Project.prototype.setFileList = function(list, target_list, target_table, get, add, item_id) {
+  setFileList(list, target_list, target_table, get, add, item_id) {
     var f, folder, i, k, l, len1, len2, li, n, notification, ref, s;
     notification = item_id + "list";
     li = [];
@@ -403,6 +384,7 @@ this.Project = (function() {
     }
     folder = this[item_id + "_folder"];
     folder.removeNoMatch(li);
+//@[item_id+"_folder"] = new ProjectFolder(null,item_id)
     for (i = l = ref = target_list.length - 1; l >= 0; i = l += -1) {
       s = target_list[i];
       if (li.indexOf(s.filename) < 0) {
@@ -419,67 +401,64 @@ this.Project = (function() {
     folder.removeEmptyFolders();
     folder.sort();
     return this.notifyListeners(notification);
-  };
+  }
 
-  Project.prototype.setSourceList = function(list) {
+  setSourceList(list) {
     return this.setFileList(list, this.source_list, this.source_table, "getSource", "addSource", "source");
-  };
+  }
 
-  Project.prototype.setSpriteList = function(list) {
+  setSpriteList(list) {
     return this.setFileList(list, this.sprite_list, this.sprite_table, "getSprite", "addSprite", "sprite");
-  };
+  }
 
-  Project.prototype.setMapList = function(list) {
+  setMapList(list) {
     return this.setFileList(list, this.map_list, this.map_table, "getMap", "addMap", "map");
-  };
+  }
 
-  Project.prototype.setSoundList = function(list) {
+  setSoundList(list) {
     return this.setFileList(list, this.sound_list, this.sound_table, "getSound", "addSound", "sound");
-  };
+  }
 
-  Project.prototype.setMusicList = function(list) {
+  setMusicList(list) {
     return this.setFileList(list, this.music_list, this.music_table, "getMusic", "addMusic", "music");
-  };
+  }
 
-  Project.prototype.setAssetList = function(list) {
+  setAssetList(list) {
     return this.setFileList(list, this.asset_list, this.asset_table, "getAsset", "addAsset", "asset");
-  };
+  }
 
-  Project.prototype.addMap = function(file) {
+  addMap(file) {
     var m;
     m = new ProjectMap(this, file.file, file.size);
     this.map_table[m.name] = m;
     this.map_list.push(m);
     this.map_folder.push(m);
     return m;
-  };
+  }
 
-  Project.prototype.getMap = function(name) {
+  getMap(name) {
     return this.map_table[name];
-  };
+  }
 
-  Project.prototype.addAsset = function(file) {
+  addAsset(file) {
     var m;
     m = new ProjectAsset(this, file.file, file.size);
     this.asset_table[m.name] = m;
     this.asset_list.push(m);
     this.asset_folder.push(m);
     return m;
-  };
+  }
 
-  Project.prototype.getAsset = function(name) {
+  getAsset(name) {
     return this.asset_table[name];
-  };
+  }
 
-  Project.prototype.createMap = function(basename) {
+  createMap(basename = "map") {
     var count, m, name;
-    if (basename == null) {
-      basename = "map";
-    }
     name = basename;
     count = 2;
     while (this.getMap(name)) {
-      name = "" + basename + (count++);
+      name = `${basename}${count++}`;
     }
     m = this.addMap({
       file: name + ".json",
@@ -487,17 +466,14 @@ this.Project = (function() {
     });
     this.notifyListeners("maplist");
     return m;
-  };
+  }
 
-  Project.prototype.createSound = function(name, thumbnail, size) {
+  createSound(name = "sound", thumbnail, size) {
     var count, filename, sound;
-    if (name == null) {
-      name = "sound";
-    }
     if (this.getSound(name)) {
       count = 2;
       while (true) {
-        filename = "" + name + (count++);
+        filename = `${name}${count++}`;
         if (this.getSound(filename) == null) {
           break;
         }
@@ -514,30 +490,27 @@ this.Project = (function() {
     this.sound_folder.push(sound);
     this.notifyListeners("soundlist");
     return sound;
-  };
+  }
 
-  Project.prototype.addSound = function(file) {
+  addSound(file) {
     var m;
     m = new ProjectSound(this, file.file, file.size);
     this.sound_table[m.name] = m;
     this.sound_list.push(m);
     this.sound_folder.push(m);
     return m;
-  };
+  }
 
-  Project.prototype.getSound = function(name) {
+  getSound(name) {
     return this.sound_table[name];
-  };
+  }
 
-  Project.prototype.createMusic = function(name, thumbnail, size) {
+  createMusic(name = "music", thumbnail, size) {
     var count, filename, music;
-    if (name == null) {
-      name = "music";
-    }
     if (this.getMusic(name)) {
       count = 2;
       while (true) {
-        filename = "" + name + (count++);
+        filename = `${name}${count++}`;
         if (this.getMusic(filename) == null) {
           break;
         }
@@ -554,30 +527,27 @@ this.Project = (function() {
     this.music_folder.push(music);
     this.notifyListeners("musiclist");
     return music;
-  };
+  }
 
-  Project.prototype.addMusic = function(file) {
+  addMusic(file) {
     var m;
     m = new ProjectMusic(this, file.file, file.size);
     this.music_table[m.name] = m;
     this.music_list.push(m);
     this.music_folder.push(m);
     return m;
-  };
+  }
 
-  Project.prototype.getMusic = function(name) {
+  getMusic(name) {
     return this.music_table[name];
-  };
+  }
 
-  Project.prototype.createAsset = function(name, thumbnail, size, ext) {
+  createAsset(name = "asset", thumbnail, size, ext) {
     var asset, count, filename;
-    if (name == null) {
-      name = "asset";
-    }
     if (this.getAsset(name)) {
       count = 2;
       while (true) {
-        filename = "" + name + (count++);
+        filename = `${name}${count++}`;
         if (this.getAsset(filename) == null) {
           break;
         }
@@ -585,7 +555,7 @@ this.Project = (function() {
     } else {
       filename = name;
     }
-    asset = new ProjectAsset(this, filename + ("." + ext), size);
+    asset = new ProjectAsset(this, filename + `.${ext}`, size);
     if (thumbnail) {
       asset.thumbnail_url = thumbnail;
     }
@@ -594,61 +564,63 @@ this.Project = (function() {
     this.asset_folder.push(asset);
     this.notifyListeners("assetlist");
     return asset;
-  };
+  }
 
-  Project.prototype.setTitle = function(title) {
+  setTitle(title) {
     this.title = title;
     return this.notifyListeners("title");
-  };
+  }
 
-  Project.prototype.setSlug = function(slug) {
+  setSlug(slug) {
     this.slug = slug;
     return this.notifyListeners("slug");
-  };
+  }
 
-  Project.prototype.setCode = function(code) {
+  setCode(code) {
     this.code = code;
     return this.notifyListeners("code");
-  };
+  }
 
-  Project.prototype.setType = function(type1) {
+  setType(type1) {
     this.type = type1;
-  };
+  }
 
-  Project.prototype.setOrientation = function(orientation) {
+  setOrientation(orientation) {
     this.orientation = orientation;
-  };
+  }
 
-  Project.prototype.setAspect = function(aspect) {
+  //window.dispatchEvent(new Event('resize'))
+  setAspect(aspect) {
     this.aspect = aspect;
-  };
+  }
 
-  Project.prototype.setGraphics = function(graphics) {
+  //window.dispatchEvent(new Event('resize'))
+  setGraphics(graphics) {
     this.graphics = graphics;
-  };
+  }
 
-  Project.prototype.setLanguage = function(language) {
+  //window.dispatchEvent(new Event('resize'))
+  setLanguage(language) {
     this.language = language;
-  };
+  }
 
-  Project.prototype.addPendingChange = function(item) {
+  //window.dispatchEvent(new Event('resize'))
+  addPendingChange(item) {
     if (this.pending_changes.indexOf(item) < 0) {
       this.pending_changes.push(item);
     }
     if (this.onbeforeunload == null) {
-      this.onbeforeunload = (function(_this) {
-        return function(event) {
-          event.preventDefault();
-          event.returnValue = "You have pending unsaved changed.";
-          _this.savePendingChanges();
-          return event.returnValue;
-        };
-      })(this);
+      this.onbeforeunload = (event) => {
+        event.preventDefault();
+        event.returnValue = "You have pending unsaved changed.";
+        this.savePendingChanges();
+        return event.returnValue;
+      };
       return window.addEventListener("beforeunload", this.onbeforeunload);
     }
-  };
+  }
 
-  Project.prototype.removePendingChange = function(item) {
+  removePendingChange(item) {
     var index;
     index = this.pending_changes.indexOf(item);
     if (index >= 0) {
@@ -660,44 +632,42 @@ this.Project = (function() {
         return this.onbeforeunload = null;
       }
     }
-  };
+  }
 
-  Project.prototype.savePendingChanges = function(callback) {
+  savePendingChanges(callback) {
     var save;
     if (this.pending_changes.length > 0) {
       save = this.pending_changes.splice(0, 1)[0];
-      return save.forceSave((function(_this) {
-        return function() {
-          return _this.savePendingChanges(callback);
-        };
-      })(this));
+      return save.forceSave(() => {
+        return this.savePendingChanges(callback);
+      });
     } else {
       if (callback != null) {
         return callback();
       }
     }
-  };
+  }
 
-  Project.prototype.getSize = function() {
+  getSize() {
     var k, l, len1, len2, ref, s, size, t, type;
     size = 0;
     ref = this.file_types;
     for (k = 0, len1 = ref.length; k < len1; k++) {
       type = ref[k];
-      t = this[type + "_list"];
+      t = this[`${type}_list`];
       for (l = 0, len2 = t.length; l < len2; l++) {
         s = t[l];
         size += s.size;
       }
     }
     return size;
-  };
+  }
 
-  Project.prototype.writeFile = function(name, content, options) {
+  writeFile(name, content, options) {
     var folder, i, k, ref;
     name = name.split("/");
     folder = name[0];
-    for (i = k = 0, ref = name.length - 1; 0 <= ref ? k <= ref : k >= ref; i = 0 <= ref ? ++k : --k) {
+    for (i = k = 0, ref = name.length - 1; (0 <= ref ? k <= ref : k >= ref); i = 0 <= ref ? ++k : --k) {
       name[i] = RegexLib.fixFilename(name[i]);
     }
     name = name.slice(1).join("-");
@@ -715,22 +685,20 @@ this.Project = (function() {
       case "assets":
         return this.writeAssetFile(name, content, options.ext);
     }
-  };
+  }
 
-  Project.prototype.writeSourceFile = function(name, content) {
+  writeSourceFile(name, content) {
     return this.app.client.sendRequest({
       name: "write_project_file",
       project: this.id,
-      file: "ms/" + name + ".ms",
+      file: `ms/${name}.ms`,
       content: content
-    }, (function(_this) {
-      return function(msg) {
-        return _this.updateSourceList();
-      };
-    })(this));
-  };
+    }, (msg) => {
+      return this.updateSourceList();
+    });
+  }
 
-  Project.prototype.writeSoundFile = function(name, content) {
+  writeSoundFile(name, content) {
     var audioContext, base64ToArrayBuffer;
     base64ToArrayBuffer = function(base64) {
       var binary_string, bytes, i, k, len, ref;
@@ -743,27 +711,25 @@ this.Project = (function() {
       return bytes.buffer;
     };
     audioContext = new AudioContext();
-    return audioContext.decodeAudioData(base64ToArrayBuffer(content), (function(_this) {
-      return function(decoded) {
-        var thumbnailer;
-        console.info(decoded);
-        thumbnailer = new SoundThumbnailer(decoded, 96, 64);
-        return _this.app.client.sendRequest({
-          name: "write_project_file",
-          project: _this.id,
-          file: "sounds/" + name + ".wav",
-          properties: {},
-          content: content,
-          thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
-        }, function(msg) {
-          console.info(msg);
-          return _this.updateSoundList();
-        });
-      };
-    })(this));
-  };
+    return audioContext.decodeAudioData(base64ToArrayBuffer(content), (decoded) => {
+      var thumbnailer;
+      console.info(decoded);
+      thumbnailer = new SoundThumbnailer(decoded, 96, 64);
+      return this.app.client.sendRequest({
+        name: "write_project_file",
+        project: this.id,
+        file: `sounds/${name}.wav`,
+        properties: {},
+        content: content,
+        thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
+      }, (msg) => {
+        console.info(msg);
+        return this.updateSoundList();
+      });
+    });
+  }
 
-  Project.prototype.writeMusicFile = function(name, content) {
+  writeMusicFile(name, content) {
     var audioContext, base64ToArrayBuffer;
     base64ToArrayBuffer = function(base64) {
       var binary_string, bytes, i, k, len, ref;
@@ -776,66 +742,61 @@ this.Project = (function() {
       return bytes.buffer;
     };
     audioContext = new AudioContext();
-    return audioContext.decodeAudioData(base64ToArrayBuffer(content), (function(_this) {
-      return function(decoded) {
-        var thumbnailer;
-        console.info(decoded);
-        thumbnailer = new SoundThumbnailer(decoded, 192, 64, "hsl(200,80%,60%)");
-        return _this.app.client.sendRequest({
-          name: "write_project_file",
-          project: _this.id,
-          file: "music/" + name + ".mp3",
-          properties: {},
-          content: content,
-          thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
-        }, function(msg) {
-          console.info(msg);
-          return _this.updateMusicList();
-        });
-      };
-    })(this));
-  };
+    return audioContext.decodeAudioData(base64ToArrayBuffer(content), (decoded) => {
+      var thumbnailer;
+      console.info(decoded);
+      thumbnailer = new SoundThumbnailer(decoded, 192, 64, "hsl(200,80%,60%)");
+      return this.app.client.sendRequest({
+        name: "write_project_file",
+        project: this.id,
+        file: `music/${name}.mp3`,
+        properties: {},
+        content: content,
+        thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
+      }, (msg) => {
+        console.info(msg);
+        return this.updateMusicList();
+      });
+    });
+  }
 
-  Project.prototype.writeSpriteFile = function(name, content, frames, fps) {
+  writeSpriteFile(name, content, frames, fps) {
     return this.app.client.sendRequest({
       name: "write_project_file",
       project: this.id,
-      file: "sprites/" + name + ".png",
+      file: `sprites/${name}.png`,
       properties: {
         frames: frames,
         fps: fps
       },
       content: content
-    }, (function(_this) {
-      return function(msg) {
-        return _this.fileUpdated({
-          file: "sprites/" + name + ".png",
-          properties: {
-            frames: frames,
-            fps: fps
-          }
-        });
-      };
-    })(this));
-  };
+    }, (msg) => {
+      return this.fileUpdated({
+        file: `sprites/${name}.png`,
+        properties: {
+          frames: frames,
+          fps: fps
+        }
+      });
+    });
+  }
 
-  Project.prototype.writeMapFile = function(name, content) {
+  // @updateSpriteList()
+  writeMapFile(name, content) {
     return this.app.client.sendRequest({
       name: "write_project_file",
       project: this.id,
-      file: "maps/" + name + ".json",
+      file: `maps/${name}.json`,
       content: content
-    }, (function(_this) {
-      return function(msg) {
-        _this.fileUpdated({
-          file: "maps/" + name + ".json"
-        });
-        return _this.updateMapList();
-      };
-    })(this));
-  };
+    }, (msg) => {
+      this.fileUpdated({
+        file: `maps/${name}.json`
+      });
+      return this.updateMapList();
+    });
+  }
 
-  Project.prototype.writeAssetFile = function(name, content, ext) {
+  writeAssetFile(name, content, ext) {
     var send, thumbnail;
     if (ext === "json") {
       content = JSON.stringify(content);
@@ -848,32 +809,26 @@ this.Project = (function() {
     if (ext === "obj") {
       content = btoa(content);
     }
-    send = (function(_this) {
-      return function() {
-        return _this.app.client.sendRequest({
-          name: "write_project_file",
-          project: _this.id,
-          file: "assets/" + name + "." + ext,
-          content: content,
-          thumbnail: thumbnail
-        }, function(msg) {
-          return _this.updateAssetList();
-        });
-      };
-    })(this);
+    send = () => {
+      return this.app.client.sendRequest({
+        name: "write_project_file",
+        project: this.id,
+        file: `assets/${name}.${ext}`,
+        content: content,
+        thumbnail: thumbnail
+      }, (msg) => {
+        return this.updateAssetList();
+      });
+    };
     if (ext === "png" || ext === "jpg") {
-      this.app.assets_manager.image_viewer.createThumbnail(content, (function(_this) {
-        return function(canvas) {
-          thumbnail = canvas.toDataURL().split(",")[1];
-          content = content.split(",")[1];
-          return send();
-        };
-      })(this));
+      this.app.assets_manager.image_viewer.createThumbnail(content, (canvas) => {
+        thumbnail = canvas.toDataURL().split(",")[1];
+        content = content.split(",")[1];
+        return send();
+      });
       return;
     }
     return send();
-  };
+  }
 
-  return Project;
-
-})();
+};

@@ -78,6 +78,7 @@ AppUI = class AppUI {
       document.getElementById("createprojectoption-type").value = "app";
       document.getElementById("createprojectoption-language").value = "microscript_v2";
       document.getElementById("createprojectoption-graphics").value = "M1";
+      document.getElementById("createprojectoption-networking").checked = false;
       document.getElementById("create-project-option-lib-matterjs").checked = false;
       document.getElementById("create-project-option-lib-cannonjs").checked = false;
       return this.hideAdvanced();
@@ -144,6 +145,7 @@ AppUI = class AppUI {
           type: document.getElementById("createprojectoption-type").value,
           language: document.getElementById("createprojectoption-language").value,
           graphics: document.getElementById("createprojectoption-graphics").value,
+          networking: document.getElementById("createprojectoption-networking").checked,
           libs: libs
         });
         this.hide("create-project-overlay");
@@ -154,6 +156,9 @@ AppUI = class AppUI {
     this.code_splitbar = new SplitBar("code-section", "horizontal");
     this.runtime_splitbar = new SplitBar("runtime-container", "vertical");
     this.runtime_splitbar.initPosition(67);
+    this.server_splitbar = new SplitBar("runtime-terminal", "horizontal");
+    this.server_splitbar.initPosition(50);
+    this.server_splitbar.closed1 = true;
     this.debug_splitbar = new SplitBar("terminal-debug-container", "horizontal");
     this.debug_splitbar.closed2 = true;
     this.debug_splitbar.splitbar_size = 12;
@@ -381,6 +386,7 @@ AppUI = class AppUI {
     }
     if (section === "code") {
       this.code_splitbar.update();
+      this.server_splitbar.update();
       this.debug_splitbar.update();
       this.runtime_splitbar.update();
       this.app.runwindow.windowResized();
@@ -480,6 +486,7 @@ AppUI = class AppUI {
     }
     if (section === "projects") {
       this.code_splitbar.update();
+      this.server_splitbar.update();
       this.debug_splitbar.update();
       this.runtime_splitbar.update();
       this.app.runwindow.windowResized();
@@ -939,6 +946,7 @@ AppUI = class AppUI {
     this.debug_splitbar.closed2 = true;
     this.debug_splitbar.update();
     this.runtime_splitbar.initPosition(50);
+    this.server_splitbar.initPosition(50);
     this.app.runwindow.terminal.start();
     this.updateActiveUsers();
     return this.doc_splitbar.initPosition(50);

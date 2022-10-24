@@ -4,7 +4,24 @@ this.MPServerConnection = class MPServerConnection {
     this.status = "connecting";
     impl = new MPServerConnectionImpl(this);
     this.send = (data) => {
-      return impl.sendMessage(data);
+      var err;
+      try {
+        impl.sendMessage(data);
+        return "sent";
+      } catch (error) {
+        err = error;
+        console.error(err);
+        return err.toString();
+      }
+    };
+    this.close = () => {
+      var err;
+      try {
+        return impl.close();
+      } catch (error) {
+        err = error;
+        return console.error(err);
+      }
     };
     this.messages = [];
   }
@@ -13,12 +30,13 @@ this.MPServerConnection = class MPServerConnection {
 
 this.MPServerConnectionImpl = class MPServerConnectionImpl {
   constructor(_interface) {
-    var err, reconnect_delay;
+    var err;
     this.interface = _interface;
     this.status = "connecting";
-    reconnect_delay = 1000;
     try {
-      this.connect();
+      this.getRelay((address) => {
+        return this.connect(address);
+      });
     } catch (error) {
       err = error;
       console.error(err);
@@ -27,11 +45,28 @@ this.MPServerConnectionImpl = class MPServerConnectionImpl {
     player.runtime.addConnection(this);
   }
 
-  connect() {
-    this.socket = new WebSocket("ws://localhost:8080");
+  getRelay(callback) {
+    return player.client.sendRequest({
+      name: "get_relay_server"
+    }, (msg) => {
+      var address;
+      if (msg.name === "error") {
+        this.interface.status = "error";
+        return this.interface.error = msg.error;
+      } else {
+        address = msg.address;
+        if (address === "self") {
+          address = location.origin.replace("http", "ws");
+        }
+        return callback(address);
+      }
+    });
+  }
+
+  connect(address) {
+    this.socket = new WebSocket(address);
     this.socket.onmessage = (msg) => {
       var err;
-      console.info("received: " + msg.data);
       try {
         msg = JSON.parse(msg.data);
         switch (msg.name) {
@@ -45,24 +80,21 @@ this.MPServerConnectionImpl = class MPServerConnectionImpl {
     };
     this.socket.onopen = () => {
       this.interface.status = "connected";
-      this.reconnect_delay = 1000;
       return this.send({
         name: "mp_client_connection",
-        server_id: "user/project"
+        server_id: ms_project_id
       });
     };
     return this.socket.onclose = () => {
-      this.interface.status = "connecting";
-      setTimeout((() => {
-        return this.connect();
-      }), this.reconnect_delay);
-      return this.reconnect_delay += 1000;
+      return this.interface.status = "disconnected";
     };
   }
 
   update() {
-    this.interface.messages = this.messages;
-    return this.messages = [];
+    if (this.messages.length > 0 || this.interface.messages.length > 0) {
+      this.interface.messages = this.messages;
+      return this.messages = [];
+    }
   }
 
   sendMessage(data) {
@@ -74,6 +106,10 @@ this.MPServerConnectionImpl = class MPServerConnectionImpl {
 
   send(data) {
     return this.socket.send(JSON.stringify(data));
+  }
+
+  close() {
+    return this.socket.close();
   }
 
 };

@@ -122,19 +122,24 @@ this.SplitBar = class SplitBar {
     switch (this.type) {
       case "horizontal":
         this.total_width = w = this.element.clientWidth - this.splitbar.clientWidth;
-        if (!this.closed2) {
+        if (this.closed2) {
+          this.side1.style.width = this.element.clientWidth + "px";
+          this.splitbar.style.display = "none";
+          return this.side2.style.display = "none";
+        } else if (this.closed1) {
+          this.side2.style.width = this.element.clientWidth + "px";
+          this.splitbar.style.display = "none";
+          return this.side1.style.display = "none";
+        } else {
+          this.side1.style.display = "block";
+          this.side2.style.display = "block";
           w1 = Math.min(Math.max(1, Math.round(this.position / 100 * w)), Math.round(w - 1));
           w2 = w1 + Math.max(this.splitbar.clientWidth, this.splitbar_size);
           w3 = this.element.clientWidth - w2;
           this.side1.style.width = w1 + "px";
           this.splitbar.style.left = w1 + "px";
           this.side2.style.width = w3 + "px";
-          this.splitbar.style.display = "block";
-          return this.side2.style.display = "block";
-        } else {
-          this.side1.style.width = this.element.clientWidth + "px";
-          this.splitbar.style.display = "none";
-          return this.side2.style.display = "none";
+          return this.splitbar.style.display = "block";
         }
         break;
       default:

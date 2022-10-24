@@ -3,6 +3,7 @@ server/.greenlockrc
 server/greenlock.d
 config.json
 server/node_modules/
+server/relay/config.json
 files/
 data/
 .DS_Store

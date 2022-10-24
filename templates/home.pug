@@ -535,6 +535,12 @@ html(lang=language)
                 option(value="PIXI") #{translator.get("Pixi.js - Experimental")}
                 option(value="BABYLON") #{translator.get("Babylon.js - Experimental")}
 
+            div.createprojectoption#create-project-option-networking
+              h3 #{translator.get("Networking")} <span class="beta-pill">beta</span>
+              input(type="checkbox" id="createprojectoption-networking")
+              label(for="createprojectoption-networking") #{translator.get("Enable networking features")}
+              div.tip #{translator.get("Create online multiplayer games using a client/server networking model")}
+
             div.createprojectoption#create-project-option-libs
               h3 #{translator.get("Additional tools and libraries")}
               each val,key in optional_libs

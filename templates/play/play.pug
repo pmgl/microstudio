@@ -81,6 +81,8 @@ html
       var graphics = '!{game.graphics}' ;
       var ms_libs = !{game.libs} ;
       window.ms_in_editor = !{debug} ;
+      window.ms_project_id = '!{game.author}/!{game.name}' ;
+      window.ms_use_server = !{game.networking} ;
 
     each file in javascript_files
       script(src=file)

@@ -220,8 +220,8 @@
   color: rgba(255,255,255,.8) ;
   white-space: nowrap;
   overflow: hidden ;
-  padding: 6px 10px ;
-  font-size: 14px ;
+  padding: 6px 20px ;
+  font-size: 16px ;
 }
 #debug-timemachine-bar * {
   vertical-align: middle ;

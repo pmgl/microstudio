@@ -114,6 +114,7 @@ class @ExportFeatures
     type: project.type
     language: project.language
     graphics: project.graphics
+    networking: project.networking
     libs: project.libs
     tabs: project.tabs
     plugins: project.plugins

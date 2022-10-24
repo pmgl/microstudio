@@ -196,7 +196,62 @@ a#run-link {
   left: 2px ;
   right: 2px ;
   bottom: 2px ;
+  overflow: hidden ;
 }
+
+#serverbar {
+  display: none ;
+  position: absolute ;
+  bottom: 2px ;
+  left: 2px ;
+  right: 2px ;
+  box-sizing: border-box ;
+  height: 40px ;
+  background: hsl(240,20%,50%) ;
+  text-align: left ;
+  padding: 7px 20px ;
+  white-space: nowrap ;
+  overflow: hidden ;
+}
+
+#serverbar i {
+  margin-right: 10px ;
+}
+
+#serverbar i.status {
+  margin: 0 10px 0 20px ;
+  background: hsl(0,50%,40%) ;
+  border-radius: 40px ;
+  border: solid 2px rgba(0,0,0,.5) ;
+  width: 14px ;
+  height: 14px ;
+  display: inline-block ;
+  position: relative ;
+  top: 3px ;
+}
+
+#serverbar i.status.running {
+  background: hsl(160,100%,60%) ;
+}
+
+#serverbar .button {
+  border-radius: 5px ;
+  background: hsl(240,20%,30%) ;
+  color: #FFF ;
+  padding: 3px 10px ;
+  display: inline-block ;
+  cursor: pointer ;
+  margin-left: 20px ;
+}
+
+.server-open .devicecontainer {
+  bottom: 44px ;
+}
+
+.server-open #serverbar {
+  display: block ;
+}
+
 #device {
   position: absolute ;
   top: 0px ;
@@ -717,4 +772,32 @@ a#run-link {
 }
 .lib-box > div > a.docbutton {
   color: rgba(255,255,255,.8) ;
+}
+
+#runtime-server-view {
+  position: absolute ;
+  left: 0 ;
+  top: 0 ;
+  bottom: 0 ;
+  overflow: hidden ;
+}
+
+#runtime-server-splitbar {
+  background: hsl(200,30%,30%);
+  position: absolute ;
+  left: 100px ;
+  top: 0px ;
+  bottom: 0 ;
+  width: 12px ;
+  cursor: ew-resize;
+  z-index: 3 ;
+  box-sizing: border-box ;
+  border-right: solid 2px #000 ;
+}
+
+#runtime-console-view {
+  position: absolute ;
+  right: 0 ;
+  top: 0 ;
+  bottom: 0 ;
 }

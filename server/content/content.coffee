@@ -350,6 +350,7 @@ class @Content
       type: data.type
       language: data.language
       graphics: data.graphics
+      networking: data.networking
       libs: data.libs
       tabs: data.tabs
       plugins: data.plugins

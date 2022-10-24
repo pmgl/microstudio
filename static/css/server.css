@@ -37,7 +37,7 @@ margin: 4px 1px;
   left: 5px ;
   right: 5px ;
   box-sizing: border-box ;
-  height: 40px ;
+  height: 20px ;
   color: #CCC ;
   font-size: 10px ;
   vertical-align: middle;
@@ -45,13 +45,19 @@ margin: 4px 1px;
 }
 
 #logo {
-  width: 185px ;
+  width: 130px ;
   margin-right: 10px ;
+}
+
+@media screen and (max-width: 400px) {
+  #logo {
+    display: none ;
+  }
 }
 
 #terminal {
   position: fixed ;
-  top: 50px ;
+  top: 40px ;
   left: 5px ;
   right: 5px ;
   bottom: 5px ;

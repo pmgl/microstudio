@@ -82,7 +82,18 @@ class @SplitBar
       when "horizontal"
         @total_width = w = @element.clientWidth-@splitbar.clientWidth
 
-        if not @closed2
+        if @closed2
+          @side1.style.width = @element.clientWidth+"px"
+          @splitbar.style.display = "none"
+          @side2.style.display = "none"
+        else if @closed1
+          @side2.style.width = @element.clientWidth+"px"
+          @splitbar.style.display = "none"
+          @side1.style.display = "none"
+        else
+          @side1.style.display = "block"
+          @side2.style.display = "block"
+
           w1 = Math.min(Math.max(1,Math.round(@position/100*w)),Math.round(w-1))
           w2 = w1+Math.max(@splitbar.clientWidth,@splitbar_size)
           w3 = @element.clientWidth-w2
@@ -91,11 +102,6 @@ class @SplitBar
           @splitbar.style.left = w1+"px"
           @side2.style.width = w3+"px"
           @splitbar.style.display = "block"
-          @side2.style.display = "block"
-        else
-          @side1.style.width = @element.clientWidth+"px"
-          @splitbar.style.display = "none"
-          @side2.style.display = "none"
       else
         @total_height = h = @element.clientHeight-@splitbar.clientHeight
 

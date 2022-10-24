@@ -12,7 +12,7 @@ class @Player
     else
       @sources.main = document.getElementById("code").innerText
       @start()
-
+      
   loadSource:(source)->
     req = new XMLHttpRequest()
     req.onreadystatechange = (event) =>
@@ -28,6 +28,11 @@ class @Player
     req.send()
 
   start:()->
+    window.addEventListener "message",(msg)=>@messageReceived(msg)
+    @postMessage
+      name: "get_token"
+
+  serverStart:()->
     @runtime = new Runtime((if window.exported_project then "" else location.origin+location.pathname),@sources,resources,@)
 
     @client = new PlayerClient @
@@ -36,8 +41,6 @@ class @Player
     @terminal.start()
 
     @runtime.start()
-
-    window.addEventListener "message",(msg)=>@messageReceived(msg)
 
     @postMessage
       name: "focus"
@@ -69,6 +72,10 @@ class @Player
     try
       data = JSON.parse data
       switch data.name
+        when "set_token"
+          window.ms_server_token = data.token
+          @serverStart()
+          
         when "command"
           @runtime.runCommand data.line,(res)=>
             if not data.line.trim().startsWith("print")

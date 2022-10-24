@@ -45,6 +45,11 @@ html
       var graphics = '!{game.graphics}' ;
       var ms_libs = !{game.libs} ;
       window.ms_in_editor = !{debug} ;
+      window.ms_project_id = '!{game.author}/!{game.name}' ;
+
+      if (location.href.includes("?srv") && parent == window) {
+        location.href = location.href.replace("?srv","?server") ;
+      }
 
     each file in javascript_files
       script(src=file)

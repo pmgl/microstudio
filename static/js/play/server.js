@@ -41,14 +41,20 @@ this.Player = class Player {
   }
 
   start() {
+    window.addEventListener("message", (msg) => {
+      return this.messageReceived(msg);
+    });
+    return this.postMessage({
+      name: "get_token"
+    });
+  }
+
+  serverStart() {
     this.runtime = new Runtime((window.exported_project ? "" : location.origin + location.pathname), this.sources, resources, this);
     this.client = new PlayerClient(this);
     this.terminal = new Terminal(this);
     this.terminal.start();
     this.runtime.start();
-    window.addEventListener("message", (msg) => {
-      return this.messageReceived(msg);
-    });
     return this.postMessage({
       name: "focus"
     });
@@ -94,6 +100,9 @@ this.Player = class Player {
     try {
       data = JSON.parse(data);
       switch (data.name) {
+        case "set_token":
+          window.ms_server_token = data.token;
+          return this.serverStart();
         case "command":
           return this.runtime.runCommand(data.line, (res) => {
             if (!data.line.trim().startsWith("print")) {

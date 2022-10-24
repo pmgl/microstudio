@@ -12,7 +12,7 @@ class @FloatingWindow
     document.addEventListener "mouseup",(event)=>@mouseUp(event)
     window.addEventListener "resize",()=>
       b = @window.getBoundingClientRect()
-      @setPosition b.x,b.y
+      @setPosition b.x - @getParentX(), b.y - @getParentY()
 
     document.querySelector("##{@elementid} .titlebar .minify").addEventListener "click",()=>@close()
     @max_ratio = .75
@@ -41,8 +41,12 @@ class @FloatingWindow
     @moving = true
     @drag_start_x = event.clientX
     @drag_start_y = event.clientY
-    @drag_pos_x = @window.getBoundingClientRect().x
-    @drag_pos_y = @window.getBoundingClientRect().y
+    @drag_pos_x = @window.getBoundingClientRect().x - @getParentX()
+    @drag_pos_y = @window.getBoundingClientRect().y - @getParentY()
+    list = document.querySelectorAll "iframe"
+    for e in list
+      e.classList.add "ignoreMouseEvents"
+    return
 
   startResize:(event)->
     @resizing = true
@@ -50,6 +54,34 @@ class @FloatingWindow
     @drag_start_y = event.clientY
     @drag_size_w = @window.getBoundingClientRect().width
     @drag_size_h = @window.getBoundingClientRect().height
+    list = document.querySelectorAll "iframe"
+    for e in list
+      e.classList.add "ignoreMouseEvents"
+    return
+
+  getParentX:()->
+    if @window.parentNode?
+      @window.parentNode.getBoundingClientRect().x
+    else
+      0
+    
+  getParentY:()->
+    if @window.parentNode?
+      @window.parentNode.getBoundingClientRect().y
+    else
+      0
+    
+  getParentWidth:()->
+    if @window.parentNode? and @window.parentNode != document.body
+      @window.parentNode.clientWidth
+    else
+      window.innerWidth
+
+  getParentHeight:()->
+    if @window.parentNode? and @window.parentNode != document.body
+      @window.parentNode.clientHeight
+    else
+      window.innerHeight
 
   mouseMove:(event)->
     if @moving
@@ -60,14 +92,14 @@ class @FloatingWindow
     if @resizing
       dx = event.clientX-@drag_start_x
       dy = event.clientY-@drag_start_y
-      w = Math.floor Math.max(200,Math.min(window.innerWidth*@max_ratio,@drag_size_w+dx))
-      h = Math.floor Math.max(200,Math.min(window.innerHeight*@max_ratio,@drag_size_h+dy))
+      w = Math.floor Math.max(200,Math.min(@getParentWidth()*@max_ratio,@drag_size_w+dx))
+      h = Math.floor Math.max(200,Math.min(@getParentHeight()*@max_ratio,@drag_size_h+dy))
       if not @options.fixed_size
         @window.style.width = "#{w}px"
         @window.style.height = "#{h}px"
       b = @window.getBoundingClientRect()
-      if w>window.innerWidth-b.x or h>window.innerHeight-b.y
-        @setPosition(Math.min(b.x,window.innerWidth-w-4),Math.min(b.y,window.innerHeight-h-4))
+      if w>@getParentWidth()-b.x or h>@getParentHeight()-b.y
+        @setPosition(Math.min(b.x-@getParentX(),@getParentWidth()-w-4),Math.min(b.y-@getParentY(),@getParentHeight()-h-4))
 
       if @listener? and @listener.floatingWindowResized?
         @listener.floatingWindowResized()
@@ -75,11 +107,15 @@ class @FloatingWindow
   mouseUp:(event)->
     @moving = false
     @resizing = false
+    list = document.querySelectorAll "iframe"
+    for e in list
+      e.classList.remove "ignoreMouseEvents"
+    return
 
   setPosition:(x,y)->
     b = @window.getBoundingClientRect()
-    x = Math.max(4-b.width/2,Math.min(window.innerWidth-b.width/2-4,x))
-    y = Math.max(4,Math.min(window.innerHeight-b.height/2-4,y))
+    x = Math.max(4-b.width/2,Math.min(@getParentWidth()-b.width/2-4,x))
+    y = Math.max(4,Math.min(@getParentHeight()-b.height/2-4,y))
     @window.style.top = y+"px"
     @window.style.left = x+"px"
 
