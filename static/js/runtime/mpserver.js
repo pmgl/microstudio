@@ -207,6 +207,9 @@ this.MPClient = class MPClient {
       messages_received: [],
       send: (data) => {
         return this.sendMessage(data);
+      },
+      disconnect: () => {
+        return this.disconnect();
       }
     };
     this.message_buffer = [];
@@ -217,6 +220,13 @@ this.MPClient = class MPClient {
       name: "mp_server_message",
       client_id: this.client_id,
       data: data
+    });
+  }
+
+  disconnect() {
+    return this.server.send({
+      name: "mp_disconnect_client",
+      client_id: this.client_id
     });
   }
 

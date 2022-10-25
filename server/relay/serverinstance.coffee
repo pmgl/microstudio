@@ -7,6 +7,7 @@ class @ServerInstance
     @client_id = 1
 
     @session.register "mp_server_message",(msg)=>@message(msg)
+    @session.register "mp_disconnect_client",(msg)=>@disconnectClient(msg)
     @session.disconnected = ()=>
       @relay.serverDisconnected @
       @stop()
@@ -19,6 +20,14 @@ class @ServerInstance
       client.send
         name: "mp_server_message"
         data: msg.data
+
+  disconnectClient:(msg)->
+    client = @connected_clients[msg.client_id]
+    if client?
+      try
+        client.socket.close()
+      catch err
+        console.error err
 
   stop:()->
     clearInterval @interval

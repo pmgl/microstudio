@@ -13,6 +13,9 @@ this.ServerInstance = class ServerInstance {
     this.session.register("mp_server_message", (msg) => {
       return this.message(msg);
     });
+    this.session.register("mp_disconnect_client", (msg) => {
+      return this.disconnectClient(msg);
+    });
     this.session.disconnected = () => {
       var client, key, ref, results;
       this.relay.serverDisconnected(this);
@@ -35,6 +38,19 @@ this.ServerInstance = class ServerInstance {
         name: "mp_server_message",
         data: msg.data
       });
+    }
+  }
+
+  disconnectClient(msg) {
+    var client, err;
+    client = this.connected_clients[msg.client_id];
+    if (client != null) {
+      try {
+        return client.socket.close();
+      } catch (error) {
+        err = error;
+        return console.error(err);
+      }
     }
   }
 

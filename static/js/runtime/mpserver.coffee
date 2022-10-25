@@ -151,6 +151,7 @@ class @MPClient
       status: "connected"
       messages_received: []
       send:(data)=> @sendMessage(data)
+      disconnect:()=> @disconnect()
 
     @message_buffer = []
 
@@ -159,6 +160,11 @@ class @MPClient
       name: "mp_server_message"
       client_id: @client_id
       data: data
+  
+  disconnect:()->
+    @server.send
+      name: "mp_disconnect_client"
+      client_id: @client_id
   
   message:(msg)->
     @message_buffer.push msg
