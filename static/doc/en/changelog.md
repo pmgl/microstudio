@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2022-10-25
+* Networking (beta)!!!
+  * create multiplayer games
+  * run and test everything from the microStudio editor, nothing to install
+
 ### Update 2022-10-05
 * Fixed `for in` wrong behavior on number / zero (ms 2.0)
 * JavaScript execution change unlocks the VM JIT
