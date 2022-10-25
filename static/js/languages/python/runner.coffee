@@ -97,6 +97,24 @@ def __init():
   except Error as err:
     sys.stderr.write(traceback.format_exception(err))
 
+def __serverInit():
+  try:
+    serverInit()
+  except BaseException as err:
+    sys.stderr.write(traceback.format_exception(err))
+
+  except Error as err:
+    sys.stderr.write(traceback.format_exception(err))
+
+def __serverUpdate():
+  try:
+    serverUpdate()
+  except BaseException as err:
+    sys.stderr.write(traceback.format_exception(err))
+
+  except Error as err:
+    sys.stderr.write(traceback.format_exception(err))
+
 if "draw" in globals():
   window.draw = __draw
 
@@ -105,6 +123,13 @@ if "update" in globals():
 
 if "init" in globals():
   window.init = __init
+
+if "serverInit" in globals():
+  window.serverInit = __serverInit
+
+if "serverUpdate" in globals():
+  window.serverUpdate = __serverUpdate
+
       """
 
       python(program,"__init__")
@@ -114,7 +139,7 @@ if "init" in globals():
       throw err.toString()
 
   call:(name,args)->
-    if name in ["draw","update","init"] and typeof window[name] == "function"
+    if name in ["draw","update","init","serverInit","serverUpdate"] and typeof window[name] == "function"
       try
         return window[name]()
       catch err
