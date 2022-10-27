@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2022-10-27
+* Networking features now supported as well in Python, Lua, JavaScript
+* Added config option default_project_language
+* Added config option tutorials_root_url
+* fixed tutorial UI issue (e.g. First Project)
+
 ### Update 2022-10-25
 * Networking (beta)!!!
   * create multiplayer games
