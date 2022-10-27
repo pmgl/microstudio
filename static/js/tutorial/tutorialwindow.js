@@ -1,64 +1,44 @@
-this.TutorialWindow = (function() {
-  function TutorialWindow(app) {
+this.TutorialWindow = class TutorialWindow {
+  constructor(app) {
     this.app = app;
     this.window = document.getElementById("tutorial-window");
-    document.querySelector("#tutorial-window").addEventListener("mousedown", (function(_this) {
-      return function(event) {
-        return _this.moveToFront();
-      };
-    })(this));
-    document.querySelector("#tutorial-window .titlebar").addEventListener("click", (function(_this) {
-      return function(event) {
-        return _this.uncollapse();
-      };
-    })(this));
-    document.querySelector("#tutorial-window .titlebar").addEventListener("mousedown", (function(_this) {
-      return function(event) {
-        return _this.startMove(event);
-      };
-    })(this));
-    document.querySelector("#tutorial-window .navigation .resize").addEventListener("mousedown", (function(_this) {
-      return function(event) {
-        return _this.startResize(event);
-      };
-    })(this));
-    document.addEventListener("mousemove", (function(_this) {
-      return function(event) {
-        return _this.mouseMove(event);
-      };
-    })(this));
-    document.addEventListener("mouseup", (function(_this) {
-      return function(event) {
-        return _this.mouseUp(event);
-      };
-    })(this));
-    window.addEventListener("resize", (function(_this) {
-      return function() {
-        var b;
-        b = _this.window.getBoundingClientRect();
-        return _this.setPosition(b.x, b.y);
-      };
-    })(this));
-    document.querySelector("#tutorial-window .navigation .previous").addEventListener("click", (function(_this) {
-      return function() {
-        return _this.previousStep();
-      };
-    })(this));
-    document.querySelector("#tutorial-window .navigation .next").addEventListener("click", (function(_this) {
-      return function() {
-        return _this.nextStep();
-      };
-    })(this));
-    document.querySelector("#tutorial-window .titlebar .minify").addEventListener("click", (function(_this) {
-      return function() {
-        return _this.close();
-      };
-    })(this));
+    document.querySelector("#tutorial-window").addEventListener("mousedown", (event) => {
+      return this.moveToFront();
+    });
+    document.querySelector("#tutorial-window .titlebar").addEventListener("click", (event) => {
+      return this.uncollapse();
+    });
+    document.querySelector("#tutorial-window .titlebar").addEventListener("mousedown", (event) => {
+      return this.startMove(event);
+    });
+    document.querySelector("#tutorial-window .navigation .resize").addEventListener("mousedown", (event) => {
+      return this.startResize(event);
+    });
+    document.addEventListener("mousemove", (event) => {
+      return this.mouseMove(event);
+    });
+    document.addEventListener("mouseup", (event) => {
+      return this.mouseUp(event);
+    });
+    window.addEventListener("resize", () => {
+      var b;
+      b = this.window.getBoundingClientRect();
+      return this.setPosition(b.x, b.y);
+    });
+    document.querySelector("#tutorial-window .navigation .previous").addEventListener("click", () => {
+      return this.previousStep();
+    });
+    document.querySelector("#tutorial-window .navigation .next").addEventListener("click", () => {
+      return this.nextStep();
+    });
+    document.querySelector("#tutorial-window .titlebar .minify").addEventListener("click", () => {
+      return this.close();
+    });
     this.highlighter = new Highlighter(this);
     this.max_ratio = .75;
   }
 
-  TutorialWindow.prototype.moveToFront = function() {
+  moveToFront() {
     var e, i, len, list;
     list = document.getElementsByClassName("floating-window");
     for (i = 0, len = list.length; i < len; i++) {
@@ -69,19 +49,17 @@ this.TutorialWindow = (function() {
         e.style["z-index"] = 10;
       }
     }
-  };
+  }
 
-  TutorialWindow.prototype.start = function(tutorial) {
+  start(tutorial) {
     var progress;
     this.tutorial = tutorial;
     this.shown = true;
     this.uncollapse();
     if ((this.tutorial.project_title != null) && (this.app.user == null)) {
-      this.app.appui.accountRequired((function(_this) {
-        return function() {
-          return _this.start(_this.tutorial);
-        };
-      })(this));
+      this.app.appui.accountRequired(() => {
+        return this.start(this.tutorial);
+      });
       return;
     }
     this.openProject();
@@ -93,9 +71,9 @@ this.TutorialWindow = (function() {
       this.current_step = 0;
     }
     return this.setStep(this.current_step);
-  };
+  }
 
-  TutorialWindow.prototype.openProject = function() {
+  openProject() {
     var err, i, i1, i2, len, options, p, project, ref, slug;
     if (this.tutorial.project_title != null) {
       slug = RegexLib.slugify(this.tutorial.project_title.split("{")[0]);
@@ -122,33 +100,30 @@ this.TutorialWindow = (function() {
             err = error;
             console.error(err);
           }
-          this.app.createProject(this.tutorial.project_title.substring(0, i1).trim(), slug, options, (function(_this) {
-            return function() {
-              return _this.start(_this.tutorial);
-            };
-          })(this));
+          this.app.createProject(this.tutorial.project_title.substring(0, i1).trim(), slug, options, () => {
+            return this.start(this.tutorial);
+          });
           return;
         } else {
-          this.app.createProject(this.tutorial.project_title, slug, (function(_this) {
-            return function() {
-              return _this.start(_this.tutorial);
-            };
-          })(this));
+          this.app.createProject(this.tutorial.project_title, slug, () => {
+            return this.start(this.tutorial);
+          });
           return;
         }
       }
       this.app.setProjectTutorial(slug, this.tutorial.link);
-      return this.app.appui.setMainSection("projects");
+      this.app.appui.setMainSection("projects");
+      return this.app.appui.setSection("code");
     }
-  };
+  }
 
-  TutorialWindow.prototype.update = function() {
+  update() {
     if (this.tutorial != null) {
       return this.setStep(this.current_step);
     }
-  };
+  }
 
-  TutorialWindow.prototype.setStep = function(index) {
+  setStep(index) {
     var c, e, element, h, i, len, percent, progress, ref, s, step, w;
     if (this.tutorial != null) {
       index = Math.max(0, Math.min(this.tutorial.steps.length - 1, index));
@@ -164,7 +139,7 @@ this.TutorialWindow = (function() {
       e.scrollTo(0, 0);
       document.querySelector("#tutorial-window .navigation .step").innerText = (index + 1) + " / " + this.tutorial.steps.length;
       percent = Math.round(this.current_step / (this.tutorial.steps.length - 1) * 100);
-      document.querySelector("#tutorial-window .navigation .step").style.background = "linear-gradient(90deg,hsl(200,50%,80%) 0%,hsl(200,50%,80%) " + percent + "%,transparent " + percent + "%)";
+      document.querySelector("#tutorial-window .navigation .step").style.background = `linear-gradient(90deg,hsl(200,50%,80%) 0%,hsl(200,50%,80%) ${percent}%,transparent ${percent}%)`;
       if (step.navigate != null) {
         s = step.navigate.split(".");
         this.app.appui.setMainSection(s[0]);
@@ -182,8 +157,8 @@ this.TutorialWindow = (function() {
         if (s.length === 4) {
           w = Math.floor(Math.max(200, Math.min(window.innerWidth * s[2] / 100)));
           h = Math.floor(Math.max(200, Math.min(window.innerHeight * s[3] / 100)));
-          this.window.style.width = w + "px";
-          this.window.style.height = h + "px";
+          this.window.style.width = `${w}px`;
+          this.window.style.height = `${h}px`;
           this.setPosition(s[0] * window.innerWidth / 100, s[1] * window.innerHeight / 100);
         }
       }
@@ -204,8 +179,10 @@ this.TutorialWindow = (function() {
         document.getElementById("tutorial-overlay").style.display = "none";
       }
     }
+    //if @current_step>0
     progress = this.app.getTutorialProgress(this.tutorial.link);
     percent = Math.round(this.current_step / (this.tutorial.steps.length - 1) * 100);
+    //if percent>progress
     this.app.setTutorialProgress(this.tutorial.link, percent);
     if (this.current_step === this.tutorial.steps.length - 1) {
       document.querySelector("#tutorial-window .navigation .next").classList.add("fa-check");
@@ -214,21 +191,21 @@ this.TutorialWindow = (function() {
       document.querySelector("#tutorial-window .navigation .next").classList.remove("fa-check");
       document.querySelector("#tutorial-window .navigation .next").classList.add("fa-arrow-right");
     }
-  };
+  }
 
-  TutorialWindow.prototype.nextStep = function() {
+  nextStep() {
     if (this.current_step === this.tutorial.steps.length - 1) {
       return this.close();
     } else {
       return this.setStep(this.current_step + 1);
     }
-  };
+  }
 
-  TutorialWindow.prototype.previousStep = function() {
+  previousStep() {
     return this.setStep(this.current_step - 1);
-  };
+  }
 
-  TutorialWindow.prototype.close = function() {
+  close() {
     var b, button;
     if (this.current_step === this.tutorial.steps.length - 1) {
       this.shown = false;
@@ -248,19 +225,17 @@ this.TutorialWindow = (function() {
       button = document.getElementById("menu-tutorials");
       b = button.getBoundingClientRect();
       this.window.classList.add("minimized");
-      return setTimeout(((function(_this) {
-        return function() {
-          _this.window.style.top = (b.y + b.height - 10) + "px";
-          _this.window.style.left = (b.x + b.width / 2 + 20) + "px";
-          _this.window.style.width = "30px";
-          _this.window.style.height = "30px";
-          return _this.collapsed = true;
-        };
-      })(this)), 100);
+      return setTimeout((() => {
+        this.window.style.top = (b.y + b.height - 10) + "px";
+        this.window.style.left = (b.x + b.width / 2 + 20) + "px";
+        this.window.style.width = "30px";
+        this.window.style.height = "30px";
+        return this.collapsed = true;
+      }), 100);
     }
-  };
+  }
 
-  TutorialWindow.prototype.uncollapse = function() {
+  uncollapse() {
     if (this.collapsed) {
       this.collapsed = false;
       this.openProject();
@@ -268,32 +243,30 @@ this.TutorialWindow = (function() {
       this.window.style.left = this.pos_left;
       this.window.style.width = this.pos_width;
       this.window.style.height = this.pos_height;
-      return setTimeout(((function(_this) {
-        return function() {
-          _this.window.classList.remove("minimized");
-          return _this.setStep(_this.current_step);
-        };
-      })(this)), 100);
+      return setTimeout((() => {
+        this.window.classList.remove("minimized");
+        return this.setStep(this.current_step);
+      }), 100);
     }
-  };
+  }
 
-  TutorialWindow.prototype.startMove = function(event) {
+  startMove(event) {
     this.moving = true;
     this.drag_start_x = event.clientX;
     this.drag_start_y = event.clientY;
     this.drag_pos_x = this.window.getBoundingClientRect().x;
     return this.drag_pos_y = this.window.getBoundingClientRect().y;
-  };
+  }
 
-  TutorialWindow.prototype.startResize = function(event) {
+  startResize(event) {
     this.resizing = true;
     this.drag_start_x = event.clientX;
     this.drag_start_y = event.clientY;
     this.drag_size_w = this.window.getBoundingClientRect().width;
     return this.drag_size_h = this.window.getBoundingClientRect().height;
-  };
+  }
 
-  TutorialWindow.prototype.mouseMove = function(event) {
+  mouseMove(event) {
     var b, dx, dy, h, w;
     if (this.moving) {
       dx = event.clientX - this.drag_start_x;
@@ -305,29 +278,27 @@ this.TutorialWindow = (function() {
       dy = event.clientY - this.drag_start_y;
       w = Math.floor(Math.max(200, Math.min(window.innerWidth * this.max_ratio, this.drag_size_w + dx)));
       h = Math.floor(Math.max(200, Math.min(window.innerHeight * this.max_ratio, this.drag_size_h + dy)));
-      this.window.style.width = w + "px";
-      this.window.style.height = h + "px";
+      this.window.style.width = `${w}px`;
+      this.window.style.height = `${h}px`;
       b = this.window.getBoundingClientRect();
       if (w > window.innerWidth - b.x || h > window.innerHeight - b.y) {
         return this.setPosition(Math.min(b.x, window.innerWidth - w - 4), Math.min(b.y, window.innerHeight - h - 4));
       }
     }
-  };
+  }
 
-  TutorialWindow.prototype.mouseUp = function(event) {
+  mouseUp(event) {
     this.moving = false;
     return this.resizing = false;
-  };
+  }
 
-  TutorialWindow.prototype.setPosition = function(x, y) {
+  setPosition(x, y) {
     var b;
     b = this.window.getBoundingClientRect();
     x = Math.max(4, Math.min(window.innerWidth - b.width - 4, x));
     y = Math.max(4, Math.min(window.innerHeight - b.height - 4, y));
     this.window.style.top = y + "px";
     return this.window.style.left = x + "px";
-  };
+  }
 
-  return TutorialWindow;
-
-})();
+};

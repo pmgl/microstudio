@@ -83,6 +83,7 @@ class @TutorialWindow
 
       @app.setProjectTutorial(slug,@tutorial.link)
       @app.appui.setMainSection("projects")
+      @app.appui.setSection("code")
 
   update:()->
     if @tutorial?
