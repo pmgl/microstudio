@@ -33,6 +33,7 @@ this.MPServerConnectionImpl = class MPServerConnectionImpl {
     var err;
     this.interface = _interface;
     this.status = "connecting";
+    this.buffer = [];
     try {
       this.getRelay((address) => {
         return this.connect(address);
@@ -79,11 +80,18 @@ this.MPServerConnectionImpl = class MPServerConnectionImpl {
       }
     };
     this.socket.onopen = () => {
+      var i, len, m, ref;
       this.interface.status = "connected";
-      return this.send({
+      this.send({
         name: "mp_client_connection",
         server_id: ms_project_id
       });
+      ref = this.buffer;
+      for (i = 0, len = ref.length; i < len; i++) {
+        m = ref[i];
+        this.sendMessage(m);
+      }
+      return this.buffer = [];
     };
     return this.socket.onclose = () => {
       return this.interface.status = "disconnected";
@@ -98,10 +106,14 @@ this.MPServerConnectionImpl = class MPServerConnectionImpl {
   }
 
   sendMessage(data) {
-    return this.send({
-      name: "mp_client_message",
-      data: data
-    });
+    if ((this.socket != null) && this.socket.readyState === 1) {
+      return this.send({
+        name: "mp_client_message",
+        data: data
+      });
+    } else {
+      return this.buffer.push(data);
+    }
   }
 
   send(data) {

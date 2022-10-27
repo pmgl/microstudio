@@ -22,6 +22,7 @@ class @MPServerConnection
 class @MPServerConnectionImpl
   constructor:(@interface)->
     @status = "connecting"
+    @buffer = []
     try
       @getRelay (address) => @connect(address)
     catch err
@@ -63,6 +64,11 @@ class @MPServerConnectionImpl
         name: "mp_client_connection"
         server_id: ms_project_id
 
+      for m in @buffer
+        @sendMessage m
+
+      @buffer = []
+
     @socket.onclose = ()=>
       @interface.status = "disconnected"
 
@@ -72,9 +78,12 @@ class @MPServerConnectionImpl
       @messages = []
 
   sendMessage:(data)->
-    @send
-      name: "mp_client_message"
-      data: data
+    if @socket? and @socket.readyState == 1
+      @send
+        name: "mp_client_message"
+        data: data
+    else
+      @buffer.push data
 
   send:(data)->
     @socket.send JSON.stringify data
