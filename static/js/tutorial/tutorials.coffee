@@ -8,15 +8,17 @@ class @Tutorials
         if req.status == 200
           @update(req.responseText)
 
+    origin = window.ms_tutorials_root_url or location.origin+"/tutorials/"
+
     switch @app.translator.lang
       when "fr"
-        req.open "GET",location.origin+"/tutorials/fr/toc.md"
+        req.open "GET",origin+"fr/toc.md"
       when "it"
-        req.open "GET",location.origin+"/tutorials/it/toc.md"
+        req.open "GET",origin+"it/toc.md"
       when "pt"
-        req.open "GET",location.origin+"/tutorials/pt/toc.md"
+        req.open "GET",origin+"pt/toc.md"
       else
-        req.open "GET",location.origin+"/tutorials/en/toc.md"
+        req.open "GET",origin+"en/toc.md"
 
     req.send()
 

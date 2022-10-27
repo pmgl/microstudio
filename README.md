@@ -30,3 +30,19 @@ You can clone this repository and start your own microStudio server, for a team 
 
 For active development use:
 * `npm run dev` instead of `npm start`
+
+### Configuration
+To use specific configuration options, create a JSON file `config.json` in the root folder (same folder as this README.md).
+You can find partial examples in this folder as config_local.json and config_prod.json.
+
+#### Configuration options
+
+|option|description|
+|-|-|
+|realm|`"local"` or `"production"`|
+|run_domain|The run domain if you are running this in production ; must include protocol (e.g. `"https://microstudio.io"`)|
+|dev_domain|The dev domain if you are running this in production ; must include protocol (e.g. `"https://microstudio.dev"`)|
+|delegate_relay_service|set to true if you are running a separate relay server for the microStudio Networking features|
+|relay-key|a secret key to use with the delegated relay service|
+|default_project_language|The default language selected when a user creates a project. Can be set to `"microscript_v2"` (default), `"microscript"`, `"javascript"`, `"lua"` or `"python"`|
+|tutorials_root_url|Sets a different URL for loading your own set of tutorials (note: if you use this option, in the toc.md, you must specify a complete URL with domain name for each tutorial)|

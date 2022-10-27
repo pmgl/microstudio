@@ -114,6 +114,7 @@ class @WebApp
           dev_domain: dev_domain
           run_domain: run_domain
           default_project_language: @server.config.default_project_language
+          tutorials_root_url: @server.config.tutorials_root_url
 
         return res.send page
       else if not @home_page[lang]? or not @server.use_cache
@@ -138,6 +139,7 @@ class @WebApp
           dev_domain: dev_domain
           run_domain: run_domain
           default_project_language: @server.config.default_project_language
+          tutorials_root_url: @server.config.tutorials_root_url
 
       res.send @home_page[lang]
 

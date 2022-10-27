@@ -80,6 +80,10 @@ html(lang=language)
       script.
         window.ms_default_project_language = "!{default_project_language}" ;
 
+    if tutorials_root_url
+      script.
+        window.ms_tutorials_root_url = "!{tutorials_root_url}" ;
+
     each js in javascript_files
       script(src=js)
 
