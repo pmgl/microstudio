@@ -76,6 +76,10 @@ html(lang=language)
       window.dev_domain = !{dev_domain} ;
       window.run_domain = !{run_domain} ;
 
+    if default_project_language
+      script.
+        window.ms_default_project_language = "!{default_project_language}" ;
+
     each js in javascript_files
       script(src=js)
 

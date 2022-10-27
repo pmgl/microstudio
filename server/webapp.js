@@ -125,7 +125,8 @@ this.WebApp = class WebApp {
           poster: (project.files != null) && (project.files["sprites/poster.png"] != null) ? `https://microstudio.io/${user.nick}/${project.slug}/sprites/poster.png` : `https://microstudio.io/${user.nick}/${project.slug}/sprites/icon.png`,
           project_moderation: this.server.config.project_moderation === true,
           dev_domain: dev_domain,
-          run_domain: run_domain
+          run_domain: run_domain,
+          default_project_language: this.server.config.default_project_language
         });
         return res.send(page);
       } else if ((this.home_page[lang] == null) || !this.server.use_cache) {
@@ -148,7 +149,8 @@ this.WebApp = class WebApp {
           poster: "https://microstudio.dev/img/microstudio.jpg",
           project_moderation: this.server.config.project_moderation === true,
           dev_domain: dev_domain,
-          run_domain: run_domain
+          run_domain: run_domain,
+          default_project_language: this.server.config.default_project_language
         });
       }
       return res.send(this.home_page[lang]);

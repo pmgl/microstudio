@@ -113,6 +113,7 @@ class @WebApp
           project_moderation: @server.config.project_moderation == true
           dev_domain: dev_domain
           run_domain: run_domain
+          default_project_language: @server.config.default_project_language
 
         return res.send page
       else if not @home_page[lang]? or not @server.use_cache
@@ -136,6 +137,7 @@ class @WebApp
           project_moderation: @server.config.project_moderation == true
           dev_domain: dev_domain
           run_domain: run_domain
+          default_project_language: @server.config.default_project_language
 
       res.send @home_page[lang]
 
