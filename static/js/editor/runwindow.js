@@ -939,9 +939,37 @@ this.ServerWatcher = class ServerWatcher {
   }
 
   watch() {
-    return this.getRelay((address) => {
-      return this.connect(address);
-    });
+    var err;
+    if ((this.socket != null) && this.socket.readyState <= 1) {
+      if (this.socket.readyState === 1) {
+        return this.sendCheck();
+      }
+    } else {
+      if (this.socket != null) {
+        try {
+          this.socket.close();
+        } catch (error1) {
+          err = error1;
+        }
+        delete this.socket;
+      }
+      return this.getRelay((address) => {
+        return this.connect(address);
+      });
+    }
+  }
+
+  sendCheck() {
+    var err;
+    try {
+      return this.socket.send(JSON.stringify({
+        name: "mp_server_status",
+        server_id: `${this.project.owner.nick}/${this.project.slug}`
+      }));
+    } catch (error1) {
+      err = error1;
+      return console.error(err);
+    }
   }
 
   getRelay(callback) {
@@ -985,11 +1013,10 @@ this.ServerWatcher = class ServerWatcher {
         msg = JSON.parse(msg.data);
         if (msg.name === "mp_server_status") {
           if (msg.running) {
-            this.server_bar.setStatus("running", this.app.translator.get("Running"));
+            return this.server_bar.setStatus("running", this.app.translator.get("Running"));
           } else {
-            this.server_bar.setStatus("stopped", this.app.translator.get("Server is not running"));
+            return this.server_bar.setStatus("stopped", this.app.translator.get("Server is not running"));
           }
-          return this.socket.close();
         }
       } catch (error1) {
         err = error1;
@@ -997,10 +1024,7 @@ this.ServerWatcher = class ServerWatcher {
       }
     };
     return this.socket.onopen = () => {
-      return this.socket.send(JSON.stringify({
-        name: "mp_server_status",
-        server_id: `${this.project.owner.nick}/${this.project.slug}`
-      }));
+      return this.sendCheck();
     };
   }
 

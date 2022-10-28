@@ -769,7 +769,24 @@ class @ServerWatcher
     @interval = setInterval (()=>@watch()),1000
 
   watch:()->
-    @getRelay (address)=>@connect(address)
+    if @socket? and @socket.readyState <= 1
+      if @socket.readyState == 1
+        @sendCheck()
+    else
+      if @socket?
+        try
+          @socket.close()
+        catch err
+        delete @socket
+      @getRelay (address)=>@connect(address)
+
+  sendCheck:()->
+    try
+      @socket.send JSON.stringify
+        name: "mp_server_status"
+        server_id: """#{@project.owner.nick}/#{@project.slug}"""
+    catch err
+      console.error err
 
   getRelay:(callback)->
     if @relay?
@@ -807,15 +824,11 @@ class @ServerWatcher
             @server_bar.setStatus "running",@app.translator.get("Running")
           else
             @server_bar.setStatus "stopped",@app.translator.get("Server is not running")
-          @socket.close()
       catch err
         console.error err
 
     @socket.onopen = ()=>
-      @socket.send JSON.stringify
-        name: "mp_server_status"
-        server_id: """#{@project.owner.nick}/#{@project.slug}"""
-
+      @sendCheck()
 
 class @FloatingRunWindow
   constructor:(@app)->
