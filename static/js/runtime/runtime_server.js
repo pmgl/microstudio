@@ -155,7 +155,7 @@ this.Runtime = class Runtime {
           global.CANNON = CANNON;
       }
     }
-    namespace = location.pathname;
+    namespace = location.pathname + "[server]";
     this.vm = new MicroVM(meta, global, namespace, location.hash === "#transpiler");
     this.vm.context.global.Server = MPServer;
     this.vm.context.global.system.pause = () => {

@@ -121,7 +121,7 @@ class @Runtime
         when "matterjs" then global.Matter = Matter
         when "cannonjs" then global.CANNON = CANNON
 
-    namespace = location.pathname
+    namespace = location.pathname + "[server]"
     @vm = new MicroVM(meta,global,namespace,location.hash == "#transpiler")
     @vm.context.global.Server = MPServer
     @vm.context.global.system.pause = ()=>
