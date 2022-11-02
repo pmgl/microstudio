@@ -188,7 +188,7 @@ class @MicroVM
       console.error err
       if @context.location? and @context.location.token?
         @error_info =
-          error: err
+          error: @context.location.token.error_text or err
           line: @context.location.token.line
           column: @context.location.token.column
           file: @context.location.token.file

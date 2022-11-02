@@ -34,6 +34,7 @@ class @Runner
               file: file
               line: line
               column: 0
+              error_text: text[text.length-1].replace("\n","")
           throw text[text.length-1].replace("\n","")
         else
           throw text
@@ -44,8 +45,6 @@ import sys
 sys.stdout = window.stdout\n
 sys.stderr = window.stderr\n
 
-def __reportError(err):
-  window.reportError(err)
     """
 
     @run(src)
@@ -53,15 +52,6 @@ def __reportError(err):
   run:(program,name="")->
     if not @initialized
       @init()
-
-    #console.info program
-    window.__reportError = (err)=>
-      console.info("plop")
-
-     console.log = (err,error)->
-       console.info("ploum")
-       console.info(err)
-       console.info(error)
 
     try
       res = python(program,name)
