@@ -25,7 +25,7 @@ this.MPServer = class MPServer {
     this.new_connections = [];
     this.active_connections = [];
     this.closed_connections = [];
-    this.messages_received = [];
+    this.messages = [];
     player.runtime.addServer(impl);
   }
 
@@ -204,7 +204,7 @@ this.MPClient = class MPClient {
     this.interface = {
       id: this.client_id,
       status: "connected",
-      messages_received: [],
+      messages: [],
       send: (data) => {
         return this.sendMessage(data);
       },

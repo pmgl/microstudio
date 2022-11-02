@@ -18,7 +18,7 @@ class @MPServer
     @new_connections = []
     @active_connections = []
     @closed_connections = []
-    @messages_received = []
+    @messages = []
     player.runtime.addServer(impl)
  
 class @MPServerImpl
@@ -149,7 +149,7 @@ class @MPClient
     @interface =
       id: @client_id
       status: "connected"
-      messages_received: []
+      messages: []
       send:(data)=> @sendMessage(data)
       disconnect:()=> @disconnect()
 
