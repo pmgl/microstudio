@@ -1,5 +1,8 @@
 ## Changelog
 
+### Update 2022-11-04
+* Export your game Server as a NodeJS app
+
 ### Update 2022-10-27
 * Networking features now supported as well in Python, Lua, JavaScript
 * Added config option default_project_language
