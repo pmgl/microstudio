@@ -260,8 +260,7 @@ class @Runtime
       @clock_interval = setInterval (()=>@clock()),16
 
   clock:()->
-    if Date.now() - @last_time > 17
-      @timer()
+    @timer()
 
   timer:()->
     return if @stopped
@@ -278,10 +277,6 @@ class @Runtime
 
     @floating_frame += @dt*60/1000
     ds = Math.min(10,Math.round(@floating_frame-@current_frame))
-    if (ds == 0 or ds == 2) and Math.abs(fps-60) < 2
-      #console.info "INCORRECT DS: "+ds+ " floating = "+@floating_frame+" current = "+@current_frame
-      ds = 1
-      @floating_frame = @current_frame+1
 
     for i in [1..ds] by 1
       @updateCall()
@@ -290,11 +285,6 @@ class @Runtime
 
     if ds>0
       @watcher.update()
-
-    #if ds != 1
-    #  console.info "frame missed"
-    #if @current_frame%60 == 0
-    #  console.info("fps: #{Math.round(1000/@dt)}")
 
   updateControls:()->
     for s in @servers

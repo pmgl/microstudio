@@ -1,7 +1,7 @@
 class @MPServerConnection
-  constructor:()->
+  constructor:(address)->
     @status = "connecting"
-    impl = new MPServerConnectionImpl @
+    impl = new MPServerConnectionImpl @,address
 
     @send = (data)=>
       try
@@ -20,13 +20,16 @@ class @MPServerConnection
     @messages = []
 
 class @MPServerConnectionImpl
-  constructor:(@interface)->
+  constructor:(@interface,@address)->
     @status = "connecting"
     @buffer = []
-    try
-      @getRelay (address) => @connect(address)
-    catch err
-      console.error err
+    if @address
+      @connect(@address)
+    else
+      try
+        @getRelay (address) => @connect(address)
+      catch err
+        console.error err
 
     @messages = []
     player.runtime.addConnection @

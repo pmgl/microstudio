@@ -317,6 +317,19 @@ class @Concatenator
       '/js/play/serverclient.js'
     ]
  
+    @server_export_js = [
+      "/js/languages/microscript/random.js"
+      "/js/runtime/microvm.js"
+      '/js/runtime/watcher.js'
+      '/js/runtime/assetmanager.js'
+      "/js/play/server_export/mpserver.js"
+      '/js/runtime/runtime_server.js'
+      '/js/runtime/watcher.js'
+      '/js/runtime/map.js'
+      '/js/debug/watch.js'
+      '/js/play/server_export/server.js'
+    ]
+ 
     for key,value of @alt_players
       @["#{key}_js"] = @alt_player_base.concat(value.scripts)
 
@@ -337,6 +350,7 @@ class @Concatenator
     @concat(@webapp_js,"webapp_js_concat")
     @concat(@player_js,"player_js_concat")
     @concat(@server_js,"server_js_concat")
+    @concat(@server_export_js,"server_export_js_concat")
     for key,value of @alt_players
       @concat(@["#{key}_js"],"#{key}_js_concat")
     @concat(@webapp_css,"webapp_css_concat")
@@ -380,6 +394,9 @@ class @Concatenator
       @["#{g}_js_concat"] or ""
     else
       @player_js_concat
+
+  getServerEngineExport:()->
+    @server_export_js_concat
 
   concat:(files,variable,callback)->
     list = (f for f in files)

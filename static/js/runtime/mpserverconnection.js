@@ -1,8 +1,8 @@
 this.MPServerConnection = class MPServerConnection {
-  constructor() {
+  constructor(address) {
     var impl;
     this.status = "connecting";
-    impl = new MPServerConnectionImpl(this);
+    impl = new MPServerConnectionImpl(this, address);
     this.send = (data) => {
       var err;
       try {
@@ -29,18 +29,23 @@ this.MPServerConnection = class MPServerConnection {
 };
 
 this.MPServerConnectionImpl = class MPServerConnectionImpl {
-  constructor(_interface) {
+  constructor(_interface, address1) {
     var err;
     this.interface = _interface;
+    this.address = address1;
     this.status = "connecting";
     this.buffer = [];
-    try {
-      this.getRelay((address) => {
-        return this.connect(address);
-      });
-    } catch (error) {
-      err = error;
-      console.error(err);
+    if (this.address) {
+      this.connect(this.address);
+    } else {
+      try {
+        this.getRelay((address) => {
+          return this.connect(address);
+        });
+      } catch (error) {
+        err = error;
+        console.error(err);
+      }
     }
     this.messages = [];
     player.runtime.addConnection(this);

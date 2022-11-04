@@ -286,6 +286,7 @@ this.Options = class Options {
   networkingChanged(value) {
     this.app.project.networking = value;
     this.app.runwindow.updateServerBar();
+    this.app.publish.updateServerExport();
     return this.app.client.sendRequest({
       name: "set_project_option",
       project: this.app.project.id,

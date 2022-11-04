@@ -44,7 +44,7 @@ class @Program.Field
   appendField:(field)->
     @chain.push(field)
 
-Program.BuildOperations = (ops,terms)->
+@Program.BuildOperations = (ops,terms)->
   while ops.length>1
     i = 0
     prec = 0
@@ -86,7 +86,7 @@ class @Program.For
 class @Program.ForIn
   constructor:(@token,@iterator,@list,@sequence)->
 
-Program.toString = (value,nesting=0)->
+@Program.toString = (value,nesting=0)->
   if value instanceof Routine
     if nesting == 0
       return value.source or "[function]"

@@ -5,7 +5,7 @@ class @PlayerClient
     @version_checked = false
     @reconnect_delay = 1000
 
-    if location.protocol.startsWith "http"
+    if location.protocol.startsWith("http") and not window.exported_project
       try
         @connect()
       catch err

@@ -65,11 +65,23 @@ class @Publish
       loc = "/#{project.owner.nick}/#{project.slug}/"
       if not project.public
         loc += project.code+"/"
-      window.location = loc+"publish/html/"
+      window.location = loc+"publish/html/?v="+Date.now()
+
+    b = document.querySelector("#server-export .publish-button")
+    b.onclick = ()=>
+      loc = "/#{project.owner.nick}/#{project.slug}/"
+      if not project.public
+        loc += project.code+"/"
+      window.location = loc+"publish/html/?server&v="+Date.now()
 
     for build in @builders
       build.loadProject(project)
+
+    @updateServerExport()
     return
+
+  updateServerExport:()->
+    document.querySelector("#publish-box-server").style.display = if @app.project? and @app.project.networking then "block" else "none"
 
   updateCheckList:()->
     project = @app.project

@@ -231,6 +231,7 @@ class @Options
   networkingChanged:(value)->
     @app.project.networking = value
     @app.runwindow.updateServerBar()
+    @app.publish.updateServerExport()
     @app.client.sendRequest {
       name: "set_project_option"
       project: @app.project.id

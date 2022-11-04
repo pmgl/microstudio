@@ -332,9 +332,7 @@ this.Runtime = class Runtime {
   }
 
   clock() {
-    if (Date.now() - this.last_time > 17) {
-      return this.timer();
-    }
+    return this.timer();
   }
 
   timer() {
@@ -352,11 +350,6 @@ this.Runtime = class Runtime {
     this.vm.context.global.system.fps = Math.round(fps = 1000 / this.dt);
     this.floating_frame += this.dt * 60 / 1000;
     ds = Math.min(10, Math.round(this.floating_frame - this.current_frame));
-    if ((ds === 0 || ds === 2) && Math.abs(fps - 60) < 2) {
-      //console.info "INCORRECT DS: "+ds+ " floating = "+@floating_frame+" current = "+@current_frame
-      ds = 1;
-      this.floating_frame = this.current_frame + 1;
-    }
     for (i = j = 1, ref = ds; j <= ref; i = j += 1) {
       this.updateCall();
     }
@@ -366,10 +359,6 @@ this.Runtime = class Runtime {
     }
   }
 
-  //if ds != 1
-  //  console.info "frame missed"
-  //if @current_frame%60 == 0
-  //  console.info("fps: #{Math.round(1000/@dt)}")
   updateControls() {
     var j, len, ref, results, s;
     ref = this.servers;

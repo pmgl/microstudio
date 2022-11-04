@@ -172,6 +172,9 @@ class @ExportFeatures
   addPublishHTML:()->
     # /user/project[/code]/publish/html/
     @webapp.app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?publish\/html\/$/,(req,res)=>
+      if req.query? and req.query.server?
+        return @publishServer(req,res)
+
       access = @webapp.getProjectAccess req,res
       return if not access?
 
@@ -246,6 +249,7 @@ class @ExportFeatures
             libs: JSON.stringify project.libs
             code: fullsource
             language: project.language
+            use_server: project.networking or false
 
         zip.file("index.html",html)
 
@@ -402,5 +406,199 @@ class @ExportFeatures
           queue.next()
 
       queue.start()
+
+  publishServer:(req,res)->
+    access = @webapp.getProjectAccess req,res
+    return if not access?
+
+    user = access.user
+    project = access.project
+    manager = @webapp.getProjectManager(project)
+
+    zip = new JSZip
+    maps_dict = {}
+    images = []
+    assets_list = []
+    fonts = []
+    sounds_list = []
+    music_list = []
+    fullsource = "\n\n"
+
+    server_src = ""
+
+    wrapsource = (s)->s
+    if project.language == "microscript_v2" # this is to prevent local variables contamination between files
+      wrapsource = (s)->
+        if /^\s*\/\/\s*javascript\s*\n/.test s
+          '\nsystem.javascript("""\n\n'+ s.replace(/\\/g,"\\\\") + '\n\n""")\n'
+        else
+          "\nfunction()\n#{s}\nend()\n"
+
+    libs = []
+    if project.graphics? and typeof project.graphics == "string"
+      g = project.graphics.toLowerCase()
+      if @webapp.concatenator.alt_players[g]?
+        libs = [].concat @webapp.concatenator.alt_players[g].lib_path # clone the array, will be modified
+
+    for optlib in project.libs
+      lib = @webapp.concatenator.optional_libs[optlib]
+      if lib?
+        libs.push lib.lib_path
+
+    proglang = @webapp.concatenator.language_engines[project.language]
+    if proglang? and proglang.scripts
+      for s in proglang.scripts
+        libs.push "../static#{s}"
+
+    if proglang? and proglang.lib_path?
+      for s in proglang.lib_path
+        libs.push s
+
+    queue = new JobQueue ()=>
+      resources = JSON.stringify
+        images: images
+        assets: assets_list
+        maps: maps_dict
+        sounds: sounds_list
+        music: music_list
+
+
+      resources = "var resources = #{resources};\n"
+      resources += "var graphics = \"#{project.graphics}\";\n"
+
+      server_src += "\n\n#{@webapp.concatenator.getServerEngineExport(project.graphics)}"
+
+      server_src = """
+var window = global ;
+
+var start = function() {
+  window.player = new this.Player(function(event) {
+    if (event.name == "started") {
+      // signal that the game is started
+    }
+    else if (event.name == "log") {
+      // console.info(event.data) ;
+    }
+  }) ;
+}
+
+var resources = #{JSON.stringify resources};
+var graphics = "#{project.graphics}";
+
+global.location = {
+  pathname: "",
+  hash: ""
+}
+global.navigator = {
+  language: "en"
+}
+
+window.ms_libs = [] ;
+
+server_code = `
+#{fullsource.replace(/`/g,"\\\`")}
+`
+      #{server_src}
+
+for (const prop in this) {
+  global[prop] = this[prop] ;
+}
+
+var fs = require("fs") ;
+fs.readFile("./config.json",(err,data)=> {
+  global.server_port = 3000 ;
+  if (! err) {
+    console.info("config.json loaded") ;
+    try {
+      var config = JSON.parse(data) ;
+      global.server_port = config.port || 3000 ;
+    } catch (err) {
+      console.info("could not parse config file") ;
+    }
+  } else {
+    console.info("could not read config file") ;
+  }
+  console.info( "starting with port set to: "+global.server_port ) ;
+  start() ;
+}) ;
+      """
+
+      zip.file("server.js",server_src)
+
+      package_json =
+        name: project.slug
+        version: "1.0.0"
+        description: ""
+        main: "server.js"
+        scripts:
+          start: "node server.js"
+        author: project.owner.nick
+        license: ""
+        dependencies:
+          ws: "^8.10.0"
+
+      config_json = 
+        port: 3000
+
+      zip.file "package.json", JSON.stringify(package_json, null, 2 )
+      zip.file "config.json", JSON.stringify(config_json, null, 2 )
+
+      zip.file("README.md",SERVER_EXPORT_README)
+
+      zip.generateAsync({type:"nodebuffer"}).then (content)=>
+        res.setHeader("Content-Type", "application/zip")
+        res.setHeader("Content-Disposition","attachement; filename=\"#{project.slug}.zip\"")
+        res.setHeader("Cache-Control","no-cache")
+        res.send content
+
+    for lib,i in libs
+      do (lib,i)=>
+        queue.add ()=>
+          fs.readFile lib,(err,data)=>
+            if data?
+              data = data.toString "utf-8"
+              server_src += "\n\n#{data}"
+
+            queue.next()
+
+    queue.add ()=>
+      manager.listFiles "maps",(maps)=>
+        for map in maps
+          do (map)=>
+            queue.add ()=>
+              @webapp.server.content.files.read "#{user.id}/#{project.id}/maps/#{map.file}","text",(content)=>
+                if content?
+                  maps_dict[map.file.split(".")[0].replace(/-/g,"/")] = content
+                queue.next()
+        queue.next()
+
+    queue.add ()=>
+      manager.listFiles "ms",(ms)=>
+        for src in ms
+          do (src)=>
+            queue.add ()=>
+              @webapp.server.content.files.read "#{user.id}/#{project.id}/ms/#{src.file}","text",(content)=>
+                if content?
+                  fullsource += wrapsource(content)+"\n\n"
+                queue.next()
+
+        queue.next()
+
+    queue.start()
+
+SERVER_EXPORT_README = """
+# Running your microStudio game server
+
+Preliminary step: you should have NodeJS installed on your server.
+
+After unzipping the server export and changing directory to the folder containing this README:
+
+* Run `npm install`
+* Edit `config.json` to set the desired port for your game server
+* Run `npm run start` to start your game server
+
+You can test your server by running your game locally. You should set the address of your own server
+when creating a new ServerConnection from the client, example: `connection = new ServerConnection('ws://127.0.0.1:3000')`.
+"""
 
 module.exports = @ExportFeatures

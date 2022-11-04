@@ -63,6 +63,16 @@ div.publish-box
     a(href="https://gamepix.com" target="_blank" style="background-image:url(/img/gamepix.png);" title="Gamepix")
     a(href="https://crazygames.com" target="_blank" style="background-image:url(/img/crazygames.svg);" title="CrazyGames")
 
+div.publish-box#publish-box-server
+  div.action-box#server-export
+    div.publish-button
+      i.fa.fa-download
+      | #{translator.get("Export Server NodeJS app")}
+
+  h2 #{translator.get("Export Server NodeJS app")}
+  p #{translator.get("Export your game server as a NodeJS app ready to be installed on your own server.")}
+  p #{translator.get("You can find instructions about setting up your server in the Advanced / Networking section of the documentation.")}
+
 div.publish-box#publish-box-android
   img.title(src="/img/android_robot.svg")
   div.action-box#android-export

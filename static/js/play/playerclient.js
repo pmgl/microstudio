@@ -6,7 +6,7 @@ this.PlayerClient = class PlayerClient {
     this.request_id = 0;
     this.version_checked = false;
     this.reconnect_delay = 1000;
-    if (location.protocol.startsWith("http")) {
+    if (location.protocol.startsWith("http") && !window.exported_project) {
       try {
         this.connect();
       } catch (error) {
