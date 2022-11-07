@@ -74,6 +74,8 @@ class Compiler
       return @compileDo(statement)
     else if statement instanceof Program.Sleep
       return @compileSleep(statement)
+    else if statement instanceof Program.Delete
+      return @compileDelete(statement)
     else if true
       console.info statement
       throw "Not implemented"
@@ -654,6 +656,25 @@ class Compiler
       @routine.LOAD_VALUE sleep.multiplier,sleep
       @routine.MUL sleep
     @routine.SLEEP sleep
+
+  compileDelete:(del)->
+    if del.field instanceof Program.Variable
+      @routine.LOAD_THIS del
+      @routine.LOAD_VALUE del.field.identifier,del
+      @routine.DELETE del 
+      return
+    else
+      @compile del.field.expression
+
+      chain = del.field.chain
+
+      for i in [0..chain.length-1] by 1
+        @compile chain[i]
+        if i < chain.length-1
+          @routine.LOAD_PROPERTY del
+
+      @routine.DELETE del
+      return
 
   exec:(context)->
     @processor = new Processor()

@@ -549,6 +549,13 @@ class @Processor
           stack_index -= 2
           op_index++
 
+        when 26 # OPCODE_DELETE
+          obj = stack[stack_index-1]
+          field = stack[stack_index]
+          delete obj[field]
+          stack[stack_index -= 1] = 0
+          op_index++
+
         when 27 # OPCODE_UPDATE_CLASS
           name = arg1[op_index]
           # TODO: set classname to variable name

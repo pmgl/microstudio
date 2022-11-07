@@ -341,6 +341,14 @@ this.Program.Sleep = class Sleep {
 
 };
 
+this.Program.Delete = class Delete {
+  constructor(token1, field1) {
+    this.token = token1;
+    this.field = field1;
+  }
+
+};
+
 this.Program.Precedence = {
   "^": 21,
   "/": 20,

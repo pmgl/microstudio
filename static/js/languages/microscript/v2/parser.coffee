@@ -221,6 +221,7 @@ class @Parser
       when Token.TYPE_EVERY then @parseEvery token
       when Token.TYPE_DO then @parseDo token
       when Token.TYPE_SLEEP then @parseSleep token
+      when Token.TYPE_DELETE then @parseDelete token
 
       else
         @tokenizer.pushBack token
@@ -659,3 +660,11 @@ class @Parser
         @tokenizer.pushBack token
 
     return new Program.Sleep sleep,delay,multiplier
+
+  parseDelete:(del)->
+    v = @parseExpression()
+
+    if not v? or (v not instanceof Program.Variable and v not instanceof Program.Field)
+      @error "expecting variable name or property access after keyword `delete`"
+    else
+      return new Program.Delete del,v

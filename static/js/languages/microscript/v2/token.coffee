@@ -116,5 +116,6 @@ class @Token
 @Token.predefined["every"] = @Token.TYPE_EVERY
 @Token.predefined["do"] = @Token.TYPE_DO
 @Token.predefined["sleep"] = @Token.TYPE_SLEEP
+@Token.predefined["delete"] = @Token.TYPE_DELETE
 
 @Token.predefined["local"] = @Token.TYPE_LOCAL

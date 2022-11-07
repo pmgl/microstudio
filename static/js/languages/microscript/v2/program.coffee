@@ -158,6 +158,9 @@ class @Program.Do
 class @Program.Sleep
   constructor:(@token,@delay,@multiplier)->
 
+class @Program.Delete
+  constructor:(@token,@field)->
+
 @Program.Precedence =
   "^":21
   "/":20

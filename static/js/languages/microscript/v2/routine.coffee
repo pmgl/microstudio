@@ -148,6 +148,7 @@ class @Routine
   EVERY:(ref)-> @OP OPCODES.EVERY,ref
   DO:(ref)-> @OP OPCODES.DO,ref
   SLEEP:(ref)-> @OP OPCODES.SLEEP,ref
+  DELETE:(ref)-> @OP OPCODES.DELETE,ref
 
   UNARY_OP:(f,ref)-> @OP OPCODES.UNARY_OP,ref,f
   BINARY_OP:(f,ref)-> @OP OPCODES.BINARY_OP,ref,f
@@ -193,6 +194,7 @@ class @OPCODES_CLASS
     @set "STORE_VARIABLE",23
     @set "CREATE_PROPERTY",24
     @set "STORE_PROPERTY",25
+    @set "DELETE",26
 
     @set "UPDATE_CLASS", 27
     @set "CREATE_CLASS", 28

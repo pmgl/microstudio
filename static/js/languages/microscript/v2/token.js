@@ -1,5 +1,5 @@
-this.Token = (function() {
-  function Token(tokenizer, type, value, string_value) {
+this.Token = class Token {
+  constructor(tokenizer, type, value, string_value) {
     this.tokenizer = tokenizer;
     this.type = type;
     this.value = value;
@@ -16,13 +16,11 @@ this.Token = (function() {
     this.is_binary_operator = (this.type >= 30 && this.type <= 39) || (this.type >= 200 && this.type <= 201) || (this.type >= 2 && this.type <= 7);
   }
 
-  Token.prototype.toString = function() {
+  toString() {
     return this.value + " : " + this.type;
-  };
+  }
 
-  return Token;
-
-})();
+};
 
 this.Token.TYPE_EQUALS = 1;
 
@@ -48,6 +46,8 @@ this.Token.TYPE_OPEN_BRACE = 20;
 
 this.Token.TYPE_CLOSED_BRACE = 21;
 
+// @Token.TYPE_OPEN_CURLY_BRACE = 22
+// @Token.TYPE_CLOSED_CURLY_BRACE = 23
 this.Token.TYPE_OPEN_BRACKET = 24;
 
 this.Token.TYPE_CLOSED_BRACKET = 25;
@@ -195,5 +195,7 @@ this.Token.predefined["every"] = this.Token.TYPE_EVERY;
 this.Token.predefined["do"] = this.Token.TYPE_DO;
 
 this.Token.predefined["sleep"] = this.Token.TYPE_SLEEP;
+
+this.Token.predefined["delete"] = this.Token.TYPE_DELETE;
 
 this.Token.predefined["local"] = this.Token.TYPE_LOCAL;

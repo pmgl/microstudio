@@ -297,9 +297,9 @@ var TextHighlightRules = require("ace/mode/text_highlight_rules").TextHighlightR
 var Microscript2HighlightRules = function() {
 
   var mapper = this.createKeywordMapper({
-      keyword: "do|after|every|sleep|else|elsif|end|function|if|in|to|local|then|or|and|not|object|class|extends|new|constructor|for|while",
+      keyword: "do|after|every|sleep|else|elsif|end|function|if|in|to|local|then|or|and|not|object|class|extends|new|constructor|for|while|delete",
       "keyword.control": "by|return|break|continue",
-      "support.function": "screen|system|audio|gamepad|keyboard|touch|mouse|storage|asset_manager|print|time|type|log|max|PI|pow|random|ceil|round|floor|abs|sqrt|min|exp|sin|atan|concat|sortList|cos|sin|tan|acos|asin|atan|atan2|sind|cosd|tand|acosd|asind|atand|atan2d|Function|Number|String|List|Object|Image|Sprite|Sound",
+      "support.function": "screen|system|audio|gamepad|keyboard|touch|mouse|storage|asset_manager|print|type|log|max|PI|pow|random|ceil|round|floor|abs|sqrt|min|exp|sin|atan|concat|sortList|cos|sin|tan|acos|asin|atan|atan2|sind|cosd|tand|acosd|asind|atand|atan2d|Function|Number|String|List|Object|Image|Sprite|Sound",
       "support.constant": "true|false|PI",
       "variable.language": "this|type|super"
     },"identifier") ;
