@@ -748,6 +748,7 @@ this.WebApp = class WebApp {
     return res.send(this.serverbox_funk({
       user: user,
       server_url: server_url,
+      standalone: this.server.config.standalone === true,
       game: {
         name: project.slug,
         pathcode: pathcode,

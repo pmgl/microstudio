@@ -643,6 +643,7 @@ class @WebApp
     res.send @serverbox_funk
       user: user
       server_url: server_url
+      standalone: @server.config.standalone == true
       game:
         name: project.slug
         pathcode: pathcode

@@ -14,6 +14,8 @@ html
 
     script.
       window.url = "#{server_url}" ;
+      window.ms_standalone = !{standalone} ;
+
   body.noselect.custom-cursor(oncontextmenu='return false;')
     div(style="position: fixed ; top:0 ; bottom: 0 ; left: 0 ; right: 0 ;")
       iframe(width="100%" height="100%" src=server_url style="border: none")
@@ -23,6 +25,9 @@ html
       var data = JSON.parse(msg.data) ;
       if (data.name == "get_token") {
         var token = localStorage.getItem("token") ;
+        if (window.ms_standalone) {
+          token = "standalone" ;
+        }
         if (token) {
           console.info(token) ;
           var socket = new WebSocket(location.origin.replace("http","ws")) ;
