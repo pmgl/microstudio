@@ -1,35 +1,29 @@
-this.ColorPicker = (function() {
-  function ColorPicker(editor) {
+this.ColorPicker = class ColorPicker {
+  constructor(editor) {
     this.editor = editor;
     this.canvas = document.createElement("canvas");
     this.canvas.width = 146;
     this.num_blocks = 9;
     this.block = this.canvas.width / this.num_blocks;
-    this.canvas.height = this.block * (2 + 1 + 1 + 1 + 1 + 1 + this.num_blocks);
-    this.hue = 0;
+    this.canvas.height = this.block * (2 + 1 + 1 + 1 + 1 + 1 + this.num_blocks) + 1;
+    this.hue = this.num_blocks - 1;
     this.type = "color";
-    this.saturation = this.num_blocks - 1;
-    this.lightness = this.num_blocks - 1;
+    this.saturation = (this.num_blocks - 1) / 2;
+    this.lightness = this.num_blocks - 2;
     this.updateColor();
     this.update();
-    this.canvas.addEventListener("mousedown", (function(_this) {
-      return function(event) {
-        return _this.mouseDown(event);
-      };
-    })(this));
-    this.canvas.addEventListener("mousemove", (function(_this) {
-      return function(event) {
-        return _this.mouseMove(event);
-      };
-    })(this));
-    document.addEventListener("mouseup", (function(_this) {
-      return function(event) {
-        return _this.mouseUp(event);
-      };
-    })(this));
+    this.canvas.addEventListener("mousedown", (event) => {
+      return this.mouseDown(event);
+    });
+    this.canvas.addEventListener("mousemove", (event) => {
+      return this.mouseMove(event);
+    });
+    document.addEventListener("mouseup", (event) => {
+      return this.mouseUp(event);
+    });
   }
 
-  ColorPicker.prototype.colorPicked = function(c) {
+  colorPicked(c) {
     var col, i, j, match;
     if (typeof c === "string") {
       match = /rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/.exec(c.replace(/ /g, ""));
@@ -42,42 +36,63 @@ this.ColorPicker = (function() {
     for (i = j = 0; j <= 2; i = ++j) {
       c[i] = Math.max(0, Math.min(255, c[i]));
     }
-    this.color = "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")";
+    this.color = `rgb(${c[0]},${c[1]},${c[2]})`;
     this.editor.setColor(this.color);
     col = this.RGBtoHSV(c[0], c[1], c[2]);
     this.hue = Math.round(col.h * this.num_blocks * 2) % (this.num_blocks * 2);
     this.saturation = Math.round(col.s * this.num_blocks);
-    this.lightness = Math.round(col.v * this.num_blocks);
+    this.lightness = Math.round(this.lightToValue(col.v) * this.num_blocks);
     if (this.saturation === 0 || this.lightness === 0) {
       this.type = "gray";
-      this.lightness = Math.round(col.v * (2 * this.num_blocks - 1)) / 2;
+      this.lightness = Math.round(this.lightToValue(col.v) * (2 * this.num_blocks - 1)) / 2;
     } else {
       this.type = "color";
       this.saturation -= 1;
       this.lightness -= 1;
     }
     return this.update();
-  };
+  }
 
-  ColorPicker.prototype.updateColor = function() {
+  updateColor() {
     var col, h, s, v;
     if (this.type === "gray") {
-      v = Math.floor(255 * this.lightness * 2 / (this.num_blocks * 2 - 1));
-      this.color = "rgb(" + v + "," + v + "," + v + ")";
+      v = Math.floor(255 * this.valueToLight(this.lightness * 2 / (this.num_blocks * 2 - 1)));
+      this.color = `rgb(${v},${v},${v})`;
     } else {
       h = this.hue / (this.num_blocks * 2);
       s = (this.saturation + 1) / this.num_blocks;
-      v = (this.lightness + 1) / this.num_blocks;
+      v = this.valueToLight((this.lightness + 1) / this.num_blocks);
       col = this.HSVtoRGB(h, s, v);
-      this.color = "rgb(" + col.r + "," + col.g + "," + col.b + ")";
+      this.color = `rgb(${col.r},${col.g},${col.b})`;
     }
     return this.editor.setColor(this.color);
-  };
+  }
 
-  ColorPicker.prototype.update = function() {
+  valueToLight(v) {
+    return Math.pow(Math.max(0, v), 2.2);
+  }
+
+  lightToValue(l) {
+    return Math.pow(Math.max(0, l), 1 / 2.2);
+  }
+
+  update() {
     var ay, col, context, grd, h, hue, j, k, l, light, m, n, ref, ref1, ref2, ref3, s, v, x, y;
     context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    grd = context.createLinearGradient(0, 0, 0, this.canvas.height);
+    grd.addColorStop(0, "#000");
+    grd.addColorStop(.96, "#000");
+    grd.addColorStop(1, "#444");
+    context.fillStyle = grd;
+    context.fillRect(0, 80, this.canvas.width, 18);
+    context.fillRect(0, 112, this.canvas.width, this.canvas.height);
+    grd = context.createLinearGradient(0, 0, this.canvas.width, 0);
+    grd.addColorStop(0, "#333");
+    grd.addColorStop(.3, "#000");
+    grd.addColorStop(1, "#000");
+    context.fillStyle = grd;
+    context.fillRect(0, 48, this.canvas.width, 18);
     context.fillStyle = "#888";
     context.fillRoundRect(0, 0, this.canvas.width, this.block * 2, 5);
     context.fillStyle = this.color;
@@ -86,12 +101,15 @@ this.ColorPicker = (function() {
     grd.addColorStop(0, 'rgba(255,255,255,0)');
     grd.addColorStop(1, "rgba(255,255,255,.5)");
     context.fillStyle = grd;
+//context.fillRect 0,@canvas.height-@block*2,@canvas.width,@block*2
+//context.fillRect 0,@block*7,@canvas.width,@block*@num_blocks
     for (light = j = 0, ref = this.num_blocks * 2 - 1; j <= ref; light = j += 1) {
       if (this.type === "gray" && this.lightness * 2 === light) {
         context.fillStyle = "#FFF";
         context.fillRoundRect(light * this.block * .5 - 1, 3 * this.block - 1, this.block * .5 + 2, this.block + 2, 1);
       }
-      context.fillStyle = "hsl(0,0%," + (light / (this.num_blocks * 2 - 1) * 100) + "%)";
+      l = this.valueToLight(light / (this.num_blocks * 2 - 1));
+      context.fillStyle = `hsl(0,0%,${l * 100}%)`;
       context.fillRoundRect(light * this.block * .5 + 1, 3 * this.block + 1, this.block * .5 - 2, this.block - 2, 1);
     }
     for (hue = k = 0, ref1 = this.num_blocks * 2 - 1; k <= ref1; hue = k += 1) {
@@ -99,7 +117,7 @@ this.ColorPicker = (function() {
         context.fillStyle = "#FFF";
         context.fillRoundRect(hue * this.block * .5 - 1, 5 * this.block - 1, this.block * .5 + 2, this.block + 2, 1);
       }
-      context.fillStyle = "hsl(" + (hue / this.num_blocks * 180) + ",100%,50%)";
+      context.fillStyle = `hsl(${hue / this.num_blocks * 180},60%,50%)`;
       context.fillRoundRect(hue * this.block * .5 + 1, 5 * this.block + 1, this.block * .5 - 2, this.block - 2, 1);
     }
     for (y = m = 0, ref2 = this.num_blocks - 1; m <= ref2; y = m += 1) {
@@ -111,21 +129,21 @@ this.ColorPicker = (function() {
         }
         h = this.hue / (this.num_blocks * 2);
         s = (x + 1) / this.num_blocks;
-        v = (ay + 1) / this.num_blocks;
+        v = this.valueToLight((ay + 1) / this.num_blocks);
         col = this.HSVtoRGB(h, s, v);
-        context.fillStyle = "rgb(" + col.r + "," + col.g + "," + col.b + ")";
+        context.fillStyle = `rgb(${col.r},${col.g},${col.b})`;
         l = this.num_blocks - 1 - light;
         context.fillRoundRect(x * this.block + 1, (y + 7) * this.block + 1, this.block - 2, this.block - 2, 2);
       }
     }
-  };
+  }
 
-  ColorPicker.prototype.mouseDown = function(event) {
+  mouseDown(event) {
     this.mousepressed = true;
     return this.mouseMove(event);
-  };
+  }
 
-  ColorPicker.prototype.mouseMove = function(event) {
+  mouseMove(event) {
     var b, hue, lightness, min, saturation, x, y;
     if (this.mousepressed) {
       b = this.canvas.getBoundingClientRect();
@@ -153,7 +171,7 @@ this.ColorPicker = (function() {
       } else if (y >= 7) {
         x = Math.floor(x / this.canvas.width * this.num_blocks);
         saturation = x;
-        lightness = this.num_blocks - 1 - (y - 7);
+        lightness = Math.max(0, this.num_blocks - 1 - (y - 7));
         if (lightness !== this.lightness || saturation !== this.saturation || this.type !== "color") {
           this.type = "color";
           this.lightness = lightness;
@@ -164,13 +182,13 @@ this.ColorPicker = (function() {
       }
     }
     return false;
-  };
+  }
 
-  ColorPicker.prototype.mouseUp = function(event) {
+  mouseUp(event) {
     return this.mousepressed = false;
-  };
+  }
 
-  ColorPicker.prototype.rgbToHsl = function(r, g, b) {
+  rgbToHsl(r, g, b) {
     var d, h, l, max, min, s;
     r /= 255;
     g /= 255;
@@ -183,6 +201,7 @@ this.ColorPicker = (function() {
     if (max === min) {
       h = s = 0;
     } else {
+      // achromatic
       d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
       switch (max) {
@@ -198,9 +217,9 @@ this.ColorPicker = (function() {
       h /= 6;
     }
     return [h, s, l];
-  };
+  }
 
-  ColorPicker.prototype.HSVtoRGB = function(h, s, v) {
+  HSVtoRGB(h, s, v) {
     var b, f, g, i, p, q, r, t;
     i = Math.floor(h * 6);
     f = h * 6 - i;
@@ -243,9 +262,9 @@ this.ColorPicker = (function() {
       g: Math.round(g * 255),
       b: Math.round(b * 255)
     };
-  };
+  }
 
-  ColorPicker.prototype.RGBtoHSV = function(r, g, b) {
+  RGBtoHSV(r, g, b) {
     var d, h, max, min, s, v;
     max = Math.max(r, g, b);
     min = Math.min(r, g, b);
@@ -274,8 +293,6 @@ this.ColorPicker = (function() {
       s: s,
       v: v
     };
-  };
+  }
 
-  return ColorPicker;
-
-})();
+};

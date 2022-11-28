@@ -5,12 +5,12 @@ class @ColorPicker
 
     @num_blocks = 9
     @block = @canvas.width/@num_blocks
-    @canvas.height = @block*(2+1+1+1+1+1+@num_blocks)
+    @canvas.height = @block*(2+1+1+1+1+1+@num_blocks)+1
 
-    @hue = 0
+    @hue = @num_blocks-1
     @type = "color"
-    @saturation = @num_blocks-1
-    @lightness = @num_blocks-1
+    @saturation = (@num_blocks-1)/2
+    @lightness = @num_blocks-2
     @updateColor()
     @update()
     @canvas.addEventListener "mousedown", (event) => @mouseDown(event)
@@ -33,10 +33,10 @@ class @ColorPicker
     col = @RGBtoHSV(c[0],c[1],c[2])
     @hue = Math.round(col.h*@num_blocks*2)%(@num_blocks*2)
     @saturation = Math.round(col.s*@num_blocks)
-    @lightness = Math.round(col.v*@num_blocks)
+    @lightness = Math.round(@lightToValue(col.v)*@num_blocks)
     if @saturation == 0 or @lightness == 0
       @type = "gray"
-      @lightness = Math.round(col.v*(2*@num_blocks-1))/2
+      @lightness = Math.round(@lightToValue(col.v)*(2*@num_blocks-1))/2
     else
       @type = "color"
       @saturation -= 1
@@ -45,19 +45,39 @@ class @ColorPicker
 
   updateColor:()->
     if @type == "gray"
-      v = Math.floor(255*@lightness*2/(@num_blocks*2-1))
+      v = Math.floor(255*@valueToLight(@lightness*2/(@num_blocks*2-1)))
       @color = "rgb(#{v},#{v},#{v})"
     else
       h = @hue/(@num_blocks*2)
       s = (@saturation+1)/@num_blocks
-      v = (@lightness+1)/@num_blocks
+      v = @valueToLight (@lightness+1)/@num_blocks
       col = @HSVtoRGB(h,s,v)
       @color = "rgb(#{col.r},#{col.g},#{col.b})"
     @editor.setColor @color
 
+  valueToLight:(v) -> Math.pow(Math.max(0,v),2.2)
+  lightToValue:(l) -> Math.pow(Math.max(0,l),1/2.2)
+
   update:()->
     context = @canvas.getContext "2d"
     context.clearRect(0,0,@canvas.width,@canvas.height)
+
+    grd = context.createLinearGradient 0,0,0,@canvas.height
+    grd.addColorStop 0,"#000"
+    grd.addColorStop .96,"#000"
+    grd.addColorStop 1,"#444"
+    context.fillStyle = grd
+
+    context.fillRect 0,80,@canvas.width,18
+    context.fillRect 0,112,@canvas.width,@canvas.height
+
+    grd = context.createLinearGradient 0,0,@canvas.width,0
+    grd.addColorStop 0,"#333"
+    grd.addColorStop .3,"#000"
+    grd.addColorStop 1,"#000"
+    context.fillStyle = grd
+
+    context.fillRect 0,48,@canvas.width,18
 
     context.fillStyle = "#888"
     context.fillRoundRect 0,0,@canvas.width,@block*2,5
@@ -75,14 +95,15 @@ class @ColorPicker
       if @type == "gray" and @lightness*2 == light
         context.fillStyle = "#FFF"
         context.fillRoundRect light*@block*.5-1,3*@block-1,@block*.5+2,@block+2,1
-      context.fillStyle = "hsl(0,0%,#{light/(@num_blocks*2-1)*100}%)"
+      l = @valueToLight light/(@num_blocks*2-1)
+      context.fillStyle = "hsl(0,0%,#{l*100}%)"
       context.fillRoundRect light*@block*.5+1,3*@block+1,@block*.5-2,@block-2,1
 
     for hue in [0..@num_blocks*2-1] by 1
       if @type == "color" and hue == @hue
         context.fillStyle = "#FFF"
         context.fillRoundRect hue*@block*.5-1,5*@block-1,@block*.5+2,@block+2,1
-      context.fillStyle = "hsl(#{hue/@num_blocks*180},100%,50%)"
+      context.fillStyle = "hsl(#{hue/@num_blocks*180},60%,50%)"
       context.fillRoundRect hue*@block*.5+1,5*@block+1,@block*.5-2,@block-2,1
 
     for y in [0..@num_blocks-1] by 1
@@ -94,7 +115,7 @@ class @ColorPicker
 
         h = @hue/(@num_blocks*2)
         s = (x+1)/@num_blocks
-        v = (ay+1)/@num_blocks
+        v = @valueToLight((ay+1)/@num_blocks)
 
         col = @HSVtoRGB(h,s,v)
         context.fillStyle = "rgb(#{col.r},#{col.g},#{col.b})"
@@ -133,7 +154,7 @@ class @ColorPicker
       else if y >= 7
         x = Math.floor(x/@canvas.width*@num_blocks)
         saturation = x
-        lightness = @num_blocks-1-(y-7)
+        lightness = Math.max(0,@num_blocks-1-(y-7))
         if lightness != @lightness or saturation != @saturation or @type != "color"
           @type = "color"
           @lightness = lightness
