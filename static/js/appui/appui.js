@@ -232,6 +232,7 @@ AppUI = class AppUI {
         return this.app.importProject(event.dataTransfer.items[0].getAsFile());
       }
     });
+    this.createFullscreenFeatures();
     setInterval((() => {
       return this.checkActivity();
     }), 10000);
@@ -343,7 +344,10 @@ AppUI = class AppUI {
     this.project = null;
     this.app.updateProjectList();
     if (useraction) {
-      return this.app.app_state.pushState("projects", "/projects/");
+      this.app.app_state.pushState("projects", "/projects/");
+    }
+    if (document.fullscreenElement) {
+      return document.exitFullscreen();
     }
   }
 
@@ -1182,6 +1186,29 @@ AppUI = class AppUI {
         }
       }), 16);
     }
+  }
+
+  createFullscreenFeatures() {
+    var button;
+    button = document.getElementById("project-fullscreen");
+    button.addEventListener("click", () => {
+      if (document.fullscreenElement) {
+        return document.exitFullscreen();
+      } else {
+        document.getElementById("projectview").requestFullscreen();
+        return document.getElementById("projectview").style.background = "hsl(200,20%,15%)";
+      }
+    });
+    return window.addEventListener("fullscreenchange", () => {
+      if (document.fullscreenElement) {
+        button.classList.remove("fa-expand");
+        return button.classList.add("fa-compress");
+      } else {
+        button.classList.add("fa-expand");
+        button.classList.remove("fa-compress");
+        return document.getElementById("projectview").style.background = "none";
+      }
+    });
   }
 
 };

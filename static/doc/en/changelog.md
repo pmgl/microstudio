@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2022-11-28
+* Color picker gamma correction (better lightness range)
+* microStudio PWA app is now fullscreen
+* added fullscreen button for project view
+
 ### Update 2022-11-04
 * Export your game Server as a NodeJS app
 

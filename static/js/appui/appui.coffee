@@ -215,6 +215,8 @@ class AppUI
       if event.dataTransfer.items and event.dataTransfer.items[0]?
         @app.importProject(event.dataTransfer.items[0].getAsFile())
 
+    @createFullscreenFeatures()    
+
     setInterval (()=>@checkActivity()),10000
 
     @reboot_date = 1663054200000
@@ -303,6 +305,9 @@ class AppUI
     @app.updateProjectList()
     if useraction
       @app.app_state.pushState "projects","/projects/"
+    if document.fullscreenElement
+      document.exitFullscreen()
+
 
   setSection:(section,useraction)->
     @current_section = section
@@ -1033,3 +1038,22 @@ class AppUI
           d = -.5*Math.sin(t*Math.PI)*20
           element.style.transform = "scale(#{s}) rotateZ(#{d}deg)"
         ),16
+
+  createFullscreenFeatures:()->
+    button = document.getElementById("project-fullscreen")
+    button.addEventListener "click",()=>
+      if document.fullscreenElement
+        document.exitFullscreen()
+      else
+        document.getElementById("projectview").requestFullscreen()
+        document.getElementById("projectview").style.background = "hsl(200,20%,15%)"
+
+    window.addEventListener "fullscreenchange",()=>
+      if document.fullscreenElement
+        button.classList.remove "fa-expand"
+        button.classList.add "fa-compress"
+      else
+        button.classList.add "fa-expand"
+        button.classList.remove "fa-compress"
+        document.getElementById("projectview").style.background = "none"
+

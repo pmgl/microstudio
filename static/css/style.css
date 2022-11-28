@@ -396,6 +396,17 @@ header .username span {
   color: #FFF;
 }
 
+.projectheader #project-fullscreen {
+  margin: 0 10px 0 0 ;
+  color: rgba(255,255,255,.5);
+  border-radius: 3px ;
+  padding: 4px ;
+}
+.projectheader #project-fullscreen:hover {
+  background: rgba(0,0,0,.25) ;
+  color: rgba(255,255,255,.75);
+}
+
 .projectheader #active-project-users {
   display: inline-block ;
   margin-left: 80px ;
