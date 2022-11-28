@@ -2,7 +2,7 @@
     "name": "microStudio",
     "short_name": "microStudio",
     "start_url": "/",
-    "display": "minimal-ui",
+    "display": "fullscreen",
     "scope": "/",
     "icons": [
         {
