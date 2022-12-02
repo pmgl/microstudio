@@ -1,4 +1,4 @@
-**microStudio** es un entorno de desarrollo integrado de videojuegos.
+**microStudio** es un entorno integrado de desarrollo de videojuegos.
 ¡Incluye todas las herramientas que necesitas para crear tu primer videojuego!
 **microStudio** te ofrece todas estas posibilidades:
 
