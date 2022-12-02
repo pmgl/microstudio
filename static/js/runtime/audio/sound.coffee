@@ -62,6 +62,7 @@ class @Sound
       setVolume:(volume)-> gain.gain.value = Math.max(0,Math.min(1,volume))
       setPitch:(pitch)-> source.playbackRate.value = Math.max(.001,Math.min(1000,pitch))
       setPan:(pan)-> panner.setPan Math.max(-1,Math.min(1,pan))
+      getDuration:()-> source.buffer.duration
       finished: false
 
     source.onended = ()-> res.finished = true
