@@ -265,7 +265,7 @@ Le stringhe sono testi o pezzi di testo. Devono essere definiti tra virgolette.
 
 ```
 animale = "gatto"
-stampa("Ciao "+animale)
+print("Ciao "+animale)
 ```
 #### Elenco
 Le liste possono contenere un certo numero di valori:
