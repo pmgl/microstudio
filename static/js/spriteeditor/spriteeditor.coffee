@@ -1,5 +1,6 @@
 class @SpriteEditor extends Manager
-  constructor:(@app)->
+  constructor:(app)->
+    super app
     @folder = "sprites"
     @item = "sprite"
     @list_change_event = "spritelist"
@@ -431,7 +432,7 @@ class @SpriteEditor extends Manager
       h = Number.parseFloat(h)
     catch err
 
-    if (@selected_sprite != "icon" or w == h) and Number.isInteger(w) and Number.isInteger(h) and w>0 and h>0 and w<257 and h<257 and @selected_sprite? and (w != @spriteview.sprite.width or h != @spriteview.sprite.height)
+    if (@selected_sprite != "icon" or w == h) and Number.isInteger(w) and Number.isInteger(h) and w > 0 and h > 0 and w <= 1024 and h <= 1024 and @selected_sprite? and (w != @spriteview.sprite.width or h != @spriteview.sprite.height)
       @spriteview.sprite.undo = new Undo() if not @spriteview.sprite.undo?
       @spriteview.sprite.undo.pushState @spriteview.sprite.clone() if @spriteview.sprite.undo.empty()
       @spriteview.sprite.resize(w,h)
