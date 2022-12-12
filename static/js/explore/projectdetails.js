@@ -164,7 +164,7 @@ this.ProjectDetails = (function() {
     this.imported_doc = false;
     document.querySelector("#project-contents-doc-import").classList.remove("done");
     document.querySelector("#project-contents-doc-import").style.display = this.app.project != null ? "block" : "none";
-    document.querySelector("#project-contents-source-import").style.display = this.app.project != null ? "block" : "none";
+    document.querySelector("#project-contents-source-import").style.display = (this.app.project != null) && this.app.project.id !== this.project.id ? "block" : "none";
     if (this.app.project != null) {
       document.querySelector("#project-contents-doc-import span").innerText = this.app.translator.get("Import doc to") + " " + this.app.project.title;
     }

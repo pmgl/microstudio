@@ -120,8 +120,8 @@ class @ProjectDetails
     @imported_doc = false
 
     document.querySelector("#project-contents-doc-import").classList.remove "done"
-    document.querySelector("#project-contents-doc-import").style.display = if @app.project? then "block" else "none"
-    document.querySelector("#project-contents-source-import").style.display = if @app.project? then "block" else "none"
+    document.querySelector("#project-contents-doc-import").style.display = if @app.project? then "block" else "none"    
+    document.querySelector("#project-contents-source-import").style.display = if @app.project? and @app.project.id != @project.id then "block" else "none"
 
     if @app.project?
       document.querySelector("#project-contents-doc-import span").innerText = @app.translator.get("Import doc to")+" "+@app.project.title
