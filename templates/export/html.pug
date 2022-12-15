@@ -54,63 +54,75 @@ html
       window.exported_project = true;
       window.ms_use_server = !{game.use_server} ;
 
-    script(type="text/javascript").
-      //
-                //
-                // The game is started with the code below.
-                // Once you have received the "started" signal (see below),
-                // you can do the following:
-                // 1) Inject functions or objects into the global context of the microStudio engine, example:
-                //
-                //   window.player.setGlobal("special_callback",function(x) { console.info(x) }) ;
-                //   // Your microScript code can now call the "special_callback" function
-                //
-                // 2) Call microScript global functions from your JavaScript code, example:
-                //
-                //   window.player.call("call_me_from_javascript",[10,1000]) ;
-                //   // arguments to the function call are provided as an array
-                //
-                // 3) Run a microScript code snippet from your JavaScript code, example:
-                //
-                //   window.player.exec("player.position_x = 50",function(result) { console.log(result) ; }) ;
-                //
-
-                window.addEventListener("load",function() {
-                  window.player = new Player(function(event) {
-                    if (event.name == "started") {
-                      // signal that the game is started
-                    }
-                    else if (event.name == "log") {
-                      // console.info(event.data) ;
-                    }
-                  }) ;
-                  document.body.focus() ;
-                }) ;
-
-
-
-
-
     each file in javascript_files
       script(src=file)
-
-  script(id="code" type="text/x-microscript").
-    !{game.code}
 
   if game.language == "python"
     script(type="text/python").
       from browser import window
+      import traceback
+      import sys
 
-      def execute(str):
+      def execute(str,filename):
         try:
-          return exec(str,globals())
+          code = compile(str,filename,"exec")
+          return exec(code,globals())
         except BaseException as err:
-          print(err)
+          exp = traceback.format_exception(err)
+          sys.stderr.write(exp)
         except Error as err:
-          print("Unexpected error")
+          exp = traceback.format_exception(err)
+          sys.stderr.write(exp)
 
       window.python = execute
       window.glob = globals()
+      window.pythonLoaded()
 
     script.
-      brython()
+      window.pythonLoaded = function() {
+        window.player = new Player() ;
+        document.body.focus() ;
+      }
+      window.addEventListener("load",function() {
+        brython() ;
+      }) ;
+  
+
+  else
+    script(type="text/javascript").
+      //
+      //
+      // The game is started with the code below.
+      // Once you have received the "started" signal (see below),
+      // you can do the following:
+      // 1) Inject functions or objects into the global context of the microStudio engine, example:
+      //
+      //   window.player.setGlobal("special_callback",function(x) { console.info(x) }) ;
+      //   // Your microScript code can now call the "special_callback" function
+      //
+      // 2) Call microScript global functions from your JavaScript code, example:
+      //
+      //   window.player.call("call_me_from_javascript",[10,1000]) ;
+      //   // arguments to the function call are provided as an array
+      //
+      // 3) Run a microScript code snippet from your JavaScript code, example:
+      //
+      //   window.player.exec("player.position_x = 50",function(result) { console.log(result) ; }) ;
+      //
+
+      window.addEventListener("load",function() {
+        window.player = new Player(function(event) {
+          if (event.name == "started") {
+            // signal that the game is started
+          }
+          else if (event.name == "log") {
+            // console.info(event.data) ;
+          }
+        }) ;
+        document.body.focus() ;
+      }) ;
+
+
+  script(id="code" type="text/x-microscript").
+    !{game.code}
+
