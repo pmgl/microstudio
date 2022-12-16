@@ -57,8 +57,10 @@ class @SoundEditor extends Manager
     console.info "folder: "+folder
     reader = new FileReader()
     reader.addEventListener "load",()=>
-      console.info "file read, size = "+ reader.result.length
-      return if reader.result.length>5000000
+      console.info "file read, size = "+ reader.result.byteLength
+      if reader.result.byteLength>5000000
+        @app.appui.showNotification(@app.translator.get("Audio file is too heavy"))
+        return
       audioContext = new AudioContext()
       audioContext.decodeAudioData reader.result,(decoded)=>
         console.info decoded
@@ -68,7 +70,7 @@ class @SoundEditor extends Manager
         if folder? then name = folder.getFullDashPath()+"-"+name
         if folder? then folder.setOpen true
 
-        sound = @app.project.createSound(name,thumbnailer.canvas.toDataURL(),reader.result.length)
+        sound = @app.project.createSound(name,thumbnailer.canvas.toDataURL(),reader.result.byteLength)
         sound.uploading = true
         @setSelectedItem name
 

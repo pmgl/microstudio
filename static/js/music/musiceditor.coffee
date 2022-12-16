@@ -34,8 +34,10 @@ class @MusicEditor extends Manager
     console.info "processing #{file.name}"
     reader = new FileReader()
     reader.addEventListener "load",()=>
-      console.info "file read, size = "+ reader.result.length
-      return if reader.result.length>5000000
+      console.info "file read, size = "+ reader.result.byteLength
+      if reader.result.byteLength>5000000
+        @app.appui.showNotification(@app.translator.get("Music file is too heavy"))
+        return
       audioContext = new AudioContext()
       audioContext.decodeAudioData reader.result,(decoded)=>
         console.info decoded
@@ -45,7 +47,7 @@ class @MusicEditor extends Manager
         if folder? then name = folder.getFullDashPath()+"-"+name
         if folder? then folder.setOpen true
 
-        music = @app.project.createMusic(name,thumbnailer.canvas.toDataURL(),reader.result.length)
+        music = @app.project.createMusic(name,thumbnailer.canvas.toDataURL(),reader.result.byteLength)
         music.uploading = true
         @setSelectedItem name
 
