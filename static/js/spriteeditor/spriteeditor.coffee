@@ -619,7 +619,9 @@ class @SpriteEditor extends Manager
     reader = new FileReader()
     reader.addEventListener "load",()=>
       console.info "file read, size = "+ reader.result.length
-      return if reader.result.length>5000000
+      if reader.result.length>5000000
+        @app.appui.showNotification(@app.translator.get("Image is too heavy"))
+        return
 
       img = new Image
       img.src = reader.result
@@ -644,6 +646,8 @@ class @SpriteEditor extends Manager
             @app.project.removePendingChange(@)
             @app.project.updateSpriteList()
             @checkNameFieldActivation()
+        else
+          @app.appui.showNotification(@app.translator.get("Image size is too large"))
 
     reader.readAsDataURL(file)
 
@@ -665,3 +669,4 @@ class @SpriteEditor extends Manager
   renameItem:(item,name)->
     @app.project.changeSpriteName item.name,name # needed to trigger updating of maps
     super(item,name)
+  

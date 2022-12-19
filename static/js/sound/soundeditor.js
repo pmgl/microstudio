@@ -82,8 +82,9 @@ this.SoundEditor = (function(superClass) {
     reader.addEventListener("load", (function(_this) {
       return function() {
         var audioContext;
-        console.info("file read, size = " + reader.result.length);
-        if (reader.result.length > 5000000) {
+        console.info("file read, size = " + reader.result.byteLength);
+        if (reader.result.byteLength > 5000000) {
+          _this.app.appui.showNotification(_this.app.translator.get("Audio file is too heavy"));
           return;
         }
         audioContext = new AudioContext();
@@ -99,7 +100,7 @@ this.SoundEditor = (function(superClass) {
           if (folder != null) {
             folder.setOpen(true);
           }
-          sound = _this.app.project.createSound(name, thumbnailer.canvas.toDataURL(), reader.result.length);
+          sound = _this.app.project.createSound(name, thumbnailer.canvas.toDataURL(), reader.result.byteLength);
           sound.uploading = true;
           _this.setSelectedItem(name);
           r2 = new FileReader();
