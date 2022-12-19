@@ -20,6 +20,7 @@ class @Routine
     r.arg1 = @arg1
     r.ref = @ref
     r.locals_size = @locals_size
+    r.uses_arguments = @uses_arguments
     r
 
   createLabel:(str="label")->

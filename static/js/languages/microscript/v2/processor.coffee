@@ -44,6 +44,16 @@ class @Processor
       for i in [0..count-1] by 1
         proc.stack[++proc.stack_index] = arguments[i] or 0
 
+      proc.stack[++proc.stack_index] = arguments.length
+
+      if routine.uses_arguments
+        a = [...arguments]
+        for i in [0..a.length-1] by 1
+          if not a[i]?
+            a[i] = 0
+
+        proc.stack[++proc.stack_index] = a
+
       proc.run context
       #res = proc.stack[0]
 
@@ -59,6 +69,16 @@ class @Processor
 
       for i in [0..count-1] by 1
         proc.stack[++proc.stack_index] = arguments[i] or 0
+
+      proc.stack[++proc.stack_index] = arguments.length
+
+      if routine.uses_arguments
+        a = [...arguments]
+        for i in [0..a.length-1] by 1
+          if not a[i]?
+            a[i] = 0
+
+        proc.stack[++proc.stack_index] = a
 
       proc.run context
       res = proc.stack[0]
@@ -559,7 +579,7 @@ class @Processor
         when 27 # OPCODE_UPDATE_CLASS
           name = arg1[op_index]
           # TODO: set classname to variable name
-          if object[name]?
+          if object[name]? and typeof object[name] == "object"
             obj = object[name]
             src = stack[stack_index]
             for key,value of src
@@ -624,11 +644,19 @@ class @Processor
               call_super = c
               call_supername = "constructor"
 
+              if routine.uses_arguments
+                argv = stack.slice(stack_index-args+1,stack_index+1)
+
               if args<con.num_args
                 for i in [args+1..con.num_args] by 1
                   stack[++stack_index] = 0
               else if args>con.num_args
                 stack_index -= args-con.num_args
+              stack[++stack_index] = args
+
+              if routine.uses_arguments
+                stack[++stack_index] = argv
+              
             else
               stack_index -= args
               stack[stack_index-1] = res
@@ -928,11 +956,19 @@ class @Processor
             call_super = global
             call_supername = ""
 
+            if routine.uses_arguments
+              argv = stack.slice(stack_index-args+1,stack_index+1)
+
             if args<f.num_args
               for i in [args+1..f.num_args] by 1
                 stack[++stack_index] = 0
             else if args>f.num_args
               stack_index -= args-f.num_args
+            stack[++stack_index] = args
+
+            if routine.uses_arguments
+              stack[++stack_index] = argv
+              
           else if typeof f == "function"
               switch args
                 when 0
@@ -1024,12 +1060,19 @@ class @Processor
             call_super = sup
             call_supername = name
 
+            if routine.uses_arguments
+              argv = stack.slice(stack_index-args+1,stack_index+1)
 
             if args<f.num_args
               for i in [args+1..f.num_args] by 1
                 stack[++stack_index] = 0
             else if args>f.num_args
               stack_index -= args-f.num_args
+            stack[++stack_index] = args
+
+            if routine.uses_arguments
+              stack[++stack_index] = argv
+              
           else if typeof f == "function"
             switch args
               when 0
@@ -1123,11 +1166,19 @@ class @Processor
             call_super = sup
             call_supername = name
 
+            if routine.uses_arguments
+              argv = stack.slice(stack_index-args+1,stack_index+1)
+
             if args<f.num_args
               for i in [args+1..f.num_args] by 1
                 stack[++stack_index] = 0
             else if args>f.num_args
               stack_index -= args-f.num_args
+            stack[++stack_index] = args
+
+            if routine.uses_arguments
+              stack[++stack_index] = argv  
+
           else if typeof f == "function"
             switch args
               when 0
@@ -1207,11 +1258,19 @@ class @Processor
               length = opcodes.length
               call_super = sup
 
+              if routine.uses_arguments
+                argv = stack.slice(stack_index-args+1,stack_index+1)
+
               if args<f.num_args
                 for i in [args+1..f.num_args] by 1
                   stack[++stack_index] = 0
               else if args>f.num_args
                 stack_index -= args-f.num_args
+              stack[++stack_index] = args
+
+              if routine.uses_arguments
+                stack[++stack_index] = argv
+              
             else
               args = arg1[op_index]
               stack_index -= args

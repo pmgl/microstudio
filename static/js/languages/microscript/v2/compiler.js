@@ -578,13 +578,22 @@ Compiler = (function() {
     }
 
     compileFunctionBody(func) {
-      var a, i, index, j, k, l, label, len, local_index, locals, m, r, ref, ref1, ref2, ref3, routine;
+      var a, args, i, index, j, k, l, label, len, local_index, locals, m, numargs, r, ref, ref1, ref2, ref3, routine;
       routine = this.routine;
       locals = this.locals;
       this.routine = new Routine(func.args != null ? func.args.length : 0);
       this.locals = new Locals(this, locals);
       local_index = this.locals.index;
+      this.routine.uses_arguments = true;
       if (func.args != null) {
+        if (this.routine.uses_arguments) {
+          args = this.locals.register("arguments");
+          this.routine.STORE_LOCAL(args, func);
+          this.routine.POP(func);
+        }
+        numargs = this.locals.register("+numargs");
+        this.routine.STORE_LOCAL(numargs, func);
+        this.routine.POP(func);
         for (i = j = ref = func.args.length - 1; j >= 0; i = j += -1) {
           a = func.args[i];
           index = this.locals.register(a.name);
@@ -596,7 +605,9 @@ Compiler = (function() {
           if (a.default != null) {
             index = this.locals.get(a.name);
             label = this.routine.createLabel("default_arg");
-            this.routine.LOAD_LOCAL(index, func);
+            this.routine.LOAD_VALUE(i, func);
+            this.routine.LOAD_LOCAL(numargs, func);
+            this.routine.LT(func);
             this.routine.JUMPY(label, func);
             this.compile(a.default);
             this.routine.STORE_LOCAL(index, func);
@@ -617,6 +628,11 @@ Compiler = (function() {
       } else {
         this.routine.LOAD_VALUE(0, func);
         this.routine.RETURN(func);
+      }
+      if ((func.args != null) && !this.locals.arguments_used) {
+        this.routine.uses_arguments = false;
+        this.routine.remove(0);
+        this.routine.remove(0);
       }
       index = 0;
       ref3 = this.locals.imports;
@@ -851,33 +867,6 @@ Compiler = (function() {
 
 }).call(this);
 
-// meta.global
-// meta.print
-
-// meta.sin = (x)->Math.sin(x)
-// meta.cos = (x)->Math.cos(x)
-// meta.tan = (x)->Math.tan(x)
-// meta.acos = (x)->Math.acos(x)
-// meta.asin = (x)->Math.asin(x)
-// meta.atan = (x)->Math.atan(x)
-// meta.atan2 = (y,x)->Math.atan2(y,x)
-
-// meta.sind = (x)->Math.sin(x/180*Math.PI)
-// meta.cosd = (x)->Math.cos(x/180*Math.PI)
-// meta.tand = (x)->Math.tan(x/180*Math.PI)
-// meta.acosd = (x)->Math.acos(x)*180/Math.PI
-// meta.asind = (x)->Math.asin(x)*180/Math.PI
-// meta.atand = (x)->Math.atan(x)*180/Math.PI
-// meta.atan2d = (y,x)->Math.atan2(y,x)*180/Math.PI
-
-// meta.log = (x)->Math.log(x)
-// meta.exp = (x)->Math.exp(x)
-
-// meta.random = new Random(0)
-
-// meta.PI = Math.PI
-// meta.true = 1
-// meta.false = 0
 this.Locals = class Locals {
   constructor(compiler, parent = null) {
     this.compiler = compiler;
@@ -917,6 +906,9 @@ this.Locals = class Locals {
 
   get(name) {
     var i, index, j, ref, v;
+    if (name === "arguments") {
+      this.arguments_used = true;
+    }
     for (i = j = ref = this.layers.length - 1; j >= 0; i = j += -1) {
       v = this.layers[i].get(name);
       if (v != null) {

@@ -44,11 +44,21 @@ this.Processor = class Processor {
     var f, proc;
     proc = new Processor(this.runner);
     f = function() {
-      var count, i, j, ref;
+      var a, count, i, j, k, ref, ref1;
       count = Math.min(routine.num_args, arguments.length);
       proc.load(routine);
       for (i = j = 0, ref = count - 1; j <= ref; i = j += 1) {
         proc.stack[++proc.stack_index] = arguments[i] || 0;
+      }
+      proc.stack[++proc.stack_index] = arguments.length;
+      if (routine.uses_arguments) {
+        a = [...arguments];
+        for (i = k = 0, ref1 = a.length - 1; k <= ref1; i = k += 1) {
+          if (a[i] == null) {
+            a[i] = 0;
+          }
+        }
+        proc.stack[++proc.stack_index] = a;
       }
       return proc.run(context);
     };
@@ -60,12 +70,22 @@ this.Processor = class Processor {
     var f, proc;
     proc = new Processor(this.runner);
     f = function() {
-      var count, i, j, ref, res;
+      var a, count, i, j, k, ref, ref1, res;
       count = routine.num_args;
       proc.load(routine);
       proc.object = this;
       for (i = j = 0, ref = count - 1; j <= ref; i = j += 1) {
         proc.stack[++proc.stack_index] = arguments[i] || 0;
+      }
+      proc.stack[++proc.stack_index] = arguments.length;
+      if (routine.uses_arguments) {
+        a = [...arguments];
+        for (i = k = 0, ref1 = a.length - 1; k <= ref1; i = k += 1) {
+          if (a[i] == null) {
+            a[i] = 0;
+          }
+        }
+        proc.stack[++proc.stack_index] = a;
       }
       proc.run(context);
       return res = proc.stack[0];
@@ -670,7 +690,7 @@ this.Processor = class Processor {
         case 27: // OPCODE_UPDATE_CLASS
           name = arg1[op_index];
           // TODO: set classname to variable name
-          if (object[name] != null) {
+          if ((object[name] != null) && typeof object[name] === "object") {
             obj = object[name];
             src = stack[stack_index];
             for (key in src) {
@@ -734,12 +754,19 @@ this.Processor = class Processor {
               object = res;
               call_super = c;
               call_supername = "constructor";
+              if (routine.uses_arguments) {
+                argv = stack.slice(stack_index - args + 1, stack_index + 1);
+              }
               if (args < con.num_args) {
                 for (i = k = ref1 = args + 1, ref2 = con.num_args; k <= ref2; i = k += 1) {
                   stack[++stack_index] = 0;
                 }
               } else if (args > con.num_args) {
                 stack_index -= args - con.num_args;
+              }
+              stack[++stack_index] = args;
+              if (routine.uses_arguments) {
+                stack[++stack_index] = argv;
               }
             } else {
               stack_index -= args;
@@ -1047,12 +1074,19 @@ this.Processor = class Processor {
             object = routine.object != null ? routine.object : global;
             call_super = global;
             call_supername = "";
+            if (routine.uses_arguments) {
+              argv = stack.slice(stack_index - args + 1, stack_index + 1);
+            }
             if (args < f.num_args) {
               for (i = m = ref4 = args + 1, ref5 = f.num_args; m <= ref5; i = m += 1) {
                 stack[++stack_index] = 0;
               }
             } else if (args > f.num_args) {
               stack_index -= args - f.num_args;
+            }
+            stack[++stack_index] = args;
+            if (routine.uses_arguments) {
+              stack[++stack_index] = argv;
             }
           } else if (typeof f === "function") {
             switch (args) {
@@ -1149,12 +1183,19 @@ this.Processor = class Processor {
             object = obj;
             call_super = sup;
             call_supername = name;
+            if (routine.uses_arguments) {
+              argv = stack.slice(stack_index - args + 1, stack_index + 1);
+            }
             if (args < f.num_args) {
               for (i = p = ref7 = args + 1, ref8 = f.num_args; p <= ref8; i = p += 1) {
                 stack[++stack_index] = 0;
               }
             } else if (args > f.num_args) {
               stack_index -= args - f.num_args;
+            }
+            stack[++stack_index] = args;
+            if (routine.uses_arguments) {
+              stack[++stack_index] = argv;
             }
           } else if (typeof f === "function") {
             switch (args) {
@@ -1254,12 +1295,19 @@ this.Processor = class Processor {
             object = obj;
             call_super = sup;
             call_supername = name;
+            if (routine.uses_arguments) {
+              argv = stack.slice(stack_index - args + 1, stack_index + 1);
+            }
             if (args < f.num_args) {
               for (i = s = ref10 = args + 1, ref11 = f.num_args; s <= ref11; i = s += 1) {
                 stack[++stack_index] = 0;
               }
             } else if (args > f.num_args) {
               stack_index -= args - f.num_args;
+            }
+            stack[++stack_index] = args;
+            if (routine.uses_arguments) {
+              stack[++stack_index] = argv;
             }
           } else if (typeof f === "function") {
             switch (args) {
@@ -1343,12 +1391,19 @@ this.Processor = class Processor {
               op_index = 0;
               length = opcodes.length;
               call_super = sup;
+              if (routine.uses_arguments) {
+                argv = stack.slice(stack_index - args + 1, stack_index + 1);
+              }
               if (args < f.num_args) {
                 for (i = w = ref13 = args + 1, ref14 = f.num_args; w <= ref14; i = w += 1) {
                   stack[++stack_index] = 0;
                 }
               } else if (args > f.num_args) {
                 stack_index -= args - f.num_args;
+              }
+              stack[++stack_index] = args;
+              if (routine.uses_arguments) {
+                stack[++stack_index] = argv;
               }
             } else {
               args = arg1[op_index];

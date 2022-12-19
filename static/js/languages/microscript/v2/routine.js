@@ -21,6 +21,7 @@ this.Routine = class Routine {
     r.arg1 = this.arg1;
     r.ref = this.ref;
     r.locals_size = this.locals_size;
+    r.uses_arguments = this.uses_arguments;
     return r;
   }
 

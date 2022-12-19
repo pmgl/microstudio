@@ -502,8 +502,18 @@ class Compiler
     @locals = new Locals @,locals
 
     local_index = @locals.index
+    @routine.uses_arguments = true
 
     if func.args?
+      if @routine.uses_arguments
+        args = @locals.register "arguments"
+        @routine.STORE_LOCAL args,func
+        @routine.POP func
+
+      numargs = @locals.register("+numargs")
+      @routine.STORE_LOCAL numargs,func
+      @routine.POP func
+
       for i in [func.args.length-1..0] by -1
         a = func.args[i]
         index = @locals.register(a.name)
@@ -515,7 +525,10 @@ class Compiler
         if a.default?
           index = @locals.get(a.name)
           label = @routine.createLabel "default_arg"
-          @routine.LOAD_LOCAL index,func
+
+          @routine.LOAD_VALUE i,func
+          @routine.LOAD_LOCAL numargs,func
+          @routine.LT func
           @routine.JUMPY label,func
           @compile a.default
           @routine.STORE_LOCAL index,func
@@ -532,6 +545,11 @@ class Compiler
     else
       @routine.LOAD_VALUE 0,func
       @routine.RETURN func
+
+    if func.args? and not @locals.arguments_used
+      @routine.uses_arguments = false
+      @routine.remove 0
+      @routine.remove 0
 
     index = 0
     for i in @locals.imports
@@ -718,35 +736,6 @@ class Compiler
     true: 1
     false: 0
 
-# meta.global
-# meta.print
-
-    #
-    # meta.sin = (x)->Math.sin(x)
-    # meta.cos = (x)->Math.cos(x)
-    # meta.tan = (x)->Math.tan(x)
-    # meta.acos = (x)->Math.acos(x)
-    # meta.asin = (x)->Math.asin(x)
-    # meta.atan = (x)->Math.atan(x)
-    # meta.atan2 = (y,x)->Math.atan2(y,x)
-    #
-    # meta.sind = (x)->Math.sin(x/180*Math.PI)
-    # meta.cosd = (x)->Math.cos(x/180*Math.PI)
-    # meta.tand = (x)->Math.tan(x/180*Math.PI)
-    # meta.acosd = (x)->Math.acos(x)*180/Math.PI
-    # meta.asind = (x)->Math.asin(x)*180/Math.PI
-    # meta.atand = (x)->Math.atan(x)*180/Math.PI
-    # meta.atan2d = (y,x)->Math.atan2(y,x)*180/Math.PI
-    #
-    # meta.log = (x)->Math.log(x)
-    # meta.exp = (x)->Math.exp(x)
-    #
-    # meta.random = new Random(0)
-    #
-    # meta.PI = Math.PI
-    # meta.true = 1
-    # meta.false = 0
-
 
 class @Locals
   constructor:(@compiler,@parent = null)->
@@ -777,6 +766,9 @@ class @Locals
     @layers[@layers.length-1].allocate()
 
   get:(name)->
+    if name == "arguments"
+      @arguments_used = true
+
     for i in [@layers.length-1..0] by -1
       v = @layers[i].get(name)
       if v?
