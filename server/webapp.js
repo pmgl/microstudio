@@ -47,7 +47,7 @@ this.WebApp = class WebApp {
     this.export_features = new ExportFeatures(this);
     this.server.build_manager.createLinks(this.app);
     this.home_page = {};
-    this.languages = ["en", "fr", "pl", "de", "it", "pt", "ru"];
+    this.languages = ["en", "fr", "pl", "de", "it", "pt", "ru", "es"];
     home_exp = "^(\\/";
     for (i = j = 1, ref = this.languages.length - 1; j <= ref; i = j += 1) {
       home_exp += `|\\/${this.languages[i]}\\/?`;
