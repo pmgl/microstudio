@@ -1,5 +1,15 @@
 ## Changelog
 
+### Update 2022-12-19
+* `playing_sound.getDuration()`
+* New language: Spanish! Thanks a lot to Jose Consuegra for their contribution!
+* Sprite max size changed to 1024x1024
+* Fixes #180, Disable import of files from same project (contributed by @HomineLudens)
+* Fixed Python project exports
+* Added warning messages for oversized files (contributed by @HomineLudens)
+* microScript: default argument values now used only if no argument is passed
+* microScript: new variable `arguments` provides the list of arguments passed to the function
+
 ### Update 2022-11-28
 * Color picker gamma correction (better lightness range)
 * microStudio PWA app is now fullscreen
