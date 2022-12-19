@@ -1,13 +1,7 @@
-var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-this.SoundEditor = (function(superClass) {
-  extend(SoundEditor, superClass);
-
-  function SoundEditor(app) {
+this.SoundEditor = class SoundEditor extends Manager {
+  constructor(app) {
     var synth;
-    this.app = app;
-    SoundEditor.__super__.constructor.call(this, this.app);
+    super(app);
     this.folder = "sounds";
     this.item = "sound";
     this.list_change_event = "soundlist";
@@ -17,120 +11,113 @@ this.SoundEditor = (function(superClass) {
     this.update_list = "updateSoundList";
     this.init();
     synth = document.getElementById("open-synth");
-    synth.addEventListener("click", (function(_this) {
-      return function() {
-        if (_this.synth == null) {
-          _this.app.audio_controller.init();
-          _this.synth = new Synth(_this.app);
-          return _this.synth.synth_window.show();
+    synth.addEventListener("click", () => {
+      if (this.synth == null) {
+        this.app.audio_controller.init();
+        this.synth = new Synth(this.app);
+        return this.synth.synth_window.show();
+      } else {
+        if (this.synth.synth_window.shown) {
+          return this.synth.synth_window.close();
         } else {
-          if (_this.synth.synth_window.shown) {
-            return _this.synth.synth_window.close();
-          } else {
-            return _this.synth.synth_window.show();
-          }
+          return this.synth.synth_window.show();
         }
-      };
-    })(this));
+      }
+    });
   }
 
-  SoundEditor.prototype.update = function() {
+  update() {
     var synth;
-    SoundEditor.__super__.update.call(this);
+    super.update();
     synth = document.getElementById("open-synth");
     if (this.app.user && this.app.user.flags.experimental) {
       return synth.style.display = "inline-block";
     } else {
       return synth.style.display = "none";
     }
-  };
+  }
 
-  SoundEditor.prototype.openItem = function(name) {
+  openItem(name) {
     var sound;
-    SoundEditor.__super__.openItem.call(this, name);
+    super.openItem(name);
     sound = this.app.project.getSound(name);
     if (sound != null) {
       return sound.play();
     }
-  };
+  }
 
-  SoundEditor.prototype.createAsset = function(folder) {
+  createAsset(folder) {
     var input;
     input = document.createElement("input");
     input.type = "file";
     input.accept = ".wav";
-    input.addEventListener("change", (function(_this) {
-      return function(event) {
-        var f, files, i, len;
-        files = event.target.files;
-        if (files.length >= 1) {
-          for (i = 0, len = files.length; i < len; i++) {
-            f = files[i];
-            _this.fileDropped(f, folder);
-          }
+    input.addEventListener("change", (event) => {
+      var f, files, i, len;
+      files = event.target.files;
+      if (files.length >= 1) {
+        for (i = 0, len = files.length; i < len; i++) {
+          f = files[i];
+          this.fileDropped(f, folder);
         }
-      };
-    })(this));
+      }
+    });
     return input.click();
-  };
+  }
 
-  SoundEditor.prototype.fileDropped = function(file, folder) {
+  fileDropped(file, folder) {
     var reader;
-    console.info("processing " + file.name);
+    console.info(`processing ${file.name}`);
     console.info("folder: " + folder);
     reader = new FileReader();
-    reader.addEventListener("load", (function(_this) {
-      return function() {
-        var audioContext;
-        console.info("file read, size = " + reader.result.byteLength);
-        if (reader.result.byteLength > 5000000) {
-          _this.app.appui.showNotification(_this.app.translator.get("Audio file is too heavy"));
-          return;
+    reader.addEventListener("load", () => {
+      var audioContext, file_size;
+      file_size = reader.result.byteLength;
+      console.info("file read, size = " + file_size);
+      if (file_size > 5000000) {
+        this.app.appui.showNotification(this.app.translator.get("Audio file is too heavy"));
+        return;
+      }
+      audioContext = new AudioContext();
+      return audioContext.decodeAudioData(reader.result, (decoded) => {
+        var name, r2, sound, thumbnailer;
+        console.info(decoded);
+        thumbnailer = new SoundThumbnailer(decoded, 96, 64);
+        name = file.name.split(".")[0];
+        name = this.findNewFilename(name, "getSound", folder);
+        if (folder != null) {
+          name = folder.getFullDashPath() + "-" + name;
         }
-        audioContext = new AudioContext();
-        return audioContext.decodeAudioData(reader.result, function(decoded) {
-          var name, r2, sound, thumbnailer;
-          console.info(decoded);
-          thumbnailer = new SoundThumbnailer(decoded, 96, 64);
-          name = file.name.split(".")[0];
-          name = _this.findNewFilename(name, "getSound", folder);
-          if (folder != null) {
-            name = folder.getFullDashPath() + "-" + name;
-          }
-          if (folder != null) {
-            folder.setOpen(true);
-          }
-          sound = _this.app.project.createSound(name, thumbnailer.canvas.toDataURL(), reader.result.byteLength);
-          sound.uploading = true;
-          _this.setSelectedItem(name);
-          r2 = new FileReader();
-          r2.addEventListener("load", function() {
-            var data;
-            sound.local_url = r2.result;
-            data = r2.result.split(",")[1];
-            _this.app.project.addPendingChange(_this);
-            return _this.app.client.sendRequest({
-              name: "write_project_file",
-              project: _this.app.project.id,
-              file: "sounds/" + name + ".wav",
-              properties: {},
-              content: data,
-              thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
-            }, function(msg) {
-              console.info(msg);
-              _this.app.project.removePendingChange(_this);
-              sound.uploading = false;
-              _this.app.project.updateSoundList();
-              return _this.checkNameFieldActivation();
-            });
+        if (folder != null) {
+          folder.setOpen(true);
+        }
+        sound = this.app.project.createSound(name, thumbnailer.canvas.toDataURL(), file_size);
+        sound.uploading = true;
+        this.setSelectedItem(name);
+        r2 = new FileReader();
+        r2.addEventListener("load", () => {
+          var data;
+          sound.local_url = r2.result;
+          data = r2.result.split(",")[1];
+          this.app.project.addPendingChange(this);
+          return this.app.client.sendRequest({
+            name: "write_project_file",
+            project: this.app.project.id,
+            file: `sounds/${name}.wav`,
+            properties: {},
+            content: data,
+            thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
+          }, (msg) => {
+            console.info(msg);
+            this.app.project.removePendingChange(this);
+            sound.uploading = false;
+            this.app.project.updateSoundList();
+            return this.checkNameFieldActivation();
           });
-          return r2.readAsDataURL(file);
         });
-      };
-    })(this));
+        return r2.readAsDataURL(file);
+      });
+    });
     return reader.readAsArrayBuffer(file);
-  };
+  }
 
-  return SoundEditor;
-
-})(Manager);
+};

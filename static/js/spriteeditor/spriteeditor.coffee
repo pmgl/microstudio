@@ -1,6 +1,7 @@
 class @SpriteEditor extends Manager
   constructor:(app)->
     super app
+
     @folder = "sprites"
     @item = "sprite"
     @list_change_event = "spritelist"
@@ -618,15 +619,15 @@ class @SpriteEditor extends Manager
     console.info "folder: "+folder
     reader = new FileReader()
     reader.addEventListener "load",()=>
-      console.info "file read, size = "+ reader.result.length
-      if reader.result.length>5000000
-        @app.appui.showNotification(@app.translator.get("Image is too heavy"))
+      console.info "file read, size = "+ reader.result.byteLength
+      if reader.result.byteLength > 5000000
+        @app.appui.showNotification(@app.translator.get("Image file is too heavy"))
         return
 
       img = new Image
       img.src = reader.result
       img.onload = ()=>
-        if img.complete and img.width > 0 and img.height > 0 and img.width<=2048 and img.height<=2048
+        if img.complete and img.width > 0 and img.height > 0 and img.width <= 2048 and img.height <= 2048
           name = file.name.split(".")[0]
           name = @findNewFilename name,"getSprite",folder
           if folder? then name = folder.getFullDashPath()+"-"+name

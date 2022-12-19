@@ -199,7 +199,7 @@ class @FolderView
           f.setOpen not f.open
 
         title.addEventListener "click",(event)=>
-          if event.clientX<title.getBoundingClientRect().x+50
+          if event.clientX < title.getBoundingClientRect().x+50
             toggle()
 
         title.addEventListener "dblclick",(event)=>

@@ -1,5 +1,7 @@
 class @MusicEditor extends Manager
-  constructor:(@app)->
+  constructor:(app)->
+    super app
+
     @folder = "music"
     @item = "music"
     @list_change_event = "musiclist"
@@ -34,8 +36,9 @@ class @MusicEditor extends Manager
     console.info "processing #{file.name}"
     reader = new FileReader()
     reader.addEventListener "load",()=>
-      console.info "file read, size = "+ reader.result.byteLength
-      if reader.result.byteLength>5000000
+      file_size = reader.result.byteLength
+      console.info "file read, size = "+ file_size
+      if file_size > 5000000
         @app.appui.showNotification(@app.translator.get("Music file is too heavy"))
         return
       audioContext = new AudioContext()
@@ -47,7 +50,7 @@ class @MusicEditor extends Manager
         if folder? then name = folder.getFullDashPath()+"-"+name
         if folder? then folder.setOpen true
 
-        music = @app.project.createMusic(name,thumbnailer.canvas.toDataURL(),reader.result.byteLength)
+        music = @app.project.createMusic(name,thumbnailer.canvas.toDataURL(),file_size)
         music.uploading = true
         @setSelectedItem name
 

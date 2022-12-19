@@ -1,11 +1,6 @@
-var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-this.MusicEditor = (function(superClass) {
-  extend(MusicEditor, superClass);
-
-  function MusicEditor(app) {
-    this.app = app;
+this.MusicEditor = class MusicEditor extends Manager {
+  constructor(app) {
+    super(app);
     this.folder = "music";
     this.item = "music";
     this.list_change_event = "musiclist";
@@ -16,91 +11,86 @@ this.MusicEditor = (function(superClass) {
     this.init();
   }
 
-  MusicEditor.prototype.openItem = function(name) {
+  openItem(name) {
     var music;
-    MusicEditor.__super__.openItem.call(this, name);
+    super.openItem(name);
     music = this.app.project.getMusic(name);
     if (music != null) {
       return music.play();
     }
-  };
+  }
 
-  MusicEditor.prototype.createAsset = function(folder) {
+  createAsset(folder) {
     var input;
     input = document.createElement("input");
     input.type = "file";
     input.accept = ".mp3";
-    input.addEventListener("change", (function(_this) {
-      return function(event) {
-        var f, files, i, len;
-        files = event.target.files;
-        if (files.length >= 1) {
-          for (i = 0, len = files.length; i < len; i++) {
-            f = files[i];
-            _this.fileDropped(f, folder);
-          }
+    input.addEventListener("change", (event) => {
+      var f, files, i, len;
+      files = event.target.files;
+      if (files.length >= 1) {
+        for (i = 0, len = files.length; i < len; i++) {
+          f = files[i];
+          this.fileDropped(f, folder);
         }
-      };
-    })(this));
+      }
+    });
     return input.click();
-  };
+  }
 
-  MusicEditor.prototype.fileDropped = function(file, folder) {
+  fileDropped(file, folder) {
     var reader;
-    console.info("processing " + file.name);
+    console.info(`processing ${file.name}`);
     reader = new FileReader();
-    reader.addEventListener("load", (function(_this) {
-      return function() {
-        var audioContext;
-        console.info("file read, size = " + reader.result.byteLength);
-        if (reader.result.byteLength > 5000000) {
-          _this.app.appui.showNotification(_this.app.translator.get("Music file is too heavy"));
-          return;
+    reader.addEventListener("load", () => {
+      var audioContext, file_size;
+      file_size = reader.result.byteLength;
+      console.info("file read, size = " + file_size);
+      if (file_size > 5000000) {
+        this.app.appui.showNotification(this.app.translator.get("Music file is too heavy"));
+        return;
+      }
+      audioContext = new AudioContext();
+      return audioContext.decodeAudioData(reader.result, (decoded) => {
+        var music, name, r2, thumbnailer;
+        console.info(decoded);
+        thumbnailer = new SoundThumbnailer(decoded, 192, 64, "hsl(200,80%,60%)");
+        name = file.name.split(".")[0];
+        name = this.findNewFilename(name, "getMusic", folder);
+        if (folder != null) {
+          name = folder.getFullDashPath() + "-" + name;
         }
-        audioContext = new AudioContext();
-        return audioContext.decodeAudioData(reader.result, function(decoded) {
-          var music, name, r2, thumbnailer;
-          console.info(decoded);
-          thumbnailer = new SoundThumbnailer(decoded, 192, 64, "hsl(200,80%,60%)");
-          name = file.name.split(".")[0];
-          name = _this.findNewFilename(name, "getMusic", folder);
-          if (folder != null) {
-            name = folder.getFullDashPath() + "-" + name;
-          }
-          if (folder != null) {
-            folder.setOpen(true);
-          }
-          music = _this.app.project.createMusic(name, thumbnailer.canvas.toDataURL(), reader.result.byteLength);
-          music.uploading = true;
-          _this.setSelectedItem(name);
-          r2 = new FileReader();
-          r2.addEventListener("load", function() {
-            var data;
-            music.local_url = r2.result;
-            data = r2.result.split(",")[1];
-            _this.app.project.addPendingChange(_this);
-            return _this.app.client.sendRequest({
-              name: "write_project_file",
-              project: _this.app.project.id,
-              file: "music/" + name + ".mp3",
-              properties: {},
-              content: data,
-              thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
-            }, function(msg) {
-              console.info(msg);
-              _this.app.project.removePendingChange(_this);
-              music.uploading = false;
-              _this.app.project.updateMusicList();
-              return _this.checkNameFieldActivation();
-            });
+        if (folder != null) {
+          folder.setOpen(true);
+        }
+        music = this.app.project.createMusic(name, thumbnailer.canvas.toDataURL(), file_size);
+        music.uploading = true;
+        this.setSelectedItem(name);
+        r2 = new FileReader();
+        r2.addEventListener("load", () => {
+          var data;
+          music.local_url = r2.result;
+          data = r2.result.split(",")[1];
+          this.app.project.addPendingChange(this);
+          return this.app.client.sendRequest({
+            name: "write_project_file",
+            project: this.app.project.id,
+            file: `music/${name}.mp3`,
+            properties: {},
+            content: data,
+            thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]
+          }, (msg) => {
+            console.info(msg);
+            this.app.project.removePendingChange(this);
+            music.uploading = false;
+            this.app.project.updateMusicList();
+            return this.checkNameFieldActivation();
           });
-          return r2.readAsDataURL(file);
         });
-      };
-    })(this));
+        return r2.readAsDataURL(file);
+      });
+    });
     return reader.readAsArrayBuffer(file);
-  };
+  }
 
-  return MusicEditor;
-
-})(Manager);
+};

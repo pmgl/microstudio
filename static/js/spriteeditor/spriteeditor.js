@@ -1,12 +1,7 @@
-var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-this.SpriteEditor = (function(superClass) {
-  extend(SpriteEditor, superClass);
-
-  function SpriteEditor(app) {
+this.SpriteEditor = class SpriteEditor extends Manager {
+  constructor(app) {
     var i, l, len, ref, tool;
-    SpriteEditor.__super__.constructor.call(this, app);
+    super(app);
     this.folder = "sprites";
     this.item = "sprite";
     this.list_change_event = "spritelist";
@@ -22,152 +17,110 @@ this.SpriteEditor = (function(superClass) {
     this.animation_panel = new AnimationPanel(this);
     this.save_delay = 1000;
     this.save_time = 0;
-    setInterval(((function(_this) {
-      return function() {
-        return _this.checkSave();
-      };
-    })(this)), this.save_delay / 2);
-    document.getElementById("sprite-width").addEventListener("input", (function(_this) {
-      return function(event) {
-        return _this.spriteDimensionChanged("width");
-      };
-    })(this));
-    document.getElementById("sprite-height").addEventListener("input", (function(_this) {
-      return function(event) {
-        return _this.spriteDimensionChanged("height");
-      };
-    })(this));
-    document.getElementById("colortext").addEventListener("input", (function(_this) {
-      return function(event) {
-        return _this.colortextChanged();
-      };
-    })(this));
-    document.getElementById("colortext-copy").addEventListener("click", (function(_this) {
-      return function(event) {
-        return _this.colortextCopy();
-      };
-    })(this));
-    this.sprite_size_validator = new InputValidator([document.getElementById("sprite-width"), document.getElementById("sprite-height")], document.getElementById("sprite-size-button"), null, (function(_this) {
-      return function(value) {
-        return _this.saveDimensionChange(value);
-      };
-    })(this));
+    setInterval((() => {
+      return this.checkSave();
+    }), this.save_delay / 2);
+    document.getElementById("sprite-width").addEventListener("input", (event) => {
+      return this.spriteDimensionChanged("width");
+    });
+    document.getElementById("sprite-height").addEventListener("input", (event) => {
+      return this.spriteDimensionChanged("height");
+    });
+    document.getElementById("colortext").addEventListener("input", (event) => {
+      return this.colortextChanged();
+    });
+    document.getElementById("colortext-copy").addEventListener("click", (event) => {
+      return this.colortextCopy();
+    });
+    this.sprite_size_validator = new InputValidator([document.getElementById("sprite-width"), document.getElementById("sprite-height")], document.getElementById("sprite-size-button"), null, (value) => {
+      return this.saveDimensionChange(value);
+    });
     this.selected_sprite = null;
-    this.app.appui.setAction("undo-sprite", (function(_this) {
-      return function() {
-        return _this.undo();
-      };
-    })(this));
-    this.app.appui.setAction("redo-sprite", (function(_this) {
-      return function() {
-        return _this.redo();
-      };
-    })(this));
-    this.app.appui.setAction("copy-sprite", (function(_this) {
-      return function() {
-        return _this.copy();
-      };
-    })(this));
-    this.app.appui.setAction("cut-sprite", (function(_this) {
-      return function() {
-        return _this.cut();
-      };
-    })(this));
-    this.app.appui.setAction("paste-sprite", (function(_this) {
-      return function() {
-        return _this.paste();
-      };
-    })(this));
-    this.app.appui.setAction("sprite-helper-tile", (function(_this) {
-      return function() {
-        return _this.toggleTile();
-      };
-    })(this));
-    this.app.appui.setAction("sprite-helper-vsymmetry", (function(_this) {
-      return function() {
-        return _this.toggleVSymmetry();
-      };
-    })(this));
-    this.app.appui.setAction("sprite-helper-hsymmetry", (function(_this) {
-      return function() {
-        return _this.toggleHSymmetry();
-      };
-    })(this));
-    this.app.appui.setAction("selection-operation-film", (function(_this) {
-      return function() {
-        return _this.stripToAnimation();
-      };
-    })(this));
-    this.app.appui.setAction("selection-action-horizontal-flip", (function(_this) {
-      return function() {
-        return _this.flipHSprite();
-      };
-    })(this));
-    this.app.appui.setAction("selection-action-vertical-flip", (function(_this) {
-      return function() {
-        return _this.flipVSprite();
-      };
-    })(this));
-    this.app.appui.setAction("selection-action-rotate-left", (function(_this) {
-      return function() {
-        return _this.rotateSprite(-1);
-      };
-    })(this));
-    this.app.appui.setAction("selection-action-rotate-right", (function(_this) {
-      return function() {
-        return _this.rotateSprite(1);
-      };
-    })(this));
-    document.addEventListener("keydown", (function(_this) {
-      return function(event) {
-        if (document.getElementById("spriteeditor").offsetParent == null) {
-          return;
+    this.app.appui.setAction("undo-sprite", () => {
+      return this.undo();
+    });
+    this.app.appui.setAction("redo-sprite", () => {
+      return this.redo();
+    });
+    this.app.appui.setAction("copy-sprite", () => {
+      return this.copy();
+    });
+    this.app.appui.setAction("cut-sprite", () => {
+      return this.cut();
+    });
+    this.app.appui.setAction("paste-sprite", () => {
+      return this.paste();
+    });
+    this.app.appui.setAction("sprite-helper-tile", () => {
+      return this.toggleTile();
+    });
+    this.app.appui.setAction("sprite-helper-vsymmetry", () => {
+      return this.toggleVSymmetry();
+    });
+    this.app.appui.setAction("sprite-helper-hsymmetry", () => {
+      return this.toggleHSymmetry();
+    });
+    this.app.appui.setAction("selection-operation-film", () => {
+      return this.stripToAnimation();
+    });
+    this.app.appui.setAction("selection-action-horizontal-flip", () => {
+      return this.flipHSprite();
+    });
+    this.app.appui.setAction("selection-action-vertical-flip", () => {
+      return this.flipVSprite();
+    });
+    this.app.appui.setAction("selection-action-rotate-left", () => {
+      return this.rotateSprite(-1);
+    });
+    this.app.appui.setAction("selection-action-rotate-right", () => {
+      return this.rotateSprite(1);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (document.getElementById("spriteeditor").offsetParent == null) {
+        return;
+      }
+      //console.info event
+      if ((document.activeElement != null) && document.activeElement.tagName.toLowerCase() === "input") {
+        return;
+      }
+      if (event.key === "Alt" && !this.tool.selectiontool) {
+        this.setColorPicker(true);
+        this.alt_pressed = true;
+      }
+      if (event.metaKey || event.ctrlKey) {
+        switch (event.key) {
+          case "z":
+            this.undo();
+            break;
+          case "Z":
+            this.redo();
+            break;
+          case "c":
+            this.copy();
+            break;
+          case "x":
+            this.cut();
+            break;
+          case "v":
+            this.paste();
+            break;
+          default:
+            return;
         }
-        if ((document.activeElement != null) && document.activeElement.tagName.toLowerCase() === "input") {
-          return;
-        }
-        if (event.key === "Alt" && !_this.tool.selectiontool) {
-          _this.setColorPicker(true);
-          _this.alt_pressed = true;
-        }
-        if (event.metaKey || event.ctrlKey) {
-          switch (event.key) {
-            case "z":
-              _this.undo();
-              break;
-            case "Z":
-              _this.redo();
-              break;
-            case "c":
-              _this.copy();
-              break;
-            case "x":
-              _this.cut();
-              break;
-            case "v":
-              _this.paste();
-              break;
-            default:
-              return;
-          }
-          event.preventDefault();
-          return event.stopPropagation();
-        }
-      };
-    })(this));
-    document.addEventListener("keyup", (function(_this) {
-      return function(event) {
-        if (event.key === "Alt" && !_this.tool.selectiontool) {
-          _this.setColorPicker(false);
-          return _this.alt_pressed = false;
-        }
-      };
-    })(this));
-    document.getElementById("eyedropper").addEventListener("click", (function(_this) {
-      return function() {
-        return _this.setColorPicker(!_this.spriteview.colorpicker);
-      };
-    })(this));
+        event.preventDefault();
+        return event.stopPropagation();
+      }
+    });
+    //console.info event
+    document.addEventListener("keyup", (event) => {
+      if (event.key === "Alt" && !this.tool.selectiontool) {
+        this.setColorPicker(false);
+        return this.alt_pressed = false;
+      }
+    });
+    document.getElementById("eyedropper").addEventListener("click", () => {
+      return this.setColorPicker(!this.spriteview.colorpicker);
+    });
     ref = DrawTool.tools;
     for (i = l = 0, len = ref.length; l < len; i = ++l) {
       tool = ref[i];
@@ -175,83 +128,90 @@ this.SpriteEditor = (function(superClass) {
       this.createToolOptions(tool);
     }
     this.setSelectedTool(DrawTool.tools[0].icon);
-    document.getElementById("spritelist").addEventListener("dragover", (function(_this) {
-      return function(event) {
-        return event.preventDefault();
-      };
-    })(this));
+    document.getElementById("spritelist").addEventListener("dragover", (event) => {
+      return event.preventDefault();
+    });
+    //console.info event
     this.code_tip = new CodeSnippetField(this.app, "#sprite-code-tip");
-    this.background_color_picker = new BackgroundColorPicker(this, ((function(_this) {
-      return function(color) {
-        _this.spriteview.updateBackgroundColor();
-        return document.getElementById("sprite-background-color").style.background = color;
-      };
-    })(this)), "sprite");
-    document.getElementById("sprite-background-color").addEventListener("mousedown", (function(_this) {
-      return function(event) {
-        if (_this.background_color_picker.shown) {
-          return _this.background_color_picker.hide();
-        } else {
-          _this.background_color_picker.show();
-          return event.stopPropagation();
-        }
-      };
-    })(this));
+    this.background_color_picker = new BackgroundColorPicker(this, ((color) => {
+      this.spriteview.updateBackgroundColor();
+      return document.getElementById("sprite-background-color").style.background = color;
+    }), "sprite");
+    document.getElementById("sprite-background-color").addEventListener("mousedown", (event) => {
+      if (this.background_color_picker.shown) {
+        return this.background_color_picker.hide();
+      } else {
+        this.background_color_picker.show();
+        return event.stopPropagation();
+      }
+    });
   }
 
-  SpriteEditor.prototype.createToolButton = function(tool) {
+  createToolButton(tool) {
     var div, parent;
     parent = document.getElementById("spritetools");
     div = document.createElement("div");
     div.classList.add("spritetoolbutton");
     div.title = tool.name;
-    div.innerHTML = "<i class='fa " + tool.icon + "'></i><br />" + (this.app.translator.get(tool.name));
-    div.addEventListener("click", (function(_this) {
-      return function() {
-        return _this.setSelectedTool(tool.icon);
-      };
-    })(this));
-    div.id = "spritetoolbutton-" + tool.icon;
+    div.innerHTML = `<i class='fa ${tool.icon}'></i><br />${this.app.translator.get(tool.name)}`;
+    div.addEventListener("click", () => {
+      return this.setSelectedTool(tool.icon);
+    });
+    div.id = `spritetoolbutton-${tool.icon}`;
     return parent.appendChild(div);
-  };
+  }
 
-  SpriteEditor.prototype.createToolOptions = function(tool) {
-    var button, div, fn, i, k, key, l, len, p, parent, ref, ref1, t, toolbox;
+  createToolOptions(tool) {
+    var button, div, i, k, key, l, len, p, parent, ref, ref1, t, toolbox;
     parent = document.getElementById("spritetooloptionslist");
     div = document.createElement("div");
     ref = tool.parameters;
     for (key in ref) {
       p = ref[key];
       if (p.type === "range") {
-        (function(_this) {
-          return (function(p, key) {
-            var input, label;
-            label = document.createElement("label");
-            label.innerText = key;
-            div.appendChild(label);
-            input = document.createElement("input");
-            input.type = "range";
-            input.min = "0";
-            input.max = "100";
-            input.value = p.value;
-            input.addEventListener("input", function(event) {
-              p.value = input.value;
-              if (key === "Size") {
-                return _this.spriteview.showBrushSize();
-              }
-            });
-            return div.appendChild(input);
+        ((p, key) => {
+          var input, label;
+          label = document.createElement("label");
+          label.innerText = key;
+          div.appendChild(label);
+          input = document.createElement("input");
+          input.type = "range";
+          input.min = "0";
+          input.max = "100";
+          input.value = p.value;
+          input.addEventListener("input", (event) => {
+            p.value = input.value;
+            if (key === "Size") {
+              return this.spriteview.showBrushSize();
+            }
           });
-        })(this)(p, key);
+          return div.appendChild(input);
+        })(p, key);
       } else if (p.type === "tool") {
         toolbox = document.createElement("div");
         toolbox.classList.add("toolbox");
         div.appendChild(toolbox);
         ref1 = p.set;
-        fn = (function(_this) {
-          return function(p, k) {
-            return button.addEventListener("click", function() {
-              var i, len1, o, ref2, results;
+        for (k = l = 0, len = ref1.length; l < len; k = ++l) {
+          t = ref1[k];
+          button = document.createElement("div");
+          button.classList.add("spritetoolbutton");
+          if (k === 0) {
+            button.classList.add("selected");
+          }
+          button.title = t.name;
+          button.id = `spritetoolbutton-${t.icon}`;
+          i = document.createElement("i");
+          i.classList.add("fa");
+          i.classList.add(t.icon);
+          button.appendChild(i);
+          button.appendChild(document.createElement("br"));
+          button.appendChild(document.createTextNode(t.name));
+          toolbox.appendChild(button);
+          t.button = button;
+          ((p, k) => {
+            return button.addEventListener("click", () => {
+              var len1, o, ref2, results;
               p.value = k;
               ref2 = p.set;
               results = [];
@@ -265,46 +225,27 @@ this.SpriteEditor = (function(superClass) {
               }
               return results;
             });
-          };
-        })(this);
-        for (k = l = 0, len = ref1.length; l < len; k = ++l) {
-          t = ref1[k];
-          button = document.createElement("div");
-          button.classList.add("spritetoolbutton");
-          if (k === 0) {
-            button.classList.add("selected");
-          }
-          button.title = t.name;
-          button.id = "spritetoolbutton-" + t.icon;
-          i = document.createElement("i");
-          i.classList.add("fa");
-          i.classList.add(t.icon);
-          button.appendChild(i);
-          button.appendChild(document.createElement("br"));
-          button.appendChild(document.createTextNode(t.name));
-          toolbox.appendChild(button);
-          t.button = button;
-          fn(p, k);
+          })(p, k);
         }
       }
     }
-    div.id = "spritetooloptions-" + tool.icon;
+    div.id = `spritetooloptions-${tool.icon}`;
     return parent.appendChild(div);
-  };
+  }
 
-  SpriteEditor.prototype.setSelectedTool = function(id) {
+  setSelectedTool(id) {
     var e, l, len, ref, tool;
     ref = DrawTool.tools;
     for (l = 0, len = ref.length; l < len; l++) {
       tool = ref[l];
-      e = document.getElementById("spritetoolbutton-" + tool.icon);
+      e = document.getElementById(`spritetoolbutton-${tool.icon}`);
       if (tool.icon === id) {
         this.tool = tool;
         e.classList.add("selected");
       } else {
         e.classList.remove("selected");
       }
-      e = document.getElementById("spritetooloptions-" + tool.icon);
+      e = document.getElementById(`spritetooloptions-${tool.icon}`);
       if (tool.icon === id) {
         e.style.display = "block";
       } else {
@@ -314,9 +255,9 @@ this.SpriteEditor = (function(superClass) {
     document.getElementById("colorpicker-group").style.display = this.tool.parameters["Color"] != null ? "block" : "none";
     this.spriteview.update();
     return this.updateSelectionHints();
-  };
+  }
 
-  SpriteEditor.prototype.toggleTile = function() {
+  toggleTile() {
     this.spriteview.tile = !this.spriteview.tile;
     this.spriteview.update();
     if (this.spriteview.tile) {
@@ -324,9 +265,9 @@ this.SpriteEditor = (function(superClass) {
     } else {
       return document.getElementById("sprite-helper-tile").classList.remove("selected");
     }
-  };
+  }
 
-  SpriteEditor.prototype.toggleVSymmetry = function() {
+  toggleVSymmetry() {
     this.spriteview.vsymmetry = !this.spriteview.vsymmetry;
     this.spriteview.update();
     if (this.spriteview.vsymmetry) {
@@ -334,9 +275,9 @@ this.SpriteEditor = (function(superClass) {
     } else {
       return document.getElementById("sprite-helper-vsymmetry").classList.remove("selected");
     }
-  };
+  }
 
-  SpriteEditor.prototype.toggleHSymmetry = function() {
+  toggleHSymmetry() {
     this.spriteview.hsymmetry = !this.spriteview.hsymmetry;
     this.spriteview.update();
     if (this.spriteview.hsymmetry) {
@@ -344,30 +285,29 @@ this.SpriteEditor = (function(superClass) {
     } else {
       return document.getElementById("sprite-helper-hsymmetry").classList.remove("selected");
     }
-  };
+  }
 
-  SpriteEditor.prototype.spriteChanged = function() {
+  spriteChanged() {
     var s;
     if (this.ignore_changes) {
       return;
     }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    this.app.project.lockFile(`sprites/${this.selected_sprite}.png`);
     this.save_time = Date.now();
     s = this.app.project.getSprite(this.selected_sprite);
     if (s != null) {
       s.updated(this.spriteview.sprite.saveData());
     }
+    // s.loaded() # triggers update of all maps
     this.app.project.addPendingChange(this);
     this.animation_panel.frameUpdated();
     this.auto_palette.update();
     this.app.project.notifyListeners(s);
     return this.app.runwindow.updateSprite(this.selected_sprite);
-  };
+  }
 
-  SpriteEditor.prototype.checkSave = function(immediate, callback) {
-    if (immediate == null) {
-      immediate = false;
-    }
+  //@updateLocalSprites()
+  checkSave(immediate = false, callback) {
     if (this.save_time > 0 && (immediate || Date.now() > this.save_time + this.save_delay)) {
       this.saveSprite(callback);
       return this.save_time = 0;
@@ -376,21 +316,21 @@ this.SpriteEditor = (function(superClass) {
         return callback();
       }
     }
-  };
+  }
 
-  SpriteEditor.prototype.forceSave = function(callback) {
+  forceSave(callback) {
     return this.checkSave(true, callback);
-  };
+  }
 
-  SpriteEditor.prototype.projectOpened = function() {
-    SpriteEditor.__super__.projectOpened.call(this);
+  projectOpened() {
+    super.projectOpened();
     this.app.project.addListener(this);
     return this.setSelectedSprite(null);
-  };
+  }
 
-  SpriteEditor.prototype.projectUpdate = function(change) {
+  projectUpdate(change) {
     var c, name, sprite;
-    SpriteEditor.__super__.projectUpdate.call(this, change);
+    super.projectUpdate(change);
     switch (change) {
       case "locks":
         this.updateCurrentFileLock();
@@ -398,30 +338,30 @@ this.SpriteEditor = (function(superClass) {
     }
     if (change instanceof ProjectSprite) {
       name = change.name;
-      c = document.querySelector("#sprite-image-" + name);
+      c = document.querySelector(`#sprite-image-${name}`);
       sprite = change;
       if ((c != null) && (c.updateSprite != null)) {
         return c.updateSprite();
       }
     }
-  };
+  }
 
-  SpriteEditor.prototype.updateCurrentFileLock = function() {
+  updateCurrentFileLock() {
     var lock, user;
     if (this.selected_sprite != null) {
-      this.spriteview.editable = !this.app.project.isLocked("sprites/" + this.selected_sprite + ".png");
+      this.spriteview.editable = !this.app.project.isLocked(`sprites/${this.selected_sprite}.png`);
     }
     lock = document.getElementById("sprite-editor-locked");
-    if ((this.selected_sprite != null) && this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
-      user = this.app.project.isLocked("sprites/" + this.selected_sprite + ".png").user;
-      lock.style = "display: block; background: " + (this.app.appui.createFriendColor(user));
-      return lock.innerHTML = "<i class='fa fa-user'></i> Locked by " + user;
+    if ((this.selected_sprite != null) && this.app.project.isLocked(`sprites/${this.selected_sprite}.png`)) {
+      user = this.app.project.isLocked(`sprites/${this.selected_sprite}.png`).user;
+      lock.style = `display: block; background: ${this.app.appui.createFriendColor(user)}`;
+      return lock.innerHTML = `<i class='fa fa-user'></i> Locked by ${user}`;
     } else {
       return lock.style = "display: none";
     }
-  };
+  }
 
-  SpriteEditor.prototype.saveSprite = function(callback) {
+  saveSprite(callback) {
     var data, pixels, saved, sprite;
     if ((this.selected_sprite == null) || !this.spriteview.sprite) {
       return;
@@ -434,87 +374,73 @@ this.SpriteEditor = (function(superClass) {
     this.app.client.sendRequest({
       name: "write_project_file",
       project: this.app.project.id,
-      file: "sprites/" + this.selected_sprite + ".png",
+      file: `sprites/${this.selected_sprite}.png`,
       pixels: pixels,
       properties: {
         frames: this.spriteview.sprite.frames.length,
         fps: this.spriteview.sprite.fps
       },
       content: data
-    }, (function(_this) {
-      return function(msg) {
-        saved = true;
-        if (_this.save_time === 0) {
-          _this.app.project.removePendingChange(_this);
-        }
-        sprite.size = msg.size;
+    }, (msg) => {
+      saved = true;
+      if (this.save_time === 0) {
+        this.app.project.removePendingChange(this);
+      }
+      sprite.size = msg.size;
+      if (callback != null) {
+        return callback();
+      }
+    });
+    return setTimeout((() => {
+      if (!saved) {
+        this.save_time = Date.now();
+        return console.info("retrying sprite save...");
+      }
+    }), 10000);
+  }
+
+  createAsset(folder, name = "sprite", content = "") {
+    return this.checkSave(true, () => {
+      if (folder != null) {
+        name = folder.getFullDashPath() + `-${name}`;
+        folder.setOpen(true);
+      }
+      return this.createSprite(name, null);
+    });
+  }
+
+  createSprite(name, img, callback) {
+    return this.checkSave(true, () => {
+      var height, sprite, width;
+      if (img != null) {
+        width = img.width;
+        height = img.height;
+      } else if (this.spriteview.selection != null) {
+        width = Math.max(8, this.spriteview.selection.w);
+        height = Math.max(8, this.spriteview.selection.h);
+      } else {
+        width = Math.max(8, this.spriteview.sprite.width);
+        height = Math.max(8, this.spriteview.sprite.height);
+      }
+      sprite = this.app.project.createSprite(width, height, name);
+      this.spriteview.setSprite(sprite);
+      this.animation_panel.spriteChanged();
+      if (img != null) {
+        this.spriteview.getFrame().getContext().drawImage(img, 0, 0);
+      }
+      this.spriteview.update();
+      this.setSelectedItem(sprite.name);
+      this.spriteview.editable = true;
+      return this.saveSprite(() => {
+        this.rebuildList();
         if (callback != null) {
           return callback();
         }
-      };
-    })(this));
-    return setTimeout(((function(_this) {
-      return function() {
-        if (!saved) {
-          _this.save_time = Date.now();
-          return console.info("retrying sprite save...");
-        }
-      };
-    })(this)), 10000);
-  };
+      });
+    });
+  }
 
-  SpriteEditor.prototype.createAsset = function(folder, name, content) {
-    if (name == null) {
-      name = "sprite";
-    }
-    if (content == null) {
-      content = "";
-    }
-    return this.checkSave(true, (function(_this) {
-      return function() {
-        if (folder != null) {
-          name = folder.getFullDashPath() + ("-" + name);
-          folder.setOpen(true);
-        }
-        return _this.createSprite(name, null);
-      };
-    })(this));
-  };
-
-  SpriteEditor.prototype.createSprite = function(name, img, callback) {
-    return this.checkSave(true, (function(_this) {
-      return function() {
-        var height, sprite, width;
-        if (img != null) {
-          width = img.width;
-          height = img.height;
-        } else if (_this.spriteview.selection != null) {
-          width = Math.max(8, _this.spriteview.selection.w);
-          height = Math.max(8, _this.spriteview.selection.h);
-        } else {
-          width = Math.max(8, _this.spriteview.sprite.width);
-          height = Math.max(8, _this.spriteview.sprite.height);
-        }
-        sprite = _this.app.project.createSprite(width, height, name);
-        _this.spriteview.setSprite(sprite);
-        _this.animation_panel.spriteChanged();
-        if (img != null) {
-          _this.spriteview.getFrame().getContext().drawImage(img, 0, 0);
-        }
-        _this.spriteview.update();
-        _this.setSelectedItem(sprite.name);
-        _this.spriteview.editable = true;
-        return _this.saveSprite(function() {
-          _this.rebuildList();
-          if (callback != null) {
-            return callback();
-          }
-        });
-      };
-    })(this));
-  };
-
-  SpriteEditor.prototype.setSelectedItem = function(name) {
+  setSelectedItem(name) {
     var sprite;
     this.checkSave(true);
     sprite = this.app.project.getSprite(name);
@@ -525,10 +451,10 @@ this.SpriteEditor = (function(superClass) {
     this.spriteview.update();
     this.spriteview.editable = true;
     this.setSelectedSprite(name);
-    return SpriteEditor.__super__.setSelectedItem.call(this, name);
-  };
+    return super.setSelectedItem(name);
+  }
 
-  SpriteEditor.prototype.setSelectedSprite = function(sprite) {
+  setSelectedSprite(sprite) {
     var e;
     this.selected_sprite = sprite;
     this.animation_panel.spriteChanged();
@@ -558,38 +484,36 @@ this.SpriteEditor = (function(superClass) {
     this.auto_palette.update();
     this.updateCodeTip();
     return this.setCoordinates(-1, -1);
-  };
+  }
 
-  SpriteEditor.prototype.setSprite = function(data) {
+  setSprite(data) {
     var img;
     data = "data:image/png;base64," + data;
     this.ignore_changes = true;
     img = new Image;
     img.src = data;
     img.crossOrigin = "Anonymous";
-    return img.onload = (function(_this) {
-      return function() {
-        _this.spriteview.sprite.load(img);
-        _this.spriteview.windowResized();
-        _this.spriteview.update();
-        _this.spriteview.editable = true;
-        _this.ignore_changes = false;
-        _this.spriteview.windowResized();
-        document.getElementById("sprite-width").value = _this.spriteview.sprite.width;
-        document.getElementById("sprite-height").value = _this.spriteview.sprite.height;
-        return _this.sprite_size_validator.update();
-      };
-    })(this);
-  };
+    return img.onload = () => {
+      this.spriteview.sprite.load(img);
+      this.spriteview.windowResized();
+      this.spriteview.update();
+      this.spriteview.editable = true;
+      this.ignore_changes = false;
+      this.spriteview.windowResized();
+      document.getElementById("sprite-width").value = this.spriteview.sprite.width;
+      document.getElementById("sprite-height").value = this.spriteview.sprite.height;
+      return this.sprite_size_validator.update();
+    };
+  }
 
-  SpriteEditor.prototype.setColor = function(color1) {
+  setColor(color1) {
     this.color = color1;
     this.spriteview.setColor(this.color);
     this.auto_palette.colorPicked(this.color);
     return document.getElementById("colortext").value = this.color;
-  };
+  }
 
-  SpriteEditor.prototype.spriteDimensionChanged = function(dim) {
+  spriteDimensionChanged(dim) {
     if (this.selected_sprite === "icon") {
       if (dim === "width") {
         return document.getElementById("sprite-height").value = document.getElementById("sprite-width").value;
@@ -597,33 +521,31 @@ this.SpriteEditor = (function(superClass) {
         return document.getElementById("sprite-width").value = document.getElementById("sprite-height").value;
       }
     }
-  };
+  }
 
-  SpriteEditor.prototype.colortextChanged = function() {
+  colortextChanged() {
     return this.colorpicker.colorPicked(document.getElementById("colortext").value);
-  };
+  }
 
-  SpriteEditor.prototype.colortextCopy = function() {
+  colortextCopy() {
     var colortext, copy;
     copy = document.getElementById("colortext-copy");
     colortext = document.getElementById("colortext");
     copy.classList.remove("fa-copy");
     copy.classList.add("fa-check");
-    setTimeout(((function(_this) {
-      return function() {
-        copy.classList.remove("fa-check");
-        return copy.classList.add("fa-copy");
-      };
-    })(this)), 3000);
-    return navigator.clipboard.writeText("\"" + colortext.value + "\"");
-  };
+    setTimeout((() => {
+      copy.classList.remove("fa-check");
+      return copy.classList.add("fa-copy");
+    }), 3000);
+    return navigator.clipboard.writeText(`"${colortext.value}"`);
+  }
 
-  SpriteEditor.prototype.saveDimensionChange = function(value) {
+  saveDimensionChange(value) {
     var err, h, w;
-    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+    if (this.app.project.isLocked(`sprites/${this.selected_sprite}.png`)) {
       return;
     }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    this.app.project.lockFile(`sprites/${this.selected_sprite}.png`);
     w = value[0];
     h = value[1];
     try {
@@ -653,20 +575,18 @@ this.SpriteEditor = (function(superClass) {
       document.getElementById("sprite-height").value = this.spriteview.sprite.height;
       return this.sprite_size_validator.update();
     }
-  };
+  }
 
-  SpriteEditor.prototype.undo = function() {
+  undo() {
     var s;
-    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+    if (this.app.project.isLocked(`sprites/${this.selected_sprite}.png`)) {
       return;
     }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    this.app.project.lockFile(`sprites/${this.selected_sprite}.png`);
     if (this.spriteview.sprite && (this.spriteview.sprite.undo != null)) {
-      s = this.spriteview.sprite.undo.undo((function(_this) {
-        return function() {
-          return _this.spriteview.sprite.clone();
-        };
-      })(this));
+      s = this.spriteview.sprite.undo.undo(() => {
+        return this.spriteview.sprite.clone();
+      });
       this.spriteview.selection = null;
       if (s != null) {
         this.spriteview.sprite.copyFrom(s);
@@ -679,14 +599,14 @@ this.SpriteEditor = (function(superClass) {
         return this.animation_panel.updateFrames();
       }
     }
-  };
+  }
 
-  SpriteEditor.prototype.redo = function() {
+  redo() {
     var s;
-    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+    if (this.app.project.isLocked(`sprites/${this.selected_sprite}.png`)) {
       return;
     }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    this.app.project.lockFile(`sprites/${this.selected_sprite}.png`);
     if (this.spriteview.sprite && (this.spriteview.sprite.undo != null)) {
       s = this.spriteview.sprite.undo.redo();
       this.spriteview.selection = null;
@@ -701,9 +621,9 @@ this.SpriteEditor = (function(superClass) {
         return this.animation_panel.updateFrames();
       }
     }
-  };
+  }
 
-  SpriteEditor.prototype.copy = function() {
+  copy() {
     if (this.tool.selectiontool && (this.spriteview.selection != null)) {
       this.clipboard = new Sprite(this.spriteview.selection.w, this.spriteview.selection.h);
       this.clipboard.frames[0].getContext().drawImage(this.spriteview.getFrame().canvas, -this.spriteview.selection.x, -this.spriteview.selection.y);
@@ -711,14 +631,14 @@ this.SpriteEditor = (function(superClass) {
     } else {
       return this.clipboard = this.spriteview.sprite.clone();
     }
-  };
+  }
 
-  SpriteEditor.prototype.cut = function() {
+  cut() {
     var sel;
-    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+    if (this.app.project.isLocked(`sprites/${this.selected_sprite}.png`)) {
       return;
     }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    this.app.project.lockFile(`sprites/${this.selected_sprite}.png`);
     if (this.spriteview.sprite.undo == null) {
       this.spriteview.sprite.undo = new Undo();
     }
@@ -738,14 +658,14 @@ this.SpriteEditor = (function(superClass) {
     this.spriteview.sprite.undo.pushState(this.spriteview.sprite.clone());
     this.currentSpriteUpdated();
     return this.spriteChanged();
-  };
+  }
 
-  SpriteEditor.prototype.paste = function() {
+  paste() {
     var x, y;
-    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+    if (this.app.project.isLocked(`sprites/${this.selected_sprite}.png`)) {
       return;
     }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    this.app.project.lockFile(`sprites/${this.selected_sprite}.png`);
     if (this.clipboard != null) {
       if (this.spriteview.sprite.undo == null) {
         this.spriteview.sprite.undo = new Undo();
@@ -779,29 +699,31 @@ this.SpriteEditor = (function(superClass) {
       this.currentSpriteUpdated();
       return this.spriteChanged();
     }
-  };
+  }
 
-  SpriteEditor.prototype.currentSpriteUpdated = function() {
+  currentSpriteUpdated() {
     this.spriteview.update();
     document.getElementById("sprite-width").value = this.spriteview.sprite.width;
     document.getElementById("sprite-height").value = this.spriteview.sprite.height;
     this.animation_panel.updateFrames();
     this.sprite_size_validator.update();
     return this.spriteview.windowResized();
-  };
+  }
 
-  SpriteEditor.prototype.setColorPicker = function(picker) {
+  setColorPicker(picker) {
     this.spriteview.colorpicker = picker;
     if (picker) {
+      //@spriteview.canvas.classList.add "colorpicker"
       this.spriteview.canvas.style.cursor = "url( '/img/eyedropper.svg' ) 0 24, pointer";
       return document.getElementById("eyedropper").classList.add("selected");
     } else {
+      //@spriteview.canvas.classList.remove "colorpicker"
       this.spriteview.canvas.style.cursor = "crosshair";
       return document.getElementById("eyedropper").classList.remove("selected");
     }
-  };
+  }
 
-  SpriteEditor.prototype.updateSelectionHints = function() {
+  updateSelectionHints() {
     var h, w;
     if ((this.spriteview.selection != null) && this.tool.selectiontool) {
       document.getElementById("selection-group").style.display = "block";
@@ -815,9 +737,9 @@ this.SpriteEditor = (function(superClass) {
     } else {
       return document.getElementById("selection-group").style.display = "none";
     }
-  };
+  }
 
-  SpriteEditor.prototype.stripToAnimation = function() {
+  stripToAnimation() {
     var h, i, index, j, l, m, n, o, ref, ref1, sprite, w;
     w = this.spriteview.selection.w;
     h = this.spriteview.selection.h;
@@ -845,107 +767,103 @@ this.SpriteEditor = (function(superClass) {
       this.spriteChanged();
       return this.animation_panel.spriteChanged();
     }
-  };
+  }
 
-  SpriteEditor.prototype.flipHSprite = function() {
-    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+  flipHSprite() {
+    if (this.app.project.isLocked(`sprites/${this.selected_sprite}.png`)) {
       return;
     }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    this.app.project.lockFile(`sprites/${this.selected_sprite}.png`);
     return this.spriteview.flipSprite("horizontal");
-  };
+  }
 
-  SpriteEditor.prototype.flipVSprite = function() {
-    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+  flipVSprite() {
+    if (this.app.project.isLocked(`sprites/${this.selected_sprite}.png`)) {
       return;
     }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    this.app.project.lockFile(`sprites/${this.selected_sprite}.png`);
     return this.spriteview.flipSprite("vertical");
-  };
+  }
 
-  SpriteEditor.prototype.rotateSprite = function(direction) {
-    if (this.app.project.isLocked("sprites/" + this.selected_sprite + ".png")) {
+  rotateSprite(direction) {
+    if (this.app.project.isLocked(`sprites/${this.selected_sprite}.png`)) {
       return;
     }
-    this.app.project.lockFile("sprites/" + this.selected_sprite + ".png");
+    this.app.project.lockFile(`sprites/${this.selected_sprite}.png`);
     return this.spriteview.rotateSprite(direction);
-  };
+  }
 
-  SpriteEditor.prototype.fileDropped = function(file, folder) {
+  fileDropped(file, folder) {
     var reader;
-    console.info("processing " + file.name);
+    console.info(`processing ${file.name}`);
     console.info("folder: " + folder);
     reader = new FileReader();
-    reader.addEventListener("load", (function(_this) {
-      return function() {
-        var img;
-        console.info("file read, size = " + reader.result.length);
-        if (reader.result.length > 5000000) {
-          _this.app.appui.showNotification(_this.app.translator.get("Image is too heavy"));
-          return;
-        }
-        img = new Image;
-        img.src = reader.result;
-        return img.onload = function() {
-          var name, sprite;
-          if (img.complete && img.width > 0 && img.height > 0 && img.width <= 2048 && img.height <= 2048) {
-            name = file.name.split(".")[0];
-            name = _this.findNewFilename(name, "getSprite", folder);
-            if (folder != null) {
-              name = folder.getFullDashPath() + "-" + name;
-            }
-            if (folder != null) {
-              folder.setOpen(true);
-            }
-            sprite = _this.app.project.createSprite(name, img);
-            _this.setSelectedItem(name);
-            return _this.app.client.sendRequest({
-              name: "write_project_file",
-              project: _this.app.project.id,
-              file: "sprites/" + name + ".png",
-              properties: {},
-              content: reader.result.split(",")[1]
-            }, function(msg) {
-              console.info(msg);
-              _this.app.project.removePendingChange(_this);
-              _this.app.project.updateSpriteList();
-              return _this.checkNameFieldActivation();
-            });
-          } else {
-            return _this.app.appui.showNotification(_this.app.translator.get("Image size is too large"));
+    reader.addEventListener("load", () => {
+      var img;
+      console.info("file read, size = " + reader.result.byteLength);
+      if (reader.result.byteLength > 5000000) {
+        this.app.appui.showNotification(this.app.translator.get("Image file is too heavy"));
+        return;
+      }
+      img = new Image;
+      img.src = reader.result;
+      return img.onload = () => {
+        var name, sprite;
+        if (img.complete && img.width > 0 && img.height > 0 && img.width <= 2048 && img.height <= 2048) {
+          name = file.name.split(".")[0];
+          name = this.findNewFilename(name, "getSprite", folder);
+          if (folder != null) {
+            name = folder.getFullDashPath() + "-" + name;
           }
-        };
+          if (folder != null) {
+            folder.setOpen(true);
+          }
+          sprite = this.app.project.createSprite(name, img);
+          this.setSelectedItem(name);
+          return this.app.client.sendRequest({
+            name: "write_project_file",
+            project: this.app.project.id,
+            file: `sprites/${name}.png`,
+            properties: {},
+            content: reader.result.split(",")[1]
+          }, (msg) => {
+            console.info(msg);
+            this.app.project.removePendingChange(this);
+            this.app.project.updateSpriteList();
+            return this.checkNameFieldActivation();
+          });
+        } else {
+          return this.app.appui.showNotification(this.app.translator.get("Image size is too large"));
+        }
       };
-    })(this));
+    });
     return reader.readAsDataURL(file);
-  };
+  }
 
-  SpriteEditor.prototype.updateCodeTip = function() {
+  updateCodeTip() {
     var code, sprite;
     if ((this.selected_sprite != null) && (this.app.project.getSprite(this.selected_sprite) != null)) {
       sprite = this.app.project.getSprite(this.selected_sprite);
-      code = "screen.drawSprite( \"" + (this.selected_sprite.replace(/-/g, "/")) + "\", x, y, " + sprite.width + ", " + sprite.height + " )";
+      code = `screen.drawSprite( "${this.selected_sprite.replace(/-/g, "/")}", x, y, ${sprite.width}, ${sprite.height} )`;
     } else {
       code = "";
     }
     return this.code_tip.set(code);
-  };
+  }
 
-  SpriteEditor.prototype.setCoordinates = function(x, y) {
+  setCoordinates(x, y) {
     var e;
     e = document.getElementById("sprite-coordinates");
     if (x < 0 || y < 0) {
       return e.innerText = "";
     } else {
-      return e.innerText = x + " , " + y;
+      return e.innerText = `${x} , ${y}`;
     }
-  };
+  }
 
-  SpriteEditor.prototype.renameItem = function(item, name) {
-    this.app.project.changeSpriteName(item.name, name);
-    return SpriteEditor.__super__.renameItem.call(this, item, name);
-  };
+  renameItem(item, name) {
+    this.app.project.changeSpriteName(item.name, name); // needed to trigger updating of maps
+    return super.renameItem(item, name);
+  }
 
-  return SpriteEditor;
-
-})(Manager);
+};

@@ -1,6 +1,6 @@
 class @SoundEditor extends Manager
-  constructor:(@app)->
-    super(@app)
+  constructor:(app)->
+    super app
 
     @folder = "sounds"
     @item = "sound"
@@ -57,8 +57,9 @@ class @SoundEditor extends Manager
     console.info "folder: "+folder
     reader = new FileReader()
     reader.addEventListener "load",()=>
-      console.info "file read, size = "+ reader.result.byteLength
-      if reader.result.byteLength>5000000
+      file_size = reader.result.byteLength
+      console.info "file read, size = "+ file_size
+      if file_size > 5000000
         @app.appui.showNotification(@app.translator.get("Audio file is too heavy"))
         return
       audioContext = new AudioContext()
@@ -70,7 +71,7 @@ class @SoundEditor extends Manager
         if folder? then name = folder.getFullDashPath()+"-"+name
         if folder? then folder.setOpen true
 
-        sound = @app.project.createSound(name,thumbnailer.canvas.toDataURL(),reader.result.byteLength)
+        sound = @app.project.createSound(name,thumbnailer.canvas.toDataURL(),file_size)
         sound.uploading = true
         @setSelectedItem name
 

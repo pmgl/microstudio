@@ -1,6 +1,6 @@
 class @AssetsManager extends Manager
-  constructor:(@app)->
-    super(@app)
+  constructor:(app)->
+    super(app)
 
     @folder = "assets"
     @item = "asset"

@@ -1,13 +1,8 @@
-var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty,
-  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var indexOf = [].indexOf;
 
-this.AssetsManager = (function(superClass) {
-  extend(AssetsManager, superClass);
-
-  function AssetsManager(app) {
-    this.app = app;
-    AssetsManager.__super__.constructor.call(this, this.app);
+this.AssetsManager = class AssetsManager extends Manager {
+  constructor(app) {
+    super(app);
     this.folder = "assets";
     this.item = "asset";
     this.list_change_event = "assetlist";
@@ -20,60 +15,56 @@ this.AssetsManager = (function(superClass) {
     this.image_viewer = new ImageViewer(this);
     this.text_viewer = new TextViewer(this);
     this.init();
-    document.querySelector("#capture-asset").addEventListener("click", (function(_this) {
-      return function() {
-        if (_this.asset != null) {
-          switch (_this.asset.ext) {
-            case "glb":
-            case "obj":
-              return _this.model_viewer.updateThumbnail();
-          }
+    document.querySelector("#capture-asset").addEventListener("click", () => {
+      if (this.asset != null) {
+        switch (this.asset.ext) {
+          case "glb":
+          case "obj":
+            return this.model_viewer.updateThumbnail();
         }
-      };
-    })(this));
+      }
+    });
     this.code_snippet = new CodeSnippet(this.app);
   }
 
-  AssetsManager.prototype.init = function() {
-    AssetsManager.__super__.init.call(this);
+  init() {
+    super.init();
     return this.splitbar.initPosition(30);
-  };
+  }
 
-  AssetsManager.prototype.update = function() {
-    return AssetsManager.__super__.update.call(this);
-  };
+  update() {
+    return super.update();
+  }
 
-  AssetsManager.prototype.checkThumbnail = function(asset, callback) {
+  checkThumbnail(asset, callback) {
     var img, url;
     url = asset.getThumbnailURL();
     img = new Image;
     img.src = url;
-    return img.onload = (function(_this) {
-      return function() {
-        var canvas, ctx, data;
-        if (img.width > 0 && img.height > 0) {
-          canvas = document.createElement("canvas");
-          canvas.width = 1;
-          canvas.height = 1;
-          ctx = canvas.getContext("2d");
-          ctx.drawImage(img, -31, -31);
-          data = ctx.getImageData(0, 0, 1, 1);
-          if (data.data[3] > 128) {
-            return;
-          }
+    return img.onload = () => {
+      var canvas, ctx, data;
+      if (img.width > 0 && img.height > 0) {
+        canvas = document.createElement("canvas");
+        canvas.width = 1;
+        canvas.height = 1;
+        ctx = canvas.getContext("2d");
+        ctx.drawImage(img, -31, -31);
+        data = ctx.getImageData(0, 0, 1, 1);
+        if (data.data[3] > 128) {
+          return;
         }
-        return callback();
-      };
-    })(this);
-  };
+      }
+      return callback();
+    };
+  }
 
-  AssetsManager.prototype.selectedItemRenamed = function() {
+  selectedItemRenamed() {
     if ((this.selected_item != null) && (this.viewer != null)) {
       return this.viewer.updateSnippet();
     }
-  };
+  }
 
-  AssetsManager.prototype.selectedItemDeleted = function() {
+  selectedItemDeleted() {
     var e, j, len, parent, ref;
     parent = document.getElementById("asset-viewer");
     ref = parent.childNodes;
@@ -84,11 +75,11 @@ this.AssetsManager = (function(superClass) {
     this.viewer = null;
     this.asset = null;
     this.code_snippet.clear();
-  };
+  }
 
-  AssetsManager.prototype.openItem = function(name) {
+  openItem(name) {
     var e, j, len, parent, ref;
-    AssetsManager.__super__.openItem.call(this, name);
+    super.openItem(name);
     this.asset = this.app.project.getAsset(name);
     console.info(this.asset);
     parent = document.getElementById("asset-viewer");
@@ -117,30 +108,29 @@ this.AssetsManager = (function(superClass) {
           return this.viewer = this.image_viewer;
       }
     }
-  };
+  }
 
-  AssetsManager.prototype.createAsset = function(folder) {
+  createAsset(folder) {
     var input;
     input = document.createElement("input");
     input.type = "file";
-    input.addEventListener("change", (function(_this) {
-      return function(event) {
-        var f, files, j, len;
-        files = event.target.files;
-        if (files.length >= 1) {
-          for (j = 0, len = files.length; j < len; j++) {
-            f = files[j];
-            _this.fileDropped(f, folder);
-          }
+    //input.accept = ".glb"
+    input.addEventListener("change", (event) => {
+      var f, files, j, len;
+      files = event.target.files;
+      if (files.length >= 1) {
+        for (j = 0, len = files.length; j < len; j++) {
+          f = files[j];
+          this.fileDropped(f, folder);
         }
-      };
-    })(this));
+      }
+    });
     return input.click();
-  };
+  }
 
-  AssetsManager.prototype.fileDropped = function(file, folder) {
+  fileDropped(file, folder) {
     var ext, name, reader, ref, split;
-    console.info("processing " + file.name);
+    console.info(`processing ${file.name}`);
     console.info("folder: " + folder);
     reader = new FileReader();
     split = file.name.split(".");
@@ -149,62 +139,60 @@ this.AssetsManager = (function(superClass) {
     if (ref = !ext, indexOf.call(this.extensions, ref) >= 0) {
       return;
     }
-    reader.addEventListener("load", (function(_this) {
-      return function() {
-        var asset, canvas, data;
-        console.info("file read, size = " + reader.result.length);
-        if (reader.result.length > 6000000) {
-          return;
-        }
-        name = _this.findNewFilename(name, "getAsset", folder);
-        if (folder != null) {
-          name = folder.getFullDashPath() + "-" + name;
-        }
-        if (folder != null) {
-          folder.setOpen(true);
-        }
-        canvas = document.createElement("canvas");
-        canvas.width = canvas.height = 64;
-        asset = _this.app.project.createAsset(name, canvas.toDataURL(), reader.result.length, ext);
-        asset.uploading = true;
-        if (ext === "json" || ext === "csv" || ext === "txt") {
-          asset.local_text = reader.result;
-        } else {
-          asset.local_url = reader.result;
-        }
-        _this.setSelectedItem(name);
-        _this.openItem(name);
-        if (ext === "json" || ext === "csv" || ext === "txt") {
-          data = reader.result;
-        } else {
-          data = reader.result.split(",")[1];
-        }
-        _this.app.project.addPendingChange(_this);
-        return _this.app.client.sendRequest({
-          name: "write_project_file",
-          project: _this.app.project.id,
-          file: "assets/" + name + "." + ext,
-          properties: {},
-          content: data,
-          thumbnail: canvas.toDataURL().split(",")[1]
-        }, function(msg) {
-          console.info(msg);
-          _this.app.project.removePendingChange(_this);
-          asset.uploading = false;
-          delete asset.local_url;
-          _this.app.project.updateAssetList();
-          return _this.checkNameFieldActivation();
-        });
-      };
-    })(this));
+    reader.addEventListener("load", () => {
+      var asset, canvas, data;
+      console.info("file read, size = " + reader.result.length);
+      if (reader.result.length > 6000000) {
+        return;
+      }
+      name = this.findNewFilename(name, "getAsset", folder);
+      if (folder != null) {
+        name = folder.getFullDashPath() + "-" + name;
+      }
+      if (folder != null) {
+        folder.setOpen(true);
+      }
+      canvas = document.createElement("canvas");
+      canvas.width = canvas.height = 64;
+      asset = this.app.project.createAsset(name, canvas.toDataURL(), reader.result.length, ext);
+      asset.uploading = true;
+      if (ext === "json" || ext === "csv" || ext === "txt") {
+        asset.local_text = reader.result;
+      } else {
+        asset.local_url = reader.result;
+      }
+      this.setSelectedItem(name);
+      this.openItem(name);
+      if (ext === "json" || ext === "csv" || ext === "txt") {
+        data = reader.result;
+      } else {
+        data = reader.result.split(",")[1];
+      }
+      this.app.project.addPendingChange(this);
+      return this.app.client.sendRequest({
+        name: "write_project_file",
+        project: this.app.project.id,
+        file: `assets/${name}.${ext}`,
+        properties: {},
+        content: data,
+        thumbnail: canvas.toDataURL().split(",")[1]
+      }, (msg) => {
+        console.info(msg);
+        this.app.project.removePendingChange(this);
+        asset.uploading = false;
+        delete asset.local_url;
+        this.app.project.updateAssetList();
+        return this.checkNameFieldActivation();
+      });
+    });
     if (ext === "json" || ext === "csv" || ext === "txt") {
       return reader.readAsText(file);
     } else {
       return reader.readAsDataURL(file);
     }
-  };
+  }
 
-  AssetsManager.prototype.updateAssetIcon = function(asset, canvas) {
+  updateAssetIcon(asset, canvas) {
     var color, context, h, w;
     context = canvas.getContext("2d");
     color = (function() {
@@ -232,71 +220,63 @@ this.AssetsManager = (function(superClass) {
     context.fillStyle = color;
     context.fillRect(0, h - 2, w, 2);
     context.font = "7pt sans-serif";
-    context.fillText("" + (asset.ext.toUpperCase()), w - 26, h - 5);
+    context.fillText(`${asset.ext.toUpperCase()}`, w - 26, h - 5);
     asset.thumbnail_url = canvas.toDataURL();
     this.app.client.sendRequest({
       name: "write_project_file",
       project: this.app.project.id,
-      file: "assets/" + asset.name + "." + asset.ext,
+      file: `assets/${asset.name}.${asset.ext}`,
       thumbnail: canvas.toDataURL().split(",")[1]
-    }, (function(_this) {
-      return function(msg) {
-        return console.info(msg);
-      };
-    })(this));
+    }, (msg) => {
+      return console.info(msg);
+    });
     if (asset.element != null) {
       return asset.element.querySelector("img").src = canvas.toDataURL();
     }
-  };
+  }
 
-  return AssetsManager;
+};
 
-})(Manager);
-
-this.CodeSnippet = (function() {
-  function CodeSnippet(app) {
+this.CodeSnippet = class CodeSnippet {
+  constructor(app1) {
     var copyable;
-    this.app = app;
+    this.app = app1;
     copyable = true;
     this.container = document.querySelector("#asset-load-code");
     this.input = document.querySelector("#asset-load-code input");
     this.select = document.querySelector("#asset-load-code select");
-    this.select.addEventListener("change", (function(_this) {
-      return function() {
-        return _this.setIndex(_this.select.selectedIndex);
-      };
-    })(this));
-    document.querySelector("#asset-load-code i").addEventListener("click", (function(_this) {
-      return function() {
-        var code, copy, input;
-        if (!copyable) {
-          return;
-        }
-        input = document.querySelector("#asset-load-code input");
-        copy = document.querySelector("#asset-load-code i");
-        code = input.value;
-        navigator.clipboard.writeText(code);
-        input.value = _this.app.translator.get("Copied!");
-        copyable = false;
-        copy.classList.remove("fa-copy");
-        copy.classList.add("fa-check");
-        return setTimeout((function() {
-          copy.classList.remove("fa-check");
-          copy.classList.add("fa-copy");
-          input.value = code;
-          return copyable = true;
-        }), 1000);
-      };
-    })(this));
+    this.select.addEventListener("change", () => {
+      return this.setIndex(this.select.selectedIndex);
+    });
+    document.querySelector("#asset-load-code i").addEventListener("click", () => {
+      var code, copy, input;
+      if (!copyable) {
+        return;
+      }
+      input = document.querySelector("#asset-load-code input");
+      copy = document.querySelector("#asset-load-code i");
+      code = input.value;
+      navigator.clipboard.writeText(code);
+      input.value = this.app.translator.get("Copied!");
+      copyable = false;
+      copy.classList.remove("fa-copy");
+      copy.classList.add("fa-check");
+      return setTimeout((() => {
+        copy.classList.remove("fa-check");
+        copy.classList.add("fa-copy");
+        input.value = code;
+        return copyable = true;
+      }), 1000);
+    });
   }
 
-  CodeSnippet.prototype.clear = function() {
+  clear() {
     this.select.innerHTML = "";
     this.input.value = "";
     return this.container.style.display = "none";
-  };
+  }
 
-  CodeSnippet.prototype.set = function(list) {
+  set(list) {
     var i, j, len, name, option, ref, snippet, value;
     this.list = list;
     this.clear();
@@ -314,53 +294,47 @@ this.CodeSnippet = (function() {
       }
     }
     return this.container.style.display = "block";
-  };
+  }
 
-  CodeSnippet.prototype.setIndex = function(index) {
+  setIndex(index) {
     if ((this.list != null) && index < this.list.length) {
       return this.input.value = this.list[index].value;
     }
-  };
+  }
 
-  return CodeSnippet;
+};
 
-})();
-
-this.CodeSnippetField = (function() {
-  function CodeSnippetField(app, query) {
+this.CodeSnippetField = class CodeSnippetField {
+  constructor(app1, query) {
     var copyable;
-    this.app = app;
+    this.app = app1;
     this.element = document.querySelector(query);
     this.input = this.element.querySelector("input");
     this.i = this.element.querySelector("i");
     copyable = true;
-    this.i.addEventListener("click", (function(_this) {
-      return function() {
-        var code;
-        if (!copyable) {
-          return;
-        }
-        code = _this.input.value;
-        navigator.clipboard.writeText(code);
-        _this.input.value = _this.app.translator.get("Copied!");
-        copyable = false;
-        _this.i.classList.remove("fa-copy");
-        _this.i.classList.add("fa-check");
-        return setTimeout((function() {
-          _this.i.classList.remove("fa-check");
-          _this.i.classList.add("fa-copy");
-          _this.input.value = _this.code;
-          return copyable = true;
-        }), 1000);
-      };
-    })(this));
+    this.i.addEventListener("click", () => {
+      var code;
+      if (!copyable) {
+        return;
+      }
+      code = this.input.value;
+      navigator.clipboard.writeText(code);
+      this.input.value = this.app.translator.get("Copied!");
+      copyable = false;
+      this.i.classList.remove("fa-copy");
+      this.i.classList.add("fa-check");
+      return setTimeout((() => {
+        this.i.classList.remove("fa-check");
+        this.i.classList.add("fa-copy");
+        this.input.value = this.code;
+        return copyable = true;
+      }), 1000);
+    });
   }
 
-  CodeSnippetField.prototype.set = function(code1) {
+  set(code1) {
     this.code = code1;
     return this.input.value = this.code;
-  };
+  }
 
-  return CodeSnippetField;
-
-})();
+};
