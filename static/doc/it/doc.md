@@ -265,7 +265,7 @@ Le stringhe sono testi o pezzi di testo. Devono essere definiti tra virgolette.
 
 ```
 animale = "gatto"
-stampa("Ciao "+animale)
+print("Ciao "+animale)
 ```
 #### Elenco
 Le liste possono contenere un certo numero di valori:
@@ -279,7 +279,7 @@ elenco_misto =[1, "gatto",[1,2,3]]
 Si può accedere agli elementi di una lista tramite il loro indice, cioè la loro posizione nella lista da 0 :
 
 ```
-lista = ["gatto", "cane", "topo"]
+elenco = ["gatto", "cane", "topo"]
 print(elenco[0])
 print(elenco[1])
 print(elenco[2])
@@ -742,7 +742,7 @@ In *microStudio* lo schermo è rappresentato dall'oggetto predefinito "screen". 
 screen.setColor("#FFF")
 screen.fillRect(0,0,100,100,100)
 ```
-Il codice qui sopra definisce il colore del disegno come ``#FFF``` cioè bianco (vedi spiegazione più sotto). Poi disegna un rettangolo riempito di questo colore, centrato sulle coordinate 0.0 dello schermo (cioè il centro dello schermo), di larghezza 100 e altezza 100.
+Il codice qui sopra definisce il colore del disegno come ```#FFF``` cioè bianco (vedi spiegazione più sotto). Poi disegna un rettangolo riempito di questo colore, centrato sulle coordinate 0.0 dello schermo (cioè il centro dello schermo), di larghezza 100 e altezza 100.
 
 Per facilitare il vostro lavoro, *microStudio* scala automaticamente le coordinate dello schermo, indipendentemente dalla risoluzione effettiva del display. Per convenzione, la dimensione più piccola dello schermo (larghezza in modalità verticale, altezza in modalità orizzontale) è 200. Essendo il punto di origine (0,0) il centro dello schermo, la dimensione più piccola è quindi graduata da -100 a +100. La dimensione più grande sarà graduata per esempio da -178 a +178 (schermo classico 16:9), oppure da -200 a +200 (schermo 2:1, smartphone più lunghi e recenti) ecc.
 
