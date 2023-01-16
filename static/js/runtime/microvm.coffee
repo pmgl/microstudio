@@ -79,6 +79,7 @@ class @MicroVM
     global.system =
       time: Date.now
       language: navigator.language
+      update_rate: 60
       inputs:
         keyboard: 1
         mouse: 1

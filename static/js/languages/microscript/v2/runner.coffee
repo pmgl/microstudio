@@ -119,8 +119,6 @@ class @Runner
     if name == "draw" or name == "update" or name == "serverUpdate"
       if @microvm.context.global[name]?
         @main_thread.addCall "#{name}()"
-      if name == "draw" or name == "serverUpdate"
-        @tick()
       return
 
     if @microvm.context.global[name]?

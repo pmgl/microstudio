@@ -369,6 +369,8 @@ class @Runtime
     if @stopped
       @updateCall()
       @drawCall()
+      if @vm.runner.tick?
+        @vm.runner.tick()
       @watchStep()
 
   resume:()->
@@ -389,18 +391,27 @@ class @Runtime
 
     @vm.context.global.system.fps = Math.round(fps = 1000/@dt)
 
-    @floating_frame += @dt*60/1000
+    update_rate = @vm.context.global.system.update_rate
+    if not update_rate? or not (update_rate > 0) or not isFinite(update_rate)
+      update_rate = 60
+
+    @floating_frame += @dt*update_rate/1000
     ds = Math.min(10,Math.round(@floating_frame-@current_frame))
-    if (ds == 0 or ds == 2) and Math.abs(fps-60) < 2
+    if (ds == 0 or ds == 2) and update_rate == 60 and Math.abs(fps-60) < 2
       #console.info "INCORRECT DS: "+ds+ " floating = "+@floating_frame+" current = "+@current_frame
       ds = 1
       @floating_frame = @current_frame+1
 
     for i in [1..ds] by 1
       @updateCall()
+      if i < ds
+        if @vm.runner.tick?
+          @vm.runner.tick()
 
     @current_frame += ds
     @drawCall()
+    if @vm.runner.tick?
+      @vm.runner.tick()
 
     if ds>0
       @watchStep()

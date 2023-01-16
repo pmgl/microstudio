@@ -149,9 +149,6 @@ this.Runner = class Runner {
       if (this.microvm.context.global[name] != null) {
         this.main_thread.addCall(`${name}()`);
       }
-      if (name === "draw" || name === "serverUpdate") {
-        this.tick();
-      }
       return;
     }
     if (this.microvm.context.global[name] != null) {

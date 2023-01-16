@@ -318,6 +318,9 @@ this.Runtime = class Runtime {
   stepForward() {
     if (this.stopped) {
       this.updateCall();
+      if (this.vm.runner.tick != null) {
+        this.vm.runner.tick();
+      }
       return this.watcher.update();
     }
   }
@@ -352,6 +355,9 @@ this.Runtime = class Runtime {
     ds = Math.min(10, Math.round(this.floating_frame - this.current_frame));
     for (i = j = 1, ref = ds; j <= ref; i = j += 1) {
       this.updateCall();
+      if (this.vm.runner.tick != null) {
+        this.vm.runner.tick();
+      }
     }
     this.current_frame += ds;
     if (ds > 0) {

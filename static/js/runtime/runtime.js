@@ -461,6 +461,9 @@ this.Runtime = class Runtime {
     if (this.stopped) {
       this.updateCall();
       this.drawCall();
+      if (this.vm.runner.tick != null) {
+        this.vm.runner.tick();
+      }
       return this.watchStep();
     }
   }
@@ -475,7 +478,7 @@ this.Runtime = class Runtime {
   }
 
   timer() {
-    var ds, dt, fps, i, j, ref, time;
+    var ds, dt, fps, i, j, ref, time, update_rate;
     if (this.stopped) {
       return;
     }
@@ -490,18 +493,30 @@ this.Runtime = class Runtime {
     this.dt = this.dt * .9 + dt * .1;
     this.last_time = time;
     this.vm.context.global.system.fps = Math.round(fps = 1000 / this.dt);
-    this.floating_frame += this.dt * 60 / 1000;
+    update_rate = this.vm.context.global.system.update_rate;
+    if ((update_rate == null) || !(update_rate > 0) || !isFinite(update_rate)) {
+      update_rate = 60;
+    }
+    this.floating_frame += this.dt * update_rate / 1000;
     ds = Math.min(10, Math.round(this.floating_frame - this.current_frame));
-    if ((ds === 0 || ds === 2) && Math.abs(fps - 60) < 2) {
+    if ((ds === 0 || ds === 2) && update_rate === 60 && Math.abs(fps - 60) < 2) {
       //console.info "INCORRECT DS: "+ds+ " floating = "+@floating_frame+" current = "+@current_frame
       ds = 1;
       this.floating_frame = this.current_frame + 1;
     }
     for (i = j = 1, ref = ds; j <= ref; i = j += 1) {
       this.updateCall();
+      if (i < ds) {
+        if (this.vm.runner.tick != null) {
+          this.vm.runner.tick();
+        }
+      }
     }
     this.current_frame += ds;
     this.drawCall();
+    if (this.vm.runner.tick != null) {
+      this.vm.runner.tick();
+    }
     if (ds > 0) {
       return this.watchStep();
     }

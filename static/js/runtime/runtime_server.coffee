@@ -252,6 +252,9 @@ class @Runtime
   stepForward:()->
     if @stopped
       @updateCall()
+      if @vm.runner.tick?
+        @vm.runner.tick()
+
       @watcher.update()
 
   resume:()->
@@ -280,6 +283,8 @@ class @Runtime
 
     for i in [1..ds] by 1
       @updateCall()
+      if @vm.runner.tick?
+        @vm.runner.tick()
 
     @current_frame += ds
 
