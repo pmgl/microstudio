@@ -331,7 +331,8 @@ class @msImage
     @context.stroke()
     @closeDrawOp() if transform
 
-  drawPolyline:(args)->
+  drawPolyline:()->
+    args = arguments
     @initContext()
     if args.length>0 and args.length%2 == 1 and typeof args[args.length-1] == "string"
       @setColor args[args.length-1]
@@ -355,7 +356,8 @@ class @msImage
     @closeDrawOp() if transform
 
 
-  drawPolygon:(args)->
+  drawPolygon:()->
+    args = arguments
     @initContext()
     if args.length>0 and args.length%2 == 1 and typeof args[args.length-1] == "string"
       @setColor args[args.length-1]
@@ -379,7 +381,8 @@ class @msImage
     @context.stroke()
     @closeDrawOp() if transform
 
-  fillPolygon:(args)->
+  fillPolygon:()->
+    args = arguments
     @initContext()
     if args.length>0 and args.length%2 == 1 and typeof args[args.length-1] == "string"
       @setColor args[args.length-1]

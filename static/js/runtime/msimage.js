@@ -403,8 +403,9 @@ this.msImage = (function() {
       }
     }
 
-    drawPolyline(args) {
-      var i, j, len, ref, transform;
+    drawPolyline() {
+      var args, i, j, len, ref, transform;
+      args = arguments;
       this.initContext();
       if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
         this.setColor(args[args.length - 1]);
@@ -433,8 +434,9 @@ this.msImage = (function() {
       }
     }
 
-    drawPolygon(args) {
-      var i, j, len, ref, transform;
+    drawPolygon() {
+      var args, i, j, len, ref, transform;
+      args = arguments;
       this.initContext();
       if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
         this.setColor(args[args.length - 1]);
@@ -464,8 +466,9 @@ this.msImage = (function() {
       }
     }
 
-    fillPolygon(args) {
-      var i, j, len, ref, transform;
+    fillPolygon() {
+      var args, i, j, len, ref, transform;
+      args = arguments;
       this.initContext();
       if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
         this.setColor(args[args.length - 1]);
