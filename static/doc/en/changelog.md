@@ -1,5 +1,9 @@
 ## Changelog
 
+### Update 2023-01-16
+* Fixed Image.drawPolyline, Image.drawPolygon, Image.fillPolygon, #186
+* Implemented `system.update_rate` writable property, #188
+
 ### Update 2022-12-19
 * `playing_sound.getDuration()`
 * New language: Spanish! Thanks a lot to Jose Consuegra for their contribution!
