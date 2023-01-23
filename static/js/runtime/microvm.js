@@ -231,7 +231,7 @@ this.MicroVM = class MicroVM {
         this.error_info = err;
       } else if ((this.context.location != null) && (this.context.location.token != null)) {
         this.error_info = {
-          error: err,
+          error: this.context.location.token.error_text || err,
           file: filename,
           line: this.context.location.token.line,
           column: this.context.location.token.column

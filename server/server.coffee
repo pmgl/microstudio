@@ -87,7 +87,10 @@ class @Server
     app.use("/lib/babylonjs",express.static("node_modules/babylonjs-loaders"))
     app.use("/lib/matterjs",express.static("node_modules/matter-js/build"))
     app.use("/lib/cannonjs",express.static("node_modules/cannon/build"))
-    app.use("/lib/brython",express.static("node_modules/brython"))
+    if @config.brython_path
+      app.use("/lib/brython",express.static(@config.brython_path))
+    else
+      app.use("/lib/brython",express.static("node_modules/brython"))
     app.use("/lib/fengari",express.static("node_modules/fengari-web/dist"))
     app.use("/lib/qrcode",express.static("node_modules/qrcode/build"))
     app.use("/lib/wavefile",express.static("node_modules/wavefile/dist"))

@@ -46,3 +46,4 @@ You can find partial examples in this folder as config_local.json and config_pro
 |relay-key|a secret key to use with the delegated relay service|
 |default_project_language|The default language selected when a user creates a project. Can be set to `"microscript_v2"` (default), `"microscript"`, `"javascript"`, `"lua"` or `"python"`|
 |tutorials_root_url|Sets a different URL for loading your own set of tutorials (note: if you use this option, in the toc.md, you must specify a complete URL with domain name for each tutorial)|
+|brython_path|Sets a path to a custom folder for the Brython lib|

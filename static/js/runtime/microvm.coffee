@@ -163,7 +163,7 @@ class @MicroVM
          @error_info = err
       else if @context.location? and @context.location.token?
         @error_info =
-          error: err
+          error: @context.location.token.error_text or err
           file: filename
           line: @context.location.token.line
           column: @context.location.token.column
