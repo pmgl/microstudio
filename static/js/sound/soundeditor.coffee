@@ -11,27 +11,9 @@ class @SoundEditor extends Manager
     @update_list = "updateSoundList"
 
     @init()
-    synth = document.getElementById "open-synth"
-    synth.addEventListener "click",()=>
-      if not @synth?
-        @app.audio_controller.init()
-        @synth = new Synth @app
-        @synth.synth_window.show()
-      else
-        if @synth.synth_window.shown
-          @synth.synth_window.close()
-        else
-          @synth.synth_window.show()
-
 
   update:()->
     super()
-    synth = document.getElementById "open-synth"
-    if @app.user and @app.user.flags.experimental
-      synth.style.display = "inline-block"
-    else
-      synth.style.display = "none"
-
 
   openItem:(name)->
     super(name)

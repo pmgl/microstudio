@@ -14,14 +14,6 @@ class @Concatenator
       res.setHeader("Content-Type", "text/javascript")
       res.send @player_js_concat
 
-    @webapp.app.get /^\/audioengine.js$/, (req,res)=>
-      res.setHeader("Content-Type", "text/javascript")
-      if not @webapp.server.use_cache
-        @concat @audioengine_js,"audioengine_js_concat",()=>
-          res.send @audioengine_js_concat
-      else
-        res.send @audioengine_js_concat
-
     @webapp.app.get /^\/server.js$/, (req,res)=>
       res.setHeader("Content-Type", "text/javascript")
       res.send @server_js_concat
@@ -234,12 +226,6 @@ class @Concatenator
       "/js/assets/textviewer.js"
       "/js/assets/fontviewer.js"
 
-      "/js/sound/audiocontroller.js"
-      "/js/sound/knob.js"
-      "/js/sound/slider.js"
-      "/js/sound/keyboard.js"
-      "/js/sound/synthwheel.js"
-      "/js/sound/synth.js"
       "/js/sound/soundeditor.js"
       "/js/sound/soundthumbnailer.js"
 
@@ -333,17 +319,6 @@ class @Concatenator
     for key,value of @alt_players
       @["#{key}_js"] = @alt_player_base.concat(value.scripts)
 
-    @audioengine_js = [
-      "/js/sound/audioengine/utils.js"
-      "/js/sound/audioengine/oscillators.js"
-      "/js/sound/audioengine/modulation.js"
-      "/js/sound/audioengine/filters.js"
-      "/js/sound/audioengine/effects.js"
-      "/js/sound/audioengine/voice.js"
-      "/js/sound/audioengine/instrument.js"
-      "/js/sound/audioengine/audioengine.js"
-    ]
-
     @refresh()
 
   refresh:()->
@@ -354,7 +329,6 @@ class @Concatenator
     for key,value of @alt_players
       @concat(@["#{key}_js"],"#{key}_js_concat")
     @concat(@webapp_css,"webapp_css_concat")
-    @concat(@audioengine_js,"audioengine_js_concat")
 
   getHomeJSFiles:()->
     if @webapp.server.use_cache and @webapp_js_concat?

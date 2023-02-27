@@ -29,7 +29,6 @@ class App
     @sprite_editor = new SpriteEditor @
     @map_editor = new MapEditor @
     @assets_manager = new AssetsManager @
-    @audio_controller = new AudioController @
     @sound_editor = new SoundEditor @
     @music_editor = new MusicEditor @
     @runwindow = new RunWindow @

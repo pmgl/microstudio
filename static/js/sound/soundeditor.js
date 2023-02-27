@@ -1,6 +1,5 @@
 this.SoundEditor = class SoundEditor extends Manager {
   constructor(app) {
-    var synth;
     super(app);
     this.folder = "sounds";
     this.item = "sound";
@@ -10,31 +9,10 @@ this.SoundEditor = class SoundEditor extends Manager {
     this.extensions = ["wav"];
     this.update_list = "updateSoundList";
     this.init();
-    synth = document.getElementById("open-synth");
-    synth.addEventListener("click", () => {
-      if (this.synth == null) {
-        this.app.audio_controller.init();
-        this.synth = new Synth(this.app);
-        return this.synth.synth_window.show();
-      } else {
-        if (this.synth.synth_window.shown) {
-          return this.synth.synth_window.close();
-        } else {
-          return this.synth.synth_window.show();
-        }
-      }
-    });
   }
 
   update() {
-    var synth;
-    super.update();
-    synth = document.getElementById("open-synth");
-    if (this.app.user && this.app.user.flags.experimental) {
-      return synth.style.display = "inline-block";
-    } else {
-      return synth.style.display = "none";
-    }
+    return super.update();
   }
 
   openItem(name) {

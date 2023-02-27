@@ -362,7 +362,6 @@ class AppUI
 
     if section == "sounds"
       @app.sound_editor.update()
-      #@app.audio_controller.init()
 
     if section == "music"
       @app.music_editor.update()

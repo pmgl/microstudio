@@ -28,7 +28,6 @@ App = class App {
     this.sprite_editor = new SpriteEditor(this);
     this.map_editor = new MapEditor(this);
     this.assets_manager = new AssetsManager(this);
-    this.audio_controller = new AudioController(this);
     this.sound_editor = new SoundEditor(this);
     this.music_editor = new MusicEditor(this);
     this.runwindow = new RunWindow(this);

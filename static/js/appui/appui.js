@@ -411,7 +411,6 @@ AppUI = class AppUI {
     if (section === "sounds") {
       this.app.sound_editor.update();
     }
-    //@app.audio_controller.init()
     if (section === "music") {
       this.app.music_editor.update();
     }
