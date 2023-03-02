@@ -208,9 +208,9 @@ this.msImage = (function() {
     }
 
     setTranslation(translation_x, translation_y) {
+      this.initContext();
       this.translation_x = translation_x;
       this.translation_y = translation_y;
-      this.initContext();
       if (!isFinite(this.translation_x)) {
         this.translation_x = 0;
       }
@@ -221,9 +221,9 @@ this.msImage = (function() {
     }
 
     setScale(scale_x, scale_y) {
+      this.initContext();
       this.scale_x = scale_x;
       this.scale_y = scale_y;
-      this.initContext();
       if (!isFinite(this.scale_x) || this.scale_x === 0) {
         this.scale_x = 1;
       }
@@ -234,8 +234,8 @@ this.msImage = (function() {
     }
 
     setRotation(rotation) {
-      this.rotation = rotation;
       this.initContext();
+      this.rotation = rotation;
       if (!isFinite(this.rotation)) {
         this.rotation = 0;
       }
@@ -247,9 +247,9 @@ this.msImage = (function() {
     }
 
     setDrawAnchor(anchor_x, anchor_y) {
+      this.initContext();
       this.anchor_x = anchor_x;
       this.anchor_y = anchor_y;
-      this.initContext();
       if (typeof this.anchor_x !== "number") {
         this.anchor_x = 0;
       }

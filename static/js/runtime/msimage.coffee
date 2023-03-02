@@ -173,8 +173,12 @@ class @msImage
   setFont:(font)->
     @font = font or "Verdana"
 
-  setTranslation:(@translation_x,@translation_y)->
+  setTranslation:(translation_x,translation_y)->
     @initContext()
+
+    @translation_x = translation_x
+    @translation_y = translation_y
+
     if not isFinite @translation_x
       @translation_x = 0
 
@@ -183,8 +187,12 @@ class @msImage
 
     @updateScreenTransform()
 
-  setScale:(@scale_x,@scale_y)->
+  setScale:(scale_x,scale_y)->
     @initContext()
+
+    @scale_x = scale_x
+    @scale_y = scale_y
+
     if not isFinite(@scale_x) or @scale_x == 0
       @scale_x = 1
 
@@ -193,8 +201,11 @@ class @msImage
 
     @updateScreenTransform()
 
-  setRotation:(@rotation)->
+  setRotation:(rotation)->
     @initContext()
+
+    @rotation = rotation
+
     if not isFinite @rotation
       @rotation = 0
     @updateScreenTransform()
@@ -202,8 +213,12 @@ class @msImage
   updateScreenTransform:()->
     @image_transform = @translation_x != 0 or @translation_y != 0 or @scale_x != 1 or @scale_y != 1 or @rotation != 0
 
-  setDrawAnchor:(@anchor_x,@anchor_y)->
+  setDrawAnchor:(anchor_x,anchor_y)->
     @initContext()
+
+    @anchor_x = anchor_x
+    @anchor_y = anchor_y
+
     @anchor_x = 0 if typeof @anchor_x != "number"
     @anchor_y = 0 if typeof @anchor_y != "number"
 
