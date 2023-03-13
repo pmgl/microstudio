@@ -124,7 +124,7 @@ class @RunWindow
     origin = "#{location.origin.replace(".dev",".io")}"
 
     @app.project.savePendingChanges ()=>
-      device.innerHTML = "<iframe id='runiframe' allow='autoplay #{origin}; gamepad #{origin}; midi #{origin}' src='#{url}?debug'></iframe>"
+      device.innerHTML = "<iframe id='runiframe' allow='autoplay #{origin}; gamepad #{origin}; midi #{origin}; camera #{origin}; microphone #{origin}' src='#{url}?debug'></iframe>"
       #document.getElementById("runiframe").focus()
       @windowResized()
       document.getElementById("take-picture-button").style.display = "inline-block"
