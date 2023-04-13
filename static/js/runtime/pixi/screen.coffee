@@ -4,7 +4,7 @@ class @Screen
       width: 200
       height: 200
       antialias: true
-      resolution: 1
+      resolution: window.devicePixelRatio || 1
       transparent: false
 
     PIXI.runtime = @runtime
