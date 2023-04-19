@@ -841,7 +841,16 @@ class AppUI
   setProject:(@project,useraction=true)->
     @updateProjectTitle()
     @get("project-icon").src = location.origin+"/#{@project.owner.nick}/#{@project.slug}/#{@project.code}/icon.png"
-    @setSection "code",useraction
+    tab = "code"
+    if @project.tabs? and not @app.tab_manager.isTabActive "code"
+      tab = "options"
+      for t in @sections
+        if @app.tab_manager.isTabActive t
+          tab = t
+          break
+      
+    @setSection tab,useraction
+
     @show "projectview"
     @hide "myprojects"
     @project.addListener @

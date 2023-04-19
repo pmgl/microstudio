@@ -945,10 +945,23 @@ AppUI = class AppUI {
   }
 
   setProject(project, useraction = true) {
+    var j, len, ref, t, tab;
     this.project = project;
     this.updateProjectTitle();
     this.get("project-icon").src = location.origin + `/${this.project.owner.nick}/${this.project.slug}/${this.project.code}/icon.png`;
-    this.setSection("code", useraction);
+    tab = "code";
+    if ((this.project.tabs != null) && !this.app.tab_manager.isTabActive("code")) {
+      tab = "options";
+      ref = this.sections;
+      for (j = 0, len = ref.length; j < len; j++) {
+        t = ref[j];
+        if (this.app.tab_manager.isTabActive(t)) {
+          tab = t;
+          break;
+        }
+      }
+    }
+    this.setSection(tab, useraction);
     this.show("projectview");
     this.hide("myprojects");
     this.project.addListener(this);
