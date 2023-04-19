@@ -670,9 +670,10 @@ class AppUI
     document.querySelector("header").style.transform = "translateY(0%)"
 
   createProjectBox:(p)->
-    element = document.createElement "div"
+    element = document.createElement "a"
     element.classList.add "project-box"
     element.id = "project-box-#{p.slug}"
+    element.href = "/projects/#{p.slug}/code/"
 
     element.dataset.title = p.title
     element.dataset.description = p.description
@@ -715,6 +716,7 @@ class AppUI
     buttons.appendChild clone_button
 
     clone_button.addEventListener "click",(event)=>
+      event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
       ConfirmDialog.confirm @app.translator.get("Do you want to clone this project?"),@app.translator.get("Clone"),@app.translator.get("Cancel"),()=>
@@ -730,6 +732,7 @@ class AppUI
     buttons.appendChild delete_button
 
     delete_button.addEventListener "click",(event)=>
+      event.preventDefault()
       event.stopPropagation()
       event.stopImmediatePropagation()
       msg = if p.owner.nick == @app.nick then @app.translator.get("Really delete this project?") else @app.translator.get("Really quit this project?")
@@ -759,8 +762,10 @@ class AppUI
       icon.style["margin-top"] = "40px"
       icon.style["box-shadow"] = "0 0 10px 1px #000"
 
-    element.addEventListener "click",()=>
-      @app.openProject p
+    element.addEventListener "click",(event)=>
+      if not event.ctrlKey and not event.metaKey
+        event.preventDefault()
+        @app.openProject p
 
     element
 

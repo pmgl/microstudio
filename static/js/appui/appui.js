@@ -776,9 +776,10 @@ AppUI = class AppUI {
 
   createProjectBox(p) {
     var buttons, clone_button, delete_button, element, export_button, export_href, icon, pill, size, sizepill, title;
-    element = document.createElement("div");
+    element = document.createElement("a");
     element.classList.add("project-box");
     element.id = `project-box-${p.slug}`;
+    element.href = `/projects/${p.slug}/code/`;
     element.dataset.title = p.title;
     element.dataset.description = p.description;
     element.dataset.tags = p.tags.join(",");
@@ -815,6 +816,7 @@ AppUI = class AppUI {
     clone_button.innerHTML = `<i class='fa fa-copy'></i> ${this.app.translator.get("Clone")}`;
     buttons.appendChild(clone_button);
     clone_button.addEventListener("click", (event) => {
+      event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
       return ConfirmDialog.confirm(this.app.translator.get("Do you want to clone this project?"), this.app.translator.get("Clone"), this.app.translator.get("Cancel"), () => {
@@ -831,6 +833,7 @@ AppUI = class AppUI {
     buttons.appendChild(delete_button);
     delete_button.addEventListener("click", (event) => {
       var msg, ok;
+      event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
       msg = p.owner.nick === this.app.nick ? this.app.translator.get("Really delete this project?") : this.app.translator.get("Really quit this project?");
@@ -857,8 +860,11 @@ AppUI = class AppUI {
       icon.style["margin-top"] = "40px";
       icon.style["box-shadow"] = "0 0 10px 1px #000";
     }
-    element.addEventListener("click", () => {
-      return this.app.openProject(p);
+    element.addEventListener("click", (event) => {
+      if (!event.ctrlKey && !event.metaKey) {
+        event.preventDefault();
+        return this.app.openProject(p);
+      }
     });
     return element;
   }
