@@ -683,6 +683,13 @@ class AppUI
     buttons = document.createElement "div"
     buttons.classList.add "buttons"
     element.appendChild buttons
+    
+    if p.size
+      size = @displayByteSize(p.size)
+      sizepill = document.createElement "div"
+      sizepill.innerText = size
+      sizepill.classList.add "pill","bg-blue","shadow5",'marginbottom10','marginright10'
+      buttons.appendChild(sizepill)
 
     if p.public
       pill = document.createElement "div"

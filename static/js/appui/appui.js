@@ -775,7 +775,7 @@ AppUI = class AppUI {
   }
 
   createProjectBox(p) {
-    var buttons, clone_button, delete_button, element, export_button, export_href, icon, pill, title;
+    var buttons, clone_button, delete_button, element, export_button, export_href, icon, pill, size, sizepill, title;
     element = document.createElement("div");
     element.classList.add("project-box");
     element.id = `project-box-${p.slug}`;
@@ -788,6 +788,13 @@ AppUI = class AppUI {
     buttons = document.createElement("div");
     buttons.classList.add("buttons");
     element.appendChild(buttons);
+    if (p.size) {
+      size = this.displayByteSize(p.size);
+      sizepill = document.createElement("div");
+      sizepill.innerText = size;
+      sizepill.classList.add("pill", "bg-blue", "shadow5", 'marginbottom10', 'marginright10');
+      buttons.appendChild(sizepill);
+    }
     if (p.public) {
       pill = document.createElement("div");
       pill.innerHTML = "<i class=\"fa fa-eye\"></i> " + this.app.translator.get("public");
