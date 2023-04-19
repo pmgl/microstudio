@@ -264,6 +264,13 @@ class @ProjectDetails
     source = @project_sources[file]
     if source? and source.parent?
       source.parent.setOpen true
+    
+    if @project? and @project.language?
+      lang = @project.language
+      if lang == "microscript_v2" and @sources[file]? and /^\s*\/\/\s*javascript\s*\n/.test(@sources[file])
+        lang = "javascript"
+      lang = @app.languages[lang] or @app.languages["microscript2"]
+      @editor.getSession().setMode(lang.ace_mode)
 
     @editor.setValue @sources[file],-1
     return if not @app.project?

@@ -1,19 +1,16 @@
-this.ProjectDetails = (function() {
-  function ProjectDetails(app) {
-    var fn, j, len, ref, s;
+this.ProjectDetails = class ProjectDetails {
+  constructor(app) {
+    var j, len, ref, s;
     this.app = app;
     this.menu = ["code", "sprites", "sounds", "music", "assets", "doc"];
     ref = this.menu;
-    fn = (function(_this) {
-      return function(s) {
-        return document.getElementById("project-contents-menu-" + s).addEventListener("click", function() {
-          return _this.setSection(s);
-        });
-      };
-    })(this);
     for (j = 0, len = ref.length; j < len; j++) {
       s = ref[j];
-      fn(s);
+      ((s) => {
+        return document.getElementById(`project-contents-menu-${s}`).addEventListener("click", () => {
+          return this.setSection(s);
+        });
+      })(s);
     }
     this.splitbar = new SplitBar("explore-project-details", "horizontal");
     this.splitbar.setPosition(45);
@@ -25,132 +22,120 @@ this.ProjectDetails = (function() {
     this.editor.getSession().setOptions({
       tabSize: 2,
       useSoftTabs: true,
-      useWorker: false
+      useWorker: false // disables lua autocorrection ; preserves syntax coloring
     });
-    document.querySelector("#project-contents-source-import").addEventListener("click", (function(_this) {
-      return function() {
-        var count, file, name;
-        if (_this.app.project == null) {
-          return;
-        }
-        file = _this.selected_source;
-        if (file == null) {
-          return;
-        }
-        if (_this.imported_sources[file]) {
-          return;
-        }
-        _this.imported_sources[file] = true;
-        name = file.split(".")[0];
-        count = 1;
-        while (_this.app.project.getSource(name) != null) {
-          count += 1;
-          name = file.split(".")[0] + count;
-        }
-        file = name + ".ms";
-        return _this.app.client.sendRequest({
-          name: "write_project_file",
-          project: _this.app.project.id,
-          file: "ms/" + file,
-          content: _this.sources[_this.selected_source]
-        }, function(msg) {
-          _this.app.project.updateSourceList();
-          return _this.setSelectedSource(_this.selected_source);
-        });
-      };
-    })(this));
-    document.getElementById("project-contents-sprite-import").addEventListener("click", (function(_this) {
-      return function() {
-        var base, count, data, name;
-        if (_this.app.project == null) {
-          return;
-        }
-        if (_this.selected_sprite == null) {
-          return;
-        }
-        name = _this.selected_sprite.name;
-        if (name == null) {
-          return;
-        }
-        if (_this.imported_sprites[name]) {
-          return;
-        }
-        _this.imported_sprites[name] = true;
-        document.getElementById("project-contents-sprite-import").style.display = "none";
-        count = 1;
-        base = name;
-        while (_this.app.project.getSprite(name) != null) {
-          count += 1;
-          name = base + count;
-        }
-        data = _this.selected_sprite.saveData().split(",")[1];
-        return _this.app.client.sendRequest({
-          name: "write_project_file",
-          project: _this.app.project.id,
-          file: "sprites/" + name + ".png",
-          properties: {
-            frames: _this.selected_sprite.frames.length,
-            fps: _this.selected_sprite.fps
-          },
-          content: data
-        }, function(msg) {
-          return _this.app.project.updateSpriteList();
-        });
-      };
-    })(this));
-    document.querySelector("#project-contents-doc-import").addEventListener("click", (function(_this) {
-      return function() {
-        var value;
-        if (_this.app.project == null) {
-          return;
-        }
-        if (_this.imported_doc || (_this.doc == null)) {
-          return;
-        }
-        _this.imported_doc = true;
-        value = _this.app.doc_editor.editor.getValue();
-        if ((value != null) && value.length > 0) {
-          value = value + "\n\n" + _this.doc;
-        } else {
-          value = _this.doc;
-        }
-        return _this.app.client.sendRequest({
-          name: "write_project_file",
-          project: _this.app.project.id,
-          file: "doc/doc.md",
-          content: value
-        }, function(msg) {
-          _this.app.project.loadDoc();
-          document.querySelector("#project-contents-doc-import").classList.add("done");
-          document.querySelector("#project-contents-doc-import i").classList.add("fa-check");
-          document.querySelector("#project-contents-doc-import i").classList.remove("fa-download");
-          return document.querySelector("#project-contents-doc-import span").innerText = _this.app.translator.get("Doc imported");
-        });
-      };
-    })(this));
-    document.getElementById("post-project-comment-button").addEventListener("click", (function(_this) {
-      return function() {
-        var text;
-        text = document.querySelector("#post-project-comment textarea").value;
-        if ((text != null) && text.length > 0) {
-          _this.postComment(text);
-          return document.querySelector("#post-project-comment textarea").value = "";
-        }
-      };
-    })(this));
-    document.getElementById("login-to-post-comment").addEventListener("click", (function(_this) {
-      return function() {
-        return _this.app.appui.showLoginPanel();
-      };
-    })(this));
-    document.getElementById("validate-to-post-comment").addEventListener("click", (function(_this) {
-      return function() {
-        return _this.app.appui.setMainSection("usersettings");
-      };
-    })(this));
+    document.querySelector("#project-contents-source-import").addEventListener("click", () => {
+      var count, file, name;
+      if (this.app.project == null) {
+        return;
+      }
+      file = this.selected_source;
+      if (file == null) {
+        return;
+      }
+      if (this.imported_sources[file]) {
+        return;
+      }
+      this.imported_sources[file] = true;
+      name = file.split(".")[0];
+      count = 1;
+      while (this.app.project.getSource(name) != null) {
+        count += 1;
+        name = file.split(".")[0] + count;
+      }
+      file = name + ".ms";
+      return this.app.client.sendRequest({
+        name: "write_project_file",
+        project: this.app.project.id,
+        file: `ms/${file}`,
+        content: this.sources[this.selected_source]
+      }, (msg) => {
+        this.app.project.updateSourceList();
+        return this.setSelectedSource(this.selected_source);
+      });
+    });
+    document.getElementById("project-contents-sprite-import").addEventListener("click", () => {
+      var base, count, data, name;
+      if (this.app.project == null) {
+        return;
+      }
+      if (this.selected_sprite == null) {
+        return;
+      }
+      name = this.selected_sprite.name;
+      if (name == null) {
+        return;
+      }
+      if (this.imported_sprites[name]) {
+        return;
+      }
+      this.imported_sprites[name] = true;
+      document.getElementById("project-contents-sprite-import").style.display = "none";
+      count = 1;
+      base = name;
+      while (this.app.project.getSprite(name) != null) {
+        count += 1;
+        name = base + count;
+      }
+      data = this.selected_sprite.saveData().split(",")[1];
+      return this.app.client.sendRequest({
+        name: "write_project_file",
+        project: this.app.project.id,
+        file: `sprites/${name}.png`,
+        properties: {
+          frames: this.selected_sprite.frames.length,
+          fps: this.selected_sprite.fps
+        },
+        content: data
+      }, (msg) => {
+        return this.app.project.updateSpriteList();
+      });
+    });
+    document.querySelector("#project-contents-doc-import").addEventListener("click", () => {
+      var value;
+      if (this.app.project == null) {
+        return;
+      }
+      if (this.imported_doc || (this.doc == null)) {
+        return;
+      }
+      this.imported_doc = true;
+      value = this.app.doc_editor.editor.getValue();
+      if ((value != null) && value.length > 0) {
+        value = value + "\n\n" + this.doc;
+      } else {
+        value = this.doc;
+      }
+      return this.app.client.sendRequest({
+        name: "write_project_file",
+        project: this.app.project.id,
+        file: "doc/doc.md",
+        content: value
+      }, (msg) => {
+        this.app.project.loadDoc();
+        document.querySelector("#project-contents-doc-import").classList.add("done");
+        document.querySelector("#project-contents-doc-import i").classList.add("fa-check");
+        document.querySelector("#project-contents-doc-import i").classList.remove("fa-download");
+        return document.querySelector("#project-contents-doc-import span").innerText = this.app.translator.get("Doc imported");
+      });
+    });
+    document.getElementById("post-project-comment-button").addEventListener("click", () => {
+      var text;
+      text = document.querySelector("#post-project-comment textarea").value;
+      if ((text != null) && text.length > 0) {
+        this.postComment(text);
+        return document.querySelector("#post-project-comment textarea").value = "";
+      }
+    });
+    document.getElementById("login-to-post-comment").addEventListener("click", () => {
+      return this.app.appui.showLoginPanel();
+    });
+    document.getElementById("validate-to-post-comment").addEventListener("click", () => {
+      return this.app.appui.setMainSection("usersettings");
+    });
   }
 
-  ProjectDetails.prototype.set = function(project1) {
+  set(project1) {
     var a, j, len, ref, ref1, section, t;
     this.project = project1;
     this.splitbar.update();
@@ -173,6 +158,7 @@ this.ProjectDetails = (function() {
     document.querySelector("#project-contents-view .sound-list").innerHTML = "";
     document.querySelector("#project-contents-view .music-list").innerHTML = "";
     document.querySelector("#project-contents-view .asset-list").innerHTML = "";
+    //document.querySelector("#project-contents-view .maps").innerHTML = ""
     document.querySelector("#project-contents-view .doc-render").innerHTML = "";
     section = "code";
     ref = this.project.tags;
@@ -194,67 +180,61 @@ this.ProjectDetails = (function() {
       name: "list_public_project_files",
       project: this.project.id,
       folder: "ms"
-    }, (function(_this) {
-      return function(msg) {
-        return _this.setSourceList(msg.files);
-      };
-    })(this));
+    }, (msg) => {
+      return this.setSourceList(msg.files);
+    });
     this.app.client.sendRequest({
       name: "list_public_project_files",
       project: this.project.id,
       folder: "sprites"
-    }, (function(_this) {
-      return function(msg) {
-        return _this.setSpriteList(msg.files);
-      };
-    })(this));
+    }, (msg) => {
+      return this.setSpriteList(msg.files);
+    });
     this.app.client.sendRequest({
       name: "list_public_project_files",
       project: this.project.id,
       folder: "sounds"
-    }, (function(_this) {
-      return function(msg) {
-        return _this.setSoundList(msg.files);
-      };
-    })(this));
+    }, (msg) => {
+      return this.setSoundList(msg.files);
+    });
     this.app.client.sendRequest({
       name: "list_public_project_files",
       project: this.project.id,
       folder: "music"
-    }, (function(_this) {
-      return function(msg) {
-        return _this.setMusicList(msg.files);
-      };
-    })(this));
+    }, (msg) => {
+      return this.setMusicList(msg.files);
+    });
     this.app.client.sendRequest({
       name: "list_public_project_files",
       project: this.project.id,
       folder: "assets"
-    }, (function(_this) {
-      return function(msg) {
-        return _this.setAssetList(msg.files);
-      };
-    })(this));
+    }, (msg) => {
+      return this.setAssetList(msg.files);
+    });
+    //@app.client.sendRequest {
+    //  name: "list_public_project_files"
+    //  project: @project.id
+    //  folder: "maps"
+    //},(msg)=>
+    //  @setMapList msg.files
     this.app.client.sendRequest({
       name: "list_public_project_files",
       project: this.project.id,
       folder: "doc"
-    }, (function(_this) {
-      return function(msg) {
-        return _this.setDocList(msg.files);
-      };
-    })(this));
+    }, (msg) => {
+      return this.setDocList(msg.files);
+    });
     this.updateComments();
     this.updateCredentials();
     a = document.querySelector("#project-contents-view .sprites .export-panel a");
-    a.href = "/" + this.project.owner + "/" + this.project.slug + "/export/sprites/";
-    a.download = this.project.slug + "_sprites.zip";
+    a.href = `/${this.project.owner}/${this.project.slug}/export/sprites/`;
+    a.download = `${this.project.slug}_sprites.zip`;
     a = document.querySelector("#project-details-exportbutton");
-    a.href = "/" + this.project.owner + "/" + this.project.slug + "/export/project/";
-    return a.download = this.project.slug + "_files.zip";
-  };
+    a.href = `/${this.project.owner}/${this.project.slug}/export/project/`;
+    return a.download = `${this.project.slug}_files.zip`;
+  }
 
-  ProjectDetails.prototype.updateCredentials = function() {
+  updateCredentials() {
     if (this.app.user != null) {
       document.getElementById("login-to-post-comment").style.display = "none";
       if (this.app.user.flags.validated) {
@@ -269,69 +249,73 @@ this.ProjectDetails = (function() {
       document.getElementById("validate-to-post-comment").style.display = "none";
       return document.getElementById("post-project-comment").style.display = "none";
     }
-  };
+  }
 
-  ProjectDetails.prototype.loadFile = function(url, callback) {
+  loadFile(url, callback) {
     var req;
     req = new XMLHttpRequest();
-    req.onreadystatechange = (function(_this) {
-      return function(event) {
-        if (req.readyState === XMLHttpRequest.DONE) {
-          if (req.status === 200) {
-            return callback(req.responseText);
-          }
+    req.onreadystatechange = (event) => {
+      if (req.readyState === XMLHttpRequest.DONE) {
+        if (req.status === 200) {
+          return callback(req.responseText);
         }
-      };
-    })(this);
+      }
+    };
     req.open("GET", url);
     return req.send();
-  };
+  }
 
-  ProjectDetails.prototype.setSection = function(section) {
+  setSection(section) {
     var j, len, ref, s;
     ref = this.menu;
     for (j = 0, len = ref.length; j < len; j++) {
       s = ref[j];
       if (s === section) {
-        document.getElementById("project-contents-menu-" + s).classList.add("selected");
-        document.querySelector("#project-contents-view ." + s).style.display = "block";
+        document.getElementById(`project-contents-menu-${s}`).classList.add("selected");
+        document.querySelector(`#project-contents-view .${s}`).style.display = "block";
       } else {
-        document.getElementById("project-contents-menu-" + s).classList.remove("selected");
-        document.querySelector("#project-contents-view ." + s).style.display = "none";
+        document.getElementById(`project-contents-menu-${s}`).classList.remove("selected");
+        document.querySelector(`#project-contents-view .${s}`).style.display = "none";
       }
     }
-  };
+  }
 
-  ProjectDetails.prototype.createSourceEntry = function(file) {
+  createSourceEntry(file) {
     return this.app.client.sendRequest({
       name: "read_public_project_file",
       project: this.project.id,
-      file: "ms/" + file
-    }, (function(_this) {
-      return function(msg) {
-        var div;
-        _this.sources[file] = msg.content;
-        div = document.createElement("div");
-        div.innerHTML = "<i class='fa fa-file-code'></i> " + (file.split(".")[0]);
-        document.querySelector("#project-contents-view .code-list").appendChild(div);
-        div.id = "project-contents-view-source-" + file;
-        div.addEventListener("click", function() {
-          return _this.setSelectedSource(file);
-        });
-        if (_this.selected_source == null) {
-          return _this.setSelectedSource(file);
-        }
-      };
-    })(this));
-  };
+      file: `ms/${file}`
+    }, (msg) => {
+      var div;
+      this.sources[file] = msg.content;
+      div = document.createElement("div");
+      div.innerHTML = `<i class='fa fa-file-code'></i> ${(file.split(".")[0])}`;
+      document.querySelector("#project-contents-view .code-list").appendChild(div);
+      div.id = `project-contents-view-source-${file}`;
+      div.addEventListener("click", () => {
+        return this.setSelectedSource(file);
+      });
+      if (this.selected_source == null) {
+        return this.setSelectedSource(file);
+      }
+    });
+  }
 
-  ProjectDetails.prototype.setSelectedSource = function(file) {
-    var source;
+  setSelectedSource(file) {
+    var lang, source;
     this.selected_source = file;
     this.source_folder.setSelectedItem(file);
     source = this.project_sources[file];
     if ((source != null) && (source.parent != null)) {
       source.parent.setOpen(true);
+    }
+    if ((this.project != null) && (this.project.language != null)) {
+      lang = this.project.language;
+      if (lang === "microscript_v2" && (this.sources[file] != null) && /^\s*\/\/\s*javascript\s*\n/.test(this.sources[file])) {
+        lang = "javascript";
+      }
+      lang = this.app.languages[lang] || this.app.languages["microscript2"];
+      this.editor.getSession().setMode(lang.ace_mode);
     }
     this.editor.setValue(this.sources[file], -1);
     if (this.app.project == null) {
@@ -348,34 +332,34 @@ this.ProjectDetails = (function() {
       document.querySelector("#project-contents-source-import i").classList.remove("fa-check");
       return document.querySelector("#project-contents-source-import span").innerText = this.app.translator.get("Import source file to") + " " + this.app.project.title;
     }
-  };
+  }
 
-  ProjectDetails.prototype.setSourceList = function(files) {
+  setSourceList(files) {
     var f, folder, j, len, manager, project, s, table, view;
+    // for f in files
+    //   @createSourceEntry(f.file)
+    // return
     table = {};
     manager = {
       folder: "ms",
       item: "source",
-      openItem: (function(_this) {
-        return function(item) {
-          return _this.setSelectedSource(item);
-        };
-      })(this)
+      openItem: (item) => {
+        return this.setSelectedSource(item);
+      }
     };
+    // table[item].play()
     this.project_sources = {};
-    project = JSON.parse(JSON.stringify(this.project));
+    project = JSON.parse(JSON.stringify(this.project)); // create a clone
     project.app = this.app;
-    project.notifyListeners = (function(_this) {
-      return function(source) {
-        _this.sources[source.name] = source.content;
-        if (_this.selected_source == null) {
-          return _this.setSelectedSource(source.name);
-        }
-      };
-    })(this);
+    project.notifyListeners = (source) => {
+      this.sources[source.name] = source.content;
+      if (this.selected_source == null) {
+        return this.setSelectedSource(source.name);
+      }
+    };
     project.getFullURL = function() {
       var url;
-      return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
+      return url = location.origin + `/${project.owner}/${project.slug}/`;
     };
     folder = new ProjectFolder(null, "source");
     for (j = 0, len = files.length; j < len; j++) {
@@ -389,32 +373,30 @@ this.ProjectDetails = (function() {
     this.source_folder = view;
     view.editable = false;
     view.rebuildList(folder);
-  };
+  }
 
-  ProjectDetails.prototype.setSpriteList = function(files) {
+  setSpriteList(files) {
     var f, folder, j, len, manager, project, s, table;
     table = {};
     this.sprites = {};
     manager = {
       folder: "sprites",
       item: "sprite",
-      openItem: (function(_this) {
-        return function(item) {
-          _this.sprites_folder_view.setSelectedItem(item);
-          _this.selected_sprite = _this.sprites[item];
-          if ((_this.app.project != null) && !_this.imported_sprites[item]) {
-            document.querySelector("#project-contents-sprite-import span").innerText = _this.app.translator.get("Import %ITEM% to project %PROJECT%").replace("%ITEM%", item.replace(/-/g, "/")).replace("%PROJECT%", _this.app.project.title);
-            return document.getElementById("project-contents-sprite-import").style.display = "block";
-          } else {
-            return document.getElementById("project-contents-sprite-import").style.display = "none";
-          }
-        };
-      })(this)
+      openItem: (item) => {
+        this.sprites_folder_view.setSelectedItem(item);
+        this.selected_sprite = this.sprites[item];
+        if ((this.app.project != null) && !this.imported_sprites[item]) {
+          document.querySelector("#project-contents-sprite-import span").innerText = this.app.translator.get("Import %ITEM% to project %PROJECT%").replace("%ITEM%", item.replace(/-/g, "/")).replace("%PROJECT%", this.app.project.title);
+          return document.getElementById("project-contents-sprite-import").style.display = "block";
+        } else {
+          return document.getElementById("project-contents-sprite-import").style.display = "none";
+        }
+      }
     };
-    project = JSON.parse(JSON.stringify(this.project));
+    project = JSON.parse(JSON.stringify(this.project)); // create a clone
     project.getFullURL = function() {
       var url;
-      return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
+      return url = location.origin + `/${project.owner}/${project.slug}/`;
     };
     project.map_list = [];
     project.notifyListeners = function() {};
@@ -430,9 +412,9 @@ this.ProjectDetails = (function() {
     this.sprites_folder_view.editable = false;
     this.sprites_folder_view.rebuildList(folder);
     document.getElementById("project-contents-sprite-import").style.display = "none";
-  };
+  }
 
-  ProjectDetails.prototype.setSoundList = function(files) {
+  setSoundList(files) {
     var f, folder, j, len, manager, project, s, table, view;
     if (files.length > 0) {
       document.getElementById("project-contents-menu-sounds").style.display = "block";
@@ -447,10 +429,10 @@ this.ProjectDetails = (function() {
         return table[item].play();
       }
     };
-    project = JSON.parse(JSON.stringify(this.project));
+    project = JSON.parse(JSON.stringify(this.project)); // create a clone
     project.getFullURL = function() {
       var url;
-      return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
+      return url = location.origin + `/${project.owner}/${project.slug}/`;
     };
     folder = new ProjectFolder(null, "sounds");
     for (j = 0, len = files.length; j < len; j++) {
@@ -462,9 +444,9 @@ this.ProjectDetails = (function() {
     view = new FolderView(manager, document.querySelector("#project-contents-view .sound-list"));
     view.editable = false;
     view.rebuildList(folder);
-  };
+  }
 
-  ProjectDetails.prototype.setMusicList = function(files) {
+  setMusicList(files) {
     var f, folder, j, len, manager, project, s, table, view;
     if (files.length > 0) {
       document.getElementById("project-contents-menu-music").style.display = "block";
@@ -479,13 +461,11 @@ this.ProjectDetails = (function() {
         return table[item].play();
       }
     };
-    project = JSON.parse(JSON.stringify(this.project));
-    project.getFullURL = (function(_this) {
-      return function() {
-        var url;
-        return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
-      };
-    })(this);
+    project = JSON.parse(JSON.stringify(this.project)); // create a clone
+    project.getFullURL = () => {
+      var url;
+      return url = location.origin + `/${project.owner}/${project.slug}/`;
+    };
     folder = new ProjectFolder(null, "sounds");
     for (j = 0, len = files.length; j < len; j++) {
       f = files[j];
@@ -496,9 +476,9 @@ this.ProjectDetails = (function() {
     view = new FolderView(manager, document.querySelector("#project-contents-view .music-list"));
     view.editable = false;
     view.rebuildList(folder);
-  };
+  }
 
-  ProjectDetails.prototype.setAssetList = function(files) {
+  setAssetList(files) {
     var f, folder, j, len, manager, project, s, table, view;
     if (files.length > 0) {
       document.getElementById("project-contents-menu-assets").style.display = "block";
@@ -511,10 +491,10 @@ this.ProjectDetails = (function() {
       item: "asset",
       openItem: function(item) {}
     };
-    project = JSON.parse(JSON.stringify(this.project));
+    project = JSON.parse(JSON.stringify(this.project)); // create a clone
     project.getFullURL = function() {
       var url;
-      return url = location.origin + ("/" + project.owner + "/" + project.slug + "/");
+      return url = location.origin + `/${project.owner}/${project.slug}/`;
     };
     folder = new ProjectFolder(null, "assets");
     for (j = 0, len = files.length; j < len; j++) {
@@ -526,55 +506,52 @@ this.ProjectDetails = (function() {
     view = new FolderView(manager, document.querySelector("#project-contents-view .asset-list"));
     view.editable = false;
     view.rebuildList(folder);
-  };
+  }
 
-  ProjectDetails.prototype.setMapList = function(files) {
+  setMapList(files) {
     return console.info(files);
-  };
+  }
 
-  ProjectDetails.prototype.setDocList = function(files) {
+  setDocList(files) {
     if (files.length > 0) {
       document.getElementById("project-contents-menu-doc").style.display = "block";
       return this.app.client.sendRequest({
         name: "read_public_project_file",
         project: this.project.id,
-        file: "doc/" + files[0].file
-      }, (function(_this) {
-        return function(msg) {
-          _this.doc = msg.content;
-          if ((_this.doc != null) && _this.doc.trim().length > 0) {
-            return document.querySelector("#project-contents-view .doc-render").innerHTML = DOMPurify.sanitize(marked(msg.content));
-          } else {
-            return document.getElementById("project-contents-menu-doc").style.display = "none";
-          }
-        };
-      })(this));
+        file: `doc/${files[0].file}`
+      }, (msg) => {
+        this.doc = msg.content;
+        if ((this.doc != null) && this.doc.trim().length > 0) {
+          return document.querySelector("#project-contents-view .doc-render").innerHTML = DOMPurify.sanitize(marked(msg.content));
+        } else {
+          return document.getElementById("project-contents-menu-doc").style.display = "none";
+        }
+      });
     } else {
       return document.getElementById("project-contents-menu-doc").style.display = "none";
     }
-  };
+  }
 
-  ProjectDetails.prototype.updateComments = function() {
+  //console.info files
+  updateComments() {
     return this.app.client.sendRequest({
       name: "get_project_comments",
       project: this.project.id
-    }, (function(_this) {
-      return function(msg) {
-        var c, e, j, len, ref;
-        e = document.getElementById("project-comment-list");
-        e.innerHTML = "";
-        if (msg.comments != null) {
-          ref = msg.comments;
-          for (j = 0, len = ref.length; j < len; j++) {
-            c = ref[j];
-            _this.createCommentBox(c);
-          }
+    }, (msg) => {
+      var c, e, j, len, ref;
+      e = document.getElementById("project-comment-list");
+      e.innerHTML = "";
+      if (msg.comments != null) {
+        ref = msg.comments;
+        for (j = 0, len = ref.length; j < len; j++) {
+          c = ref[j];
+          this.createCommentBox(c);
         }
-      };
-    })(this));
-  };
+      }
+    });
+  }
 
-  ProjectDetails.prototype.createCommentBox = function(c) {
+  createCommentBox(c) {
     var author, buttons, clear, contents, div, i, span, t, time, tt;
     console.info(c);
     div = document.createElement("div");
@@ -621,11 +598,12 @@ this.ProjectDetails = (function() {
     if ((this.app.user != null) && (this.app.user.nick === c.user || this.app.user.flags.admin)) {
       buttons = document.createElement("div");
       buttons.classList.add("buttons");
-      buttons.appendChild(this.createButton("trash", this.app.translator.get("Delete"), "red", (function(_this) {
-        return function() {
-          return _this.deleteComment(c);
-        };
-      })(this)));
+      //buttons.appendChild @createButton "edit","Edit","green",()=>
+      //  @editComment c
+      //buttons.appendChild document.createElement "br"
+      buttons.appendChild(this.createButton("trash", this.app.translator.get("Delete"), "red", () => {
+        return this.deleteComment(c);
+      }));
       div.appendChild(buttons);
     }
     contents = document.createElement("div");
@@ -636,69 +614,61 @@ this.ProjectDetails = (function() {
     clear.style = "clear:both";
     div.appendChild(clear);
     return document.getElementById("project-comment-list").appendChild(div);
-  };
+  }
 
-  ProjectDetails.prototype.createButton = function(icon, text, color, callback) {
+  createButton(icon, text, color, callback) {
     var button, i, span;
     button = document.createElement("div");
     button.classList.add("small" + color + "button");
     i = document.createElement("i");
     i.classList.add("fa");
-    i.classList.add("fa-" + icon);
+    i.classList.add(`fa-${icon}`);
     button.appendChild(i);
     span = document.createElement("span");
     span.innerText = text;
     button.appendChild(span);
-    button.addEventListener("click", (function(_this) {
-      return function() {
-        return callback();
-      };
-    })(this));
+    button.addEventListener("click", () => {
+      return callback();
+    });
     return button;
-  };
+  }
 
-  ProjectDetails.prototype.postComment = function(text) {
+  postComment(text) {
     return this.app.client.sendRequest({
       name: "add_project_comment",
       project: this.project.id,
       text: text
-    }, (function(_this) {
-      return function(msg) {
-        return _this.updateComments();
-      };
-    })(this));
-  };
+    }, (msg) => {
+      return this.updateComments();
+    });
+  }
 
-  ProjectDetails.prototype.editComment = function(id, text) {};
+  editComment(id, text) {}
 
-  ProjectDetails.prototype.deleteComment = function(c) {
-    return ConfirmDialog.confirm(this.app.translator.get("Do you really want to delete this comment?"), this.app.translator.get("Delete"), this.app.translator.get("Cancel"), (function(_this) {
-      return function() {
-        return _this.app.client.sendRequest({
-          name: "delete_project_comment",
-          project: _this.project.id,
-          id: c.id
-        }, function(msg) {
-          return _this.updateComments();
-        });
-      };
-    })(this));
-  };
+  deleteComment(c) {
+    return ConfirmDialog.confirm(this.app.translator.get("Do you really want to delete this comment?"), this.app.translator.get("Delete"), this.app.translator.get("Cancel"), () => {
+      return this.app.client.sendRequest({
+        name: "delete_project_comment",
+        project: this.project.id,
+        id: c.id
+      }, (msg) => {
+        return this.updateComments();
+      });
+    });
+  }
 
-  return ProjectDetails;
+};
 
-})();
-
-this.ExploreProjectSource = (function() {
-  function ExploreProjectSource(project1, file1, size) {
+this.ExploreProjectSource = class ExploreProjectSource {
+  constructor(project1, file1, size = 0) {
     var s;
     this.project = project1;
     this.file = file1;
-    this.size = size != null ? size : 0;
+    this.size = size;
     this.name = this.file.split(".")[0];
     this.ext = this.file.split(".")[1];
     this.filename = this.file;
-    this.file = "ms/" + this.file;
+    this.file = `ms/${this.file}`;
     s = this.name.split("-");
     this.shortname = s[s.length - 1];
     this.path_prefix = s.length > 1 ? s.splice(0, s.length - 1).join("-") + "-" : "";
@@ -707,18 +677,14 @@ this.ExploreProjectSource = (function() {
     this.reload();
   }
 
-  ExploreProjectSource.prototype.reload = function() {
-    return fetch(this.project.getFullURL() + ("ms/" + this.name + ".ms")).then((function(_this) {
-      return function(result) {
-        return result.text().then(function(text) {
-          _this.content = text;
-          _this.fetched = true;
-          return _this.project.notifyListeners(_this);
-        });
-      };
-    })(this));
-  };
+  reload() {
+    return fetch(this.project.getFullURL() + `ms/${this.name}.ms`).then((result) => {
+      return result.text().then((text) => {
+        this.content = text;
+        this.fetched = true;
+        return this.project.notifyListeners(this);
+      });
+    });
+  }
 
-  return ExploreProjectSource;
-
-})();
+};
