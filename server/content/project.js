@@ -81,7 +81,7 @@ this.Project = class Project {
           for (j = 0, len = ref.length; j < len; j++) {
             u = ref[j];
             link = new ProjectLink(this, u);
-            if (link.user != null) {
+            if ((link.user != null) && !link.user.flags.deleted) {
               this.users.push(link);
             }
           }
@@ -240,11 +240,13 @@ this.Project = class Project {
     ref = this.users;
     for (j = 0, len = ref.length; j < len; j++) {
       link = ref[j];
-      list.push({
-        id: link.user.id,
-        nick: link.user.nick,
-        accepted: link.accepted
-      });
+      if ((link.user != null) && !link.user.flags.deleted) {
+        list.push({
+          id: link.user.id,
+          nick: link.user.nick,
+          accepted: link.accepted
+        });
+      }
     }
     return list;
   }

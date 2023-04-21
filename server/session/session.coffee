@@ -47,6 +47,7 @@ class @Session
     @register "send_password_recovery",(msg)=>@sendPasswordRecovery(msg)
     @register "token",(msg)=>@checkToken(msg)
     @register "delete_guest",(msg)=>@deleteGuest(msg)
+    @register "delete_account",(msg)=>@deleteAccount(msg)
     @register "change_password",(msg)=>@changePassword(msg)
 
     @register "send_validation_mail",(msg)=>@sendValidationMail(msg)
@@ -338,7 +339,7 @@ class @Session
     if not user?
       user = @content.findUserByEmail data.nick
 
-    if user? and user.hash?
+    if user? and user.hash? and not user.flags.deleted
       hash = user.hash
       s = hash.split("|")
       h = SHA256(s[0]+data.password)
@@ -1686,5 +1687,49 @@ class @Session
           @send
             name:"next_chunk"
             request_id: id
+
+  checkPassword:(user,password)->
+    if user? and user.hash?
+      hash = user.hash
+      s = hash.split("|")
+      h = SHA256(s[0]+password)
+      if h.toString() == s[1]
+        return true
+
+    return false
+
+  deleteAccount:(msg)->
+    return if not @user
+    return if not msg.password
+    return if not msg.confirm or msg.confirm != "DELETE MY ACCOUNT"
+
+    if not @server.rate_limiter.accept("delete_account",@user.id) then return @sendError "You are rate limited",msg.request_id
+
+    if not @checkPassword(@user,msg.password) then return @sendError "Wrong password",msg.request_id
+
+    # DELETE USER
+
+    console.info "DELETING USER: "+@user.nick
+    @server.stats.inc("account_deletion")
+
+    @user.delete()
+
+    delete @server.content.users_by_nick[@user.nick]
+    delete @server.content.users_by_email[@user.email]
+
+    @user.setFlag("validated",false)
+    @user.setFlag("newsletter",false)
+
+    @user.set("hash","1234567890|1234567890")
+    @user.set("validation_token",""+Math.random()+""+Math.random())
+    @user.set("nick","*deleted"+@user.id)
+    @user.set("email","*deleted"+@user.id+"@microstudio.io") 
+
+    @send
+      name:"user_deleted"
+      request_id: msg.request_id
+
+    @socket.close()
+
 
 module.exports = @Session

@@ -71,6 +71,9 @@ this.Session = class Session {
     this.register("delete_guest", (msg) => {
       return this.deleteGuest(msg);
     });
+    this.register("delete_account", (msg) => {
+      return this.deleteAccount(msg);
+    });
     this.register("change_password", (msg) => {
       return this.changePassword(msg);
     });
@@ -541,7 +544,7 @@ this.Session = class Session {
     if (user == null) {
       user = this.content.findUserByEmail(data.nick);
     }
-    if ((user != null) && (user.hash != null)) {
+    if ((user != null) && (user.hash != null) && !user.flags.deleted) {
       hash = user.hash;
       s = hash.split("|");
       h = SHA256(s[0] + data.password);
@@ -2424,6 +2427,54 @@ this.Session = class Session {
         }
       }
     }
+  }
+
+  checkPassword(user, password) {
+    var h, hash, s;
+    if ((user != null) && (user.hash != null)) {
+      hash = user.hash;
+      s = hash.split("|");
+      h = SHA256(s[0] + password);
+      if (h.toString() === s[1]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  deleteAccount(msg) {
+    if (!this.user) {
+      return;
+    }
+    if (!msg.password) {
+      return;
+    }
+    if (!msg.confirm || msg.confirm !== "DELETE MY ACCOUNT") {
+      return;
+    }
+    if (!this.server.rate_limiter.accept("delete_account", this.user.id)) {
+      return this.sendError("You are rate limited", msg.request_id);
+    }
+    if (!this.checkPassword(this.user, msg.password)) {
+      return this.sendError("Wrong password", msg.request_id);
+    }
+    // DELETE USER
+    console.info("DELETING USER: " + this.user.nick);
+    this.server.stats.inc("account_deletion");
+    this.user.delete();
+    delete this.server.content.users_by_nick[this.user.nick];
+    delete this.server.content.users_by_email[this.user.email];
+    this.user.setFlag("validated", false);
+    this.user.setFlag("newsletter", false);
+    this.user.set("hash", "1234567890|1234567890");
+    this.user.set("validation_token", "" + Math.random() + "" + Math.random());
+    this.user.set("nick", "*deleted" + this.user.id);
+    this.user.set("email", "*deleted" + this.user.id + "@microstudio.io");
+    this.send({
+      name: "user_deleted",
+      request_id: msg.request_id
+    });
+    return this.socket.close();
   }
 
 };

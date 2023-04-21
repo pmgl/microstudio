@@ -7,6 +7,7 @@ class @RateLimiter
 
     @map.login_ip = new RateLimiterClass(@,1,20) # 20 tentatives de login par minute de la même IP
     @map.login_user = new RateLimiterClass(@,2,10) # 10 tentatives de login par username par 2 minutes
+    @map.delete_account = new RateLimiterClass(@,5,5) # 5 tentatives de suppression par user par 5 minutes
 
     @map.send_mail_user = new RateLimiterClass(@,5,5) # 5 mails max en 5 minutes
 

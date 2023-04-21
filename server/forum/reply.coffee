@@ -19,6 +19,9 @@ class @ForumReply
     @likes = data.likes or []
     @pinned = data.pinned
 
+  isDeleted:()->
+    @deleted or not @author? or @author.flags.deleted
+
   set:(prop,value)->
     data = @record.get()
     data[prop] = value

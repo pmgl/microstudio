@@ -105,7 +105,7 @@ html(lang=language)
           - var i = post.replies.length-1
           while i>=0
             - var reply = post.replies[i]
-            if !reply.deleted && !reply.author.flags.censored && !reply.author.flags.banned
+            if !reply.isDeleted() && !reply.author.flags.censored && !reply.author.flags.banned
               div.post-content(id="post-reply-"+i data-reply-id=reply.id)
                 i.link.fas.fa-link(title="Copy link" data-link=post_info.url+i+"/")
                 div.post-content-info
@@ -127,7 +127,7 @@ html(lang=language)
             - i -= 1
         else
           each reply,i in post.replies
-            if !reply.deleted && !reply.author.flags.censored && !reply.author.flags.banned
+            if !reply.isDeleted() && !reply.author.flags.censored && !reply.author.flags.banned
               div.post-content(id="post-reply-"+i data-reply-id=reply.id)
                 i.link.fas.fa-link(title="Copy link" data-link=post_info.url+i+"/")
                 div.post-content-info

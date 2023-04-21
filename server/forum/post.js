@@ -37,6 +37,10 @@ this.ForumPost = class ForumPost {
     this.reverse = data.reverse;
   }
 
+  isDeleted() {
+    return this.deleted || (this.author == null) || this.author.flags.deleted;
+  }
+
   addReply(reply) {
     this.replies.push(reply);
     if (!reply.deleted) {

@@ -67,12 +67,13 @@ class @Forum
     category = @categories[catid]
     if category?
       post = new ForumPost category,record
-      category.addPost(post)
-      @posts[post.id] = post
-      if not post.deleted and not category.hidden
-        @post_count++
-        @index post.category.language,"#{post.title} #{post.category.name} #{post.author.nick}",post,post.id
-        @index post.category.language,post.text,post,post.id
+      if not post.isDeleted()
+        category.addPost(post)
+        @posts[post.id] = post
+        if not category.hidden
+          @post_count++
+          @index post.category.language,"#{post.title} #{post.category.name} #{post.author.nick}",post,post.id
+          @index post.category.language,post.text,post,post.id
 
       post
 
@@ -81,12 +82,13 @@ class @Forum
     post = @posts[postid]
     if post?
       reply = new ForumReply post,record
-      post.addReply(reply)
-      @replies[reply.id] = reply
-      if not reply.deleted and not post.category.hidden
-        @reply_count++
-        @index reply.post.category.language,reply.text,reply.post,post.id
-      reply
+      if not reply.isDeleted()
+        post.addReply(reply)
+        @replies[reply.id] = reply
+        if not post.category.hidden
+          @reply_count++
+          @index reply.post.category.language,reply.text,reply.post,post.id
+        reply
 
   createPost:(category,user,title,text)->
     data =

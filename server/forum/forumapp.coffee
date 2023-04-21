@@ -38,7 +38,7 @@ class @ForumApp
       for c in list
         ps = c.getSortedPosts()
         for p in ps
-          if not p.deleted
+          if not p.isDeleted()
             posts.push p
 
       posts.sort (a,b)->b.activity-a.activity
@@ -87,7 +87,7 @@ class @ForumApp
         list = category.getSortedPosts()
         posts = []
         for p in list
-          if not p.deleted
+          if not p.isDeleted()
             posts.push p
 
         description = category.description
@@ -115,7 +115,7 @@ class @ForumApp
       id = path[3]
       scroll = path[4]
       post = @forum.posts[id]
-      if post? and not post.deleted and not post.author.flags.censored and not post.author.flags.banned
+      if post? and not post.isDeleted() and not post.author.flags.censored and not post.author.flags.banned
         cat = post.category
         list = @forum.listCategories(lang)
 

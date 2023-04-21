@@ -128,7 +128,7 @@ html(lang=language)
                   div.post-status(data-colorize=post.status) •&nbsp;&nbsp;#{post.status}&nbsp;&nbsp;•
                 div.post-users
                   each p in post.people
-                    if !p.author.flags.censored && !p.author.flags.banned
+                    if !p.author.flags.censored && !p.author.flags.banned && !p.author.flags.deleted
                       if p.author.flags.profile_image
                         img.user(title=p.author.nick src="/"+p.author.nick+".png")
                       else

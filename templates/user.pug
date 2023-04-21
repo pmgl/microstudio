@@ -81,6 +81,21 @@ div.usersettings#usersettings
     div.usersetting#advanced
       div.button#open-translation-app <i class="fa fa-globe"></i> #{translator.get("Open translation tool")}
 
+    div.usersetting#delete-account(style="display:none")
+      h3 #{translator.get("DANGER ZONE")}
+      h3 #{translator.get("Delete my account")}
+      p #{translator.get("You can delete your account permanently. Deletion is immediate and cannot be undone. All the projects you own and all your information will be permanently deleted from our servers.")}
+      div.button.bg-green#show-account-deletion <i class="fas fa-exclamation-triangle"></i> #{translator.get("Show account deletion form")}
+      div#delete-account-form(style="display:none")
+        div(style="margin:20px 0px")
+          input#delete-account-confirm(type="text" placeholder="DELETE MY ACCOUNT" autocomplete="off")
+          div.tip #{translator.get("Type exactly DELETE MY ACCOUNT")}
+        div(style="margin:20px 0px")
+          input#delete-account-password(type="password" placeholder="password")
+          div.tip #{translator.get("Your Password")}
+        div.button#delete-account-button <i class="fa fa-trash"></i> #{translator.get("Delete account")}
+        div#delete-account-error(style="margin-top:20px")
+
 
   div.usersettings-page#usersettings-profile(style="display: none")
     h1 #{translator.get("Your Profile")}

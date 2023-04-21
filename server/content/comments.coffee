@@ -7,7 +7,7 @@ class @Comments
     if data? and data.length>0
       for c in data
         user = @project.content.users[c.user]
-        if user?
+        if user? and not user.flags.deleted
           @comments.push new Comment @,user,c
     return
 
@@ -24,7 +24,7 @@ class @Comments
   getAll:()->
     res = []
     for c,i in @comments
-      if not c.flags.deleted and not c.user.flags.censored
+      if not c.flags.deleted and not c.user.flags.censored and not c.user.flags.deleted
         res.push
           user: c.user.nick
           user_info:

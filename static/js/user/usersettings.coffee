@@ -18,6 +18,28 @@ class @UserSettings
         if event.keyCode == 13
           @changePasswordClick()
 
+      document.getElementById("show-account-deletion").addEventListener "click",()=>
+        e = document.getElementById("delete-account-form")
+        if e.style.display != "block"
+          e.style.display = "block"
+          document.getElementById("delete-account").scrollIntoView()
+        else
+          e.style.display = "none"
+
+      document.getElementById("delete-account-button").addEventListener "click",()=>
+        @deleteAccount()
+
+      checkDeleteButton = ()=>
+        if document.getElementById("delete-account-confirm").value == "DELETE MY ACCOUNT" and document.getElementById("delete-account-password").value.length > 0
+          document.getElementById("delete-account-button").classList.add("enabled")
+        else
+          document.getElementById("delete-account-button").classList.remove("enabled")
+
+      document.getElementById("delete-account-confirm").addEventListener "keyup",checkDeleteButton
+      
+      document.getElementById("delete-account-password").addEventListener "keyup",checkDeleteButton
+      
+
     @nick_validator = new InputValidator document.getElementById("usersetting-nick"),
       document.getElementById("usersetting-nick-button"),
       document.getElementById("usersetting-nick-error"),
@@ -196,6 +218,11 @@ class @UserSettings
 
     @resetChangePassword()
 
+    if not window.ms_standalone
+      if not @app.user.flags.guest
+        document.getElementById("delete-account").style.display = "block"
+
+
   updateStorage:()->
     percent = Math.floor(@app.user.info.size/@app.user.info.max_storage*100)
     str = @app.translator.get "[STORAGE] used of [MAX_STORAGE] ([PERCENT] %)"
@@ -360,3 +387,22 @@ class @UserSettings
 
   hideChangePassword:()->
     document.getElementById("usersetting-change-password").style.display = "none"
+
+  deleteAccount:()->
+    return if not document.getElementById("delete-account-button").classList.contains("enabled")
+    text = document.getElementById("delete-account-confirm").value
+    password = document.getElementById("delete-account-password").value
+    if text == "DELETE MY ACCOUNT"
+      console.info text
+      @app.client.sendRequest {
+        name: "delete_account"
+        confirm: text
+        password: password
+      },(msg)=>
+        console.info msg
+        if msg.name == "error"
+          document.getElementById("delete-account-error").innerText = @app.translator.get msg.error
+        else
+           document.getElementById("delete-account-error").innerText = @app.translator.get "Account Deleted Successfully. You will be redirected."
+           setTimeout (()=>window.location.href = "/"),4000
+           

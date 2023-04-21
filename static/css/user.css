@@ -98,6 +98,10 @@ body.standalone #usersettings-menu-settings, body.standalone #usersettings-menu-
   font-family: "Source Sans Pro",Verdana ;
   width: 200px ;
 }
+.usersettings input::placeholder {
+  color: rgba(255,255,255,.2) ;
+  font-style:italic ;
+}
 .usersettings input[type="checkbox"] {
   width: initial ;
 }
@@ -274,6 +278,28 @@ body.standalone #usersettings-menu-settings, body.standalone #usersettings-menu-
 
 #usersettings-progress h2 {
   text-align: center ;
+}
+
+.usersetting#delete-account {
+  margin-top: 100px ;
+  padding: 20px;
+  border-radius: 10px;
+  background: hsl(300,20%,30%) ;
+}
+.usersetting#delete-account .button {
+  background: hsl(0,50%,50%);
+}
+
+.usersetting .button#delete-account-button {
+  background: hsl(300,20%,10%) ;
+  color: rgba(255,255,255,.2) ;
+  cursor: default ;
+}
+
+.usersetting .button#delete-account-button.enabled {
+  background: hsl(0,50%,50%);
+  color: rgba(255,255,255,.9) ;
+  cursor: pointer ;
 }
 
 #user-progress-statistics, #user-progress-level {

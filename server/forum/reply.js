@@ -23,6 +23,10 @@ this.ForumReply = class ForumReply {
     this.pinned = data.pinned;
   }
 
+  isDeleted() {
+    return this.deleted || (this.author == null) || this.author.flags.deleted;
+  }
+
   set(prop, value) {
     var data;
     data = this.record.get();

@@ -37,6 +37,9 @@ class @ForumPost
 
     @reverse = data.reverse
 
+  isDeleted:()->
+    @deleted or not @author? or @author.flags.deleted
+
   addReply:(reply)->
     @replies.push reply
     if not reply.deleted

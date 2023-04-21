@@ -8,8 +8,8 @@ ForumReply = require(__dirname + "/reply.js");
 
 Indexer = require(__dirname + "/indexer.js");
 
-this.Forum = (function() {
-  function Forum(content) {
+this.Forum = class Forum {
+  constructor(content) {
     this.content = content;
     this.db = this.content.db;
     this.server = this.content.server;
@@ -25,16 +25,16 @@ this.Forum = (function() {
     this.load();
   }
 
-  Forum.prototype.close = function() {
+  close() {
     var i, indexer, key, len, ref;
     ref = this.indexers;
     for (indexer = i = 0, len = ref.length; i < len; indexer = ++i) {
       key = ref[indexer];
       indexer.stop();
     }
-  };
+  }
 
-  Forum.prototype.load = function() {
+  load() {
     var categories, i, j, k, len, len1, len2, posts, record, replies;
     categories = this.db.list("forum_categories");
     for (i = 0, len = categories.length; i < len; i++) {
@@ -52,9 +52,9 @@ this.Forum = (function() {
       this.loadReply(record);
     }
     this.updateActivity();
-  };
+  }
 
-  Forum.prototype.index = function(language, text, target, uid) {
+  index(language, text, target, uid) {
     var indexer;
     if (language == null) {
       return;
@@ -64,9 +64,9 @@ this.Forum = (function() {
       this.indexers[language] = indexer = new Indexer();
     }
     return indexer.add(text, target, uid);
-  };
+  }
 
-  Forum.prototype.loadCategory = function(record) {
+  loadCategory(record) {
     var cat;
     cat = new ForumCategory(this, record);
     if ((cat.language != null) && !cat.deleted) {
@@ -79,42 +79,46 @@ this.Forum = (function() {
       this.category_count++;
     }
     return cat;
-  };
+  }
 
-  Forum.prototype.loadPost = function(record) {
+  loadPost(record) {
     var category, catid, post;
     catid = record.getField("category");
     category = this.categories[catid];
     if (category != null) {
       post = new ForumPost(category, record);
-      category.addPost(post);
-      this.posts[post.id] = post;
-      if (!post.deleted && !category.hidden) {
-        this.post_count++;
-        this.index(post.category.language, post.title + " " + post.category.name + " " + post.author.nick, post, post.id);
-        this.index(post.category.language, post.text, post, post.id);
+      if (!post.isDeleted()) {
+        category.addPost(post);
+        this.posts[post.id] = post;
+        if (!category.hidden) {
+          this.post_count++;
+          this.index(post.category.language, `${post.title} ${post.category.name} ${post.author.nick}`, post, post.id);
+          this.index(post.category.language, post.text, post, post.id);
+        }
       }
       return post;
     }
-  };
+  }
 
-  Forum.prototype.loadReply = function(record) {
+  loadReply(record) {
     var post, postid, reply;
     postid = record.getField("post");
     post = this.posts[postid];
     if (post != null) {
       reply = new ForumReply(post, record);
-      post.addReply(reply);
-      this.replies[reply.id] = reply;
-      if (!reply.deleted && !post.category.hidden) {
-        this.reply_count++;
-        this.index(reply.post.category.language, reply.text, reply.post, post.id);
+      if (!reply.isDeleted()) {
+        post.addReply(reply);
+        this.replies[reply.id] = reply;
+        if (!post.category.hidden) {
+          this.reply_count++;
+          this.index(reply.post.category.language, reply.text, reply.post, post.id);
+        }
+        return reply;
       }
-      return reply;
     }
-  };
+  }
 
-  Forum.prototype.createPost = function(category, user, title, text) {
+  createPost(category, user, title, text) {
     var data, err, i, id, len, post, record, ref;
     data = {
       author: user,
@@ -142,9 +146,9 @@ this.Forum = (function() {
       }
     }
     return post;
-  };
+  }
 
-  Forum.prototype.createReply = function(post, user, text) {
+  createReply(post, user, text) {
     var data, i, id, len, record, ref, reply;
     data = {
       post: post.id,
@@ -163,9 +167,9 @@ this.Forum = (function() {
       this.sendReplyNotification(id, reply);
     }
     return reply;
-  };
+  }
 
-  Forum.prototype.sendPostNotification = function(userid, post) {
+  sendPostNotification(userid, post) {
     var subject, text, translator, user;
     user = this.content.users[userid];
     if (user == null) {
@@ -181,15 +185,15 @@ this.Forum = (function() {
       return;
     }
     translator = this.content.translator.getTranslator(user.language);
-    subject = translator.get("%USER% posted in %CATEGORY%").replace("%USER%", post.author.nick).replace("%CATEGORY%", post.category.name) + (" - " + (translator.get("microStudio Community")));
+    subject = translator.get("%USER% posted in %CATEGORY%").replace("%USER%", post.author.nick).replace("%CATEGORY%", post.category.name) + ` - ${translator.get("microStudio Community")}`;
     text = translator.get("%USER% published a new post in %CATEGORY%:").replace("%USER%", post.author.nick).replace("%CATEGORY%", post.category.name) + "\n\n";
     text += post.title + "\n";
-    text += "https://microstudio.dev" + (post.getPath()) + "\n\n";
+    text += `https://microstudio.dev${post.getPath()}\n\n`;
     text += post.text.length < 500 ? post.text : post.text.substring(0, 500) + " (...)";
     return this.server.mailer.sendMail(user.email, subject, text);
-  };
+  }
 
-  Forum.prototype.sendReplyNotification = function(userid, reply) {
+  sendReplyNotification(userid, reply) {
     var subject, text, translator, user;
     user = this.content.users[userid];
     if (user == null) {
@@ -205,14 +209,14 @@ this.Forum = (function() {
       return;
     }
     translator = this.content.translator.getTranslator(user.language);
-    subject = translator.get("%USER% posted a reply").replace("%USER%", reply.author.nick) + (" - " + (translator.get("microStudio Community")));
+    subject = translator.get("%USER% posted a reply").replace("%USER%", reply.author.nick) + ` - ${translator.get("microStudio Community")}`;
     text = translator.get("%USER% posted a reply to %POST%:").replace("%USER%", reply.author.nick).replace("%POST%", reply.post.title) + "\n\n";
-    text += "https://microstudio.dev" + (reply.post.getPath()) + (reply.post.replies.length - 1) + "/\n\n";
+    text += `https://microstudio.dev${reply.post.getPath()}${reply.post.replies.length - 1}/\n\n`;
     text += reply.text.length < 500 ? reply.text : reply.text.substring(0, 500) + " (...)";
     return this.server.mailer.sendMail(user.email, subject, text);
-  };
+  }
 
-  Forum.prototype.createCategory = function(language, name, slug, description, hue, permissions) {
+  createCategory(language, name, slug, description, hue, permissions) {
     var cat, data, record;
     data = {
       language: language,
@@ -226,15 +230,15 @@ this.Forum = (function() {
     };
     record = this.db.create("forum_categories", data);
     return cat = this.loadCategory(record);
-  };
+  }
 
-  Forum.prototype.editCategory = function(user, category, data) {};
+  editCategory(user, category, data) {}
 
-  Forum.prototype.editPost = function(user, post, data) {};
+  editPost(user, post, data) {}
 
-  Forum.prototype.editReply = function(user, post, reply, data) {};
+  editReply(user, post, reply, data) {}
 
-  Forum.prototype.listCategories = function(lang) {
+  listCategories(lang) {
     var c, cats, i, len, res;
     cats = this.languages[lang];
     if (cats != null) {
@@ -252,9 +256,9 @@ this.Forum = (function() {
     } else {
       return [];
     }
-  };
+  }
 
-  Forum.prototype.updateActivity = function() {
+  updateActivity() {
     var cat, key, ref;
     this.activity = 0;
     ref = this.categories;
@@ -263,32 +267,30 @@ this.Forum = (function() {
       this.activity = Math.max(this.activity, cat.activity);
     }
     return this.sorted = false;
-  };
+  }
 
-  Forum.prototype.getLanguages = function() {
+  getLanguages() {
     var key, lang;
     lang = [];
     for (key in this.languages) {
       lang.push(key);
     }
     return lang;
-  };
+  }
 
-  Forum.prototype.getCategory = function(language, slug) {
+  getCategory(language, slug) {
     var lang;
     lang = this.languages[language];
     if (!lang) {
       return null;
     }
     return lang[slug];
-  };
+  }
 
-  Forum.prototype.escapeHTML = function(s) {
+  escapeHTML(s) {
     return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  };
+  }
 
-  return Forum;
-
-})();
+};
 
 module.exports = this.Forum;

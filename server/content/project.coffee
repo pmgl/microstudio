@@ -65,7 +65,7 @@ class @Project
         if data.users?
           for u in data.users
             link = new ProjectLink @,u
-            if link.user?
+            if link.user? and not link.user.flags.deleted
               @users.push link
 
       if data.files? and not @deleted
@@ -172,10 +172,11 @@ class @Project
   listUsers:()->
     list = []
     for link in @users
-      list.push
-        id: link.user.id
-        nick: link.user.nick
-        accepted: link.accepted
+      if link.user? and not link.user.flags.deleted
+        list.push
+          id: link.user.id
+          nick: link.user.nick
+          accepted: link.accepted
     list
 
   delete:()->
