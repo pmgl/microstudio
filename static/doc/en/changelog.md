@@ -1,5 +1,25 @@
 ## Changelog
 
+### Update 2023-04-24
+* Allow to open project in new tab, closes #135
+* land on enabled tab when opening project, closes #192
+* show projects storage usage, closes #185
+* correct syntax highlighter in explore view, fixes #197
+* Account deletion procedure ; stay away from it! ;-)
+* Added player_extra_js config option
+
+### Update 2023-04-13
+* PIXI: setting resolution to devicePixelRatio
+
+### Update 2023-03-13
+* Enabled video and audio capture in Run View
+
+### Update 2023-03-02
+* Fixed #171, Image.setTranslation first call ignored
+
+### Update 2023-01-23
+* Fixed Python bad error reporting #187
+
 ### Update 2023-01-16
 * Fixed Image.drawPolyline, Image.drawPolygon, Image.fillPolygon, #186
 * Implemented `system.update_rate` writable property, #188
