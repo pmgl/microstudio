@@ -131,9 +131,9 @@ class @WebApp
           optional_libs: @concatenator.optional_libs
           language_engines: @concatenator.language_engines
           translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
-          title: "microStudio - "+translator.get("Learn programming, create games")
-          description: translator.get("Learn programming, create video games - microStudio is a free game engine online.")
-          long_description: translator.get("microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything.")
+          title: "microStudio - "+translator.get("Game Engine")
+          description: translator.get("microStudio is a free, open source game engine, code centric, integrated, available in the cloud or offline.")
+          long_description: translator.get("microStudio is a free, open source game engine, easy to learn and packed with features. It offers 4 programming languages and includes a sprite editor and a map editor.")
           poster: "https://microstudio.dev/img/microstudio.jpg"
           project_moderation: @server.config.project_moderation == true
           dev_domain: dev_domain
@@ -278,6 +278,9 @@ class @WebApp
         "https://microstudio.io/#{user.nick}/#{pathcode}/sprites/poster.png"
       else
         "https://microstudio.io/#{user.nick}/#{pathcode}/icon512.png"
+
+      if @server.config.player_extra_js?
+        jsfiles = jsfiles.concat @server.config.player_extra_js
 
       manager.listFiles "ms",(sources)=>
         manager.listFiles "sprites",(sprites)=>

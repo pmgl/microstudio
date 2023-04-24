@@ -144,9 +144,9 @@ this.WebApp = class WebApp {
           optional_libs: this.concatenator.optional_libs,
           language_engines: this.concatenator.language_engines,
           translation: this.server.content.translator.languages[lang] != null ? this.server.content.translator.languages[lang].export() : "{}",
-          title: "microStudio - " + translator.get("Learn programming, create games"),
-          description: translator.get("Learn programming, create video games - microStudio is a free game engine online."),
-          long_description: translator.get("microStudio is a free game engine online. Learn, create and share with the community. Use the built-in sprite editor, map editor and code editor to create anything."),
+          title: "microStudio - " + translator.get("Game Engine"),
+          description: translator.get("microStudio is a free, open source game engine, code centric, integrated, available in the cloud or offline."),
+          long_description: translator.get("microStudio is a free, open source game engine, easy to learn and packed with features. It offers 4 programming languages and includes a sprite editor and a map editor."),
           poster: "https://microstudio.dev/img/microstudio.jpg",
           project_moderation: this.server.config.project_moderation === true,
           dev_domain: dev_domain,
@@ -318,6 +318,9 @@ this.WebApp = class WebApp {
       }
       pathcode = project.public ? project.slug : `${project.slug}/${project.code}`;
       poster = (project.files != null) && (project.files["sprites/poster.png"] != null) ? `https://microstudio.io/${user.nick}/${pathcode}/sprites/poster.png` : `https://microstudio.io/${user.nick}/${pathcode}/icon512.png`;
+      if (this.server.config.player_extra_js != null) {
+        jsfiles = jsfiles.concat(this.server.config.player_extra_js);
+      }
       return manager.listFiles("ms", (sources) => {
         return manager.listFiles("sprites", (sprites) => {
           return manager.listFiles("maps", (maps) => {
