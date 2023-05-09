@@ -315,16 +315,20 @@ class @SpriteView
 
     if (@mouse_over or Date.now()<@show_brush_size) and @canvas.style.cursor != "move"
       if Date.now()<@show_brush_size
-        mx = Math.floor(@sprite.width/2)*if @tile then 2 else 1
-        my = Math.floor(@sprite.height/2)*if @tile then 2 else 1
+        mx = Math.floor(@sprite.width/2-1)*if @tile then 2 else 1
+        my = Math.floor(@sprite.height/2-1)*if @tile then 2 else 1
       else
         mx = @mouse_x
         my = @mouse_y
-      bs = (@brush_size-1)/2
+      bs = Math.floor((@brush_size-1)/2)
       context.strokeStyle = "#000"
       context.lineWidth = 4
       context.beginPath()
-      context.rect (mx-bs)*wblock-woffset,(my-bs)*hblock-hoffset,wblock*@brush_size,hblock*@brush_size
+      if @editor.tool.shape == "round"
+        d = if @brush_size % 2 then 0 else .5 
+        context.ellipse (mx+.5+d)*wblock-woffset,(my+.5+d)*hblock-hoffset,wblock*@brush_size/2,hblock*@brush_size/2,0,0,Math.PI*2,true
+      else
+        context.rect (mx-bs)*wblock-woffset,(my-bs)*hblock-hoffset,wblock*@brush_size,hblock*@brush_size
       context.stroke()
       context.strokeStyle = "#FFF"
       context.lineWidth = 3

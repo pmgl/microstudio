@@ -187,6 +187,47 @@ this.SpriteEditor = class SpriteEditor extends Manager {
           });
           return div.appendChild(input);
         })(p, key);
+      } else if (p.type === "size_shape") {
+        ((p, key) => {
+          var input, label, shape;
+          label = document.createElement("label");
+          label.innerText = key;
+          div.appendChild(label);
+          div.appendChild(document.createElement("br"));
+          input = document.createElement("input");
+          input.style = "width:70% ; vertical-align: top";
+          input.type = "range";
+          input.min = "0";
+          input.max = "100";
+          input.value = p.value;
+          input.addEventListener("input", (event) => {
+            p.value = input.value;
+            if (key === "Size") {
+              return this.spriteview.showBrushSize();
+            }
+          });
+          div.appendChild(input);
+          shape = document.createElement("i");
+          shape.style = "verticla-align: top ; padding: 6px 8px ; background: hsl(200,50%,50%) ; border-radius: 4px ;margin-left: 5px ; cursor: pointer ; width: 15px";
+          shape.classList.add("fas");
+          shape.classList.add("fa-circle");
+          shape.title = this.app.translator.get("Shape");
+          tool.shape = "round";
+          shape.addEventListener("click", () => {
+            if (tool.shape === "round") {
+              tool.shape = "square";
+              shape.classList.remove("fa-circle");
+              shape.classList.add("fa-square-full");
+            } else {
+              tool.shape = "round";
+              shape.classList.add("fa-circle");
+              shape.classList.remove("fa-square-full");
+            }
+            return this.spriteview.showBrushSize();
+          });
+          div.appendChild(shape);
+          return div.appendChild(document.createElement("br"));
+        })(p, key);
       } else if (p.type === "tool") {
         toolbox = document.createElement("div");
         toolbox.classList.add("toolbox");

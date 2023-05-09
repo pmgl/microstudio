@@ -326,7 +326,7 @@ this.SpriteView = class SpriteView {
   }
 
   update() {
-    var bs, context, f, grd, h, hblock, hoffset, i, j, k, l, m, mx, my, n, w, wblock, woffset;
+    var bs, context, d, f, grd, h, hblock, hoffset, i, j, k, l, m, mx, my, n, w, wblock, woffset;
     this.brush_size = this.editor.tool.getSize(this.sprite);
     context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -380,17 +380,22 @@ this.SpriteView = class SpriteView {
     this.drawGrid(context);
     if ((this.mouse_over || Date.now() < this.show_brush_size) && this.canvas.style.cursor !== "move") {
       if (Date.now() < this.show_brush_size) {
-        mx = Math.floor(this.sprite.width / 2) * (this.tile ? 2 : 1);
-        my = Math.floor(this.sprite.height / 2) * (this.tile ? 2 : 1);
+        mx = Math.floor(this.sprite.width / 2 - 1) * (this.tile ? 2 : 1);
+        my = Math.floor(this.sprite.height / 2 - 1) * (this.tile ? 2 : 1);
       } else {
         mx = this.mouse_x;
         my = this.mouse_y;
       }
-      bs = (this.brush_size - 1) / 2;
+      bs = Math.floor((this.brush_size - 1) / 2);
       context.strokeStyle = "#000";
       context.lineWidth = 4;
       context.beginPath();
-      context.rect((mx - bs) * wblock - woffset, (my - bs) * hblock - hoffset, wblock * this.brush_size, hblock * this.brush_size);
+      if (this.editor.tool.shape === "round") {
+        d = this.brush_size % 2 ? 0 : .5;
+        context.ellipse((mx + .5 + d) * wblock - woffset, (my + .5 + d) * hblock - hoffset, wblock * this.brush_size / 2, hblock * this.brush_size / 2, 0, 0, Math.PI * 2, true);
+      } else {
+        context.rect((mx - bs) * wblock - woffset, (my - bs) * hblock - hoffset, wblock * this.brush_size, hblock * this.brush_size);
+      }
       context.stroke();
       context.strokeStyle = "#FFF";
       context.lineWidth = 3;

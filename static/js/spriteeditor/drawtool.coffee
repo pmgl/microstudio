@@ -7,10 +7,17 @@ class @DrawTool
 
   getSize:(sprite)->
     if @parameters["Size"]
-      size = Math.min(sprite.width,sprite.height)*@parameters["Size"].value/100/2
-      size = 1+Math.floor(size/2)*2
+      size = Math.min(sprite.width-1,sprite.height-1,99)*@parameters["Size"].value/100
+      size = 1+Math.floor(size)
+      return size
     else
+      return 1
+
+  getRoundness:()->
+    if @shape == "round"
       1
+    else
+      0
 
   start:(sprite,x,y,button,shiftkey)->
     @pixels = {}
@@ -33,17 +40,28 @@ class @DrawTool
     @last_y = y
 
   domove:(sprite,x,y,button,pass=0)->
-    if pass<1 and @vsymmetry
+    if pass < 1 and @vsymmetry
       nx = sprite.width-1-x
       @domove(sprite,nx,y,button,1)
-    if pass<2 and @hsymmetry
+    if pass < 2 and @hsymmetry
       ny = sprite.height-1-y
       @domove(sprite,x,ny,button,2)
 
     size = @getSize(sprite)
     d = (size-1)/2
-    for i in [-d..d] by 1
-      for j in [-d..d] by 1
+    d1 = Math.ceil(-d)
+    d2 = Math.ceil(d)
+    m = (d1+d2)/2
+    roundness = @getRoundness()
+    r2 = (d+.5)*(d+.5)
+    r2 *= (1+(1-roundness))
+    
+    for i in [d1..d2] by 1
+      for j in [d1..d2] by 1
+        di = (i-m)
+        dj = (j-m)
+        continue if di*di+dj*dj > r2
+        
         xx = x+i
         yy = y+j
         if @tile
@@ -68,7 +86,7 @@ class @PencilTool extends @DrawTool
     super("Pencil","fa-pencil-alt")
 
     @parameters["Size"] =
-      type: "range"
+      type: "size_shape"
       value: 0
 
     @parameters["Opacity"] =
@@ -96,7 +114,7 @@ class @EraserTool extends @DrawTool
     super("Eraser","fa-eraser")
 
     @parameters["Size"] =
-      type: "range"
+      type: "size_shape"
       value: 0
 
     @parameters["Opacity"] =
@@ -337,7 +355,7 @@ class @EnhanceTool extends @DrawTool
       value: 0
 
     @parameters["Size"] =
-      type: "range"
+      type: "size_shape"
       value: 0
 
     @parameters["Amount"] =

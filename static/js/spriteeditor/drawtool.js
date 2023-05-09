@@ -12,10 +12,19 @@ this.DrawTool = (function() {
     getSize(sprite) {
       var size;
       if (this.parameters["Size"]) {
-        size = Math.min(sprite.width, sprite.height) * this.parameters["Size"].value / 100 / 2;
-        return size = 1 + Math.floor(size / 2) * 2;
+        size = Math.min(sprite.width - 1, sprite.height - 1, 99) * this.parameters["Size"].value / 100;
+        size = 1 + Math.floor(size);
+        return size;
       } else {
         return 1;
+      }
+    }
+
+    getRoundness() {
+      if (this.shape === "round") {
+        return 1;
+      } else {
+        return 0;
       }
     }
 
@@ -45,7 +54,7 @@ this.DrawTool = (function() {
     }
 
     domove(sprite, x, y, button, pass = 0) {
-      var d, i, ii, j, jj, k, nx, ny, ref1, ref2, results, size, xx, yy;
+      var d, d1, d2, di, dj, i, ii, j, jj, k, m, nx, ny, r2, ref1, ref2, results, roundness, size, xx, yy;
       if (pass < 1 && this.vsymmetry) {
         nx = sprite.width - 1 - x;
         this.domove(sprite, nx, y, button, 1);
@@ -56,23 +65,34 @@ this.DrawTool = (function() {
       }
       size = this.getSize(sprite);
       d = (size - 1) / 2;
+      d1 = Math.ceil(-d);
+      d2 = Math.ceil(d);
+      m = (d1 + d2) / 2;
+      roundness = this.getRoundness();
+      r2 = (d + .5) * (d + .5);
+      r2 *= 1 + (1 - roundness);
       results = [];
-      for (i = k = ref1 = -d, ref2 = d; k <= ref2; i = k += 1) {
+      for (i = k = ref1 = d1, ref2 = d2; k <= ref2; i = k += 1) {
         results.push((function() {
           var l, ref3, ref4, results1;
           results1 = [];
-          for (j = l = ref3 = -d, ref4 = d; l <= ref4; j = l += 1) {
+          for (j = l = ref3 = d1, ref4 = d2; l <= ref4; j = l += 1) {
+            di = i - m;
+            dj = j - m;
+            if (di * di + dj * dj > r2) {
+              continue;
+            }
             xx = x + i;
             yy = y + j;
             if (this.tile) {
               results1.push((function() {
-                var m, results2;
+                var n, results2;
                 results2 = [];
-                for (ii = m = -1; m <= 1; ii = m += 1) {
+                for (ii = n = -1; n <= 1; ii = n += 1) {
                   results2.push((function() {
-                    var n, results3;
+                    var o, results3;
                     results3 = [];
-                    for (jj = n = -1; n <= 1; jj = n += 1) {
+                    for (jj = o = -1; o <= 1; jj = o += 1) {
                       results3.push(this.preprocessPixel(sprite, xx + ii * sprite.width, yy + jj * sprite.height, button));
                     }
                     return results3;
@@ -114,7 +134,7 @@ this.PencilTool = class PencilTool extends this.DrawTool {
   constructor() {
     super("Pencil", "fa-pencil-alt");
     this.parameters["Size"] = {
-      type: "range",
+      type: "size_shape",
       value: 0
     };
     this.parameters["Opacity"] = {
@@ -148,7 +168,7 @@ this.EraserTool = class EraserTool extends this.DrawTool {
   constructor() {
     super("Eraser", "fa-eraser");
     this.parameters["Size"] = {
-      type: "range",
+      type: "size_shape",
       value: 0
     };
     this.parameters["Opacity"] = {
@@ -425,7 +445,7 @@ this.EnhanceTool = class EnhanceTool extends this.DrawTool {
       value: 0
     };
     this.parameters["Size"] = {
-      type: "range",
+      type: "size_shape",
       value: 0
     };
     this.parameters["Amount"] = {

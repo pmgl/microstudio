@@ -142,6 +142,42 @@ class @SpriteEditor extends Manager
             if key == "Size"
               @spriteview.showBrushSize()
           div.appendChild input
+      else if p.type == "size_shape"
+        do (p,key)=>
+          label = document.createElement "label"
+          label.innerText = key
+          div.appendChild label
+          div.appendChild document.createElement "br"
+          input = document.createElement "input"
+          input.style = "width:70% ; vertical-align: top"
+          input.type = "range"
+          input.min = "0"
+          input.max = "100"
+          input.value = p.value
+          input.addEventListener "input",(event)=>
+            p.value = input.value
+            if key == "Size"
+              @spriteview.showBrushSize()
+          div.appendChild input
+          shape = document.createElement "i"
+          shape.style = "verticla-align: top ; padding: 6px 8px ; background: hsl(200,50%,50%) ; border-radius: 4px ;margin-left: 5px ; cursor: pointer ; width: 15px"
+          shape.classList.add "fas"
+          shape.classList.add "fa-circle"
+          shape.title = @app.translator.get "Shape"
+          tool.shape = "round"
+          shape.addEventListener "click",()=>
+            if tool.shape == "round"
+              tool.shape = "square"
+              shape.classList.remove "fa-circle"
+              shape.classList.add "fa-square-full"
+            else
+              tool.shape = "round"
+              shape.classList.add "fa-circle"
+              shape.classList.remove "fa-square-full"
+            @spriteview.showBrushSize()
+
+          div.appendChild shape
+          div.appendChild document.createElement "br"
       else if p.type == "tool"
         toolbox = document.createElement "div"
         toolbox.classList.add "toolbox"
