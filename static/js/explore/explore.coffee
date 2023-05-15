@@ -14,7 +14,7 @@ class @Explore
 
     @sort_types = ["hot","new","top"]
 
-    @project_types = ["all","app","library","plugin","tutorial"]
+    @project_types = ["all","app","library","plugin","tutorial","example","template"]
     @project_type = "all"
 
     @sort_functions =
@@ -226,6 +226,8 @@ class @Explore
         when "library" then label.innerHTML = """<i class="fas fa-file-code"></i> #{@app.translator.get("Library")}"""
         when "plugin" then label.innerHTML = """<i class="fas fa-plug"></i> #{@app.translator.get("Plug-in")}"""
         when "tutorial" then label.innerHTML = """<i class="fas fa-graduation-cap"></i> #{@app.translator.get("Tutorial")}"""
+        when "example" then label.innerHTML = """<i class="fas fa-lightbulb"></i> #{@app.translator.get("Example")}"""
+        when "template" then label.innerHTML = """<i class="fas fa-boxes"></i> #{@app.translator.get("Template")}"""
 
       element.appendChild label
 

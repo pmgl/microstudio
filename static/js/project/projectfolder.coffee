@@ -112,8 +112,8 @@ class @ProjectFolder
   sort:()->
     for f in @subfolders
       f.sort()
-    @subfolders.sort (a,b)->if a.name<b.name then -1 else 1
-    @files.sort (a,b)->if a.shortname<b.shortname then -1 else 1
+    @subfolders.sort (a,b)->if a.name < b.name then -1 else 1
+    @files.sort (a,b)->if a.shortname < b.shortname then -1 else 1
 
   setElement:(@element)->
     @setOpen @open

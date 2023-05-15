@@ -130,6 +130,12 @@
 .explore-project-box .type-label.tutorial {
   background: hsl(300,50%,50%) ;
 }
+.explore-project-box .type-label.example {
+  background: hsl(40,90%,40%) ;
+}
+.explore-project-box .type-label.template {
+  background: hsl(270,50%,60%) ;
+}
 
 .explore-project-box .awaiting-label {
   position: absolute ;
@@ -244,6 +250,8 @@
 #explore-type-button.library i:before { content: "\f1c9" ; }
 #explore-type-button.plugin i:before { content: "\f1e6" ; }
 #explore-type-button.tutorial i:before { content: "\f19d" ; }
+#explore-type-button.example i:before { content: "\f0eb" ; }
+#explore-type-button.template i:before { content: "\f468" ; }
 
 #explore-type-button.app {
   background: hsl(0,50%,50%);
@@ -256,6 +264,12 @@
 }
 #explore-type-button.tutorial {
   background: hsl(300,50%,50%);
+}
+#explore-type-button.example {
+  background: hsl(40,90%,40%);
+}
+#explore-type-button.template {
+  background: hsl(270,50%,60%);
 }
 #explore-type-button i {
   margin-right: 10px ;

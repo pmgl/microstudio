@@ -1,5 +1,5 @@
-this.ProjectFolder = (function() {
-  function ProjectFolder(parent, name1) {
+this.ProjectFolder = class ProjectFolder {
+  constructor(parent, name1) {
     this.parent = parent;
     this.name = name1;
     this.subfolders = [];
@@ -7,11 +7,8 @@ this.ProjectFolder = (function() {
     this.open = false;
   }
 
-  ProjectFolder.prototype.push = function(item, path) {
+  push(item, path = item.name) {
     var f, fold, folders;
-    if (path == null) {
-      path = item.name;
-    }
     folders = path.split("-");
     if (folders.length > 1) {
       f = folders.splice(0, 1)[0];
@@ -25,9 +22,17 @@ this.ProjectFolder = (function() {
       item.parent = this;
     }
     return item;
-  };
+  }
 
-  ProjectFolder.prototype.getSubFolder = function(name) {
+  // add:(file,path)->
+  //   if not path?
+  //     path = file.name.split["-"]
+
+  //   if file instanceof ProjectFolder
+  //     @subfolders.push file
+  //   else
+  //     @files.push file
+  getSubFolder(name) {
     var f, j, len, ref;
     ref = this.subfolders;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -37,9 +42,9 @@ this.ProjectFolder = (function() {
       }
     }
     return null;
-  };
+  }
 
-  ProjectFolder.prototype.isAncestorOf = function(f) {
+  isAncestorOf(f) {
     if (this.subfolders.indexOf(f) >= 0) {
       return true;
     }
@@ -48,9 +53,9 @@ this.ProjectFolder = (function() {
     } else {
       return false;
     }
-  };
+  }
 
-  ProjectFolder.prototype.getAllFiles = function() {
+  getAllFiles() {
     var f, j, len, list, ref;
     list = [];
     list = list.concat(this.files);
@@ -60,16 +65,16 @@ this.ProjectFolder = (function() {
       list = list.concat(f.getAllFiles());
     }
     return list;
-  };
+  }
 
-  ProjectFolder.prototype.createSubFolder = function(name) {
+  createSubFolder(name) {
     var f;
     f = new ProjectFolder(this, name);
     this.subfolders.push(f);
     return f;
-  };
+  }
 
-  ProjectFolder.prototype.containsFiles = function() {
+  containsFiles() {
     var f, j, len, ref;
     if (this.files.length > 0) {
       return true;
@@ -83,55 +88,55 @@ this.ProjectFolder = (function() {
       }
     }
     return false;
-  };
+  }
 
-  ProjectFolder.prototype["delete"] = function() {
+  delete() {
     if (this.parent != null) {
       this.parent.removeFolder(this);
     }
     if ((this.element != null) && (this.element.parentNode != null)) {
       return this.element.parentNode.removeChild(this.element);
     }
-  };
+  }
 
-  ProjectFolder.prototype.addFolder = function(f) {
+  addFolder(f) {
     if (f.parent != null) {
       f.parent.removeFolder(f);
     }
     this.subfolders.push(f);
     return f.parent = this;
-  };
+  }
 
-  ProjectFolder.prototype.removeFolder = function(f) {
+  removeFolder(f) {
     var index;
     index = this.subfolders.indexOf(f);
     if (index >= 0) {
       return this.subfolders.splice(index, 1);
     }
-  };
+  }
 
-  ProjectFolder.prototype.createEmptyFolder = function() {
+  createEmptyFolder() {
     var count, f, name;
     count = 1;
     name = "folder";
     while (this.getSubFolder(name) != null) {
       count += 1;
-      name = "folder" + count;
+      name = `folder${count}`;
     }
     f = new ProjectFolder(this, name);
     this.subfolders.push(f);
     return f;
-  };
+  }
 
-  ProjectFolder.prototype.getFullDashPath = function() {
+  getFullDashPath() {
     if ((this.parent != null) && (this.parent.parent != null)) {
       return this.parent.getFullDashPath() + "-" + this.name;
     } else {
       return this.name;
     }
-  };
+  }
 
-  ProjectFolder.prototype.removeNoMatch = function(list) {
+  removeNoMatch(list) {
     var f, i, j, k, len, ref, ref1;
     ref = this.subfolders;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -144,20 +149,20 @@ this.ProjectFolder = (function() {
         this.files.splice(i, 1);
       }
     }
-  };
+  }
 
-  ProjectFolder.prototype.removeEmptyFolders = function() {
+  removeEmptyFolders() {
     var f, i, j, ref;
     for (i = j = ref = this.subfolders.length - 1; j >= 0; i = j += -1) {
       f = this.subfolders[i];
       f.removeEmptyFolders();
-      if (f.subfolders.length === 0 && f.files.length === 0 && !f["protected"]) {
+      if (f.subfolders.length === 0 && f.files.length === 0 && !f.protected) {
         this.subfolders.splice(i, 1);
       }
     }
-  };
+  }
 
-  ProjectFolder.prototype.sort = function() {
+  sort() {
     var f, j, len, ref;
     ref = this.subfolders;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -178,14 +183,14 @@ this.ProjectFolder = (function() {
         return 1;
       }
     });
-  };
+  }
 
-  ProjectFolder.prototype.setElement = function(element) {
+  setElement(element) {
     this.element = element;
     return this.setOpen(this.open);
-  };
+  }
 
-  ProjectFolder.prototype.setOpen = function(open) {
+  setOpen(open) {
     this.open = open;
     if (this.element != null) {
       if (this.open) {
@@ -194,12 +199,10 @@ this.ProjectFolder = (function() {
         return this.element.classList.remove("open");
       }
     }
-  };
+  }
 
-  ProjectFolder.prototype.find = function() {};
+  find() {}
 
-  ProjectFolder.prototype.remove = function() {};
+  remove() {}
 
-  return ProjectFolder;
-
-})();
+};

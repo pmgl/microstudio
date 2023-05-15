@@ -1,5 +1,7 @@
 class @Editor extends Manager
-  constructor:(@app)->
+  constructor:(app)->
+    super(app)
+    
     @language = @app.languages.microscript
 
     @folder = "ms"
