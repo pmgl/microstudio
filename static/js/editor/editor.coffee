@@ -82,8 +82,10 @@ class @Editor extends Manager
     document.querySelector("#help-window-content").addEventListener "mousedown",(event)=>
       event.stopPropagation()
       @show_help = not @show_help
+      event.preventDefault()
       if not @show_help
         document.querySelector("#help-window").classList.add "disabled"
+        document.querySelector("#help-window-content").classList.remove "displaycontent"
       else
         document.querySelector("#help-window").classList.remove "disabled"
         @liveHelp()
@@ -297,7 +299,16 @@ class @Editor extends Manager
       @addDocButton(suggest[0].pointer,suggest[0].section)
 
     c = document.querySelector "#help-window-content"
-    c.classList.add "displaycontent"
+    if window.innerWidth < 800
+      c.style["max-width"] = (window.innerWidth-120) + "px"
+    else
+      c.style["max-width"] = "unset"
+    if @app.appui.code_splitbar.type == "vertical"
+      c.classList.add "displaycontent"
+      c.classList.add "vertical"
+    else
+      c.classList.add "displaycontent"
+      c.classList.remove "vertical"
 
   tokenizeLine:(line)->
     tokenizer = new Tokenizer(line.replace(":","."))

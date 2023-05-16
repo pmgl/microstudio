@@ -1,17 +1,21 @@
-this.Highlighter = (function() {
-  function Highlighter(tutorial) {
+this.Highlighter = class Highlighter {
+  constructor(tutorial) {
     this.tutorial = tutorial;
     this.shown = false;
     this.canvas = document.getElementById("highlighter");
     this.arrow = document.getElementById("highlighter-arrow");
   }
 
-  Highlighter.prototype.highlight = function(ref, auto) {
+  highlight(ref, auto) {
     var element, h, rect, w, x, y;
     if (ref != null) {
       element = document.querySelector(ref);
     }
     if (element != null) {
+      // open main menu when it is collapsed
+      if (ref.indexOf(".titlemenu") >= 0 && (document.getElementById("main-menu-button").offsetParent != null)) {
+        element = document.getElementById("main-menu-button");
+      }
       this.highlighted = element;
       rect = element.getBoundingClientRect();
       if (rect.width === 0) {
@@ -24,21 +28,19 @@ this.Highlighter = (function() {
       h = Math.floor(rect.height * 1) + 40;
       this.canvas.width = w;
       this.canvas.height = h;
-      this.canvas.style.width = w + "px";
-      this.canvas.style.height = h + "px";
-      this.canvas.style.top = (Math.round(y - h / 2)) + "px";
-      this.canvas.style.left = (Math.round(x - w / 2)) + "px";
+      this.canvas.style.width = `${w}px`;
+      this.canvas.style.height = `${h}px`;
+      this.canvas.style.top = `${Math.round(y - h / 2)}px`;
+      this.canvas.style.left = `${Math.round(x - w / 2)}px`;
       this.canvas.style.display = "block";
       this.shown = true;
       this.updateCanvas();
       if (this.timeout != null) {
         clearTimeout(this.timeout);
       }
-      this.timeout = setTimeout(((function(_this) {
-        return function() {
-          return _this.justHide();
-        };
-      })(this)), 6000);
+      this.timeout = setTimeout((() => {
+        return this.justHide();
+      }), 6000);
       if (auto) {
         return this.setAuto(element);
       } else {
@@ -49,70 +51,60 @@ this.Highlighter = (function() {
     } else {
       return this.hide();
     }
-  };
+  }
 
-  Highlighter.prototype.setAuto = function(element) {
+  setAuto(element) {
     var f;
     if (element.tagName === "INPUT" && element.type === "text") {
-      f = (function(_this) {
-        return function(event) {
-          if (event.key === "Enter") {
-            _this.tutorial.nextStep();
-            return element.removeEventListener("keydown", f);
-          }
-        };
-      })(this);
+      f = (event) => {
+        if (event.key === "Enter") {
+          this.tutorial.nextStep();
+          return element.removeEventListener("keydown", f);
+        }
+      };
       element.addEventListener("keydown", f);
       if (this.remove_event_listener != null) {
         this.remove_event_listener();
       }
-      return this.remove_event_listener = (function(_this) {
-        return function() {
-          return element.removeEventListener("keydown", f);
-        };
-      })(this);
+      return this.remove_event_listener = () => {
+        return element.removeEventListener("keydown", f);
+      };
     } else {
-      f = (function(_this) {
-        return function() {
-          _this.tutorial.nextStep();
-          return element.removeEventListener("click", f);
-        };
-      })(this);
+      f = () => {
+        this.tutorial.nextStep();
+        return element.removeEventListener("click", f);
+      };
       element.addEventListener("click", f);
       if (this.remove_event_listener != null) {
         this.remove_event_listener();
       }
-      return this.remove_event_listener = (function(_this) {
-        return function() {
-          return element.removeEventListener("click", f);
-        };
-      })(this);
+      return this.remove_event_listener = () => {
+        return element.removeEventListener("click", f);
+      };
     }
-  };
+  }
 
-  Highlighter.prototype.hide = function() {
+  hide() {
     this.shown = false;
     this.canvas.style.display = "none";
     if (this.remove_event_listener != null) {
       return this.remove_event_listener();
     }
-  };
+  }
 
-  Highlighter.prototype.justHide = function() {
+  justHide() {
     this.shown = false;
     return this.canvas.style.display = "none";
-  };
+  }
 
-  Highlighter.prototype.updateCanvas = function() {
+  updateCanvas() {
     var amount, context, grd, h, i, j, ref1, w, x, y;
     if (!this.shown) {
       return;
     }
-    requestAnimationFrame((function(_this) {
-      return function() {
-        return _this.updateCanvas();
-      };
-    })(this));
+    requestAnimationFrame(() => {
+      return this.updateCanvas();
+    });
     context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (this.highlighted.getBoundingClientRect().width === 0) {
@@ -141,9 +133,8 @@ this.Highlighter = (function() {
       y = y > 0 ? Math.sqrt(y) : -Math.sqrt(-y);
       context.lineTo(this.canvas.width / 2 + x * w, this.canvas.height / 2 + y * h);
     }
+    //context.ellipse(@canvas.width/2,@canvas.height/2,w,h,Math.PI,Math.PI*2*Math.min(1,amount),0,true)
     return context.stroke();
-  };
+  }
 
-  return Highlighter;
-
-})();
+};

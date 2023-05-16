@@ -1,5 +1,16 @@
 ## Changelog
 
+### Update 2023-05-16
+* Sprite editor brush size improvement (even values now possible like 2x2, 4x4)
+* New sprite editor brush shape setting: round or square
+* New project types:
+  * Example: project is very short and made for illustrating a specific point
+  * Template: a working game with placeholder graphics, configurable and extensible code.
+* microStudio responsive UI improvements:
+  * code section automatically rearrange windows in portrait mode
+  * main toolbar is now fully responsive, with burger menu
+* Added Discord button in the main toolbar
+
 ### Update 2023-04-24
 * Allow to open project in new tab, closes #135
 * land on enabled tab when opening project, closes #192

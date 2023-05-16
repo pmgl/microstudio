@@ -6,6 +6,7 @@
   height: 100px ;
   border-left: solid 2px rgba(0,0,0,.5);
   z-index: 2 ;
+  overflow: hidden ;
 }
 #terminal {
   position: absolute ;

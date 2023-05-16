@@ -1,5 +1,5 @@
 @media screen and (max-device-width: 800px) {
-  .explore-project-author, .explore-project-likes, .run-button, #language-setting {
+  .explore-project-author, .explore-project-likes, .run-button {
     display: none ;
   }
   .help-list {
@@ -30,23 +30,42 @@
 }
 
 
-@media screen and (max-width: 1000px) {
-  .titlemenu span {
-    display: none ;
+@media screen and (max-width: 1100px) {
+  header .titlemenu {
+    position: fixed ;
+    display: block ;
+    top: 60px ;
+    left: -100% ;
+    padding: 10px ;
+    background: hsl(200,40%,35%) ;
+    white-space: normal ;
+    border-bottom: solid 4px rgba(0,0,0,.5) ;
+    box-sizing: border-box ;
+    width: 100% ;
+    transition: left 0.5s ease ;
   }
-  .titlemenu li {
-    padding: 16px 18px 15px 18px;
-    margin: 4px 1px 0 0;
+
+  header .logo {
+    width: 140px ;
+    margin-top: 22px ;
   }
-  .titlemenu li i {
-    margin: 0 ;
+
+  header .main-menu {
+    display: inline-block ;
   }
-  .titlemenu li.selected {
-    background: rgba(255,255,255,.1);
+
+  header .titlemenu li {
+    margin: 5px ;
+    background: rgba(0,0,0,.2) ;
+    padding: 15px 25px;
+  }
+
+  header .titlemenu li.selected {
+    background: rgba(255,255,255,.2) ;
   }
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1300px) {
   #login-button span {
     display: none ;
   }

@@ -78,6 +78,62 @@ class @SplitBar
 
   update:()->
     return if @element.clientWidth == 0 or @element.clientHeight == 0
+
+    if @auto?
+      if @element.clientWidth > @element.clientHeight*@auto
+        @type = "horizontal"
+        @splitbar.style.width = "10px"
+        @splitbar.style.height = "unset"
+        @splitbar.style.top = 0
+        @splitbar.style.bottom = 0
+        @splitbar.style.left = "unset"
+        @splitbar.style.right = "unset"
+        @splitbar.style.cursor = "ew-resize"
+
+        @side1.style.left = 0
+        @side1.style.right = "unset"
+        @side1.style.height = "unset"
+        @side1.style.top = 0
+        @side1.style.bottom = 0
+
+        @side2.style.right = 0
+        @side2.style.left = "unset"
+        @side2.style.height = "unset"
+        @side2.style.top = 0
+        @side2.style.bottom = 0
+
+        @side1.classList.remove "vertical-split"
+        @side1.classList.add "horizontal-split"
+        @side2.classList.remove "vertical-split"
+        @side2.classList.add "horizontal-split"
+      else
+        @type = "vertical"
+        @splitbar.style.height = "10px"
+        @splitbar.style.width = "unset"
+        @splitbar.style.left = 0
+        @splitbar.style.right = 0
+        @splitbar.style.top = "unset"
+        @splitbar.style.bottom = "unset"
+        @splitbar.style.cursor = "ns-resize"
+
+        @side1.style.top = 0
+        @side1.style.width = "unset"
+        @side1.style.bottom = "unset"
+        @side1.style.left = 0
+        @side1.style.right = 0
+
+        @side2.style.bottom = 0
+        @side2.style.width = "unset"
+        @side2.style.top = "unset"
+        @side2.style.left = 0
+        @side2.style.right = 0
+
+        @side1.classList.add "vertical-split"
+        @side1.classList.remove "horizontal-split"
+        @side2.classList.add "vertical-split"
+        @side2.classList.remove "horizontal-split"
+
+        
     switch @type
       when "horizontal"
         @total_width = w = @element.clientWidth-@splitbar.clientWidth

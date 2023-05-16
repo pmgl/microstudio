@@ -154,7 +154,9 @@ AppUI = class AppUI {
     });
     this.doc_splitbar = new SplitBar("doc-section", "horizontal");
     this.code_splitbar = new SplitBar("code-section", "horizontal");
+    this.code_splitbar.auto = 1;
     this.runtime_splitbar = new SplitBar("runtime-container", "vertical");
+    this.runtime_splitbar.auto = 1.5;
     this.runtime_splitbar.initPosition(67);
     this.server_splitbar = new SplitBar("runtime-terminal", "horizontal");
     this.server_splitbar.initPosition(50);
@@ -648,21 +650,19 @@ AppUI = class AppUI {
     document.querySelector("#language-setting").addEventListener("mouseup", (event) => {
       return event.stopPropagation();
     });
+    this.createMainMenuFunction();
     document.querySelector("#language-setting").addEventListener("click", (event) => {
       var e;
       e = document.querySelector("#language-menu");
       if (!e.classList.contains("language-menu-open")) {
         e.classList.add("language-menu-open");
-        document.querySelector("#language-setting").style.width = "0px";
         if (!this.languagemenuclose) {
           return this.languagemenuclose = document.body.addEventListener("mouseup", (event) => {
-            e.classList.remove("language-menu-open");
-            return document.querySelector("#language-setting").style.width = "32px";
+            return e.classList.remove("language-menu-open");
           });
         }
       } else {
-        e.classList.remove("language-menu-open");
-        return document.querySelector("#language-setting").style.width = "32px";
+        return e.classList.remove("language-menu-open");
       }
     });
     ref = window.ms_languages;
@@ -1234,6 +1234,65 @@ AppUI = class AppUI {
         return document.getElementById("projectview").style.background = "none";
       }
     });
+  }
+
+  createMainMenuFunction() {
+    var bump, button, closing, displayed, menu, resize;
+    button = document.getElementById("main-menu-button");
+    menu = document.querySelector(".titlemenu");
+    closing = false;
+    displayed = false;
+    bump = () => {
+      var f, t;
+      t = Date.now();
+      f = () => {
+        var rr, tt;
+        tt = Date.now() - t;
+        if (tt < 250) {
+          tt = 1 - tt / 250;
+          tt = Math.pow(tt, 2);
+          rr = tt;
+          tt = 1 + tt * .5;
+          button.style.transform = `scale(${tt},${tt}) rotate(${-rr * 10}deg)`;
+          return setTimeout(f, 16);
+        } else {
+          return button.style.transform = "none";
+        }
+      };
+      return f();
+    };
+    button.addEventListener("click", (event) => {
+      if (menu.style.left !== "0%" && !closing) {
+        menu.style.left = "0%";
+        return bump();
+      } else {
+        menu.style.left = "-100%";
+        return bump();
+      }
+    });
+    document.addEventListener("mouseup", () => {
+      if ((button.offsetParent != null) && menu.style.left !== "-100%") {
+        menu.style.left = "-100%";
+        closing = true;
+        return bump();
+      } else {
+        return closing = false;
+      }
+    });
+    resize = () => {
+      if (button.offsetParent == null) {
+        menu.style.left = "0px";
+        return displayed = false;
+      } else if (menu.style.left !== "0%") {
+        menu.style.left = "-100%";
+        if (!displayed) {
+          displayed = true;
+          return bump();
+        }
+      }
+    };
+    window.addEventListener("resize", resize);
+    return resize();
   }
 
 };

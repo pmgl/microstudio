@@ -151,7 +151,9 @@ class AppUI
 
     @doc_splitbar = new SplitBar("doc-section","horizontal")
     @code_splitbar = new SplitBar("code-section","horizontal")
+    @code_splitbar.auto = 1
     @runtime_splitbar = new SplitBar("runtime-container","vertical")
+    @runtime_splitbar.auto = 1.5
     @runtime_splitbar.initPosition(67)
     @server_splitbar = new SplitBar "runtime-terminal","horizontal"
     @server_splitbar.initPosition(50)
@@ -566,18 +568,17 @@ class AppUI
     document.querySelector("#language-setting").addEventListener "mouseup",(event)=>
       event.stopPropagation()
 
+    @createMainMenuFunction()
+
     document.querySelector("#language-setting").addEventListener "click",(event)=>
       e = document.querySelector("#language-menu")
       if not e.classList.contains "language-menu-open"
         e.classList.add "language-menu-open"
-        document.querySelector("#language-setting").style.width = "0px"
         if ! @languagemenuclose
           @languagemenuclose = document.body.addEventListener "mouseup",(event)=>
             e.classList.remove "language-menu-open"
-            document.querySelector("#language-setting").style.width = "32px"
       else
         e.classList.remove "language-menu-open"
-        document.querySelector("#language-setting").style.width = "32px"
 
     for lang in window.ms_languages
       do (lang)=>
@@ -1077,3 +1078,55 @@ class AppUI
         button.classList.remove "fa-compress"
         document.getElementById("projectview").style.background = "none"
 
+
+  createMainMenuFunction:()->
+    button = document.getElementById("main-menu-button")
+    menu = document.querySelector ".titlemenu"
+    closing = false
+    displayed = false
+
+    bump = ()=>
+      t = Date.now()
+      f = ()=>
+        tt = Date.now()-t
+        if tt < 250
+          tt = 1-tt/250
+          tt = Math.pow(tt,2)
+          rr = tt
+          tt = 1+tt*.5
+          button.style.transform = "scale(#{tt},#{tt}) rotate(#{-rr*10}deg)"
+          setTimeout f,16
+        else
+          button.style.transform = "none"
+
+      f()
+
+    button.addEventListener "click",(event)=>
+      if menu.style.left != "0%" and not closing
+        menu.style.left = "0%"
+        bump()
+      else
+        menu.style.left = "-100%"
+        bump()
+
+    document.addEventListener "mouseup",()=>
+      if button.offsetParent? and menu.style.left != "-100%"
+        menu.style.left = "-100%"
+        closing = true
+        bump()
+      else
+        closing = false
+
+    resize = ()=>
+      if not button.offsetParent?
+        menu.style.left = "0px"
+        displayed = false
+      else if menu.style.left != "0%"
+        menu.style.left = "-100%"
+        if not displayed
+          displayed = true
+          bump()
+
+    window.addEventListener "resize",resize
+
+    resize()

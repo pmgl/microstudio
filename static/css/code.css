@@ -80,7 +80,7 @@
 }
 .runbar .buttons,.runtime-splitbar .buttons {
   display: inline-block ;
-  margin-left: 60px ;
+  margin-left: 40px ;
 }
 .runbar .buttons div,.runtime-splitbar .buttons div {
   margin-left: 1px ;
@@ -197,6 +197,8 @@ a#run-link {
   right: 2px ;
   bottom: 2px ;
   overflow: hidden ;
+  min-height: 50px ;
+  min-width: 50px ;
 }
 
 #serverbar {
@@ -306,6 +308,14 @@ a#run-link {
   width: 450px ;
   left: 75px ;
   bottom:40px ;
+}
+
+#help-window-content.displaycontent.vertical {
+  width: 450px ;
+  right: 0 ;
+  top:50px ;
+  left: unset ;
+  bottom: unset ;
 }
 
 .help-window.disabled #help-window-content {
@@ -669,6 +679,15 @@ a#run-link {
   height: 36px ;
   border: none ;
   background: none ;
+  overflow: hidden ;
+}
+
+.runtime-container.vertical-split .runbar {
+  border-top: solid 2px rgba(0,0,0,.5) ;
+}
+
+.runtime-terminal.horizontal-split #terminal-toolbar {
+  border-left: solid 2px rgba(0,0,0,.5) ;
 }
 
 #run-window {

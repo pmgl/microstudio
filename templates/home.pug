@@ -2,7 +2,7 @@ doctype html
 html(lang=language)
   head
     meta(name="description" content=description)
-    meta(name="viewport" content="width=device-width, user-scalable=no, initial-scale=.6")
+    meta(name="viewport" content="width=device-width, user-scalable=no, initial-scale=1")
     link(rel="alternate" hreflang="pt" href="https://microstudio.dev/ru/")
     link(rel="alternate" hreflang="pt" href="https://microstudio.dev/pt/")
     link(rel="alternate" hreflang="it" href="https://microstudio.dev/it/")
@@ -107,47 +107,11 @@ html(lang=language)
         div#header-progress-level Level 0
         div#header-progress-xp 0
 
-      div#language-setting
-        i.fas.fa-comment
-        div.lang.notranslate(translate="no") #{language.toUpperCase()}
-
-      div.language-menu#language-menu
-        div.language-choice#language-choice-en(title="English")
-          i.fas.fa-comment
-          div.notranslate(translate="no") EN
-
-        div.language-choice#language-choice-fr(title="Français")
-          i.fas.fa-comment
-          div.notranslate(translate="no") FR
-
-        div.language-choice#language-choice-pl(title="Polski")
-          i.fas.fa-comment
-          div.notranslate(translate="no") PL
-
-        div.language-choice#language-choice-de(title="Deutsch")
-          i.fas.fa-comment
-          div.notranslate(translate="no") DE
-
-        div.language-choice#language-choice-it(title="Italiano")
-          i.fas.fa-comment
-          div.notranslate(translate="no") IT
-
-        div.language-choice#language-choice-pt(title="Português")
-          i.fas.fa-comment
-          div.notranslate(translate="no") PT
-
-        div.language-choice#language-choice-ru(title="русский")
-          i.fas.fa-comment
-          div.notranslate(translate="no") RU
-
-        div.language-choice#language-choice-es(title="Español")
-          i.fas.fa-comment
-          div.notranslate(translate="no") ES
-
+      i.fas.fa-bars.main-menu#main-menu-button
 
       img.logo#logo(src="/img/microstudiologo.svg" alt="microStudio" title="microStudio")
 
-      ul.titlemenu
+      div.titlemenu
         li#menu-explore.selected(title=translator.get("Explore")) <i class="fa fa-search"></i><br /><span>#{translator.get("Explore")}</span>
         li#menu-projects(title=translator.get("Create")) <i class="fa fa-code"></i><br /><span>#{translator.get("Create")}</span>
         //- li#menu-play(title=translator.get("Play")) <i class="fa fa-gamepad"></i><br /><span>#{translator.get("Play")}</span>
@@ -155,7 +119,48 @@ html(lang=language)
         li#menu-help(title=translator.get("Documentation")) <i class="fa fa-book-open"></i><br /><span>#{translator.get("Documentation")}</span>
         a(target="_blank" href=language == "fr" ? "/fr/community/" : "/community/")
           li#menu-community(title=translator.get("Community")) <i class="fa fa-users"></i><br /><span>#{translator.get("Community")}</span>
+        a(target="_blank" href="https://discord.com/invite/BDMqjxd")
+          li#menu-community(title="Discord") <i class="fab fa-discord"></i><br /><span>Discord</span>
         li#menu-about(title=translator.get("About")) <i class="fa fa-info-circle"></i><br /><span>#{translator.get("About")}</span><i class="fab fa-patreon"></i>
+
+        div#language-setting
+          i.fas.fa-comment
+          div.lang.notranslate(translate="no") #{language.toUpperCase()}
+        
+        div.language-menu-container
+          div.language-menu#language-menu
+            div.language-choice#language-choice-en(title="English")
+              i.fas.fa-comment
+              div.notranslate(translate="no") EN
+
+            div.language-choice#language-choice-fr(title="Français")
+              i.fas.fa-comment
+              div.notranslate(translate="no") FR
+
+            div.language-choice#language-choice-pl(title="Polski")
+              i.fas.fa-comment
+              div.notranslate(translate="no") PL
+
+            div.language-choice#language-choice-de(title="Deutsch")
+              i.fas.fa-comment
+              div.notranslate(translate="no") DE
+
+            div.language-choice#language-choice-it(title="Italiano")
+              i.fas.fa-comment
+              div.notranslate(translate="no") IT
+
+            div.language-choice#language-choice-pt(title="Português")
+              i.fas.fa-comment
+              div.notranslate(translate="no") PT
+
+            div.language-choice#language-choice-ru(title="русский")
+              i.fas.fa-comment
+              div.notranslate(translate="no") RU
+
+            div.language-choice#language-choice-es(title="Español")
+              i.fas.fa-comment
+              div.notranslate(translate="no") ES
+
 
     div.usermenu(style="height:0px;")
       //div.profile <i class="fa fa-user"></i> #{translator.get("Profile")}

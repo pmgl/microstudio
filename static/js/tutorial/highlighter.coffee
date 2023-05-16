@@ -7,6 +7,10 @@ class @Highlighter
   highlight:(ref,auto)->
     element = document.querySelector(ref) if ref?
     if element?
+      # open main menu when it is collapsed
+      if ref.indexOf(".titlemenu") >= 0 and document.getElementById("main-menu-button").offsetParent?
+        element = document.getElementById("main-menu-button")
+
       @highlighted = element
       rect = element.getBoundingClientRect()
       if rect.width == 0

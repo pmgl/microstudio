@@ -114,9 +114,10 @@ header .logo {
   width: 180px ;
   vertical-align: top ;
   cursor: pointer ;
+  transition: width 0.5s ease, margin-top 0.5s ease ;
 }
 
-header ul {
+header .titlemenu {
   display: inline-block ;
   margin: 0px 0 0 0 ;
   padding: 0 ;
@@ -126,7 +127,7 @@ header ul {
 header li {
   display: inline-block ;
   position: relative ;
-  margin: 0px 10px ;
+  margin: 0px 5px ;
   font-size: 14px;
   margin-top: 7px ;
   padding: 6px 10px 3px 10px;
@@ -135,6 +136,17 @@ header li {
   text-align: center;
   cursor: pointer ;
   border-radius: 5px ;
+}
+
+.main-menu-container {
+  white-space: nowrap ;
+}
+
+header .main-menu {
+  font-size: 24px;
+  margin: 20px 0 0 20px;
+  display: none ;
+  transform-origin: center ;
 }
 
 header li i {
@@ -168,10 +180,9 @@ header li .pastille {
 }
 
 #language-setting {
+  display: inline-block ;
   position: relative ;
-    float: right;
-    right: 20px ;
-    top: 6px ;
+  margin-left: 20px ;
     padding: 8px 0;
     border-radius: 20px;
     font-size: 12px;
@@ -184,7 +195,7 @@ header li .pastille {
 #language-setting i {
   position: absolute ;
   font-size: 32px ;
-  color: hsl(200,50%,40%);
+  color: hsl(200,50%,50%);
   cursor: pointer;
 }
 #language-setting .lang {
@@ -195,38 +206,41 @@ header li .pastille {
   padding: 8px 10px ;
   cursor: pointer;
 }
-.language-menu {
-  float: right ;
+.language-menu-container {
+  display: inline-block ;
+  width: 20px ;
+  height: 20px ;
   position: relative ;
-  width: 0px ;
-  overflow: hidden ;
-  padding: 8px ;
-  top: 6px ;
-  transition: width 0.5s ease ;
-  font-size: 12px ;
-  width: 0px ;
-  height: 32px ;
-  padding: 8px 0 ;
-  z-index: 10 ;
 }
-.language-menu-open {
-  width: 405px;
+.language-menu {
+  box-sizing: border-box ;
+  position: absolute ;
+  display: inline-block ;
+  height: 0px ;
+  overflow: hidden ;
+  top: -20px ;
+  right: 12px ;
+  transition: height 0.5s ease, padding 0.5s ease ;
+  font-size: 12px ;
+  z-index: 10 ;
   background: hsl(200,25%,20%);
   border-radius: 5px;
-  padding-left: 10px;
+  padding: 0 8px ;
+}
+.language-menu-open {
+  height: 330px;
+  padding: 8px ;
   /*box-shadow: 0 0 10px #000;*/
 }
 .language-choice {
-  display: inline-block ;
   position: relative ;
   width: 32px ;
-  height: 32px ;
-  margin-right: 20px ;
+  height: 40px ;
 }
 .language-choice i {
   position: absolute ;
   font-size: 32px ;
-  color: hsl(200,50%,40%);
+  color: hsl(200,50%,50%);
   cursor: pointer;
 }
 .language-choice div {
@@ -371,6 +385,7 @@ header .username span {
   height: 30px ;
   font-size: 18px ;
   padding: 10px 20px 0px 16px ;
+  white-space: nowrap ;
 /*  border-bottom: solid 1px rgba(0,0,0,.2);*/
 }
 
@@ -384,7 +399,9 @@ header .username span {
 }
 
 .projectheader .backtoprojects {
-  float: right ;
+  position: absolute ;
+  top: 9px ;
+  right: 9px ;
   border-radius: 5px ;
   background: hsl(0,50%,40%);
   padding: 4px 10px ;

@@ -85,8 +85,10 @@ this.Editor = class Editor extends Manager {
     document.querySelector("#help-window-content").addEventListener("mousedown", (event) => {
       event.stopPropagation();
       this.show_help = !this.show_help;
+      event.preventDefault();
       if (!this.show_help) {
-        return document.querySelector("#help-window").classList.add("disabled");
+        document.querySelector("#help-window").classList.add("disabled");
+        return document.querySelector("#help-window-content").classList.remove("displaycontent");
       } else {
         document.querySelector("#help-window").classList.remove("disabled");
         this.liveHelp();
@@ -364,7 +366,18 @@ this.Editor = class Editor extends Manager {
       this.addDocButton(suggest[0].pointer, suggest[0].section);
     }
     c = document.querySelector("#help-window-content");
-    return c.classList.add("displaycontent");
+    if (window.innerWidth < 800) {
+      c.style["max-width"] = (window.innerWidth - 120) + "px";
+    } else {
+      c.style["max-width"] = "unset";
+    }
+    if (this.app.appui.code_splitbar.type === "vertical") {
+      c.classList.add("displaycontent");
+      return c.classList.add("vertical");
+    } else {
+      c.classList.add("displaycontent");
+      return c.classList.remove("vertical");
+    }
   }
 
   tokenizeLine(line) {

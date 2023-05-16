@@ -119,6 +119,55 @@ this.SplitBar = class SplitBar {
     if (this.element.clientWidth === 0 || this.element.clientHeight === 0) {
       return;
     }
+    if (this.auto != null) {
+      if (this.element.clientWidth > this.element.clientHeight * this.auto) {
+        this.type = "horizontal";
+        this.splitbar.style.width = "10px";
+        this.splitbar.style.height = "unset";
+        this.splitbar.style.top = 0;
+        this.splitbar.style.bottom = 0;
+        this.splitbar.style.left = "unset";
+        this.splitbar.style.right = "unset";
+        this.splitbar.style.cursor = "ew-resize";
+        this.side1.style.left = 0;
+        this.side1.style.right = "unset";
+        this.side1.style.height = "unset";
+        this.side1.style.top = 0;
+        this.side1.style.bottom = 0;
+        this.side2.style.right = 0;
+        this.side2.style.left = "unset";
+        this.side2.style.height = "unset";
+        this.side2.style.top = 0;
+        this.side2.style.bottom = 0;
+        this.side1.classList.remove("vertical-split");
+        this.side1.classList.add("horizontal-split");
+        this.side2.classList.remove("vertical-split");
+        this.side2.classList.add("horizontal-split");
+      } else {
+        this.type = "vertical";
+        this.splitbar.style.height = "10px";
+        this.splitbar.style.width = "unset";
+        this.splitbar.style.left = 0;
+        this.splitbar.style.right = 0;
+        this.splitbar.style.top = "unset";
+        this.splitbar.style.bottom = "unset";
+        this.splitbar.style.cursor = "ns-resize";
+        this.side1.style.top = 0;
+        this.side1.style.width = "unset";
+        this.side1.style.bottom = "unset";
+        this.side1.style.left = 0;
+        this.side1.style.right = 0;
+        this.side2.style.bottom = 0;
+        this.side2.style.width = "unset";
+        this.side2.style.top = "unset";
+        this.side2.style.left = 0;
+        this.side2.style.right = 0;
+        this.side1.classList.add("vertical-split");
+        this.side1.classList.remove("horizontal-split");
+        this.side2.classList.add("vertical-split");
+        this.side2.classList.remove("horizontal-split");
+      }
+    }
     switch (this.type) {
       case "horizontal":
         this.total_width = w = this.element.clientWidth - this.splitbar.clientWidth;
