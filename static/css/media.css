@@ -31,6 +31,10 @@
   .home-section div.center {
     width: auto;
   }
+
+  body {
+    zoom: 75% ;
+  }
 }
 
 
