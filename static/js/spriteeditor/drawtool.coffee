@@ -40,14 +40,15 @@ class @DrawTool
     @last_y = y
 
   domove:(sprite,x,y,button,pass=0)->
+    size = @getSize(sprite)
+    dn = if size%2 == 0 then 1 else 0
     if pass < 1 and @vsymmetry
-      nx = sprite.width-1-x
+      nx = sprite.width-1-x-dn
       @domove(sprite,nx,y,button,1)
     if pass < 2 and @hsymmetry
-      ny = sprite.height-1-y
+      ny = sprite.height-1-y-dn
       @domove(sprite,x,ny,button,2)
 
-    size = @getSize(sprite)
     d = (size-1)/2
     d1 = Math.ceil(-d)
     d2 = Math.ceil(d)

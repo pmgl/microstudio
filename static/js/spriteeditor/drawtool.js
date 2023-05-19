@@ -54,16 +54,17 @@ this.DrawTool = (function() {
     }
 
     domove(sprite, x, y, button, pass = 0) {
-      var d, d1, d2, di, dj, i, ii, j, jj, k, m, nx, ny, r2, ref1, ref2, results, roundness, size, xx, yy;
+      var d, d1, d2, di, dj, dn, i, ii, j, jj, k, m, nx, ny, r2, ref1, ref2, results, roundness, size, xx, yy;
+      size = this.getSize(sprite);
+      dn = size % 2 === 0 ? 1 : 0;
       if (pass < 1 && this.vsymmetry) {
-        nx = sprite.width - 1 - x;
+        nx = sprite.width - 1 - x - dn;
         this.domove(sprite, nx, y, button, 1);
       }
       if (pass < 2 && this.hsymmetry) {
-        ny = sprite.height - 1 - y;
+        ny = sprite.height - 1 - y - dn;
         this.domove(sprite, x, ny, button, 2);
       }
-      size = this.getSize(sprite);
       d = (size - 1) / 2;
       d1 = Math.ceil(-d);
       d2 = Math.ceil(d);
