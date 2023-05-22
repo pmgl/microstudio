@@ -9,6 +9,7 @@ this.MapEditor = class MapEditor extends Manager {
     this.extensions = ["json"];
     this.update_list = "updateMapList";
     this.init();
+    this.splitbar.auto = 1;
     this.mapeditor_splitbar = new SplitBar("mapeditor-container", "horizontal");
     this.mapeditor_splitbar.initPosition(80);
     this.mapview = new MapView(this);

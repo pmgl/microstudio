@@ -226,8 +226,13 @@ this.TutorialWindow = class TutorialWindow {
       b = button.getBoundingClientRect();
       this.window.classList.add("minimized");
       return setTimeout((() => {
-        this.window.style.top = (b.y + b.height - 10) + "px";
-        this.window.style.left = (b.x + b.width / 2 + 20) + "px";
+        if (b.x < 0) { // Main bar is collapsed
+          this.window.style.top = "20px";
+          this.window.style.left = "240px";
+        } else {
+          this.window.style.top = Math.max(0, b.y + b.height - 10) + "px";
+          this.window.style.left = Math.max(0, b.x + b.width / 2 + 20) + "px";
+        }
         this.window.style.width = "30px";
         this.window.style.height = "30px";
         return this.collapsed = true;

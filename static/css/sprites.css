@@ -16,6 +16,10 @@
   overflow: hidden ;
 }
 
+.sprites-right.vertical-split .spriteinfo {
+  border-top: solid 2px rgba(0,0,0,.5) ;
+}
+
 .sprites-splitbar {
   background: hsl(200,30%,30%);
   position: absolute ;

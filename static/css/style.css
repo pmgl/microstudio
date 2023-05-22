@@ -711,6 +711,25 @@ padding-left: 2px ;
   z-index: 2 ;
   overflow-y: auto ;
   scrollbar-width: none ;
+  transition: left 0.5s ease ;
+  background: hsl(200,20%,16%);
+}
+
+.projectview.sidebar-collapsed .sidemenu {
+  left: -60px ;
+  overflow: visible ;
+}
+
+.projectview.sidebar-collapsed .section-container {
+  left: -10px ;
+}
+.projectview.sidebar-collapsed .sidemenu li.selected {
+  position:absolute ;
+  left: 60px ;
+  top: -65px ;
+  transform: scale(0.8) ;
+  border-radius: 5px ;
+  box-shadow: 0 0 5px #000 ;
 }
 
 .sidemenu ul {
@@ -731,6 +750,7 @@ padding-left: 2px ;
   width: 60px;
   cursor: pointer ;
   margin: 0px 0px ;
+  transition: left 0.5s ease, top 0.5s ease, transform 0.5s ease ;
 }
 
 .sidemenu li img {

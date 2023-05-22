@@ -10,6 +10,7 @@ this.SpriteEditor = class SpriteEditor extends Manager {
     this.extensions = ["png", "jpg", "jpeg"];
     this.update_list = "updateSpriteList";
     this.init();
+    this.splitbar.auto = 1;
     this.spriteview = new SpriteView(this);
     this.auto_palette = new AutoPalette(this);
     this.colorpicker = new ColorPicker(this);

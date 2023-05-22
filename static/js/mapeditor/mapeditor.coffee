@@ -10,6 +10,7 @@ class @MapEditor extends Manager
     @update_list = "updateMapList"
 
     @init()
+    @splitbar.auto = 1
 
     @mapeditor_splitbar = new SplitBar("mapeditor-container","horizontal")
     @mapeditor_splitbar.initPosition(80)

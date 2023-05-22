@@ -150,6 +150,7 @@ class AppUI
         @get("create-project-title").value = ""
 
     @doc_splitbar = new SplitBar("doc-section","horizontal")
+    @doc_splitbar.auto = 1
     @code_splitbar = new SplitBar("code-section","horizontal")
     @code_splitbar.auto = 1
     @runtime_splitbar = new SplitBar("runtime-container","vertical")
@@ -217,7 +218,8 @@ class AppUI
       if event.dataTransfer.items and event.dataTransfer.items[0]?
         @app.importProject(event.dataTransfer.items[0].getAsFile())
 
-    @createFullscreenFeatures()    
+    @createFullscreenFeatures()
+    @createProjectSideBarCollapse()   
 
     setInterval (()=>@checkActivity()),10000
 
@@ -312,6 +314,7 @@ class AppUI
 
 
   setSection:(section,useraction)->
+    if @makeProjectSideBarVisible? then @makeProjectSideBarVisible()
     @current_section = section
 
     for s in @sections
@@ -1130,3 +1133,32 @@ class AppUI
     window.addEventListener "resize",resize
 
     resize()
+
+  createProjectSideBarCollapse:()->
+    collapse_time = 0
+    resize_until = Date.now()
+
+    @makeProjectSideBarVisible = ()=>
+      if document.getElementById("projectview").classList.contains "sidebar-collapsed"
+        document.getElementById("projectview").classList.remove "sidebar-collapsed"
+        window.dispatchEvent(new Event('resize'))
+      if window.innerWidth < 600
+        collapse_time = Date.now() + 3000
+
+    window.addEventListener "resize",()=>
+      if not document.getElementById("projectview").classList.contains("sidebar-collapsed") and window.innerWidth < 600
+        collapse_time = Date.now() + 3000
+      else if document.getElementById("projectview").classList.contains("sidebar-collapsed") and window.innerWidth >= 600
+        @makeProjectSideBarVisible()
+
+    setInterval (()=>
+      if Date.now() < resize_until
+        window.dispatchEvent(new Event('resize'))
+        
+      if collapse_time and Date.now() > collapse_time
+        collapse_time = 0
+        if window.innerWidth < 600
+          document.getElementById("projectview").classList.add "sidebar-collapsed"
+          window.dispatchEvent(new Event('resize'))
+    ),500
+      

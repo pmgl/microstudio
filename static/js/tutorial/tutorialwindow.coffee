@@ -186,8 +186,12 @@ class @TutorialWindow
       @window.classList.add "minimized"
 
       setTimeout (()=>
-        @window.style.top = (b.y+b.height-10)+"px"
-        @window.style.left = (b.x+b.width/2+20)+"px"
+        if b.x < 0  # Main bar is collapsed
+          @window.style.top = "20px"
+          @window.style.left = "240px"
+        else
+          @window.style.top = Math.max(0,(b.y+b.height-10))+"px"
+          @window.style.left = Math.max(0,(b.x+b.width/2+20))+"px"
         @window.style.width = "30px"
         @window.style.height = "30px"
         @collapsed = true

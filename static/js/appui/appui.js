@@ -153,6 +153,7 @@ AppUI = class AppUI {
       }
     });
     this.doc_splitbar = new SplitBar("doc-section", "horizontal");
+    this.doc_splitbar.auto = 1;
     this.code_splitbar = new SplitBar("code-section", "horizontal");
     this.code_splitbar.auto = 1;
     this.runtime_splitbar = new SplitBar("runtime-container", "vertical");
@@ -235,6 +236,7 @@ AppUI = class AppUI {
       }
     });
     this.createFullscreenFeatures();
+    this.createProjectSideBarCollapse();
     setInterval((() => {
       return this.checkActivity();
     }), 10000);
@@ -355,6 +357,9 @@ AppUI = class AppUI {
 
   setSection(section, useraction) {
     var item, j, k, len, len1, list, menuitem, ref, s;
+    if (this.makeProjectSideBarVisible != null) {
+      this.makeProjectSideBarVisible();
+    }
     this.current_section = section;
     ref = this.sections;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -1293,6 +1298,40 @@ AppUI = class AppUI {
     };
     window.addEventListener("resize", resize);
     return resize();
+  }
+
+  createProjectSideBarCollapse() {
+    var collapse_time, resize_until;
+    collapse_time = 0;
+    resize_until = Date.now();
+    this.makeProjectSideBarVisible = () => {
+      if (document.getElementById("projectview").classList.contains("sidebar-collapsed")) {
+        document.getElementById("projectview").classList.remove("sidebar-collapsed");
+        window.dispatchEvent(new Event('resize'));
+      }
+      if (window.innerWidth < 600) {
+        return collapse_time = Date.now() + 3000;
+      }
+    };
+    window.addEventListener("resize", () => {
+      if (!document.getElementById("projectview").classList.contains("sidebar-collapsed") && window.innerWidth < 600) {
+        return collapse_time = Date.now() + 3000;
+      } else if (document.getElementById("projectview").classList.contains("sidebar-collapsed") && window.innerWidth >= 600) {
+        return this.makeProjectSideBarVisible();
+      }
+    });
+    return setInterval((() => {
+      if (Date.now() < resize_until) {
+        window.dispatchEvent(new Event('resize'));
+      }
+      if (collapse_time && Date.now() > collapse_time) {
+        collapse_time = 0;
+        if (window.innerWidth < 600) {
+          document.getElementById("projectview").classList.add("sidebar-collapsed");
+          return window.dispatchEvent(new Event('resize'));
+        }
+      }
+    }), 500);
   }
 
 };

@@ -35,6 +35,25 @@
   body {
     zoom: 75% ;
   }
+
+  #code-section {
+    zoom: 133.3333334% ;
+  }
+
+  #doc-section {
+    zoom: 133.3333334% ;
+  }
+
+  #projectoptions-left {
+    display: none ;
+  }
+  #projectoptions-right {
+    left: 0px ;
+  }
+
+  #explore-box-list, #project-list {
+    zoom: 70% ;
+  }
 }
 
 

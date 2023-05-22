@@ -1,5 +1,12 @@
 ## Changelog
 
+### Update 2023-05-22
+* Sidebar auto-collapses in mobile portrait mode
+* Splitbar can now go vertical in sprites, maps and doc tabs
+* Fixed code editor wrong cursor positioning when zoomed out on mobile
+* more UI improvements on mobile (project settings, explore, project list)
+
+
 ### Update 2023-05-16
 * Sprite editor brush size improvement (even values now possible like 2x2, 4x4)
 * New sprite editor brush shape setting: round or square
@@ -7,9 +14,10 @@
   * Example: project is very short and made for illustrating a specific point
   * Template: a working game with placeholder graphics, configurable and extensible code.
 * microStudio responsive UI improvements:
-  * code section automatically rearrange windows in portrait mode
+  * code section automatically rearranges windows in portrait mode
   * main toolbar is now fully responsive, with burger menu
 * Added Discord button in the main toolbar
+* Fixed #196 (help window visibility bug)
 
 ### Update 2023-04-24
 * Allow to open project in new tab, closes #135

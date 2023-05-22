@@ -11,6 +11,7 @@ class @SpriteEditor extends Manager
     @update_list = "updateSpriteList"
 
     @init()
+    @splitbar.auto = 1
 
     @spriteview = new SpriteView @
 
