@@ -65,35 +65,7 @@ class @AppState
       @app.appui.setMainSection("home")
       @app.appui.showLoginPanel()
     else if location.pathname.startsWith("/tutorial/")
-      path = location.pathname.split("/")
-      path.splice 0,2
-      if path[path.length-1] == ""
-        path.splice path.length-1,1
-
-      path = path.join("/")
-      path = location.origin+"/#{path}/doc/doc.md?v=#{Date.now()}"
-      console.info path
-      tuto = new Tutorial(path,false)
-      tuto.load ()=>
-        @app.tutorial.start(tuto)
-      ,(err)=>
-        console.info err
-        alert(@app.translator.get("Tutorial not found"))
-        history.replaceState {name:"home"},"","/"
-
-      @app.client.listen "project_file_updated",(msg)=>
-        if msg.type == "doc" and msg.file == "doc"
-          tuto.update(msg.data)
-          @app.tutorial.update()
-
-      user = location.pathname.split("/")[2]
-      project = location.pathname.split("/")[3]
-
-      @app.client.send
-        name: "listen_to_project"
-        user: user
-        project: project
-
+      @load_tutorial = true
     else if location.pathname.startsWith("/i/")
       @app.appui.setMainSection("explore",false)
       history.replaceState {name:"project_details"},"",location.pathname
@@ -140,3 +112,35 @@ class @AppState
     if history.state? and history.state.name?
       if history.state.name.startsWith "project."
         @popState()
+
+    if @load_tutorial
+      delete @load_tutorial
+      
+      path = location.pathname.split("/")
+      path.splice 0,2
+      if path[path.length-1] == ""
+        path.splice path.length-1,1
+
+      path = path.join("/")
+      path = location.origin+"/#{path}/doc/doc.md?v=#{Date.now()}"
+      console.info path
+      tuto = new Tutorial(path,false)
+      tuto.load ()=>
+        @app.tutorial.start(tuto)
+      ,(err)=>
+        console.info err
+        alert(@app.translator.get("Tutorial not found"))
+        history.replaceState {name:"home"},"","/"
+
+      @app.client.listen "project_file_updated",(msg)=>
+        if msg.type == "doc" and msg.file == "doc"
+          tuto.update(msg.data)
+          @app.tutorial.update()
+
+      user = location.pathname.split("/")[2]
+      project = location.pathname.split("/")[3]
+
+      @app.client.send
+        name: "listen_to_project"
+        user: user
+        project: project      

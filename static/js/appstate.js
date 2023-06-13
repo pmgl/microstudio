@@ -1,22 +1,17 @@
-this.AppState = (function() {
-  function AppState(app) {
+this.AppState = class AppState {
+  constructor(app) {
     this.app = app;
-    window.addEventListener("popstate", (function(_this) {
-      return function(event) {
-        return _this.popState();
-      };
-    })(this));
+    window.addEventListener("popstate", (event) => {
+      return this.popState();
+    });
   }
 
-  AppState.prototype.pushState = function(name, path, obj) {
-    if (obj == null) {
-      obj = {};
-    }
+  pushState(name, path, obj = {}) {
     obj.name = name;
     return history.pushState(obj, "", path);
-  };
+  }
 
-  AppState.prototype.popState = function() {
+  popState() {
     var i, len, p, project, ref, ref1, s;
     if (history.state != null) {
       s = history.state.name.split(".");
@@ -83,55 +78,19 @@ this.AppState = (function() {
         }
       }
     }
-  };
+  }
 
-  AppState.prototype.initState = function() {
-    var i, len, p, path, project, ref, s, tab, tuto, user;
+  initState() {
+    var i, len, p, path, project, ref, s, tab;
     if (location.pathname.startsWith("/login/")) {
-      path = this.app.translator.lang !== "en" ? "/" + this.app.translator.lang + "/" : "/";
+      path = this.app.translator.lang !== "en" ? `/${this.app.translator.lang}/` : "/";
       history.replaceState({
         name: "home"
       }, "", path);
       this.app.appui.setMainSection("home");
       return this.app.appui.showLoginPanel();
     } else if (location.pathname.startsWith("/tutorial/")) {
-      path = location.pathname.split("/");
-      path.splice(0, 2);
-      if (path[path.length - 1] === "") {
-        path.splice(path.length - 1, 1);
-      }
-      path = path.join("/");
-      path = location.origin + ("/" + path + "/doc/doc.md?v=" + (Date.now()));
-      console.info(path);
-      tuto = new Tutorial(path, false);
-      tuto.load((function(_this) {
-        return function() {
-          return _this.app.tutorial.start(tuto);
-        };
-      })(this), (function(_this) {
-        return function(err) {
-          console.info(err);
-          alert(_this.app.translator.get("Tutorial not found"));
-          return history.replaceState({
-            name: "home"
-          }, "", "/");
-        };
-      })(this));
-      this.app.client.listen("project_file_updated", (function(_this) {
-        return function(msg) {
-          if (msg.type === "doc" && msg.file === "doc") {
-            tuto.update(msg.data);
-            return _this.app.tutorial.update();
-          }
-        };
-      })(this));
-      user = location.pathname.split("/")[2];
-      project = location.pathname.split("/")[3];
-      return this.app.client.send({
-        name: "listen_to_project",
-        user: user,
-        project: project
-      });
+      return this.load_tutorial = true;
     } else if (location.pathname.startsWith("/i/")) {
       this.app.appui.setMainSection("explore", false);
       return history.replaceState({
@@ -141,7 +100,7 @@ this.AppState = (function() {
       ref = ["about", "tutorials", "explore", "documentation"];
       for (i = 0, len = ref.length; i < len; i++) {
         p = ref[i];
-        if (location.pathname.startsWith("/" + p + "/") || location.pathname === ("/" + p)) {
+        if (location.pathname.startsWith(`/${p}/`) || location.pathname === `/${p}`) {
           history.replaceState({
             name: p
           }, "", location.pathname);
@@ -151,13 +110,11 @@ this.AppState = (function() {
               this.app.explore.setProjectType(s);
             }
           }
-          return this.app.appui.setMainSection(((function(_this) {
-            return function(p) {
-              return {
-                "documentation": "help"
-              }[p] || p;
-            };
-          })(this))(p));
+          return this.app.appui.setMainSection(((p) => {
+            return {
+              "documentation": "help"
+            }[p] || p;
+          })(p));
         }
       }
       if (this.app.user != null) {
@@ -166,7 +123,7 @@ this.AppState = (function() {
           project = s[2];
           tab = s[3];
           return history.replaceState({
-            name: "project." + s[2] + "." + s[3]
+            name: `project.${s[2]}.${s[3]}`
           }, "", location.pathname);
         } else if (location.pathname.startsWith("/user/") && s[2]) {
           switch (s[2]) {
@@ -187,23 +144,56 @@ this.AppState = (function() {
           }, "", "/projects/");
         }
       } else {
-        path = this.app.translator.lang !== "en" ? "/" + this.app.translator.lang + "/" : "/";
+        path = this.app.translator.lang !== "en" ? `/${this.app.translator.lang}/` : "/";
         history.replaceState({
           name: "home"
         }, "", path);
         return this.app.appui.setMainSection("home");
       }
     }
-  };
+  }
 
-  AppState.prototype.projectsFetched = function() {
+  projectsFetched() {
+    var path, project, tuto, user;
     if ((history.state != null) && (history.state.name != null)) {
       if (history.state.name.startsWith("project.")) {
-        return this.popState();
+        this.popState();
       }
     }
-  };
+    if (this.load_tutorial) {
+      delete this.load_tutorial;
+      path = location.pathname.split("/");
+      path.splice(0, 2);
+      if (path[path.length - 1] === "") {
+        path.splice(path.length - 1, 1);
+      }
+      path = path.join("/");
+      path = location.origin + `/${path}/doc/doc.md?v=${Date.now()}`;
+      console.info(path);
+      tuto = new Tutorial(path, false);
+      tuto.load(() => {
+        return this.app.tutorial.start(tuto);
+      }, (err) => {
+        console.info(err);
+        alert(this.app.translator.get("Tutorial not found"));
+        return history.replaceState({
+          name: "home"
+        }, "", "/");
+      });
+      this.app.client.listen("project_file_updated", (msg) => {
+        if (msg.type === "doc" && msg.file === "doc") {
+          tuto.update(msg.data);
+          return this.app.tutorial.update();
+        }
+      });
+      user = location.pathname.split("/")[2];
+      project = location.pathname.split("/")[3];
+      return this.app.client.send({
+        name: "listen_to_project",
+        user: user,
+        project: project
+      });
+    }
+  }
 
-  return AppState;
-
-})();
+};
