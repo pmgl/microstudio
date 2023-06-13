@@ -1,5 +1,10 @@
 ## Changelog
 
+### Update 2023-06-13
+* Fixed race condition bug when launching tutorials
+* Fixed confirm dialog not showing when deleting a file with project in fullscreen mode
+* Fixed problems caused by text selection being enabled in fullscreen mode
+
 ### Update 2023-05-22
 * Sidebar auto-collapses in mobile portrait mode
 * Splitbar can now go vertical in sprites, maps and doc tabs
