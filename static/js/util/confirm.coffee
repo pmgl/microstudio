@@ -16,6 +16,10 @@ class @ConfirmDialogWindow
     @cancel.addEventListener "click",()=>@cancelPressed()
 
   show:(message,ok,cancel,@callback,@dismiss)->
+    if document.fullscreenElement?
+      document.fullscreenElement.appendChild @overlay
+    else
+      document.body.appendChild @overlay
     @text.innerHTML = message
     @ok.innerText = ok
     @cancel.innerText = cancel
