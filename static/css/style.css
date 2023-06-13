@@ -616,6 +616,7 @@ header .username span {
 .projectview {
   position: absolute;  top:0 ; bottom: 0 ; left: 0 ; right: 0 ;
   display: none ;
+  user-select: none ;
 }
 
 .container {
