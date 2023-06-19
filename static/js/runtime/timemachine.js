@@ -180,6 +180,9 @@ this.TimeMachine = class TimeMachine {
     //@runtime.vm.context.object = @runtime.vm.context.global
     //@runtime.vm.context.local = @runtime.vm.context.global
     this.runtime.vm.call("draw");
+    if (this.runtime.vm.runner.tick != null) {
+      this.runtime.vm.runner.tick();
+    }
     return this.runtime.watchStep();
   }
 

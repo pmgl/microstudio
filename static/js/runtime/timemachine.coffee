@@ -147,6 +147,9 @@ class @TimeMachine
     #@runtime.vm.context.object = @runtime.vm.context.global
     #@runtime.vm.context.local = @runtime.vm.context.global
     @runtime.vm.call("draw")
+    if @runtime.vm.runner.tick?
+      @runtime.vm.runner.tick()
+
     @runtime.watchStep()
 
   copyGlobal:(source,dest)->
