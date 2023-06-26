@@ -16,11 +16,11 @@ class @ModelViewer
     if not @initialized
       @initialized = true
       s = document.createElement "script"
-      s.src = location.origin+"/lib/babylonjs/babylon.js"
+      s.src = location.origin+"/lib/babylonjs/v4/babylon.js"
       document.head.appendChild s
       s.onload = ()=>
         s = document.createElement "script"
-        s.src = location.origin+"/lib/babylonjs/babylonjs.loaders.min.js"
+        s.src = location.origin+"/lib/babylonjs/v4/babylonjs.loaders.min.js"
         document.head.appendChild s
         s.onload = ()=>
           @view(asset)

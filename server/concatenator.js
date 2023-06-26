@@ -25,36 +25,36 @@ this.Concatenator = class Concatenator {
     this.alt_player_base = ['/js/util/canvas2d.js', "/js/languages/microscript/random.js", "/js/runtime/microvm.js", "/js/runtime/mpserverconnection.js", '/js/runtime/runtime.js', '/js/runtime/watcher.js', '/js/runtime/projectinterface.js', '/js/runtime/timemachine.js', '/js/runtime/assetmanager.js', '/js/runtime/keyboard.js', '/js/runtime/gamepad.js', '/js/runtime/sprite.js', '/js/runtime/msimage.js', '/js/runtime/map.js', "/js/runtime/audio/audio.js", "/js/runtime/audio/beeper.js", "/js/runtime/audio/sound.js", "/js/runtime/audio/music.js", '/js/play/player.js', '/js/play/playerclient.js'];
     this.alt_players = {
       m2d: {
-        lib: ["/lib/pixijs/pixi.min.js"],
-        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"],
+        lib: ["/lib/pixijs/v6/pixi.min.js"],
+        lib_path: ["../static/lib/pixijs/v6/pixi.min.js"],
         scripts: ['/js/runtime/m2d/screen.js', '/js/runtime/m2d/m2d.js']
       },
       m3d: {
-        lib: ["/lib/babylonjs/babylon.js", "/lib/babylonjs/babylonjs.loaders.min.js"],
-        lib_path: ["node_modules/babylonjs/babylon.js", "node_modules/babylonjs-loaders/babylonjs.loaders.min.js"],
+        lib: ["/lib/babylonjs/v4/babylon.js", "/lib/babylonjs/v4/babylonjs.loaders.min.js"],
+        lib_path: ["../static/lib/babylonjs/v4/babylon.js", "../static/lib/babylonjs/v4/babylonjs.loaders.min.js"],
         scripts: ['/js/runtime/m3d/screen.js', '/js/runtime/m3d/m3d.js']
       },
       pixi: {
-        lib: ["/lib/pixijs/pixi.min.js"],
-        lib_path: ["node_modules/pixi.js/dist/browser/pixi.min.js"],
+        lib: ["/lib/pixijs/v6/pixi.min.js"],
+        lib_path: ["../static/lib/pixijs/v6/pixi.min.js"],
         scripts: ['/js/runtime/pixi/screen.js', '/js/runtime/pixi/pixi.js']
       },
       babylon: {
-        lib: ["/lib/babylonjs/babylon.js", "/lib/babylonjs/babylonjs.loaders.min.js"],
-        lib_path: ["node_modules/babylonjs/babylon.js", "node_modules/babylonjs-loaders/babylonjs.loaders.min.js"],
+        lib: ["/lib/babylonjs/v4/babylon.js", "/lib/babylonjs/v4/babylonjs.loaders.min.js"],
+        lib_path: ["../static/lib/babylonjs/v4/babylon.js", "../static/lib/babylonjs/v4/babylonjs.loaders.min.js"],
         scripts: ['/js/runtime/babylon/screen.js', '/js/runtime/babylon/babylon.js']
       }
     };
     this.optional_libs = {
       matterjs: {
         title: "matter.js - 2D physics engine",
-        lib: "/lib/matterjs/matter.min.js",
-        lib_path: "node_modules/matter-js/build/matter.min.js"
+        lib: "/lib/matterjs/v017/matter.min.js",
+        lib_path: "../static/lib/matterjs/v017/matter.min.js"
       },
       cannonjs: {
         title: "cannon.js - 3D physics engine",
-        lib: "/lib/cannonjs/cannon.min.js",
-        lib_path: "node_modules/cannon/build/cannon.min.js"
+        lib: "/lib/cannonjs/v06/cannon.min.js",
+        lib_path: "../static/lib/cannonjs/v06/cannon.min.js"
       }
     };
     this.language_engines = {
