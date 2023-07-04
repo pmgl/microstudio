@@ -137,10 +137,11 @@ class @Runtime
     if ready < count
       if not @loading_bar_time? or Date.now()>@loading_bar_time+16
         @loading_bar_time = Date.now()
-        @screen.clear()
-        @screen.drawRect 0,0,100,10,"#DDD"
-        progress = ready/count
-        @screen.fillRect -(1-progress)*48,0,progress*96,6,"#DDD"
+        if @screen.fillRect?
+          @screen.clear()
+          @screen.drawRect 0,0,100,10,"#DDD"
+          progress = ready/count
+          @screen.fillRect -(1-progress)*48,0,progress*96,6,"#DDD"
         if window.ms_async_load and @vm?
           @vm.context.global.system.loading = Math.floor(ready/count*100)
 
@@ -186,14 +187,15 @@ class @Runtime
     else if window.graphics == "M2D"
       global.M2D = M2D
       M2D.runtime = @
-    else if window.graphics == "PIXI"
+    else if window.graphics.toLowerCase().startsWith "pixi"
       global.PIXI = PIXI
       PIXI.runtime = @
-    else if window.graphics == "BABYLON"
+    else if window.graphics.toLowerCase().startsWith "babylon"
       global.BABYLON = BABYLON
       BABYLON.runtime = @
 
     for lib in window.ms_libs
+      lib = lib.split("_")[0]
       switch lib
         when "matterjs" then global.Matter = Matter
         when "cannonjs" then global.CANNON = CANNON

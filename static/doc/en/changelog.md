@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2023-07-04
+* You can now choose Babylon.js versions 4, 5 or 6
+* You can now choose Pixi.js versions 6 or 7
+* You can now choose Matter.js versions 0.17, 0.18 or 0.19
+* Fixed time machine
+
 ### Update 2023-06-13
 * Fixed race condition bug when launching tutorials
 * Fixed confirm dialog not showing when deleting a file with project in fullscreen mode

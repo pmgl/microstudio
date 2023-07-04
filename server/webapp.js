@@ -116,6 +116,7 @@ this.WebApp = class WebApp {
           language: lang,
           standalone: this.server.config.standalone === true,
           languages: this.languages,
+          graphics_options: this.concatenator.alt_players,
           optional_libs: this.concatenator.optional_libs,
           language_engines: this.concatenator.language_engines,
           translation: this.server.content.translator.languages[lang] != null ? this.server.content.translator.languages[lang].export() : "{}",
@@ -141,6 +142,7 @@ this.WebApp = class WebApp {
           language: lang,
           standalone: this.server.config.standalone === true,
           languages: this.languages,
+          graphics_options: this.concatenator.alt_players,
           optional_libs: this.concatenator.optional_libs,
           language_engines: this.concatenator.language_engines,
           translation: this.server.content.translator.languages[lang] != null ? this.server.content.translator.languages[lang].export() : "{}",
@@ -275,7 +277,7 @@ this.WebApp = class WebApp {
     });
     // /user/project[/code/]
     this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+\/?)?)?$/, (req, res) => {
-      var access, encoding, file, jsfiles, len3, lib, manager, o, pathcode, poster, prog_lang, project, redir, ref4, user;
+      var access, encoding, file, jsfiles, l, len3, lib, manager, o, pathcode, poster, prog_lang, project, redir, ref4, user;
       if ((req.query != null) && (req.query.server != null)) {
         if (this.ensureDevArea(req, res)) {
           return;
@@ -307,8 +309,9 @@ this.WebApp = class WebApp {
       ref4 = project.libs;
       for (o = 0, len3 = ref4.length; o < len3; o++) {
         lib = ref4[o];
-        if (this.concatenator.optional_libs[lib] != null) {
-          jsfiles.push(this.concatenator.optional_libs[lib].lib);
+        l = this.concatenator.findOptionalLib(lib);
+        if (l) {
+          jsfiles.push(l.lib);
         }
       }
       prog_lang = project.language;

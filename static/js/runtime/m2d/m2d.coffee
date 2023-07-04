@@ -29,4 +29,7 @@ class M2D.Sprite extends PIXI.Sprite
     @anchor.y = .5
     @scale.y *= -1
 
-PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
+if PIXI.BaseTexture.defaultOptions?
+  PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST
+else
+  PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST

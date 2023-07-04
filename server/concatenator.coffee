@@ -54,16 +54,65 @@ class @Concatenator
         lib: ["/lib/pixijs/v6/pixi.min.js"]
         lib_path: ["../static/lib/pixijs/v6/pixi.min.js"]
         scripts: ['/js/runtime/pixi/screen.js','/js/runtime/pixi/pixi.js']
+        versions:
+          pixi_v6:
+            name: "version 6"
+            lib: ["/lib/pixijs/v6/pixi.min.js"]
+            lib_path: ["../static/lib/pixijs/v6/pixi.min.js"]
+            scripts: ['/js/runtime/pixi/screen.js','/js/runtime/pixi/pixi.js']
+            original: true
+          pixi_v7:
+            name: "version 7"
+            lib: ["/lib/pixijs/v7/pixi.min.js"]
+            lib_path: ["../static/lib/pixijs/v7/pixi.min.js"]
+            scripts: ['/js/runtime/pixi/screen.js','/js/runtime/pixi/pixi.js']
+            default: true
+
       babylon:
         lib: ["/lib/babylonjs/v4/babylon.js","/lib/babylonjs/v4/babylonjs.loaders.min.js"]
         lib_path: ["../static/lib/babylonjs/v4/babylon.js","../static/lib/babylonjs/v4/babylonjs.loaders.min.js"]
         scripts: ['/js/runtime/babylon/screen.js','/js/runtime/babylon/babylon.js']
+        versions:
+          babylon_v4:
+            name: "version 4"
+            lib: ["/lib/babylonjs/v4/babylon.js","/lib/babylonjs/v4/babylonjs.loaders.min.js"]
+            lib_path: ["../static/lib/babylonjs/v4/babylon.js","../static/lib/babylonjs/v4/babylonjs.loaders.min.js"]
+            scripts: ['/js/runtime/babylon/screen.js','/js/runtime/babylon/babylon.js']
+            original: true
+          babylon_v5:
+            name: "version 5"
+            lib: ["/lib/babylonjs/v5/babylon.js","/lib/babylonjs/v5/babylonjs.loaders.min.js"]
+            lib_path: ["../static/lib/babylonjs/v5/babylon.js","../static/lib/babylonjs/v5/babylonjs.loaders.min.js"]
+            scripts: ['/js/runtime/babylon/screen.js','/js/runtime/babylon/babylon.js']
+          babylon_v6:
+            name: "version 6"
+            lib: ["/lib/babylonjs/v6/babylon.js","/lib/babylonjs/v6/babylonjs.loaders.min.js"]
+            lib_path: ["../static/lib/babylonjs/v6/babylon.js","../static/lib/babylonjs/v6/babylonjs.loaders.min.js"]
+            scripts: ['/js/runtime/babylon/screen.js','/js/runtime/babylon/babylon.js']
+            default: true
 
     @optional_libs =
       matterjs:
         title: "matter.js - 2D physics engine"
         lib: "/lib/matterjs/v017/matter.min.js"
         lib_path: "../static/lib/matterjs/v017/matter.min.js"
+        versions:
+          matterjs_v017:
+            name: "version 0.17"
+            lib: "/lib/matterjs/v017/matter.min.js"
+            lib_path: "../static/lib/matterjs/v017/matter.min.js"
+            original: true
+
+          matterjs_v018:
+            name: "version 0.18"
+            lib: "/lib/matterjs/v018/matter.min.js"
+            lib_path: "../static/lib/matterjs/v018/matter.min.js"
+
+          matterjs_v019:
+            name: "version 0.19"
+            lib: "/lib/matterjs/v019/matter.min.js"
+            lib_path: "../static/lib/matterjs/v019/matter.min.js"
+            default: true
 
       cannonjs:
         title: "cannon.js - 3D physics engine"
@@ -122,16 +171,18 @@ class @Concatenator
         lib: []
 
 
-      #blockly:
-      #  title: "Blockly"
-      #  scripts: []
-      #  lib: []
-
     for key,value of @alt_players
-      @webapp.app.get new RegExp("^\\/#{key}.js$"), (req,res)=>
-        res.setHeader("Content-Type", "text/javascript")
-        res.send @["#{key}_js_concat"]
-
+      do (key,value)=>
+        @webapp.app.get new RegExp("^\\/#{key}.js$"), (req,res)=>
+          res.setHeader("Content-Type", "text/javascript")
+          res.send @["#{key}_js_concat"]
+        if value.versions
+          for k,v of value.versions
+            do (k,v)=>
+              @webapp.app.get new RegExp("^\\/#{k}.js$"), (req,res)=>
+                res.setHeader("Content-Type", "text/javascript")
+                res.send @["#{k}_js_concat"]
+          
     @webapp_css = [
       "/css/style.css"
       "/css/home.css"
@@ -318,6 +369,9 @@ class @Concatenator
  
     for key,value of @alt_players
       @["#{key}_js"] = @alt_player_base.concat(value.scripts)
+      if value.versions
+        for k,v of value.versions
+          @["#{k}_js"] = @alt_player_base.concat(v.scripts)
 
     @refresh()
 
@@ -328,6 +382,9 @@ class @Concatenator
     @concat(@server_export_js,"server_export_js_concat")
     for key,value of @alt_players
       @concat(@["#{key}_js"],"#{key}_js_concat")
+      if value.versions?
+        for k,v of value.versions
+          @concat(@["#{k}_js"],"#{k}_js_concat")
     @concat(@webapp_css,"webapp_css_concat")
 
   getHomeJSFiles:()->
@@ -342,19 +399,33 @@ class @Concatenator
     else
       @webapp_css
 
+  findAltPlayer:(graphics)->
+    if graphics? and typeof graphics == "string"
+      graphics = graphics.toLowerCase()
+      if @alt_players[graphics]?
+        return @alt_players[graphics]
+      else
+        id = graphics.split("_")[0]
+        player = @alt_players[id]
+        if player? and player.versions?
+          return player.versions[graphics]
+    
+    return null
+
   getPlayerJSFiles:(graphics)->
-    if graphics? and typeof graphics == "string" and @alt_players[graphics.toLowerCase()]
-      g = graphics.toLowerCase()
-      player = @alt_players[g]
-      if @webapp.server.use_cache and @player3d_js_concat?
-        player.lib.concat ["/#{g}.js"]
+    if graphics? and typeof graphics == "string"
+      graphics = graphics.toLowerCase()
+      player = @findAltPlayer(graphics)
+      if player?
+        if @webapp.server.use_cache and @babylon_js_concat?
+          player.lib.concat ["/#{graphics}.js"]
+        else
+          player.lib.concat @["#{graphics}_js"]
       else
-        player.lib.concat @["#{g}_js"]
-    else
-      if @webapp.server.use_cache and @player_js_concat?
-        ["/play.js"]
-      else
-        @player_js
+        if @webapp.server.use_cache and @player_js_concat?
+          ["/play.js"]
+        else
+          @player_js
 
   getServerJSFiles:()->
     if @webapp.server.use_cache and @server_js_concat?
@@ -363,14 +434,28 @@ class @Concatenator
       @server_js
 
   getEngineExport:(graphics)->
-    if graphics? and typeof graphics == "string" and @alt_players[graphics.toLowerCase()]
-      g = graphics.toLowerCase()
-      @["#{g}_js_concat"] or ""
+    if graphics? and typeof graphics == "string"
+      graphics = graphics.toLowerCase()
+      @["#{graphics}_js_concat"] or @player_js_concat
     else
       @player_js_concat
 
   getServerEngineExport:()->
     @server_export_js_concat
+
+  findOptionalLib:(lib)->
+    if typeof lib != "string"
+      return false
+    
+    id = lib.split("_")[0]
+    l = @optional_libs[id]
+    if l?
+      if id == lib or not l.versions? or not l.versions[lib]?
+        return l
+      else
+        return l.versions[lib]
+    else
+      return false
 
   concat:(files,variable,callback)->
     list = (f for f in files)

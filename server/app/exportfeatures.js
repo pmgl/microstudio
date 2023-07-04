@@ -230,7 +230,7 @@ this.ExportFeatures = class ExportFeatures {
   addPublishHTML() {
     // /user/project[/code]/publish/html/
     return this.webapp.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+\/([^\/\|\?\&\.]+\/)?publish\/html\/$/, (req, res) => {
-      var access, assets_list, fonts, fullsource, g, i, images, j, k, l, len, len1, len2, len3, lib, libs, manager, maps_dict, music_list, n, optlib, proglang, project, queue, ref, ref1, ref2, s, sounds_list, user, wrapsource, zip;
+      var access, assets_list, fonts, fullsource, g, i, images, j, k, l, len, len1, len2, len3, lib, libs, manager, maps_dict, music_list, n, optlib, p, proglang, project, queue, ref, ref1, ref2, s, sounds_list, user, wrapsource, zip;
       if ((req.query != null) && (req.query.server != null)) {
         return this.publishServer(req, res);
       }
@@ -266,15 +266,16 @@ this.ExportFeatures = class ExportFeatures {
       libs = [];
       if ((project.graphics != null) && typeof project.graphics === "string") {
         g = project.graphics.toLowerCase();
-        if (this.webapp.concatenator.alt_players[g] != null) {
-          libs = [].concat(this.webapp.concatenator.alt_players[g].lib_path); // clone the array, will be modified
+        p = this.webapp.concatenator.findAltPlayer(g);
+        if (p) {
+          libs = [].concat(p.lib_path); // clone the array, will be modified
         }
       }
       ref = project.libs;
       for (j = 0, len = ref.length; j < len; j++) {
         optlib = ref[j];
-        lib = this.webapp.concatenator.optional_libs[optlib];
-        if (lib != null) {
+        lib = this.webapp.concatenator.findOptionalLib(optlib);
+        if (lib) {
           libs.push(lib.lib_path);
         }
       }
@@ -501,10 +502,10 @@ this.ExportFeatures = class ExportFeatures {
             })(src);
           }
           queue.add(() => {
-            var font, len5, p, ref3;
+            var font, len5, q, ref3;
             ref3 = this.webapp.fonts.fonts;
-            for (p = 0, len5 = ref3.length; p < len5; p++) {
-              font = ref3[p];
+            for (q = 0, len5 = ref3.length; q < len5; q++) {
+              font = ref3[q];
               if (font === "BitCell" || fullsource.indexOf(`"${font}"`) >= 0) {
                 fonts.push(font);
                 ((font) => {

@@ -56,8 +56,8 @@ html(lang=language)
     script(src="/lib/jquery/jquery.js")
     script(src="/lib/jquery-ui/jquery-ui.min.js")
     script(src="/lib/ace/ace.js")
-    script(src="/lib/mode-microscript.js")
-    script(src="/lib/mode-microscript2.js")
+    script(src="/lib/ace/mode-microscript.js")
+    script(src="/lib/ace/mode-microscript2.js")
     script(src="/lib/ace/mode-markdown.js")
     script(src="/lib/ace/theme-tomorrow_night_bright.js")
 
@@ -75,6 +75,8 @@ html(lang=language)
       window.translation = !{translation};
       window.dev_domain = !{dev_domain} ;
       window.run_domain = !{run_domain} ;
+      window.ms_optional_libs = !{JSON.stringify(optional_libs)};
+      window.ms_graphics_options = !{JSON.stringify(graphics_options)};
 
     if default_project_language
       script.

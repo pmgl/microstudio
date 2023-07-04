@@ -103,6 +103,7 @@ class @WebApp
           language: lang
           standalone: @server.config.standalone == true
           languages: @languages
+          graphics_options: @concatenator.alt_players
           optional_libs: @concatenator.optional_libs
           language_engines: @concatenator.language_engines
           translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
@@ -128,6 +129,7 @@ class @WebApp
           language: lang
           standalone: @server.config.standalone == true
           languages: @languages
+          graphics_options: @concatenator.alt_players
           optional_libs: @concatenator.optional_libs
           language_engines: @concatenator.language_engines
           translation: if @server.content.translator.languages[lang]? then @server.content.translator.languages[lang].export() else "{}"
@@ -265,8 +267,9 @@ class @WebApp
         jsfiles = @concatenator.getPlayerJSFiles(project.graphics)
 
       for lib in project.libs
-        if @concatenator.optional_libs[lib]?
-          jsfiles.push @concatenator.optional_libs[lib].lib
+        l = @concatenator.findOptionalLib lib
+        if l
+          jsfiles.push l.lib
 
       prog_lang = project.language
       if @concatenator.language_engines[prog_lang]?

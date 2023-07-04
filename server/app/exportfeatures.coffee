@@ -204,12 +204,13 @@ class @ExportFeatures
       libs = []
       if project.graphics? and typeof project.graphics == "string"
         g = project.graphics.toLowerCase()
-        if @webapp.concatenator.alt_players[g]?
-          libs = [].concat @webapp.concatenator.alt_players[g].lib_path # clone the array, will be modified
+        p = @webapp.concatenator.findAltPlayer g
+        if p
+          libs = [].concat p.lib_path # clone the array, will be modified
 
       for optlib in project.libs
-        lib = @webapp.concatenator.optional_libs[optlib]
-        if lib?
+        lib = @webapp.concatenator.findOptionalLib(optlib)
+        if lib
           libs.push lib.lib_path
 
       proglang = @webapp.concatenator.language_engines[project.language]

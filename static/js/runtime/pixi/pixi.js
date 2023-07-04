@@ -11,4 +11,8 @@ PIXI.Sprite.from = function(source) {
   return this._from(source);
 };
 
-PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+if (PIXI.BaseTexture.defaultOptions != null) {
+  PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST;
+} else {
+  PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+}

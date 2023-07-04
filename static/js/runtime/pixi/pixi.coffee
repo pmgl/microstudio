@@ -9,4 +9,7 @@ PIXI.Sprite.from = (source)->
     source = PIXI.runtime.sprites[source].frames[0].canvas
   return @_from(source)
 
-PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST
+if PIXI.BaseTexture.defaultOptions?
+  PIXI.BaseTexture.defaultOptions.scaleMode = PIXI.SCALE_MODES.NEAREST
+else
+  PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST

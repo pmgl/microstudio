@@ -171,10 +171,12 @@ this.Runtime = class Runtime {
     if (ready < count) {
       if ((this.loading_bar_time == null) || Date.now() > this.loading_bar_time + 16) {
         this.loading_bar_time = Date.now();
-        this.screen.clear();
-        this.screen.drawRect(0, 0, 100, 10, "#DDD");
-        progress = ready / count;
-        this.screen.fillRect(-(1 - progress) * 48, 0, progress * 96, 6, "#DDD");
+        if (this.screen.fillRect != null) {
+          this.screen.clear();
+          this.screen.drawRect(0, 0, 100, 10, "#DDD");
+          progress = ready / count;
+          this.screen.fillRect(-(1 - progress) * 48, 0, progress * 96, 6, "#DDD");
+        }
         if (window.ms_async_load && (this.vm != null)) {
           this.vm.context.global.system.loading = Math.floor(ready / count * 100);
         }
@@ -228,16 +230,17 @@ this.Runtime = class Runtime {
     } else if (window.graphics === "M2D") {
       global.M2D = M2D;
       M2D.runtime = this;
-    } else if (window.graphics === "PIXI") {
+    } else if (window.graphics.toLowerCase().startsWith("pixi")) {
       global.PIXI = PIXI;
       PIXI.runtime = this;
-    } else if (window.graphics === "BABYLON") {
+    } else if (window.graphics.toLowerCase().startsWith("babylon")) {
       global.BABYLON = BABYLON;
       BABYLON.runtime = this;
     }
     ref = window.ms_libs;
     for (j = 0, len1 = ref.length; j < len1; j++) {
       lib = ref[j];
+      lib = lib.split("_")[0];
       switch (lib) {
         case "matterjs":
           global.Matter = Matter;

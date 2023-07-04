@@ -1,9 +1,8 @@
-var DEFAULT_CODE,
-  indexOf = [].indexOf;
+var DEFAULT_CODE;
 
 this.Options = class Options {
   constructor(app) {
-    var advanced, i, input, len, list;
+    var advanced, input, j, len, list;
     this.app = app;
     this.textInput("projectoption-name", (value) => {
       return this.optionChanged("title", value);
@@ -24,6 +23,9 @@ this.Options = class Options {
       return this.typeChanged(value);
     });
     this.selectInput("projectoption-graphics", (value) => {
+      return this.graphicsChanged(value);
+    });
+    this.selectInput("projectoption-graphics-version", (value) => {
       return this.graphicsChanged(value);
     });
     this.selectInput("projectoption-language", (value) => {
@@ -53,24 +55,38 @@ this.Options = class Options {
       }
     });
     list = document.querySelectorAll("#project-option-libs input");
-    for (i = 0, len = list.length; i < len; i++) {
-      input = list[i];
+    for (j = 0, len = list.length; j < len; j++) {
+      input = list[j];
       ((input) => {
-        return input.addEventListener("change", () => {
-          var id, index;
-          id = input.id.split("-");
-          id = id[id.length - 1];
-          if (input.checked) {
-            if (indexOf.call(this.app.project.libs, id) < 0) {
-              this.app.project.libs.push(id);
-              return this.optionChanged("libs", this.app.project.libs);
+        var id, key, option, ref, value, version_e;
+        id = input.id.split("-");
+        id = id[id.length - 1];
+        if (ms_optional_libs[id] != null) {
+          version_e = document.getElementById(`project-option-lib-${id}-version`);
+          if (ms_optional_libs[id].versions != null) {
+            ref = ms_optional_libs[id].versions;
+            for (key in ref) {
+              value = ref[key];
+              option = document.createElement("option");
+              option.value = key;
+              option.innerText = value.name;
+              version_e.appendChild(option);
             }
+            this.selectInput(version_e.id, (value) => {
+              this.addLib(value);
+              return this.libsChanged();
+            });
           } else {
-            index = this.app.project.libs.indexOf(id);
-            if (index >= 0) {
-              this.app.project.libs.splice(index, 1);
-              return this.optionChanged("libs", this.app.project.libs);
-            }
+            version_e.style.display = "none";
+          }
+        }
+        return input.addEventListener("change", () => {
+          if (input.checked) {
+            this.addLib(id);
+            return this.libsChanged();
+          } else {
+            this.removeLib(id);
+            return this.libsChanged();
           }
         });
       })(input);
@@ -103,7 +119,6 @@ this.Options = class Options {
   }
 
   projectOpened() {
-    var e, i, input, j, len, len1, lib, list, ref;
     document.getElementById("projectoptions-icon").src = this.app.project.getFullURL() + "icon.png";
     //document.getElementById("projectoptions-icon").setAttribute("src","#{@app.project.getFullURL()}icon.png")
     document.getElementById("projectoption-name").value = this.app.project.title;
@@ -112,31 +127,109 @@ this.Options = class Options {
     document.getElementById("projectoption-orientation").value = this.app.project.orientation;
     document.getElementById("projectoption-aspect").value = this.app.project.aspect;
     document.getElementById("projectoption-type").value = this.app.project.type || "app";
-    document.getElementById("projectoption-graphics").value = this.app.project.graphics || "M1";
+    document.getElementById("projectoption-graphics").value = (this.app.project.graphics || "M1").split("_")[0];
     document.getElementById("projectoption-language").value = this.app.project.language || "microscript_v1_i";
     document.getElementById("projectoption-networking").checked = this.app.project.networking || false;
     this.library_tip.style.display = this.app.project.type === "library" ? "block" : "none";
-    list = document.querySelectorAll("#project-option-libs input");
-    for (i = 0, len = list.length; i < len; i++) {
-      input = list[i];
-      input.checked = false;
-    }
-    ref = this.app.project.libs;
-    for (j = 0, len1 = ref.length; j < len1; j++) {
-      lib = ref[j];
-      e = document.getElementById(`project-option-lib-${lib}`);
-      if (e != null) {
-        e.checked = true;
-      }
-    }
+    this.updateOptionalLibs();
     this.updateSecretCodeLine();
     this.updateUserList();
     this.app.project.addListener(this);
     if (window.ms_standalone || this.app.user.flags.guest) {
-      return document.querySelector("#projectoptions-users-content").style.display = "none";
+      document.querySelector("#projectoptions-users-content").style.display = "none";
     } else {
-      return document.querySelector("#projectoptions-users-content").style.display = "block";
+      document.querySelector("#projectoptions-users-content").style.display = "block";
     }
+    return this.updateGraphicsVersion();
+  }
+
+  updateGraphicsVersion() {
+    var e, full_id, graphics, id, key, option, ref, ref1, v;
+    e = document.getElementById("projectoption-graphics-version");
+    full_id = this.app.project.graphics || "M1";
+    id = full_id.split("_")[0].toLowerCase();
+    graphics = ms_graphics_options[id];
+    if (graphics) {
+      if (graphics.versions) {
+        e.innerHTML = "";
+        ref = graphics.versions;
+        for (key in ref) {
+          v = ref[key];
+          option = document.createElement("option");
+          option.value = key.toUpperCase();
+          option.innerText = v.name;
+          e.appendChild(option);
+        }
+        if (graphics.versions[full_id.toLowerCase()]) {
+          e.value = full_id;
+        } else {
+          ref1 = graphics.versions;
+          for (key in ref1) {
+            v = ref1[key];
+            if (v.original) {
+              e.value = key.toUpperCase();
+            }
+          }
+        }
+        return e.style.display = "inline-block";
+      } else {
+        return e.style.display = "none";
+      }
+    } else {
+      return e.style.display = "none";
+    }
+  }
+
+  updateOptionalLibs() {
+    var checked, e, id, input, j, k, key, len, len1, lib, list, optlib, ref, results, v, value, version;
+    list = document.querySelectorAll("#project-option-libs input");
+    results = [];
+    for (j = 0, len = list.length; j < len; j++) {
+      input = list[j];
+      input.checked = false;
+      id = input.id;
+      id = id.split("-");
+      id = id[id.length - 1];
+      e = document.getElementById(`project-option-lib-${id}`);
+      v = document.getElementById(`project-option-lib-${id}-version`);
+      checked = false;
+      version = null;
+      optlib = null;
+      ref = this.app.project.libs;
+      for (k = 0, len1 = ref.length; k < len1; k++) {
+        lib = ref[k];
+        if (lib.startsWith(id)) {
+          checked = true;
+          version = lib;
+          optlib = ms_optional_libs[id];
+        }
+      }
+      e.checked = checked;
+      if (checked && (optlib.versions != null)) {
+        v.style.display = "inline-block";
+        if (optlib.versions[version] != null) {
+          results.push(v.value = version);
+        } else {
+          results.push((function() {
+            var ref1, results1;
+            ref1 = optlib.versions;
+            results1 = [];
+            for (key in ref1) {
+              value = ref1[key];
+              if (value.original) {
+                results1.push(v.value = key);
+              } else {
+                results1.push(void 0);
+              }
+            }
+            return results1;
+          })());
+        }
+      } else {
+        results.push(v.style.display = "none");
+      }
+    }
+    return results;
   }
 
   updateSecretCodeLine() {
@@ -236,14 +329,69 @@ this.Options = class Options {
   }
 
   graphicsChanged(value) {
+    var graphics, id, key, ref, v;
+    id = value.split("_")[0];
+    if (id === value) {
+      graphics = ms_graphics_options[id.toLowerCase()];
+      if (graphics && graphics.versions) {
+        ref = graphics.versions;
+        for (key in ref) {
+          v = ref[key];
+          if (v.default) {
+            value = key.toUpperCase();
+            break;
+          }
+        }
+      }
+    }
     this.app.project.setGraphics(value);
     this.app.debug.updateDebuggerVisibility();
+    this.updateGraphicsVersion();
     return this.app.client.sendRequest({
       name: "set_project_option",
       project: this.app.project.id,
       option: "graphics",
       value: value
     }, (msg) => {});
+  }
+
+  fixLib(lib) {
+    var key, ref, value;
+    if ((ms_optional_libs[lib] != null) && ms_optional_libs[lib].versions) {
+      ref = ms_optional_libs[lib].versions;
+      for (key in ref) {
+        value = ref[key];
+        if (value.default) {
+          return key;
+        }
+      }
+    }
+    return lib;
+  }
+
+  addLib(lib) {
+    this.removeLib(lib);
+    return this.app.project.libs.push(this.fixLib(lib));
+  }
+
+  removeLib(lib) {
+    var i, id, j, l, ref, results;
+    id = lib.split("_")[0];
+    results = [];
+    for (i = j = ref = this.app.project.libs.length - 1; j >= 0; i = j += -1) {
+      l = this.app.project.libs[i];
+      if (l.split("_")[0] === id) {
+        results.push(this.app.project.libs.splice(i, 1));
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  }
+
+  libsChanged() {
+    this.optionChanged("libs", this.app.project.libs);
+    return this.updateOptionalLibs();
   }
 
   languageChanged(value) {
@@ -324,12 +472,12 @@ this.Options = class Options {
   }
 
   updateUserList() {
-    var div, i, len, ref, user;
+    var div, j, len, ref, user;
     div = document.getElementById("project-user-list");
     div.innerHTML = "";
     ref = this.app.project.users;
-    for (i = 0, len = ref.length; i < len; i++) {
-      user = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      user = ref[j];
       ((user) => {
         var e, name, remove;
         e = document.createElement("div");
