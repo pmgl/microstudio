@@ -223,7 +223,8 @@ class AppUI
 
     setInterval (()=>@checkActivity()),10000
 
-    @reboot_date = 1663054200000
+    @addWarningMessage("""Recent server failure and data loss :-( Check <a target="_blank" href="https://microstudio.dev/community/news/failure/653/">this post</a> for more information.""",undefined,"server_failure",true)
+    @reboot_date = 1689163200000
     @checkRebootMessage()
 
   checkRebootMessage:()->
@@ -235,7 +236,7 @@ class AppUI
         minutes = Math.max(0,@reboot_date-Date.now())/60000
         if minutes>=120
           hours = Math.floor(minutes/60)
-          div.innerHTML = "<i class='fas fa-info-circle'></i> "+@app.translator.get("microStudio will be down for maintenance on %DATE% at %TIME%. Downtime will last a few minutes.").replace("%DATE%",new Date(@reboot_date).toLocaleDateString()).replace("%TIME%",new Date(@reboot_date).toLocaleTimeString())
+          div.innerHTML = "<i class='fas fa-info-circle'></i> "+@app.translator.get("microStudio will be down for server migration on %DATE% at %TIME%. Downtime will last a few minutes.").replace("%DATE%",new Date(@reboot_date).toLocaleDateString()).replace("%TIME%",new Date(@reboot_date).toLocaleTimeString())
         else if minutes>=2
           minutes = Math.floor(minutes)
           div.innerHTML = "<i class='fas fa-exclamation-circle'></i> "+@app.translator.get("Downtime will start in %MINUTES% minutes").replace("%MINUTES%",minutes)

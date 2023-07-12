@@ -240,7 +240,8 @@ AppUI = class AppUI {
     setInterval((() => {
       return this.checkActivity();
     }), 10000);
-    this.reboot_date = 1663054200000;
+    this.addWarningMessage("Recent server failure and data loss :-( Check <a target=\"_blank\" href=\"https://microstudio.dev/community/news/failure/653/\">this post</a> for more information.", void 0, "server_failure", true);
+    this.reboot_date = 1689163200000;
     this.checkRebootMessage();
   }
 
@@ -255,7 +256,7 @@ AppUI = class AppUI {
         minutes = Math.max(0, this.reboot_date - Date.now()) / 60000;
         if (minutes >= 120) {
           hours = Math.floor(minutes / 60);
-          return div.innerHTML = "<i class='fas fa-info-circle'></i> " + this.app.translator.get("microStudio will be down for maintenance on %DATE% at %TIME%. Downtime will last a few minutes.").replace("%DATE%", new Date(this.reboot_date).toLocaleDateString()).replace("%TIME%", new Date(this.reboot_date).toLocaleTimeString());
+          return div.innerHTML = "<i class='fas fa-info-circle'></i> " + this.app.translator.get("microStudio will be down for server migration on %DATE% at %TIME%. Downtime will last a few minutes.").replace("%DATE%", new Date(this.reboot_date).toLocaleDateString()).replace("%TIME%", new Date(this.reboot_date).toLocaleTimeString());
         } else if (minutes >= 2) {
           minutes = Math.floor(minutes);
           return div.innerHTML = "<i class='fas fa-exclamation-circle'></i> " + this.app.translator.get("Downtime will start in %MINUTES% minutes").replace("%MINUTES%", minutes);
