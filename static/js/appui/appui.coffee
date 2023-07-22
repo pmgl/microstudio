@@ -223,7 +223,6 @@ class AppUI
 
     setInterval (()=>@checkActivity()),10000
 
-    @addWarningMessage("""Recent server failure and data loss :-( Check <a target="_blank" href="https://microstudio.dev/community/news/failure/653/">this post</a> for more information.""",undefined,"server_failure",true)
     @reboot_date = 1689163200000
     @checkRebootMessage()
 

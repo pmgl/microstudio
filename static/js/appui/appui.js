@@ -240,7 +240,6 @@ AppUI = class AppUI {
     setInterval((() => {
       return this.checkActivity();
     }), 10000);
-    this.addWarningMessage("Recent server failure and data loss :-( Check <a target=\"_blank\" href=\"https://microstudio.dev/community/news/failure/653/\">this post</a> for more information.", void 0, "server_failure", true);
     this.reboot_date = 1689163200000;
     this.checkRebootMessage();
   }
