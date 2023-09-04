@@ -3,7 +3,7 @@ define("ace/mode/microscript_highlight_rules", ["require", "exports", "module", 
     var r = e("../lib/oop"),
         i = e("./text_highlight_rules").TextHighlightRules,
         s = function() {
-            var e = "continue|break|else|elsif|end|for|by|function|if|in|to|local|return|then|while|or|and|not|object|class|extends|new|this|super",
+            var e = "continue|break|else|elsif|end|for|by|function|if|in|to|local|return|then|while|or|and|not|object|class|extends|new|this|super|global",
                 t = "true|false",
                 n = "print|time|type|log|max|PI|pow|random|ceil|round|floor|abs|sqrt|min|exp|sin|atan|concat|sort|cos|sin|tan|acos|asin|atan|atan2|sind|cosd|tand|acosd|asind|atand|atan2d",
                 r = "screen|system|audio|gamepad|keyboard|touch|mouse",
