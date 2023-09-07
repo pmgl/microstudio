@@ -301,7 +301,7 @@ var Microscript2HighlightRules = function() {
       "keyword.control": "by|return|break|continue",
       "support.function": "screen|system|audio|gamepad|keyboard|touch|mouse|storage|asset_manager|print|type|log|max|PI|pow|random|ceil|round|floor|abs|sqrt|min|exp|sin|atan|concat|sortList|cos|sin|tan|acos|asin|atan|atan2|sind|cosd|tand|acosd|asind|atand|atan2d|Function|Number|String|List|Object|Image|Sprite|Sound",
       "support.constant": "true|false|PI",
-      "variable.language": "this|type|super"
+      "variable.language": "this|type|super|global"
     },"identifier") ;
 
   this.$rules = {
