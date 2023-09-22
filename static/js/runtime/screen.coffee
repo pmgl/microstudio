@@ -131,6 +131,10 @@ class @Screen
       drawPolygon: ()->screen.drawPolygon(arguments)
       drawPolyline: ()->screen.drawPolyline(arguments)
       fillPolygon: ()->screen.fillPolygon(arguments)
+      drawQuadCurve: ()->screen.drawQuadCurve(arguments)
+      drawBezierCurve: ()->screen.drawBezierCurve(arguments)
+      drawArc: ( x,y,radius, angle1, angle2, ccw,color )-> screen.drawArc( x,y,radius, angle1, angle2, ccw,color )
+      fillArc: ( x,y,radius, angle1, angle2, ccw,color )-> screen.fillArc( x,y,radius, angle1, angle2, ccw,color )
       setCursorVisible: (visible)->screen.setCursorVisible(visible)
       loadFont: (font)->screen.loadFont(font)
       isFontReady: (font)->screen.isFontReady(font)
@@ -416,7 +420,7 @@ class @Screen
 
     @context.globalAlpha = @alpha
     @context.lineWidth = @line_width
-    return if args.length<4
+    return if args.length < 4
     len = Math.floor(args.length/2)
     transform = @initDrawOp 0,0,false
     @context.beginPath()
@@ -439,7 +443,7 @@ class @Screen
 
     @context.globalAlpha = @alpha
     @context.lineWidth = @line_width
-    return if args.length<4
+    return if args.length < 4
     len = Math.floor(args.length/2)
     transform = @initDrawOp 0,0,false
     @context.beginPath()
@@ -449,6 +453,85 @@ class @Screen
 
     @context.fill()
     @closeDrawOp() if transform
+
+
+  drawQuadCurve:(args)->
+    if args.length>0 and args.length%2 == 1 and typeof args[args.length-1] == "string"
+      @setColor args[args.length-1]
+
+    if Array.isArray args[0]
+      if args[1]? and typeof args[1] == "string"
+        @setColor args[1]
+      args = args[0]
+
+    @context.globalAlpha = @alpha
+    @context.lineWidth = @line_width
+    return if args.length < 4
+    len = Math.floor(args.length/2)
+    transform = @initDrawOp 0,0,false
+    @context.beginPath()
+    @context.moveTo args[0],-args[1]
+    index = 2
+    while index <= args.length-4
+      @context.quadraticCurveTo args[index],-args[index+1],args[index+2],-args[index+3]
+      index += 4
+
+    @context.stroke()
+    @closeDrawOp() if transform
+
+  drawBezierCurve:(args)->
+    if args.length>0 and args.length%2 == 1 and typeof args[args.length-1] == "string"
+      @setColor args[args.length-1]
+
+    if Array.isArray args[0]
+      if args[1]? and typeof args[1] == "string"
+        @setColor args[1]
+      args = args[0]
+
+    @context.globalAlpha = @alpha
+    @context.lineWidth = @line_width
+    return if args.length < 4
+    len = Math.floor(args.length/2)
+    transform = @initDrawOp 0,0,false
+    @context.beginPath()
+    @context.moveTo args[0],-args[1]
+    index = 2
+    while index <= args.length-6
+      @context.bezierCurveTo args[index],-args[index+1],args[index+2],-args[index+3],args[index+4],-args[index+5]
+      index += 6
+
+    @context.stroke()
+    @closeDrawOp() if transform
+
+  drawArc:( x,y,radius, angle1, angle2, ccw,color )->
+    @setColor color
+    @context.globalAlpha = @alpha
+    @context.lineWidth = @line_width
+
+    if @initDrawOp(x,-y)
+      @context.beginPath()
+      @context.arc( 0, 0, radius, -angle1/180*Math.PI, -angle2/180*Math.PI, ccw )
+      @context.stroke()
+      @closeDrawOp(x,-y)
+    else
+      @context.beginPath()
+      @context.arc( x,-y, radius, -angle1/180*Math.PI, -angle2/180*Math.PI, ccw )
+      @context.stroke()
+
+  fillArc:( x,y,radius, angle1, angle2, ccw,color )->
+    @setColor color
+    @context.globalAlpha = @alpha
+    @context.lineWidth = @line_width
+
+    if @initDrawOp(x,-y)
+      @context.beginPath()
+      @context.arc( 0, 0, radius, -angle1/180*Math.PI, -angle2/180*Math.PI, ccw )
+      @context.fill()
+      @closeDrawOp(x,-y)
+    else
+      @context.beginPath()
+      @context.arc( x,-y, radius, -angle1/180*Math.PI, -angle2/180*Math.PI, ccw )
+      @context.fill()
 
   textWidth:(text,size)->
     @context.font = "#{size}pt #{@font}"

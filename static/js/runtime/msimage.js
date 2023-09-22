@@ -497,6 +497,106 @@ this.msImage = (function() {
       }
     }
 
+    drawQuadCurve() {
+      var args, index, len, transform;
+      args = arguments;
+      this.initContext();
+      if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
+        this.setColor(args[args.length - 1]);
+      }
+      if (Array.isArray(args[0])) {
+        if ((args[1] != null) && typeof args[1] === "string") {
+          this.setColor(args[1]);
+        }
+        args = args[0];
+      }
+      this.context.globalAlpha = this.alpha;
+      this.context.lineWidth = this.line_width;
+      if (args.length < 4) {
+        return;
+      }
+      len = Math.floor(args.length / 2);
+      transform = this.initDrawOp(0, 0, false);
+      this.context.beginPath();
+      this.context.moveTo(args[0], args[1]);
+      index = 2;
+      while (index <= args.length - 4) {
+        this.context.quadraticCurveTo(args[index], args[index + 1], args[index + 2], args[index + 3]);
+        index += 4;
+      }
+      this.context.stroke();
+      if (transform) {
+        return this.closeDrawOp();
+      }
+    }
+
+    drawBezierCurve() {
+      var args, index, len, transform;
+      args = arguments;
+      this.initContext();
+      if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
+        this.setColor(args[args.length - 1]);
+      }
+      if (Array.isArray(args[0])) {
+        if ((args[1] != null) && typeof args[1] === "string") {
+          this.setColor(args[1]);
+        }
+        args = args[0];
+      }
+      this.context.globalAlpha = this.alpha;
+      this.context.lineWidth = this.line_width;
+      if (args.length < 4) {
+        return;
+      }
+      len = Math.floor(args.length / 2);
+      transform = this.initDrawOp(0, 0, false);
+      this.context.beginPath();
+      this.context.moveTo(args[0], args[1]);
+      index = 2;
+      while (index <= args.length - 6) {
+        this.context.bezierCurveTo(args[index], args[index + 1], args[index + 2], args[index + 3], args[index + 4], args[index + 5]);
+        index += 6;
+      }
+      this.context.stroke();
+      if (transform) {
+        return this.closeDrawOp();
+      }
+    }
+
+    drawArc(x, y, radius, angle1, angle2, ccw, color) {
+      this.initContext();
+      this.setColor(color);
+      this.context.globalAlpha = this.alpha;
+      this.context.lineWidth = this.line_width;
+      if (this.initDrawOp(x, y)) {
+        this.context.beginPath();
+        this.context.arc(0, 0, radius, angle1 / 180 * Math.PI, angle2 / 180 * Math.PI, ccw);
+        this.context.stroke();
+        return this.closeDrawOp(x, -y);
+      } else {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, angle1 / 180 * Math.PI, angle2 / 180 * Math.PI, ccw);
+        return this.context.stroke();
+      }
+    }
+
+    fillArc(x, y, radius, angle1, angle2, ccw, color) {
+      this.initContext();
+      this.setColor(color);
+      this.context.globalAlpha = this.alpha;
+      this.context.lineWidth = this.line_width;
+      if (this.initDrawOp(x, y)) {
+        this.context.beginPath();
+        this.context.arc(0, 0, radius, angle1 / 180 * Math.PI, angle2 / 180 * Math.PI, ccw);
+        this.context.fill();
+        return this.closeDrawOp(x, -y);
+      } else {
+        this.context.beginPath();
+        this.context.arc(x, y, radius, angle1 / 180 * Math.PI, angle2 / 180 * Math.PI, ccw);
+        return this.context.fill();
+      }
+    }
+
     textWidth(text, size) {
       this.initContext();
       this.context.font = `${size}pt ${this.font}`;

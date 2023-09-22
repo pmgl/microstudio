@@ -1,5 +1,5 @@
-this.Screen = (function() {
-  function Screen(runtime) {
+this.Screen = class Screen {
+  constructor(runtime) {
     this.runtime = runtime;
     this.canvas = document.createElement("canvas");
     this.canvas.width = 1080;
@@ -35,33 +35,29 @@ this.Screen = (function() {
     this.loadFont(this.font);
     this.initContext();
     this.cursor = "default";
-    this.canvas.addEventListener("mousemove", (function(_this) {
-      return function() {
-        _this.last_mouse_move = Date.now();
-        if (_this.cursor !== "default" && _this.cursor_visibility === "auto") {
-          _this.cursor = "default";
-          return _this.canvas.style.cursor = "default";
-        }
-      };
-    })(this));
-    setInterval(((function(_this) {
-      return function() {
-        return _this.checkMouseCursor();
-      };
-    })(this)), 1000);
+    this.canvas.addEventListener("mousemove", () => {
+      this.last_mouse_move = Date.now();
+      if (this.cursor !== "default" && this.cursor_visibility === "auto") {
+        this.cursor = "default";
+        return this.canvas.style.cursor = "default";
+      }
+    });
+    setInterval((() => {
+      return this.checkMouseCursor();
+    }), 1000);
     this.cursor_visibility = "auto";
   }
 
-  Screen.prototype.checkMouseCursor = function() {
+  checkMouseCursor() {
     if (Date.now() > this.last_mouse_move + 4000 && this.cursor_visibility === "auto") {
       if (this.cursor !== "none") {
         this.cursor = "none";
         return this.canvas.style.cursor = "none";
       }
     }
-  };
+  }
 
-  Screen.prototype.setCursorVisible = function(visible) {
+  setCursorVisible(visible) {
     this.cursor_visibility = visible;
     if (visible) {
       this.cursor = "default";
@@ -70,9 +66,9 @@ this.Screen = (function() {
       this.cursor = "none";
       return this.canvas.style.cursor = "none";
     }
-  };
+  }
 
-  Screen.prototype.initContext = function() {
+  initContext() {
     var b, c, j, len1, ratio, ref;
     c = this.canvas.getContext("2d", {
       alpha: false
@@ -88,6 +84,12 @@ this.Screen = (function() {
     this.context.scale(ratio, ratio);
     this.width = this.canvas.width / ratio;
     this.height = this.canvas.height / ratio;
+    // @translation_x = 0
+    // @translation_y = 0
+    // @rotation = 0
+    // @scale_x = 1
+    // @scale_y = 1
+    // @screen_transform = false
     this.context.lineCap = "round";
     this.blending = {
       normal: "source-over",
@@ -98,15 +100,15 @@ this.Screen = (function() {
       b = ref[j];
       this.blending[b] = b;
     }
-  };
+  }
 
-  Screen.prototype.getInterface = function() {
+  getInterface() {
     var screen;
-    if (this["interface"] != null) {
-      return this["interface"];
+    if (this.interface != null) {
+      return this.interface;
     }
     screen = this;
-    return this["interface"] = {
+    return this.interface = {
       width: this.width,
       height: this.height,
       clear: function(color) {
@@ -211,6 +213,18 @@ this.Screen = (function() {
       fillPolygon: function() {
         return screen.fillPolygon(arguments);
       },
+      drawQuadCurve: function() {
+        return screen.drawQuadCurve(arguments);
+      },
+      drawBezierCurve: function() {
+        return screen.drawBezierCurve(arguments);
+      },
+      drawArc: function(x, y, radius, angle1, angle2, ccw, color) {
+        return screen.drawArc(x, y, radius, angle1, angle2, ccw, color);
+      },
+      fillArc: function(x, y, radius, angle1, angle2, ccw, color) {
+        return screen.fillArc(x, y, radius, angle1, angle2, ccw, color);
+      },
       setCursorVisible: function(visible) {
         return screen.setCursorVisible(visible);
       },
@@ -221,14 +235,14 @@ this.Screen = (function() {
         return screen.isFontReady(font);
       }
     };
-  };
+  }
 
-  Screen.prototype.updateInterface = function() {
-    this["interface"].width = this.width;
-    return this["interface"].height = this.height;
-  };
+  updateInterface() {
+    this.interface.width = this.width;
+    return this.interface.height = this.height;
+  }
 
-  Screen.prototype.clear = function(color) {
+  clear(color) {
     var blending_save, c, s;
     c = this.context.fillStyle;
     s = this.context.strokeStyle;
@@ -244,18 +258,18 @@ this.Screen = (function() {
     this.context.fillStyle = c;
     this.context.strokeStyle = s;
     return this.context.globalCompositeOperation = blending_save;
-  };
+  }
 
-  Screen.prototype.initDraw = function() {
+  initDraw() {
     this.alpha = 1;
     this.line_width = 1;
     if (this.supersampling !== this.previous_supersampling) {
       this.resize();
       return this.previous_supersampling = this.supersampling;
     }
-  };
+  }
 
-  Screen.prototype.setColor = function(color) {
+  setColor(color) {
     var b, c, g, r;
     if (color == null) {
       return;
@@ -275,85 +289,79 @@ this.Screen = (function() {
       this.context.fillStyle = color;
       return this.context.strokeStyle = color;
     }
-  };
+  }
 
-  Screen.prototype.setAlpha = function(alpha1) {
+  setAlpha(alpha1) {
     this.alpha = alpha1;
-  };
+  }
 
-  Screen.prototype.setPixelated = function(pixelated1) {
+  setPixelated(pixelated1) {
     this.pixelated = pixelated1;
-  };
+  }
 
-  Screen.prototype.setBlending = function(blending) {
+  setBlending(blending) {
     blending = this.blending[blending || "normal"] || "source-over";
     return this.context.globalCompositeOperation = blending;
-  };
+  }
 
-  Screen.prototype.setLineWidth = function(line_width) {
+  setLineWidth(line_width) {
     this.line_width = line_width;
-  };
+  }
 
-  Screen.prototype.setLineDash = function(dash) {
+  setLineDash(dash) {
     if (!Array.isArray(dash)) {
       return this.context.setLineDash([]);
     } else {
       return this.context.setLineDash(dash);
     }
-  };
+  }
 
-  Screen.prototype.setLinearGradient = function(x1, y1, x2, y2, c1, c2) {
+  setLinearGradient(x1, y1, x2, y2, c1, c2) {
     var grd;
     grd = this.context.createLinearGradient(x1, -y1, x2, -y2);
     grd.addColorStop(0, c1);
     grd.addColorStop(1, c2);
     this.context.fillStyle = grd;
     return this.context.strokeStyle = grd;
-  };
+  }
 
-  Screen.prototype.setRadialGradient = function(x, y, radius, c1, c2) {
+  setRadialGradient(x, y, radius, c1, c2) {
     var grd;
     grd = this.context.createRadialGradient(x, -y, 0, x, -y, radius);
     grd.addColorStop(0, c1);
     grd.addColorStop(1, c2);
     this.context.fillStyle = grd;
     return this.context.strokeStyle = grd;
-  };
+  }
 
-  Screen.prototype.setFont = function(font) {
+  setFont(font) {
     this.font = font || "Verdana";
     return this.loadFont(this.font);
-  };
+  }
 
-  Screen.prototype.loadFont = function(font) {
+  loadFont(font = "BitCell") {
     var err;
-    if (font == null) {
-      font = "BitCell";
-    }
     if (!this.font_load_requested[font]) {
       this.font_load_requested[font] = true;
       try {
         if ((document.fonts != null) && (document.fonts.load != null)) {
-          document.fonts.load("16pt " + font);
+          document.fonts.load(`16pt ${font}`);
         }
       } catch (error) {
         err = error;
       }
     }
     return 1;
-  };
+  }
 
-  Screen.prototype.isFontReady = function(font) {
+  isFontReady(font = this.font) {
     var err, res;
-    if (font == null) {
-      font = this.font;
-    }
     if (this.font_loaded[font]) {
       return 1;
     }
     try {
       if ((document.fonts != null) && (document.fonts.check != null)) {
-        res = document.fonts.check("16pt " + font);
+        res = document.fonts.check(`16pt ${font}`);
         if (res) {
           this.font_loaded[font] = res;
         }
@@ -367,9 +375,9 @@ this.Screen = (function() {
       err = error;
     }
     return 1;
-  };
+  }
 
-  Screen.prototype.setTranslation = function(translation_x, translation_y) {
+  setTranslation(translation_x, translation_y) {
     this.translation_x = translation_x;
     this.translation_y = translation_y;
     if (!isFinite(this.translation_x)) {
@@ -379,9 +387,9 @@ this.Screen = (function() {
       this.translation_y = 0;
     }
     return this.updateScreenTransform();
-  };
+  }
 
-  Screen.prototype.setScale = function(scale_x, scale_y) {
+  setScale(scale_x, scale_y) {
     this.scale_x = scale_x;
     this.scale_y = scale_y;
     if (!isFinite(this.scale_x) || this.scale_x === 0) {
@@ -391,21 +399,21 @@ this.Screen = (function() {
       this.scale_y = 1;
     }
     return this.updateScreenTransform();
-  };
+  }
 
-  Screen.prototype.setRotation = function(rotation1) {
+  setRotation(rotation1) {
     this.rotation = rotation1;
     if (!isFinite(this.rotation)) {
       this.rotation = 0;
     }
     return this.updateScreenTransform();
-  };
+  }
 
-  Screen.prototype.updateScreenTransform = function() {
+  updateScreenTransform() {
     return this.screen_transform = this.translation_x !== 0 || this.translation_y !== 0 || this.scale_x !== 1 || this.scale_y !== 1 || this.rotation !== 0;
-  };
+  }
 
-  Screen.prototype.setDrawAnchor = function(anchor_x, anchor_y) {
+  setDrawAnchor(anchor_x, anchor_y) {
     this.anchor_x = anchor_x;
     this.anchor_y = anchor_y;
     if (typeof this.anchor_x !== "number") {
@@ -414,22 +422,19 @@ this.Screen = (function() {
     if (typeof this.anchor_y !== "number") {
       return this.anchor_y = 0;
     }
-  };
+  }
 
-  Screen.prototype.setDrawRotation = function(object_rotation) {
+  setDrawRotation(object_rotation) {
     this.object_rotation = object_rotation;
-  };
+  }
 
-  Screen.prototype.setDrawScale = function(object_scale_x, object_scale_y) {
+  setDrawScale(object_scale_x, object_scale_y = this.object_scale_x) {
     this.object_scale_x = object_scale_x;
-    this.object_scale_y = object_scale_y != null ? object_scale_y : this.object_scale_x;
-  };
+    this.object_scale_y = object_scale_y;
+  }
 
-  Screen.prototype.initDrawOp = function(x, y, object_transform) {
+  initDrawOp(x, y, object_transform = true) {
     var res;
-    if (object_transform == null) {
-      object_transform = true;
-    }
     res = false;
     if (this.screen_transform) {
       this.context.save();
@@ -453,13 +458,19 @@ this.Screen = (function() {
       }
     }
     return res;
-  };
+  }
 
-  Screen.prototype.closeDrawOp = function(x, y) {
+  closeDrawOp(x, y) {
+    //if @object_scale_x != 1 or @object_scale_y != 1
+    //  @context.scale 1/@object_scale_x,1/@object_scale_y
+
+    //if @object_rotation != 0
+    //  @context.rotate -@object_rotation/180*Math.PI
+    //@context.translate -x,-y
     return this.context.restore();
-  };
+  }
 
-  Screen.prototype.fillRect = function(x, y, w, h, color) {
+  fillRect(x, y, w, h, color) {
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
     if (this.initDrawOp(x, -y)) {
@@ -468,12 +479,9 @@ this.Screen = (function() {
     } else {
       return this.context.fillRect(x - w / 2 - this.anchor_x * w / 2, -y - h / 2 + this.anchor_y * h / 2, w, h);
     }
-  };
+  }
 
-  Screen.prototype.fillRoundRect = function(x, y, w, h, round, color) {
-    if (round == null) {
-      round = 10;
-    }
+  fillRoundRect(x, y, w, h, round = 10, color) {
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
     if (this.initDrawOp(x, -y)) {
@@ -482,9 +490,9 @@ this.Screen = (function() {
     } else {
       return this.context.fillRoundRect(x - w / 2 - this.anchor_x * w / 2, -y - h / 2 + this.anchor_y * h / 2, w, h, round);
     }
-  };
+  }
 
-  Screen.prototype.fillRound = function(x, y, w, h, color) {
+  fillRound(x, y, w, h, color) {
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
     w = Math.abs(w);
@@ -499,9 +507,9 @@ this.Screen = (function() {
       this.context.ellipse(x - this.anchor_x * w / 2, -y + this.anchor_y * h / 2, w / 2, h / 2, 0, 0, Math.PI * 2, false);
       return this.context.fill();
     }
-  };
+  }
 
-  Screen.prototype.drawRect = function(x, y, w, h, color) {
+  drawRect(x, y, w, h, color) {
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
     this.context.lineWidth = this.line_width;
@@ -511,12 +519,9 @@ this.Screen = (function() {
     } else {
       return this.context.strokeRect(x - w / 2 - this.anchor_x * w / 2, -y - h / 2 + this.anchor_y * h / 2, w, h);
     }
-  };
+  }
 
-  Screen.prototype.drawRoundRect = function(x, y, w, h, round, color) {
-    if (round == null) {
-      round = 10;
-    }
+  drawRoundRect(x, y, w, h, round = 10, color) {
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
     this.context.lineWidth = this.line_width;
@@ -526,9 +531,9 @@ this.Screen = (function() {
     } else {
       return this.context.strokeRoundRect(x - w / 2 - this.anchor_x * w / 2, -y - h / 2 + this.anchor_y * h / 2, w, h, round);
     }
-  };
+  }
 
-  Screen.prototype.drawRound = function(x, y, w, h, color) {
+  drawRound(x, y, w, h, color) {
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
     this.context.lineWidth = this.line_width;
@@ -544,9 +549,9 @@ this.Screen = (function() {
       this.context.ellipse(x - this.anchor_x * w / 2, -y + this.anchor_y * h / 2, w / 2, h / 2, 0, 0, Math.PI * 2, false);
       return this.context.stroke();
     }
-  };
+  }
 
-  Screen.prototype.drawLine = function(x1, y1, x2, y2, color) {
+  drawLine(x1, y1, x2, y2, color) {
     var transform;
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
@@ -559,9 +564,9 @@ this.Screen = (function() {
     if (transform) {
       return this.closeDrawOp();
     }
-  };
+  }
 
-  Screen.prototype.drawPolyline = function(args) {
+  drawPolyline(args) {
     var i, j, len, ref, transform;
     if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
       this.setColor(args[args.length - 1]);
@@ -581,16 +586,16 @@ this.Screen = (function() {
     transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(args[0], -args[1]);
-    for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+    for (i = j = 1, ref = len - 1; (1 <= ref ? j <= ref : j >= ref); i = 1 <= ref ? ++j : --j) {
       this.context.lineTo(args[i * 2], -args[i * 2 + 1]);
     }
     this.context.stroke();
     if (transform) {
       return this.closeDrawOp();
     }
-  };
+  }
 
-  Screen.prototype.drawPolygon = function(args) {
+  drawPolygon(args) {
     var i, j, len, ref, transform;
     if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
       this.setColor(args[args.length - 1]);
@@ -610,7 +615,7 @@ this.Screen = (function() {
     transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(args[0], -args[1]);
-    for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+    for (i = j = 1, ref = len - 1; (1 <= ref ? j <= ref : j >= ref); i = 1 <= ref ? ++j : --j) {
       this.context.lineTo(args[i * 2], -args[i * 2 + 1]);
     }
     this.context.closePath();
@@ -618,9 +623,9 @@ this.Screen = (function() {
     if (transform) {
       return this.closeDrawOp();
     }
-  };
+  }
 
-  Screen.prototype.fillPolygon = function(args) {
+  fillPolygon(args) {
     var i, j, len, ref, transform;
     if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
       this.setColor(args[args.length - 1]);
@@ -640,25 +645,119 @@ this.Screen = (function() {
     transform = this.initDrawOp(0, 0, false);
     this.context.beginPath();
     this.context.moveTo(args[0], -args[1]);
-    for (i = j = 1, ref = len - 1; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
+    for (i = j = 1, ref = len - 1; (1 <= ref ? j <= ref : j >= ref); i = 1 <= ref ? ++j : --j) {
       this.context.lineTo(args[i * 2], -args[i * 2 + 1]);
     }
     this.context.fill();
     if (transform) {
       return this.closeDrawOp();
     }
-  };
+  }
 
-  Screen.prototype.textWidth = function(text, size) {
-    this.context.font = size + "pt " + this.font;
+  drawQuadCurve(args) {
+    var index, len, transform;
+    if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
+      this.setColor(args[args.length - 1]);
+    }
+    if (Array.isArray(args[0])) {
+      if ((args[1] != null) && typeof args[1] === "string") {
+        this.setColor(args[1]);
+      }
+      args = args[0];
+    }
+    this.context.globalAlpha = this.alpha;
+    this.context.lineWidth = this.line_width;
+    if (args.length < 4) {
+      return;
+    }
+    len = Math.floor(args.length / 2);
+    transform = this.initDrawOp(0, 0, false);
+    this.context.beginPath();
+    this.context.moveTo(args[0], -args[1]);
+    index = 2;
+    while (index <= args.length - 4) {
+      this.context.quadraticCurveTo(args[index], -args[index + 1], args[index + 2], -args[index + 3]);
+      index += 4;
+    }
+    this.context.stroke();
+    if (transform) {
+      return this.closeDrawOp();
+    }
+  }
+
+  drawBezierCurve(args) {
+    var index, len, transform;
+    if (args.length > 0 && args.length % 2 === 1 && typeof args[args.length - 1] === "string") {
+      this.setColor(args[args.length - 1]);
+    }
+    if (Array.isArray(args[0])) {
+      if ((args[1] != null) && typeof args[1] === "string") {
+        this.setColor(args[1]);
+      }
+      args = args[0];
+    }
+    this.context.globalAlpha = this.alpha;
+    this.context.lineWidth = this.line_width;
+    if (args.length < 4) {
+      return;
+    }
+    len = Math.floor(args.length / 2);
+    transform = this.initDrawOp(0, 0, false);
+    this.context.beginPath();
+    this.context.moveTo(args[0], -args[1]);
+    index = 2;
+    while (index <= args.length - 6) {
+      this.context.bezierCurveTo(args[index], -args[index + 1], args[index + 2], -args[index + 3], args[index + 4], -args[index + 5]);
+      index += 6;
+    }
+    this.context.stroke();
+    if (transform) {
+      return this.closeDrawOp();
+    }
+  }
+
+  drawArc(x, y, radius, angle1, angle2, ccw, color) {
+    this.setColor(color);
+    this.context.globalAlpha = this.alpha;
+    this.context.lineWidth = this.line_width;
+    if (this.initDrawOp(x, -y)) {
+      this.context.beginPath();
+      this.context.arc(0, 0, radius, -angle1 / 180 * Math.PI, -angle2 / 180 * Math.PI, ccw);
+      this.context.stroke();
+      return this.closeDrawOp(x, -y);
+    } else {
+      this.context.beginPath();
+      this.context.arc(x, -y, radius, -angle1 / 180 * Math.PI, -angle2 / 180 * Math.PI, ccw);
+      return this.context.stroke();
+    }
+  }
+
+  fillArc(x, y, radius, angle1, angle2, ccw, color) {
+    this.setColor(color);
+    this.context.globalAlpha = this.alpha;
+    this.context.lineWidth = this.line_width;
+    if (this.initDrawOp(x, -y)) {
+      this.context.beginPath();
+      this.context.arc(0, 0, radius, -angle1 / 180 * Math.PI, -angle2 / 180 * Math.PI, ccw);
+      this.context.fill();
+      return this.closeDrawOp(x, -y);
+    } else {
+      this.context.beginPath();
+      this.context.arc(x, -y, radius, -angle1 / 180 * Math.PI, -angle2 / 180 * Math.PI, ccw);
+      return this.context.fill();
+    }
+  }
+
+  textWidth(text, size) {
+    this.context.font = `${size}pt ${this.font}`;
     return this.context.measureText(text).width;
-  };
+  }
 
-  Screen.prototype.drawText = function(text, x, y, size, color) {
+  drawText(text, x, y, size, color) {
     var h, w;
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
-    this.context.font = size + "pt " + this.font;
+    this.context.font = `${size}pt ${this.font}`;
     this.context.textAlign = "center";
     this.context.textBaseline = "middle";
     w = this.context.measureText(text).width;
@@ -669,13 +768,13 @@ this.Screen = (function() {
     } else {
       return this.context.fillText(text, x - this.anchor_x * w / 2, -y + this.anchor_y * h / 2);
     }
-  };
+  }
 
-  Screen.prototype.drawTextOutline = function(text, x, y, size, color) {
+  drawTextOutline(text, x, y, size, color) {
     var h, w;
     this.setColor(color);
     this.context.globalAlpha = this.alpha;
-    this.context.font = size + "pt " + this.font;
+    this.context.font = `${size}pt ${this.font}`;
     this.context.lineWidth = this.line_width;
     this.context.textAlign = "center";
     this.context.textBaseline = "middle";
@@ -687,9 +786,9 @@ this.Screen = (function() {
     } else {
       return this.context.strokeText(text, x - this.anchor_x * w / 2, -y + this.anchor_y * h / 2);
     }
-  };
+  }
 
-  Screen.prototype.getSpriteFrame = function(sprite) {
+  getSpriteFrame(sprite) {
     var dt, frame, s;
     frame = null;
     if (typeof sprite === "string") {
@@ -724,9 +823,9 @@ this.Screen = (function() {
     } else {
       return null;
     }
-  };
+  }
 
-  Screen.prototype.drawSprite = function(sprite, x, y, w, h) {
+  drawSprite(sprite, x, y, w, h) {
     var canvas;
     canvas = this.getSpriteFrame(sprite);
     if (canvas == null) {
@@ -746,9 +845,9 @@ this.Screen = (function() {
     } else {
       return this.context.drawImage(canvas, x - w / 2 - this.anchor_x * w / 2, -y - h / 2 + this.anchor_y * h / 2, w, h);
     }
-  };
+  }
 
-  Screen.prototype.drawSpritePart = function(sprite, sx, sy, sw, sh, x, y, w, h) {
+  drawSpritePart(sprite, sx, sy, sw, sh, x, y, w, h) {
     var canvas;
     canvas = this.getSpriteFrame(sprite);
     if (canvas == null) {
@@ -768,9 +867,9 @@ this.Screen = (function() {
     } else {
       return this.context.drawImage(canvas, sx, sy, sw, sh, x - w / 2 - this.anchor_x * w / 2, -y - h / 2 + this.anchor_y * h / 2, w, h);
     }
-  };
+  }
 
-  Screen.prototype.drawMap = function(map, x, y, w, h) {
+  drawMap(map, x, y, w, h) {
     if (typeof map === "string") {
       map = this.runtime.maps[map];
     }
@@ -781,13 +880,15 @@ this.Screen = (function() {
     this.context.imageSmoothingEnabled = !this.pixelated;
     if (this.initDrawOp(x, -y)) {
       map.draw(this.context, -w / 2 - this.anchor_x * w / 2, -h / 2 + this.anchor_y * h / 2, w, h);
+      //@context.drawImage map.getCanvas(),-w/2-@anchor_x*w/2,-h/2+@anchor_y*h/2,w,h
       return this.closeDrawOp(x, -y);
     } else {
       return map.draw(this.context, x - w / 2 - this.anchor_x * w / 2, -y - h / 2 + this.anchor_y * h / 2, w, h);
     }
-  };
+  }
 
-  Screen.prototype.resize = function() {
+  //@context.drawImage map.getCanvas(),x-w/2-@anchor_x*w/2,-y-h/2+@anchor_y*h/2,w,h
+  resize() {
     var backingStoreRatio, ch, cw, devicePixelRatio, h, min, r, ratio, w;
     cw = window.innerWidth;
     ch = window.innerHeight;
@@ -802,6 +903,8 @@ this.Screen = (function() {
       ">1x1": 1 / 1
     }[this.runtime.aspect];
     min = this.runtime.aspect.startsWith(">");
+    //if not ratio? and @runtime.orientation in ["portrait","landscape"]
+    //  ratio = 16/9
     if (ratio != null) {
       if (min) {
         switch (this.runtime.orientation) {
@@ -856,62 +959,44 @@ this.Screen = (function() {
     this.canvas.width = this.width;
     this.canvas.height = this.height;
     return this.initContext();
-  };
+  }
 
-  Screen.prototype.startControl = function(element) {
+  startControl(element) {
     var backingStoreRatio, devicePixelRatio;
     this.element = element;
-    document.addEventListener("touchstart", (function(_this) {
-      return function(event) {
-        return _this.touchStart(event);
-      };
-    })(this));
-    document.addEventListener("touchmove", (function(_this) {
-      return function(event) {
-        return _this.touchMove(event);
-      };
-    })(this));
-    document.addEventListener("touchend", (function(_this) {
-      return function(event) {
-        return _this.touchRelease(event);
-      };
-    })(this));
-    document.addEventListener("touchcancel", (function(_this) {
-      return function(event) {
-        return _this.touchRelease(event);
-      };
-    })(this));
-    document.addEventListener("mousedown", (function(_this) {
-      return function(event) {
-        return _this.mouseDown(event);
-      };
-    })(this));
-    document.addEventListener("mousemove", (function(_this) {
-      return function(event) {
-        return _this.mouseMove(event);
-      };
-    })(this));
-    document.addEventListener("mouseup", (function(_this) {
-      return function(event) {
-        return _this.mouseUp(event);
-      };
-    })(this));
-    document.addEventListener("mousewheel", (function(_this) {
-      return function(event) {
-        return _this.mouseWheel(event);
-      };
-    })(this));
-    document.addEventListener("DOMMouseScroll", (function(_this) {
-      return function(event) {
-        return _this.mouseWheel(event);
-      };
-    })(this));
+    document.addEventListener("touchstart", (event) => {
+      return this.touchStart(event);
+    });
+    document.addEventListener("touchmove", (event) => {
+      return this.touchMove(event);
+    });
+    document.addEventListener("touchend", (event) => {
+      return this.touchRelease(event);
+    });
+    document.addEventListener("touchcancel", (event) => {
+      return this.touchRelease(event);
+    });
+    document.addEventListener("mousedown", (event) => {
+      return this.mouseDown(event);
+    });
+    document.addEventListener("mousemove", (event) => {
+      return this.mouseMove(event);
+    });
+    document.addEventListener("mouseup", (event) => {
+      return this.mouseUp(event);
+    });
+    document.addEventListener("mousewheel", (event) => {
+      return this.mouseWheel(event);
+    });
+    document.addEventListener("DOMMouseScroll", (event) => {
+      return this.mouseWheel(event);
+    });
     devicePixelRatio = window.devicePixelRatio || 1;
     backingStoreRatio = this.context.webkitBackingStorePixelRatio || this.context.mozBackingStorePixelRatio || this.context.msBackingStorePixelRatio || this.context.oBackingStorePixelRatio || this.context.backingStorePixelRatio || 1;
     return this.ratio = devicePixelRatio / backingStoreRatio;
-  };
+  }
 
-  Screen.prototype.touchStart = function(event) {
+  touchStart(event) {
     var b, i, j, min, ref, t, x, y;
     event.preventDefault();
     event.stopPropagation();
@@ -931,9 +1016,9 @@ this.Screen = (function() {
       this.mouse.left = 1;
     }
     return false;
-  };
+  }
 
-  Screen.prototype.touchMove = function(event) {
+  touchMove(event) {
     var b, i, j, min, ref, t, x, y;
     event.preventDefault();
     event.stopPropagation();
@@ -951,9 +1036,9 @@ this.Screen = (function() {
       }
     }
     return false;
-  };
+  }
 
-  Screen.prototype.touchRelease = function(event) {
+  touchRelease(event) {
     var i, j, ref, t, x, y;
     for (i = j = 0, ref = event.changedTouches.length - 1; j <= ref; i = j += 1) {
       t = event.changedTouches[i];
@@ -966,9 +1051,9 @@ this.Screen = (function() {
       this.mouse.middle = 0;
     }
     return false;
-  };
+  }
 
-  Screen.prototype.mouseDown = function(event) {
+  mouseDown(event) {
     var b, min, x, y;
     this.mousepressed = true;
     b = this.canvas.getBoundingClientRect();
@@ -979,6 +1064,7 @@ this.Screen = (function() {
       x: x,
       y: y
     };
+    //console.info @touches["mouse"]
     this.mouse.x = x;
     this.mouse.y = y;
     switch (event.button) {
@@ -993,9 +1079,9 @@ this.Screen = (function() {
     }
     this.mouse.pressed = Math.min(1, this.mouse.left + this.mouse.right + this.mouse.middle);
     return false;
-  };
+  }
 
-  Screen.prototype.mouseMove = function(event) {
+  mouseMove(event) {
     var b, min, x, y;
     event.preventDefault();
     b = this.canvas.getBoundingClientRect();
@@ -1009,9 +1095,9 @@ this.Screen = (function() {
     this.mouse.x = x;
     this.mouse.y = y;
     return false;
-  };
+  }
 
-  Screen.prototype.mouseUp = function(event) {
+  mouseUp(event) {
     var b, min, x, y;
     delete this.touches["mouse"];
     b = this.canvas.getBoundingClientRect();
@@ -1032,20 +1118,18 @@ this.Screen = (function() {
     }
     this.mouse.pressed = Math.min(1, this.mouse.left + this.mouse.right + this.mouse.middle);
     return false;
-  };
+  }
 
-  Screen.prototype.mouseWheel = function(e) {
+  mouseWheel(e) {
     if (e.wheelDelta < 0 || e.detail > 0) {
       return this.wheel = -1;
     } else {
       return this.wheel = 1;
     }
-  };
+  }
 
-  Screen.prototype.takePicture = function(callback) {
+  takePicture(callback) {
     return callback(this.canvas.toDataURL());
-  };
+  }
 
-  return Screen;
-
-})();
+};
