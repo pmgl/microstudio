@@ -1,5 +1,14 @@
 ## Changelog
 
+### Update 2023-09-25
+* added missing keyword "global" to syntax highlighter (contributed by @HomineLudens :-) )
+* added drawing functions, thanks a lot to @TinkerSmith for providing the initial experiment
+  * screen.drawArc()
+  * screen.fillArc()
+  * screen.drawQuadCurve()
+  * screen.drawBezierCurve()
+  (functions work on the Image class as well)
+
 ### Update 2023-07-04
 * You can now choose Babylon.js versions 4, 5 or 6
 * You can now choose Pixi.js versions 6 or 7
