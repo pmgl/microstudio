@@ -614,14 +614,15 @@ class @msImage
   drawMap:(map,x,y,w,h)->
     @initContext()
     map = window.player.runtime.maps[map] if typeof map == "string"
-    return if not map? or not map.ready or not map.canvas?
+    return if not map? or not map.ready
     @context.globalAlpha = @alpha
     @context.imageSmoothingEnabled = not @pixelated
     if @initDrawOp(x,y)
-      @context.drawImage map.getCanvas(),-w/2-@anchor_x*w/2,-h/2+@anchor_y*h/2,w,h
+      map.draw @context,-w/2-@anchor_x*w/2,-h/2+@anchor_y*h/2,w,h
       @closeDrawOp(x,y)
     else
-      @context.drawImage map.getCanvas(),x-w/2-@anchor_x*w/2,y-h/2+@anchor_y*h/2,w,h
+      map.draw @context,x-w/2-@anchor_x*w/2,y-h/2+@anchor_y*h/2,w,h
+
 
 @BLENDING_MODES =
   normal: "source-over"

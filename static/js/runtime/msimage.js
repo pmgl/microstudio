@@ -736,16 +736,16 @@ this.msImage = (function() {
       if (typeof map === "string") {
         map = window.player.runtime.maps[map];
       }
-      if ((map == null) || !map.ready || (map.canvas == null)) {
+      if ((map == null) || !map.ready) {
         return;
       }
       this.context.globalAlpha = this.alpha;
       this.context.imageSmoothingEnabled = !this.pixelated;
       if (this.initDrawOp(x, y)) {
-        this.context.drawImage(map.getCanvas(), -w / 2 - this.anchor_x * w / 2, -h / 2 + this.anchor_y * h / 2, w, h);
+        map.draw(this.context, -w / 2 - this.anchor_x * w / 2, -h / 2 + this.anchor_y * h / 2, w, h);
         return this.closeDrawOp(x, y);
       } else {
-        return this.context.drawImage(map.getCanvas(), x - w / 2 - this.anchor_x * w / 2, y - h / 2 + this.anchor_y * h / 2, w, h);
+        return map.draw(this.context, x - w / 2 - this.anchor_x * w / 2, y - h / 2 + this.anchor_y * h / 2, w, h);
       }
     }
 
