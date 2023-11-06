@@ -8,6 +8,14 @@ class @Sprite
       @frames.push new msImage(@width,@height)
       @ready = 1
 
+  setFPS:(fps)->
+    dt = 1000/@fps
+    frame = ((Date.now()-@animation_start)/dt) % @frames.length
+    @fps = fps
+    dt = 1000/fps
+    @animation_start = Date.now() - frame*dt
+    fps
+
   setFrame:(f)->
     @animation_start = Date.now()-1000/@fps*f
 
