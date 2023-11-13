@@ -1459,7 +1459,7 @@ this.Session = class Session {
   }
 
   getPublicProjects(data) {
-    var found, i, j, k, l, len1, len2, len3, list, m, offset, p, ref, ref1, ref2, ref3, search, source, t, tags, type;
+    var found, i, j, k, l, language, len1, len2, len3, list, m, offset, p, ref, ref1, ref2, ref3, search, source, t, tags, type;
     switch (data.ranking) {
       case "new":
         source = this.content.new_projects;
@@ -1475,6 +1475,7 @@ this.Session = class Session {
     search = typeof data.search === "string" ? data.search : "";
     search = search.trim();
     type = data.type || "all";
+    language = data.language || "";
     offset = data.offset || 0;
     for (i = j = ref = offset, ref1 = source.length - 1; j <= ref1; i = j += 1) {
       p = source[i];
@@ -1513,11 +1514,15 @@ this.Session = class Session {
         if (type !== "all" && p.type !== type) {
           continue;
         }
+        if (language !== "" && ((p.language == null) || !p.language.includes(language))) {
+          continue;
+        }
         list.push({
           id: p.id,
           title: p.title,
           description: p.description,
           poster: (p.files != null) && (p.files["sprites/poster.png"] != null),
+          icon: (p.files != null) && (p.files["sprites/icon.png"] != null),
           type: p.type,
           tags: p.tags,
           flags: p.flags,

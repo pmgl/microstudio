@@ -1006,6 +1006,7 @@ class @Session
     search = if typeof data.search == "string" then data.search else ""
     search = search.trim()
     type = data.type or "all"
+    language = data.language or ""
     offset = data.offset or 0
 
     for i in [offset..source.length-1] by 1
@@ -1036,11 +1037,15 @@ class @Session
         if type != "all" and p.type != type
           continue
 
+        if language != "" and (not p.language? or not p.language.includes(language))
+          continue
+
         list.push
           id: p.id
           title: p.title
           description: p.description
           poster: p.files? and p.files["sprites/poster.png"]?
+          icon: p.files? and p.files["sprites/icon.png"]?
           type: p.type
           tags: p.tags
           flags: p.flags

@@ -55,7 +55,7 @@ this.WebApp = class WebApp {
         home_exp += "|";
       }
     }
-    this.reserved = ["explore", "documentation", "projects", "about", "login", "user"];
+    this.reserved = ["explore", "documentation", "projects", "about", "login", "user", "tutorials\\/examples", , "tutorials\\/community"];
     this.reserved_exact = ["tutorials"];
     ref1 = this.reserved;
     for (k = 0, len = ref1.length; k < len; k++) {

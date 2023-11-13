@@ -85,7 +85,7 @@ this.Runner = class Runner {
     this.fps = 60;
     this.fps_max = 60;
     this.cpu_load = 0;
-    this.microvm.context.meta.print("microScript 2.0 - beta");
+    this.microvm.context.meta.print("microScript 2.0");
     return this.triggers_controls_update = true;
   }
 

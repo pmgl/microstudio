@@ -312,6 +312,7 @@ class @Concatenator
       "/js/tutorial/tutorial.js"
       "/js/tutorial/tutorialwindow.js"
       "/js/tutorial/highlighter.js"
+      "/js/tutorial/tutorialspage.js"
     ]
 
     @player_js = [

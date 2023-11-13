@@ -467,7 +467,13 @@ AppUI = class AppUI {
         name = {
           "help": "documentation"
         }[section] || section;
-        this.app.app_state.pushState(name, `/${name}/`);
+        if (name === "documentation") {
+          this.app.documentation.pushState();
+        } else if (name === "tutorials") {
+          this.app.tutorials.tutorials_page.pushState();
+        } else {
+          this.app.app_state.pushState(name, `/${name}/`);
+        }
       }
     }
     ref = this.menuoptions;
@@ -955,9 +961,9 @@ AppUI = class AppUI {
     }
   }
 
-  setProject(project, useraction = true) {
+  setProject(project1, useraction = true) {
     var j, len, ref, t, tab;
-    this.project = project;
+    this.project = project1;
     this.updateProjectTitle();
     this.get("project-icon").src = location.origin + `/${this.project.owner.nick}/${this.project.slug}/${this.project.code}/icon.png`;
     tab = "code";
@@ -1332,6 +1338,37 @@ AppUI = class AppUI {
         }
       }
     }), 500);
+  }
+
+  createProjectLikesButton(element, project) {
+    var e, likes;
+    e = element.querySelector(".likes-button");
+    if (e) {
+      e.parentNode.removeChild(e);
+    }
+    likes = document.createElement("div");
+    likes.classList.add("likes-button");
+    likes.innerHTML = "<i class='fa fa-thumbs-up'></i> " + project.likes;
+    if (project.liked) {
+      likes.classList.add("liked");
+    }
+    element.appendChild(likes);
+    return likes.addEventListener("click", () => {
+      event.stopImmediatePropagation();
+      if (!this.app.user.flags.validated) {
+        return alert(this.app.translator.get("Validate your e-mail address to enable votes."));
+      }
+      return this.app.client.sendRequest({
+        name: "toggle_like",
+        project: project.id
+      }, (msg) => {
+        if (msg.name === "project_likes") {
+          project.likes = msg.likes;
+          project.liked = msg.liked;
+          return this.createProjectLikesButton(element, project);
+        }
+      });
+    });
   }
 
 };

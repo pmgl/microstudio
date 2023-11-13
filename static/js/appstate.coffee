@@ -3,13 +3,15 @@ class @AppState
     window.addEventListener "popstate",(event)=>@popState()
 
   pushState:(name,path,obj = {})->
-    obj.name = name
-    history.pushState obj,"",path
+    console.info "pushing state\nname=#{name}\npath=#{path}"
+    if history.state? and history.state.name != name
+      obj.name = name
+      history.pushState obj,"",path
 
   popState:()->
     if history.state?
       s = history.state.name.split(".")
-      if history.state.name in ["documentation","tutorials","about","projects","explore"]
+      if history.state.name in ["documentation","about","projects","explore"]
         if history.state.name == "projects"
           if @app.project and @app.project.pending_changes.length>0
             history.forward()
@@ -32,6 +34,27 @@ class @AppState
 
         @app.appui.setMainSection "projects"
         @app.appui.setSection s[2]
+      else if history.state.name.startsWith("documentation")
+        s = history.state.name.split(".")
+        if s[1]
+          @app.documentation.setSection s[1]
+          @app.appui.setMainSection "help"
+        else
+          @app.appui.setMainSection "help"
+      else if history.state.name.startsWith("tutorials")
+        s = history.state.name.split(".")
+        if s[1]
+          @app.tutorials.tutorials_page.setSection s[1],false
+          @app.appui.setMainSection "tutorials"
+          if s[1] == "examples" 
+            if s[2] and s[3]
+              @app.tutorials.tutorials_page.reloadExample s[2],s[3]
+            else
+              @app.tutorials.tutorials_page.closeExampleView()
+        else
+          @app.tutorials.tutorials_page.setSection "core"
+          @app.appui.setMainSection "tutorials"
+
       else if history.state.name.startsWith("user.") and s[1]?
         switch s[1]
           when "settings"
@@ -77,6 +100,21 @@ class @AppState
             s = location.pathname.split("/")[2]
             if s in ["library","plugin","tutorial","app","all"]
               @app.explore.setProjectType s
+
+          else if p == "documentation"
+            path = location.pathname.split("/")
+            if path[2]
+              @app.documentation.setSection path[2],null,null,false
+
+          else if p == "tutorials"
+            path = location.pathname.split("/")
+            if path[2]
+              @app.tutorials.tutorials_page.setSection path[2],false
+              history.replaceState {name: "tutorials.#{path[2]}"},"",location.pathname
+              if path[2] == "examples" 
+                if path[3] and path[4]
+                  @app.tutorials.tutorials_page.reloadExample path[3],path[4]
+                  history.replaceState {name: "tutorials.#{path[2]}.#{path[3]}.#{path[4]}"},"",location.pathname
 
           return @app.appui.setMainSection ((p)=>{"documentation":"help"}[p] or p)(p)
 

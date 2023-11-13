@@ -1,6 +1,7 @@
 this.Terminal = class Terminal {
-  constructor(runwindow) {
+  constructor(runwindow, tid = "terminal") {
     this.runwindow = runwindow;
+    this.tid = tid;
     this.localStorage = localStorage;
     this.commands = {
       clear: () => {
@@ -34,26 +35,26 @@ this.Terminal = class Terminal {
       return;
     }
     this.started = true;
-    document.getElementById("terminal").addEventListener("mousedown", (event) => {
+    document.getElementById(`${this.tid}`).addEventListener("mousedown", (event) => {
       this.pressed = true;
       this.moved = false;
       return true;
     });
-    document.getElementById("terminal").addEventListener("mousemove", (event) => {
+    document.getElementById(`${this.tid}`).addEventListener("mousemove", (event) => {
       if (this.pressed) {
         this.moved = true;
       }
       return true;
     });
-    document.getElementById("terminal").addEventListener("mouseup", (event) => {
+    document.getElementById(`${this.tid}`).addEventListener("mouseup", (event) => {
       if (!this.moved) {
-        document.getElementById("terminal-input").focus();
+        document.getElementById(`${this.tid}-input`).focus();
       }
       this.moved = false;
       this.pressed = false;
       return true;
     });
-    document.getElementById("terminal-input").addEventListener("paste", (event) => {
+    document.getElementById(`${this.tid}-input`).addEventListener("paste", (event) => {
       var j, len, line, s, text;
       text = event.clipboardData.getData("text/plain");
       s = text.split("\n");
@@ -61,34 +62,34 @@ this.Terminal = class Terminal {
         event.preventDefault();
         for (j = 0, len = s.length; j < len; j++) {
           line = s[j];
-          document.getElementById("terminal-input").value = "";
+          document.getElementById(`${this.tid}-input`).value = "";
           this.validateLine(line);
         }
       } else {
         return false;
       }
     });
-    //document.getElementById("terminal-input").value = s[0]
-    document.getElementById("terminal-input").addEventListener("keydown", (event) => {
+    //document.getElementById("#{@tid}-input").value = s[0]
+    document.getElementById(`${this.tid}-input`).addEventListener("keydown", (event) => {
       var v;
       // console.info event.key
       if (event.key === "Enter") {
-        v = document.getElementById("terminal-input").value;
-        document.getElementById("terminal-input").value = "";
+        v = document.getElementById(`${this.tid}-input`).value;
+        document.getElementById(`${this.tid}-input`).value = "";
         this.validateLine(v);
         return this.force_scroll = true;
       } else if (event.key === "ArrowUp") {
         if (this.history_index == null) {
           this.history_index = this.history.length - 1;
-          this.current_input = document.getElementById("terminal-input").value;
+          this.current_input = document.getElementById(`${this.tid}-input`).value;
         } else {
           this.history_index = Math.max(0, this.history_index - 1);
         }
         if (this.history_index === this.history.length - 1) {
-          this.current_input = document.getElementById("terminal-input").value;
+          this.current_input = document.getElementById(`${this.tid}-input`).value;
         }
         if (this.history_index >= 0 && this.history_index < this.history.length) {
-          document.getElementById("terminal-input").value = this.history[this.history_index];
+          document.getElementById(`${this.tid}-input`).value = this.history[this.history_index];
           return this.setTrailingCaret();
         }
       } else if (event.key === "ArrowDown") {
@@ -101,10 +102,10 @@ this.Terminal = class Terminal {
           return;
         }
         if (this.history_index >= 0 && this.history_index < this.history.length) {
-          document.getElementById("terminal-input").value = this.history[this.history_index];
+          document.getElementById(`${this.tid}-input`).value = this.history[this.history_index];
           return this.setTrailingCaret();
         } else if (this.history_index === this.history.length) {
-          document.getElementById("terminal-input").value = this.current_input;
+          document.getElementById(`${this.tid}-input`).value = this.current_input;
           return this.setTrailingCaret();
         }
       }
@@ -130,13 +131,13 @@ this.Terminal = class Terminal {
     } else {
       this.runwindow.runCommand(v);
       if (this.runwindow.multiline) {
-        document.querySelector("#terminal-input-gt i").classList.add("fa-ellipsis-v");
+        document.querySelector(`#${this.tid}-input-gt i`).classList.add("fa-ellipsis-v");
         for (i = j = 0, ref = this.runwindow.nesting * 2 - 1; j <= ref; i = j += 1) {
-          document.getElementById("terminal-input").value += " ";
+          document.getElementById(`${this.tid}-input`).value += " ";
         }
         return this.setTrailingCaret();
       } else {
-        return document.querySelector("#terminal-input-gt i").classList.remove("fa-ellipsis-v");
+        return document.querySelector(`#${this.tid}-input-gt i`).classList.remove("fa-ellipsis-v");
       }
     }
   }
@@ -144,8 +145,8 @@ this.Terminal = class Terminal {
   setTrailingCaret() {
     return setTimeout((() => {
       var val;
-      val = document.getElementById("terminal-input").value;
-      return document.getElementById("terminal-input").setSelectionRange(val.length, val.length);
+      val = document.getElementById(`${this.tid}-input`).value;
+      return document.getElementById(`${this.tid}-input`).setSelectionRange(val.length, val.length);
     }), 0);
   }
 
@@ -156,7 +157,7 @@ this.Terminal = class Terminal {
         this.scroll = true;
         this.force_scroll = false;
       } else {
-        e = document.getElementById("terminal-view");
+        e = document.getElementById(`${this.tid}-view`);
         this.scroll = Math.abs(e.getBoundingClientRect().height + e.scrollTop - e.scrollHeight) < 10;
       }
       div = document.createDocumentFragment();
@@ -167,7 +168,7 @@ this.Terminal = class Terminal {
         t = ref[j];
         container.appendChild(element = this.echoReal(t.text, t.classname));
       }
-      document.getElementById("terminal-lines").appendChild(div);
+      document.getElementById(`${this.tid}-lines`).appendChild(div);
       if (this.scroll) {
         element.scrollIntoView();
       }
@@ -210,7 +211,7 @@ this.Terminal = class Terminal {
 
   truncate() {
     var c, e;
-    e = document.getElementById("terminal-lines");
+    e = document.getElementById(`${this.tid}-lines`);
     while (this.length > 10000 && (e.firstChild != null)) {
       c = e.firstChild.children.length;
       e.removeChild(e.firstChild);
@@ -219,11 +220,11 @@ this.Terminal = class Terminal {
   }
 
   clear() {
-    document.getElementById("terminal-lines").innerHTML = "";
+    document.getElementById(`${this.tid}-lines`).innerHTML = "";
     this.buffer = [];
     this.length = 0;
     this.error_lines = 0;
-    document.querySelector("#terminal-input-gt i").classList.remove("fa-ellipsis-v");
+    document.querySelector(`#${this.tid}-input-gt i`).classList.remove("fa-ellipsis-v");
     return delete this.runwindow.multiline;
   }
 

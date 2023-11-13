@@ -9,38 +9,10 @@
   overflow: auto ;
 }
 
-
-
 .usersettings-page {
-  position: absolute;
-  top: 80px ;
-  bottom: 80px ;
-  overflow: auto ;
-  right: 0px ;
-  left: 300px ;
-  padding-right: 80px ;
+  padding: 40px ;
 }
 
-#usersettings-menu {
-  position: absolute ;
-  top: 80px ;
-  bottom: 80px ;
-  left: 30px ;
-  width: 200px ;
-  text-align: right ;
-  padding-top: 20px ;
-}
-#usersettings-menu div {
-  display: inline-block ;
-  background: rgba(255,255,255,.1);
-  border-radius: 25px ;
-  padding: 6px 15px ;
-  margin: 10px 0 ;
-  cursor: pointer ;
-}
-#usersettings-menu div.selected {
-  background: rgba(255,255,255,.3);
-}
 #usersettings-menu div i {
   margin-left: 10px ;
 }

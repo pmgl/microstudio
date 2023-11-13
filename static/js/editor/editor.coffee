@@ -259,8 +259,8 @@ class @Editor extends Manager
     button.innerHTML = "<i class='fa fa-book-open'></i> "+@app.translator.get("View doc")
     button.addEventListener "mousedown",(event)=>
       event.stopPropagation()
-      @app.appui.setMainSection "help",true
       @app.documentation.setSection section or "API"
+      @app.appui.setMainSection "help",true
       element = document.getElementById pointer
       if element?
         element.scrollIntoView()

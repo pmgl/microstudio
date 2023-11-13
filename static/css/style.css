@@ -454,39 +454,49 @@ header .username span {
   right: 0 ;
   overflow: auto ;
 }
-#about-content {
+
+.section-content {
   position: absolute;
-  top: 80px ;
-  bottom: 80px ;
   overflow: auto ;
-  right: 80px ;
-  left: 300px ;
+  left: 0px ;
+  right: 0px ;
+  top: 100px ;
+  bottom: 0px ;
 }
+
+#about-content {
+  padding: 0px 40px 40px 40px ;
+}
+
 #about-content i {
   font-size: 25px;
   vertical-align: middle;
   margin-right: 10px;
 }
-#about-menu {
+.section-menu {
   position: absolute ;
-  top: 80px ;
-  bottom: 80px ;
+  top: 10px ;
   left: 30px ;
-  width: 200px ;
-  text-align: right ;
+  right: 30px ;
+  text-align: left ;
   padding-top: 20px ;
+  white-space: nowrap;
+  overflow: auto ;
 }
-#about-menu div {
+.section-menu div {
   display: inline-block ;
   background: rgba(255,255,255,.1);
-  border-radius: 15px ;
-  padding: 4px 15px ;
-  margin: 10px 0 ;
+  border-radius: 30px ;
+  padding: 10px 25px ;
+  margin: 5px ;
   cursor: pointer ;
+  font-size: 18px ;
 }
-#about-menu div.selected {
-  background: rgba(255,255,255,.3);
+.section-menu div.selected {
+  background: rgba(255,255,255,.8);
+  color: rgba(0,0,0,.8);
 }
+
 .about {
   padding: 80px ;
 }
@@ -1804,3 +1814,53 @@ img.pixelated {
   background: hsl(0,50%,50%);
   font-family: Ubuntu ;
 }
+
+.search-field {
+  width: 200px ;
+  display: inline-block;
+  position: relative ;
+}
+.search-field input {
+  border-radius: 25px;
+      border: none;
+      margin: 6px;
+      font-size: 14px;
+      padding: 5px 15px;
+      background: rgba(255,255,255,.9);
+      width: 148px ;
+}
+.search-field input:focus {
+  outline: none ;
+}
+.search-field i {
+  position: absolute;
+      right: 16px;
+      top: 12px;
+      z-index: 1;
+      color: rgba(0,0,0,.3);
+      font-size: 16px;
+}
+
+.likes-button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 14px;
+  background: rgba(255,255,255,.2);
+  border-radius: 5px ;
+  color: rgba(255,255,255,.9);
+  padding: 4px 12px ;
+  vertical-align: baseline ;
+  cursor: pointer ;
+}
+
+.likes-button.liked {
+  background: hsl(0,50%,50%);
+}
+
+
+.likes-button i {
+  margin-right: 4px ;
+  vertical-align: baseline ;
+}
+

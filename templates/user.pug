@@ -1,15 +1,13 @@
 div.usersettings#usersettings
-  div#usersettings-menu
+  div.section-menu#usersettings-menu
     div.selected#usersettings-menu-settings #{translator.get("Settings")}
       i.fa.fa-cogs
-    br
     div#usersettings-menu-profile #{translator.get("Profile")}
       i.fas.fa-user-circle
-    br
     div#usersettings-menu-progress #{translator.get("Stats & Achievements")}
       i.fas.fa-chart-bar
 
-  div.usersettings-page#usersettings-settings
+  div.section-content.usersettings-page#usersettings-settings
     h1 #{translator.get("User Settings")}
     div.usersetting#usersetting-block-nickname
       h3 #{translator.get("Nickname")}
@@ -97,7 +95,7 @@ div.usersettings#usersettings
         div#delete-account-error(style="margin-top:20px")
 
 
-  div.usersettings-page#usersettings-profile(style="display: none")
+  div.section-content.usersettings-page#usersettings-profile(style="display: none")
     h1 #{translator.get("Your Profile")}
 
     div.usersetting
@@ -120,7 +118,7 @@ div.usersettings#usersettings
       div.tip #{translator.get("Your public page displays your nickname, description, profile image and a list of your public projects.")}
 
 
-  div.usersettings-page#usersettings-progress(style="display: none")
+  div.section-content.usersettings-page#usersettings-progress(style="display: none")
     h1 #{translator.get("Your Progress")}
 
     div#user-progress-level

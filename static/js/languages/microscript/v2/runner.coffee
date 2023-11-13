@@ -67,7 +67,7 @@ class @Runner
     @fps = 60
     @fps_max = 60
     @cpu_load = 0
-    @microvm.context.meta.print("microScript 2.0 - beta")
+    @microvm.context.meta.print("microScript 2.0")
 
     @triggers_controls_update = true
 

@@ -1,6 +1,7 @@
 this.Tutorials = class Tutorials {
   constructor(app) {
     this.app = app;
+    this.tutorials_page = new TutorialsPage(this);
   }
 
   load() {

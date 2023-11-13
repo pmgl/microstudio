@@ -7,15 +7,18 @@ this.AppState = class AppState {
   }
 
   pushState(name, path, obj = {}) {
-    obj.name = name;
-    return history.pushState(obj, "", path);
+    console.info(`pushing state\nname=${name}\npath=${path}`);
+    if ((history.state != null) && history.state.name !== name) {
+      obj.name = name;
+      return history.pushState(obj, "", path);
+    }
   }
 
   popState() {
     var i, len, p, project, ref, ref1, s;
     if (history.state != null) {
       s = history.state.name.split(".");
-      if ((ref = history.state.name) === "documentation" || ref === "tutorials" || ref === "about" || ref === "projects" || ref === "explore") {
+      if ((ref = history.state.name) === "documentation" || ref === "about" || ref === "projects" || ref === "explore") {
         if (history.state.name === "projects") {
           if (this.app.project && this.app.project.pending_changes.length > 0) {
             history.forward();
@@ -50,6 +53,30 @@ this.AppState = class AppState {
         }
         this.app.appui.setMainSection("projects");
         return this.app.appui.setSection(s[2]);
+      } else if (history.state.name.startsWith("documentation")) {
+        s = history.state.name.split(".");
+        if (s[1]) {
+          this.app.documentation.setSection(s[1]);
+          return this.app.appui.setMainSection("help");
+        } else {
+          return this.app.appui.setMainSection("help");
+        }
+      } else if (history.state.name.startsWith("tutorials")) {
+        s = history.state.name.split(".");
+        if (s[1]) {
+          this.app.tutorials.tutorials_page.setSection(s[1], false);
+          this.app.appui.setMainSection("tutorials");
+          if (s[1] === "examples") {
+            if (s[2] && s[3]) {
+              return this.app.tutorials.tutorials_page.reloadExample(s[2], s[3]);
+            } else {
+              return this.app.tutorials.tutorials_page.closeExampleView();
+            }
+          }
+        } else {
+          this.app.tutorials.tutorials_page.setSection("core");
+          return this.app.appui.setMainSection("tutorials");
+        }
       } else if (history.state.name.startsWith("user.") && (s[1] != null)) {
         switch (s[1]) {
           case "settings":
@@ -108,6 +135,27 @@ this.AppState = class AppState {
             s = location.pathname.split("/")[2];
             if (s === "library" || s === "plugin" || s === "tutorial" || s === "app" || s === "all") {
               this.app.explore.setProjectType(s);
+            }
+          } else if (p === "documentation") {
+            path = location.pathname.split("/");
+            if (path[2]) {
+              this.app.documentation.setSection(path[2], null, null, false);
+            }
+          } else if (p === "tutorials") {
+            path = location.pathname.split("/");
+            if (path[2]) {
+              this.app.tutorials.tutorials_page.setSection(path[2], false);
+              history.replaceState({
+                name: `tutorials.${path[2]}`
+              }, "", location.pathname);
+              if (path[2] === "examples") {
+                if (path[3] && path[4]) {
+                  this.app.tutorials.tutorials_page.reloadExample(path[3], path[4]);
+                  history.replaceState({
+                    name: `tutorials.${path[2]}.${path[3]}.${path[4]}`
+                  }, "", location.pathname);
+                }
+              }
             }
           }
           return this.app.appui.setMainSection(((p) => {

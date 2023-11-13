@@ -412,7 +412,12 @@ class AppUI
         @app.app_state.pushState "project_details","/i/#{p.owner}/#{p.slug}/",{project: p}
       else
         name = {"help":"documentation"}[section] || section
-        @app.app_state.pushState name,"/#{name}/"
+        if name == "documentation"
+          @app.documentation.pushState()
+        else if name == "tutorials"
+          @app.tutorials.tutorials_page.pushState()
+        else
+          @app.app_state.pushState name,"/#{name}/"
 
     for s in @menuoptions
       do (s)=>
@@ -1162,3 +1167,27 @@ class AppUI
           window.dispatchEvent(new Event('resize'))
     ),500
       
+
+  createProjectLikesButton:(element,project)->
+    e = element.querySelector(".likes-button")
+    if e
+      e.parentNode.removeChild(e)
+  
+    likes = document.createElement "div"
+    likes.classList.add "likes-button"
+    likes.innerHTML = "<i class='fa fa-thumbs-up'></i> "+project.likes
+    likes.classList.add("liked") if project.liked
+    element.appendChild likes
+
+    likes.addEventListener "click",()=>
+      event.stopImmediatePropagation()
+      if not @app.user.flags.validated
+        return alert(@app.translator.get("Validate your e-mail address to enable votes."))
+      @app.client.sendRequest {
+        name:"toggle_like"
+        project: project.id
+      },(msg)=>
+        if msg.name == "project_likes"
+          project.likes = msg.likes
+          project.liked = msg.liked
+          @createProjectLikesButton(element,project)

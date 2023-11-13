@@ -1,5 +1,6 @@
 class @Tutorials
   constructor:(@app)->
+    @tutorials_page = new TutorialsPage @
 
   load:()->
     req = new XMLHttpRequest()
@@ -155,3 +156,5 @@ class @Tutorials
     tuto = new Tutorial(t.link.replace("https://microstudio.dev",location.origin))
     tuto.load ()=>
       @app.tutorial.start(tuto)
+
+

@@ -1,4 +1,35 @@
 div.tutorials
-  h1 #{translator.get("Tutorials")}
-  h3 #{translator.get("Learn the basics of programming and how to create games with microStudio:")}
-  div#tutorials-content
+  div.section-menu#tutorials-menu
+    div.selected#tutorials-core #{translator.get("Tutorials")}
+    div#tutorials-community #{translator.get("Community Tutorials")}
+    div#tutorials-examples #{translator.get("Examples")}
+
+  div.section-content#tutorials-content-core
+    div#tutorials-content
+
+  div.section-content#tutorials-content-community
+
+  div.section-content#tutorials-content-examples
+    div.project-search-bar
+      div.search-field#example-search
+        input#example-search-input(name="search")
+        i.fa.fa-search
+        
+      select
+        option microScript 
+        option Python 
+        option Lua 
+        option JavaScript
+
+    div#tutorials-examples-list
+    div#tutorials-example-view-topbar
+      img.pixelated#tutorials-example-view-icon
+      span Example Title
+      i.fa.fa-times
+    div#tutorials-examples-view
+      div.split-left#tutorials-examples-code
+        div.split-left.code-list.assetlist#tutorials-examples-code-files
+        div#tutorials-examples-code-split.horizontal-splitbar
+        div.split-right#tutorials-examples-code-editor 
+      div#tutorials-examples-split.horizontal-splitbar
+      div.split-right#tutorials-examples-run

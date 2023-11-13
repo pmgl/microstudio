@@ -320,8 +320,8 @@ this.Editor = class Editor extends Manager {
     button.addEventListener("mousedown", (event) => {
       var element;
       event.stopPropagation();
-      this.app.appui.setMainSection("help", true);
       this.app.documentation.setSection(section || "API");
+      this.app.appui.setMainSection("help", true);
       element = document.getElementById(pointer);
       if (element != null) {
         return element.scrollIntoView();

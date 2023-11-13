@@ -1,5 +1,5 @@
 class @Terminal
-  constructor:(@runwindow)->
+  constructor:(@runwindow,@tid="terminal")->
     @localStorage = localStorage
     @commands =
       clear: ()=>@clear()
@@ -22,57 +22,57 @@ class @Terminal
   start:()->
     return if @started
     @started = true
-    document.getElementById("terminal").addEventListener "mousedown",(event)=>
+    document.getElementById("#{@tid}").addEventListener "mousedown",(event)=>
       @pressed = true
       @moved = false
       true
 
-    document.getElementById("terminal").addEventListener "mousemove",(event)=>
+    document.getElementById("#{@tid}").addEventListener "mousemove",(event)=>
       if @pressed
         @moved = true
       true
 
-    document.getElementById("terminal").addEventListener "mouseup",(event)=>
+    document.getElementById("#{@tid}").addEventListener "mouseup",(event)=>
       if not @moved
-        document.getElementById("terminal-input").focus()
+        document.getElementById("#{@tid}-input").focus()
 
       @moved = false
       @pressed = false
       true
 
-    document.getElementById("terminal-input").addEventListener "paste",(event)=>
+    document.getElementById("#{@tid}-input").addEventListener "paste",(event)=>
       text = event.clipboardData.getData("text/plain")
       s = text.split("\n")
       if s.length>1
         event.preventDefault()
         for line in s
-          document.getElementById("terminal-input").value = ""
+          document.getElementById("#{@tid}-input").value = ""
           @validateLine line
         return
       else
         false
-      #document.getElementById("terminal-input").value = s[0]
+      #document.getElementById("#{@tid}-input").value = s[0]
 
-    document.getElementById("terminal-input").addEventListener "keydown",(event)=>
+    document.getElementById("#{@tid}-input").addEventListener "keydown",(event)=>
       # console.info event.key
       if event.key == "Enter"
-        v = document.getElementById("terminal-input").value
-        document.getElementById("terminal-input").value = ""
+        v = document.getElementById("#{@tid}-input").value
+        document.getElementById("#{@tid}-input").value = ""
         @validateLine v
         @force_scroll = true
 
       else if event.key == "ArrowUp"
         if not @history_index?
           @history_index = @history.length-1
-          @current_input = document.getElementById("terminal-input").value
+          @current_input = document.getElementById("#{@tid}-input").value
         else
           @history_index = Math.max(0,@history_index-1)
 
         if @history_index == @history.length-1
-          @current_input = document.getElementById("terminal-input").value
+          @current_input = document.getElementById("#{@tid}-input").value
 
         if @history_index>=0 and @history_index<@history.length
-          document.getElementById("terminal-input").value = @history[@history_index]
+          document.getElementById("#{@tid}-input").value = @history[@history_index]
           @setTrailingCaret()
 
       else if event.key == "ArrowDown"
@@ -83,10 +83,10 @@ class @Terminal
           return
 
         if @history_index>=0 and @history_index<@history.length
-          document.getElementById("terminal-input").value = @history[@history_index]
+          document.getElementById("#{@tid}-input").value = @history[@history_index]
           @setTrailingCaret()
         else if @history_index == @history.length
-          document.getElementById("terminal-input").value = @current_input
+          document.getElementById("#{@tid}-input").value = @current_input
           @setTrailingCaret()
 
     setInterval (()=>@update()),16
@@ -106,17 +106,17 @@ class @Terminal
     else
       @runwindow.runCommand v
       if @runwindow.multiline
-        document.querySelector("#terminal-input-gt i").classList.add("fa-ellipsis-v")
+        document.querySelector("##{@tid}-input-gt i").classList.add("fa-ellipsis-v")
         for i in [0..@runwindow.nesting*2-1] by 1
-          document.getElementById("terminal-input").value += " "
+          document.getElementById("#{@tid}-input").value += " "
         @setTrailingCaret()
       else
-        document.querySelector("#terminal-input-gt i").classList.remove("fa-ellipsis-v")
+        document.querySelector("##{@tid}-input-gt i").classList.remove("fa-ellipsis-v")
 
   setTrailingCaret:()->
     setTimeout (()=>
-      val = document.getElementById("terminal-input").value
-      document.getElementById("terminal-input").setSelectionRange(val.length,val.length)
+      val = document.getElementById("#{@tid}-input").value
+      document.getElementById("#{@tid}-input").setSelectionRange(val.length,val.length)
     ),0
 
   update:()->
@@ -125,7 +125,7 @@ class @Terminal
         @scroll = true
         @force_scroll = false
       else
-        e = document.getElementById("terminal-view")
+        e = document.getElementById("#{@tid}-view")
         @scroll = Math.abs(e.getBoundingClientRect().height+e.scrollTop-e.scrollHeight) < 10
 
       div = document.createDocumentFragment()
@@ -133,7 +133,7 @@ class @Terminal
       div.appendChild container
       for t in @buffer
         container.appendChild element = @echoReal t.text,t.classname
-      document.getElementById("terminal-lines").appendChild div
+      document.getElementById("#{@tid}-lines").appendChild div
       if @scroll
         element.scrollIntoView()
       @length += @buffer.length
@@ -167,7 +167,7 @@ class @Terminal
     @error_lines += 1
 
   truncate:()->
-    e = document.getElementById("terminal-lines")
+    e = document.getElementById("#{@tid}-lines")
     while @length>10000 and e.firstChild?
       c = e.firstChild.children.length
       e.removeChild e.firstChild
@@ -175,9 +175,9 @@ class @Terminal
     return
 
   clear:()->
-    document.getElementById("terminal-lines").innerHTML = ""
+    document.getElementById("#{@tid}-lines").innerHTML = ""
     @buffer = []
     @length = 0
     @error_lines = 0
-    document.querySelector("#terminal-input-gt i").classList.remove("fa-ellipsis-v")
+    document.querySelector("##{@tid}-input-gt i").classList.remove("fa-ellipsis-v")
     delete @runwindow.multiline

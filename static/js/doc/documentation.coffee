@@ -7,9 +7,13 @@ class @Documentation
 
     setTimeout (()=>@load "API",(src)=>
       @buildLiveHelp src,"API"
-      setTimeout (()=>@setSection "Quickstart",()=>
-        @buildLiveHelp @doc,"Quickstart"
-      ),100
+      if not @current_section
+        setTimeout (()=>@setSection "Quickstart",(()=>
+          @buildLiveHelp @doc,"Quickstart"
+        ),null,false),100
+      else
+        @load "Quickstart",(src)=>
+          @buildLiveHelp src,"Quickstart"
     ),100
 
     @sections = {}
@@ -36,7 +40,17 @@ class @Documentation
 
     window.addEventListener "resize",()=>@updateViewPos()
 
-  setSection:(id,callback,url)->
+  pushState:()->
+    if @current_section
+      @app.app_state.pushState "documentation.#{@current_section}","/documentation/#{@current_section}/"
+    else
+      @app.app_state.pushState "documentation","/documentation/"
+
+  setSection:(id,callback,url,push_state = true)->
+    @current_section = id
+    if push_state
+      @pushState()
+
     @load (if url? then url else id),(@doc)=>
       @update()
       callback() if callback?

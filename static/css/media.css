@@ -8,25 +8,6 @@
   .help-view {
     left: 0 ;
   }
-  #about-menu br {
-    display: none ;
-  }
-  #about-menu {
-    bottom: unset ;
-    text-align: center ;
-    top: 40px ;
-    right: 30px ;
-    width: unset ;
-  }
-  #about-menu div {
-    margin: 5px 5px ;
-  }
-  #about-content {
-    left: 30px ;
-    right: 30px ;
-    top: 150px ;
-    bottom: 30px ;
-  }
 
   .home-section div.center {
     width: auto;
@@ -54,6 +35,8 @@
   #explore-box-list, #project-list {
     zoom: 70% ;
   }
+  
+  div::-webkit-scrollbar { display: none ; }
 }
 
 
