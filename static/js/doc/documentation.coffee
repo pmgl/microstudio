@@ -5,17 +5,6 @@ class @Documentation
     @suggest = {}
     @title_elements = []
 
-    setTimeout (()=>@load "API",(src)=>
-      @buildLiveHelp src,"API"
-      if not @current_section
-        setTimeout (()=>@setSection "Quickstart",(()=>
-          @buildLiveHelp @doc,"Quickstart"
-        ),null,false),100
-      else
-        @load "Quickstart",(src)=>
-          @buildLiveHelp src,"Quickstart"
-    ),100
-
     @sections = {}
 
     list = document.getElementsByClassName "help-section-category"
@@ -39,6 +28,17 @@ class @Documentation
           @setSection id
 
     window.addEventListener "resize",()=>@updateViewPos()
+
+  stateInitialized:()->
+    @load "API",(src)=>
+          @buildLiveHelp src,"API"
+          if not @current_section
+            setTimeout (()=>@setSection "Quickstart",(()=>
+              @buildLiveHelp @doc,"Quickstart"
+            ),null,false),100
+          else
+            @load "Quickstart",(src)=>
+              @buildLiveHelp src,"Quickstart"
 
   pushState:()->
     if @current_section

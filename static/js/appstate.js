@@ -107,6 +107,11 @@ this.AppState = class AppState {
     }
   }
 
+  stateInitialized() {
+    console.info("state initialized");
+    return this.app.documentation.stateInitialized();
+  }
+
   initState() {
     var i, len, p, path, project, ref, s, tab;
     if (location.pathname.startsWith("/login/")) {
@@ -115,12 +120,12 @@ this.AppState = class AppState {
         name: "home"
       }, "", path);
       this.app.appui.setMainSection("home");
-      return this.app.appui.showLoginPanel();
+      this.app.appui.showLoginPanel();
     } else if (location.pathname.startsWith("/tutorial/")) {
-      return this.load_tutorial = true;
+      this.load_tutorial = true;
     } else if (location.pathname.startsWith("/i/")) {
       this.app.appui.setMainSection("explore", false);
-      return history.replaceState({
+      history.replaceState({
         name: "project_details"
       }, "", location.pathname);
     } else {
@@ -158,11 +163,13 @@ this.AppState = class AppState {
               }
             }
           }
-          return this.app.appui.setMainSection(((p) => {
+          this.app.appui.setMainSection(((p) => {
             return {
               "documentation": "help"
             }[p] || p;
           })(p));
+          this.stateInitialized();
+          return;
         }
       }
       if (this.app.user != null) {
@@ -170,24 +177,26 @@ this.AppState = class AppState {
         if (location.pathname.startsWith("/projects/") && s[2] && s[3]) {
           project = s[2];
           tab = s[3];
-          return history.replaceState({
+          history.replaceState({
             name: `project.${s[2]}.${s[3]}`
           }, "", location.pathname);
         } else if (location.pathname.startsWith("/user/") && s[2]) {
           switch (s[2]) {
             case "settings":
               this.app.appui.setMainSection("usersettings");
-              return this.app.user_settings.setSection("settings");
+              this.app.user_settings.setSection("settings");
+              break;
             case "profile":
               this.app.appui.setMainSection("usersettings");
-              return this.app.user_settings.setSection("profile");
+              this.app.user_settings.setSection("profile");
+              break;
             case "progress":
               this.app.appui.setMainSection("usersettings");
-              return this.app.user_settings.setSection("progress");
+              this.app.user_settings.setSection("progress");
           }
         } else {
           this.app.appui.setMainSection("projects");
-          return history.replaceState({
+          history.replaceState({
             name: "projects"
           }, "", "/projects/");
         }
@@ -196,9 +205,10 @@ this.AppState = class AppState {
         history.replaceState({
           name: "home"
         }, "", path);
-        return this.app.appui.setMainSection("home");
+        this.app.appui.setMainSection("home");
       }
     }
+    return this.stateInitialized();
   }
 
   projectsFetched() {

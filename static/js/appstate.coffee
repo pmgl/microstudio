@@ -81,6 +81,11 @@ class @AppState
               @app.explore.openProject(p)
               @app.appui.setMainSection "explore"
 
+
+  stateInitialized:()->
+    console.info "state initialized"
+    @app.documentation.stateInitialized()
+
   initState:()->
     if location.pathname.startsWith("/login/")
       path = if @app.translator.lang != "en" then "/#{@app.translator.lang}/" else "/"
@@ -116,7 +121,9 @@ class @AppState
                   @app.tutorials.tutorials_page.reloadExample path[3],path[4]
                   history.replaceState {name: "tutorials.#{path[2]}.#{path[3]}.#{path[4]}"},"",location.pathname
 
-          return @app.appui.setMainSection ((p)=>{"documentation":"help"}[p] or p)(p)
+          @app.appui.setMainSection ((p)=>{"documentation":"help"}[p] or p)(p)
+          @stateInitialized()
+          return
 
       if @app.user?
         s = location.pathname.split("/")
@@ -145,6 +152,8 @@ class @AppState
         path = if @app.translator.lang != "en" then "/#{@app.translator.lang}/" else "/"
         history.replaceState {name:"home"},"",path
         @app.appui.setMainSection("home")
+
+    @stateInitialized()
 
   projectsFetched:()->
     if history.state? and history.state.name?

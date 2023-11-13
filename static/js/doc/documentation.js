@@ -6,22 +6,6 @@ this.Documentation = class Documentation {
     this.help = {};
     this.suggest = {};
     this.title_elements = [];
-    setTimeout((() => {
-      return this.load("API", (src) => {
-        this.buildLiveHelp(src, "API");
-        if (!this.current_section) {
-          return setTimeout((() => {
-            return this.setSection("Quickstart", (() => {
-              return this.buildLiveHelp(this.doc, "Quickstart");
-            }), null, false);
-          }), 100);
-        } else {
-          return this.load("Quickstart", (src) => {
-            return this.buildLiveHelp(src, "Quickstart");
-          });
-        }
-      });
-    }), 100);
     this.sections = {};
     list = document.getElementsByClassName("help-section-category");
     for (j = 0, len1 = list.length; j < len1; j++) {
@@ -54,6 +38,23 @@ this.Documentation = class Documentation {
     }
     window.addEventListener("resize", () => {
       return this.updateViewPos();
+    });
+  }
+
+  stateInitialized() {
+    return this.load("API", (src) => {
+      this.buildLiveHelp(src, "API");
+      if (!this.current_section) {
+        return setTimeout((() => {
+          return this.setSection("Quickstart", (() => {
+            return this.buildLiveHelp(this.doc, "Quickstart");
+          }), null, false);
+        }), 100);
+      } else {
+        return this.load("Quickstart", (src) => {
+          return this.buildLiveHelp(src, "Quickstart");
+        });
+      }
     });
   }
 
