@@ -382,6 +382,8 @@ this.Explore = class Explore {
     }
     if (p.type === "tutorial") {
       this.get("project-details-runbutton").href = location.origin.replace(".dev", ".io") + `/tutorial/${p.owner}/${p.slug}/`;
+    } else if (p.type === "example") {
+      this.get("project-details-runbutton").href = `${dev_domain}/tutorials/examples/${p.owner}/${p.slug}/`;
     } else {
       this.get("project-details-runbutton").href = location.origin.replace(".dev", ".io") + `/${p.owner}/${p.slug}/`;
     }

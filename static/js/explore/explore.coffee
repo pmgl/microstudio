@@ -326,6 +326,8 @@ class @Explore
 
     if p.type == "tutorial"
       @get("project-details-runbutton").href = location.origin.replace(".dev",".io")+"/tutorial/#{p.owner}/#{p.slug}/"
+    else if p.type == "example"
+      @get("project-details-runbutton").href = "#{dev_domain}/tutorials/examples/#{p.owner}/#{p.slug}/"
     else
       @get("project-details-runbutton").href = location.origin.replace(".dev",".io")+"/#{p.owner}/#{p.slug}/"
 
