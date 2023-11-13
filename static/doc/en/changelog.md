@@ -1,5 +1,14 @@
 ## Changelog
 
+### Update 2023-11-13
+* New help section: "Examples"
+  * Available under Tutorials / Examples https://microstudio.dev/tutorials/examples/
+  * Search and find simple examples
+  * Run and modify the examples within the help page, no need to clone the projects
+  * Guidelines for producing your own examples: https://microstudio.dev/documentation/Creating-Examples/
+* New function `sprite.setFPS()` (doesn't break the animation phase)
+* Fixed #206, draw map on Image
+
 ### Update 2023-09-25
 * added missing keyword "global" to syntax highlighter (contributed by @HomineLudens :-) )
 * added drawing functions, thanks a lot to @TinkerSmith for providing the initial experiment
