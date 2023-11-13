@@ -201,7 +201,11 @@ this.Explore = class Explore {
       element.appendChild(smallicon);
     } else {
       icon = new Image;
-      icon.src = location.origin + `/${p.owner}/${p.slug}/icon.png`;
+      if (p.icon || p.type !== "example") {
+        icon.src = location.origin + `/${p.owner}/${p.slug}/icon.png`;
+      } else {
+        icon.src = `${dev_domain}/img/lightbulb16.png`;
+      }
       icon.classList.add("icon");
       icon.classList.add("pixelated");
       icon.alt = p.title;
@@ -343,7 +347,7 @@ this.Explore = class Explore {
     this.get("explore-tags-bar").style.display = "none";
     this.get("explore-contents").style.display = "none";
     this.get("explore-project-details").style.display = "block";
-    this.get("project-details-image").src = location.origin + `/${p.owner}/${p.slug}/icon.png`;
+    this.get("project-details-image").src = p.icon || p.type !== "example" ? location.origin + `/${p.owner}/${p.slug}/icon.png` : `${dev_domain}/img/lightbulb16.png`;
     this.get("project-details-title").innerText = p.title;
     desc = DOMPurify.sanitize(marked(p.description));
     if (p.poster) {

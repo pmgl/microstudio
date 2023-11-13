@@ -163,7 +163,11 @@ class @Explore
 
     else
       icon = new Image
-      icon.src = location.origin+"/#{p.owner}/#{p.slug}/icon.png"
+      if p.icon or p.type != "example"
+        icon.src = location.origin+"/#{p.owner}/#{p.slug}/icon.png"
+      else
+        icon.src = "#{dev_domain}/img/lightbulb16.png"
+
       icon.classList.add "icon"
       icon.classList.add "pixelated"
       icon.alt = p.title
@@ -286,7 +290,7 @@ class @Explore
     @get("explore-contents").style.display = "none"
     @get("explore-project-details").style.display = "block"
 
-    @get("project-details-image").src = location.origin+"/#{p.owner}/#{p.slug}/icon.png"
+    @get("project-details-image").src = if p.icon or p.type != "example" then location.origin+"/#{p.owner}/#{p.slug}/icon.png" else "#{dev_domain}/img/lightbulb16.png"
     @get("project-details-title").innerText = p.title
     desc = DOMPurify.sanitize marked p.description
 
