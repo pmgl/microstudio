@@ -139,7 +139,7 @@ this.TextViewer = class TextViewer {
   }
 
   editorContentsChanged() {
-    document.getElementById("text-asset-viewer").style.background = "none";
+    document.getElementById("text-asset-viewer").style.removeProperty("background");
     if (this.ignore_changes) {
       return;
     }
@@ -172,7 +172,6 @@ this.TextViewer = class TextViewer {
         console.info("JSON parsed successfully");
       } catch (error) {
         err = error;
-        console.error(err);
         document.getElementById("text-asset-viewer").style.background = "#600";
         return;
       }

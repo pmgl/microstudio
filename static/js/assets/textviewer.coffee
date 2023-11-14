@@ -113,7 +113,7 @@ class @TextViewer
 
 
   editorContentsChanged:()->
-    document.getElementById("text-asset-viewer").style.background = "none"
+    document.getElementById("text-asset-viewer").style.removeProperty("background")
     return if @ignore_changes
     @update_time = Date.now()
     @save_time = Date.now()
@@ -138,7 +138,6 @@ class @TextViewer
         json = JSON.parse @asset.content
         console.info "JSON parsed successfully"
       catch err
-        console.error err
         document.getElementById("text-asset-viewer").style.background = "#600"
         return
    
