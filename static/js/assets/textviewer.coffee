@@ -1,6 +1,12 @@
 class @TextViewer
   constructor:(@manager)->
     @element = document.getElementById "text-asset-viewer"
+    @app = @manager.app
+
+    @save_delay = 3000
+    @save_time = 0
+    setInterval (()=>@checkSave()),@save_delay/2
+
 
   updateSnippet:()->
     switch @asset.ext
@@ -21,6 +27,7 @@ class @TextViewer
         }]
 
   view:(asset)->
+    @checkSave(true)
     @element.style.display = "block"
     @asset = asset
     @updateSnippet()
@@ -31,11 +38,15 @@ class @TextViewer
       @editor.$blockScrolling = Infinity
       @editor.setTheme("ace/theme/tomorrow_night_bright")
       @editor.setFontSize("12px")
-      @editor.setReadOnly(true)
+      @editor.setReadOnly(false)
+      @editor.getSession().on "change",()=>
+        @editorContentsChanged()
 
     switch asset.ext
       when "json"
         @editor.getSession().setMode("ace/mode/json")
+      when "md"
+        @editor.getSession().setMode("ace/mode/markdown")
       else
         @editor.getSession().setMode("ace/mode/text")
 
@@ -47,6 +58,9 @@ class @TextViewer
           @setText asset,text,asset.ext
 
   setText:(asset,text,ext)->
+    @ignore_changes = true
+    #@updateCurrentFileLock()
+
     if ext == "json"
       try
         text = JSON.stringify(JSON.parse(text), null, '\t')
@@ -54,6 +68,7 @@ class @TextViewer
         console.error err
 
     @editor.setValue(text,-1)
+    @editor.getSession().setUndoManager(new ace.UndoManager())
 
     @manager.checkThumbnail asset,()=>
       console.info "Must create thumbnail"
@@ -63,6 +78,8 @@ class @TextViewer
         asset.element.querySelector("img").src = canvas.toDataURL()
 
       @manager.updateAssetIcon asset,canvas
+
+    @ignore_changes = false
 
   createThumbnail:(text,ext)->
     canvas = document.createElement "canvas"
@@ -87,9 +104,57 @@ class @TextViewer
     context.font = "5pt Verdana"
     lines = text.split("\n")
     i = 0
-    while i<lines.length and i<10
+    while i < lines.length and i < 10
       context.fillText lines[i],4,10+i*8
       i += 1
 
     context.restore()
     canvas
+
+
+  editorContentsChanged:()->
+    document.getElementById("text-asset-viewer").style.background = "none"
+    return if @ignore_changes
+    @update_time = Date.now()
+    @save_time = Date.now()
+    @app.project.addPendingChange @
+    if @asset?
+      @app.project.lockFile "assets/#{@asset.filename}"
+      @asset.content = @editor.getValue()
+
+  checkSave:(immediate=false,callback)->
+    if @save_time > 0 and (immediate or Date.now() > @save_time + @save_delay)
+      @saveFile(callback)
+      @save_time = 0
+
+  forceSave:(callback)->
+    @checkSave(true,callback)
+
+  saveFile:(callback)->
+    saved = false
+
+    if @asset.ext == "json"
+      try
+        json = JSON.parse @asset.content
+        console.info "JSON parsed successfully"
+      catch err
+        console.error err
+        document.getElementById("text-asset-viewer").style.background = "#600"
+        return
+   
+    @app.client.sendRequest {
+      name: "write_project_file"
+      project: @app.project.id
+      file: "assets/#{@asset.filename}"
+      content: @asset.content
+    },(msg)=>
+      saved = true
+      @app.project.removePendingChange(@) if @save_time == 0
+      @asset.size = msg.size
+      callback() if callback?
+
+    setTimeout (()=>
+      if not saved
+       @save_time = Date.now()
+       console.info("retrying code save...")
+      ),10000

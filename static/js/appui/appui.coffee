@@ -40,7 +40,7 @@ class AppUI
           when "sprites" then @app.sprite_editor.checkSave true
           when "maps" then @app.map_editor.checkSave true
           when "doc" then @app.doc_editor.checkSave true
-
+          when "assets" then @app.assets_manager.text_viewer.checkSave true
 
     for s in @menuoptions
       do (s)=>

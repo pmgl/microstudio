@@ -628,7 +628,7 @@ this.WebApp = class WebApp {
       });
     });
     // asset files
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_-]+.(glb|obj|jpg|png|ttf|txt|csv|json)$/, (req, res) => {
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_-]+.(glb|obj|jpg|png|ttf|txt|csv|json|md)$/, (req, res) => {
       var access, asset, project, s, user;
       s = req.path.split("/");
       access = this.getProjectAccess(req, res);

@@ -7,6 +7,7 @@ class @AssetManager
       loadJSON: (path,callback) => @loadJSON path,callback
       loadText: (path,callback) => @loadText path,callback
       loadCSV: (path,callback) => @loadCSV path,callback
+      loadMarkdown: (path,callback) => @loadMarkdown path,callback
 
   getInterface:()->
     @interface
@@ -87,3 +88,6 @@ class @AssetManager
 
   loadCSV:(path,callback)->
     @loadText path,callback,"csv"
+
+  loadMarkdown:(path,callback)->
+    @loadText path,callback,"md"

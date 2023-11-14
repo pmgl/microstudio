@@ -30,6 +30,8 @@ AppUI = class AppUI {
             return this.app.map_editor.checkSave(true);
           case "doc":
             return this.app.doc_editor.checkSave(true);
+          case "assets":
+            return this.app.assets_manager.text_viewer.checkSave(true);
         }
       }
     });

@@ -8,7 +8,7 @@ this.AssetsManager = class AssetsManager extends Manager {
     this.list_change_event = "assetlist";
     this.get_item = "getAsset";
     this.use_thumbnails = true;
-    this.extensions = ["glb", "obj", "json", "ttf", "png", "jpg", "txt", "csv"];
+    this.extensions = ["glb", "obj", "json", "ttf", "png", "jpg", "txt", "csv", "md"];
     this.update_list = "updateAssetList";
     this.model_viewer = new ModelViewer(this);
     this.font_viewer = new FontViewer(this);
@@ -100,6 +100,7 @@ this.AssetsManager = class AssetsManager extends Manager {
         case "json":
         case "txt":
         case "csv":
+        case "md":
           this.text_viewer.view(this.asset);
           return this.viewer = this.text_viewer;
         case "png":
@@ -156,14 +157,14 @@ this.AssetsManager = class AssetsManager extends Manager {
       canvas.width = canvas.height = 64;
       asset = this.app.project.createAsset(name, canvas.toDataURL(), reader.result.length, ext);
       asset.uploading = true;
-      if (ext === "json" || ext === "csv" || ext === "txt") {
+      if (ext === "json" || ext === "csv" || ext === "txt" || ext === "md") {
         asset.local_text = reader.result;
       } else {
         asset.local_url = reader.result;
       }
       this.setSelectedItem(name);
       this.openItem(name);
-      if (ext === "json" || ext === "csv" || ext === "txt") {
+      if (ext === "json" || ext === "csv" || ext === "txt" || ext === "md") {
         data = reader.result;
       } else {
         data = reader.result.split(",")[1];
@@ -185,7 +186,7 @@ this.AssetsManager = class AssetsManager extends Manager {
         return this.checkNameFieldActivation();
       });
     });
-    if (ext === "json" || ext === "csv" || ext === "txt") {
+    if (ext === "json" || ext === "csv" || ext === "txt" || ext === "md") {
       return reader.readAsText(file);
     } else {
       return reader.readAsDataURL(file);
@@ -205,6 +206,8 @@ this.AssetsManager = class AssetsManager extends Manager {
           return "hsl(60,50%,60%)";
         case "txt":
           return "hsl(160,50%,60%)";
+        case "md":
+          return "hsl(270,50%,60%)";
         case "glb":
           return "hsl(300,50%,60%)";
         case "obj":

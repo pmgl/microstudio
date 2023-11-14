@@ -7,7 +7,7 @@ class @AssetsManager extends Manager
     @list_change_event = "assetlist"
     @get_item = "getAsset"
     @use_thumbnails = true
-    @extensions = ["glb","obj","json","ttf","png","jpg","txt","csv"]
+    @extensions = ["glb","obj","json","ttf","png","jpg","txt","csv","md"]
     @update_list = "updateAssetList"
 
     @model_viewer = new ModelViewer @
@@ -79,7 +79,7 @@ class @AssetsManager extends Manager
           @model_viewer.view @asset
           @viewer = @model_viewer
 
-        when "json","txt","csv"
+        when "json","txt","csv","md"
           @text_viewer.view @asset
           @viewer = @text_viewer
 
@@ -126,7 +126,7 @@ class @AssetsManager extends Manager
       asset = @app.project.createAsset(name,canvas.toDataURL(),reader.result.length,ext)
       asset.uploading = true
 
-      if ext in ["json","csv","txt"]
+      if ext in ["json","csv","txt","md"]
         asset.local_text = reader.result
       else
         asset.local_url = reader.result
@@ -134,7 +134,7 @@ class @AssetsManager extends Manager
       @setSelectedItem name
       @openItem name
 
-      if ext in ["json","csv","txt"]
+      if ext in ["json","csv","txt","md"]
         data = reader.result
       else
         data = reader.result.split(",")[1]
@@ -156,7 +156,7 @@ class @AssetsManager extends Manager
         @app.project.updateAssetList()
         @checkNameFieldActivation()
 
-    if ext in ["json","csv","txt"]
+    if ext in ["json","csv","txt","md"]
       reader.readAsText(file)
     else
       reader.readAsDataURL(file)
@@ -168,6 +168,7 @@ class @AssetsManager extends Manager
       when "json" then "hsl(0,50%,60%)"
       when "csv" then "hsl(60,50%,60%)"
       when "txt" then "hsl(160,50%,60%)"
+      when "md" then "hsl(270,50%,60%)"
       when "glb" then "hsl(300,50%,60%)"
       when "obj" then "hsl(240,50%,70%)"
       else "hsl(0,0%,60%)"
