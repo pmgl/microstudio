@@ -1,5 +1,12 @@
 ## Changelog
 
+### Update 2023-11-20
+* Text assets (TXT, CSV, OBJ, MD) can be edited in microStudio
+* Support for markdown (.MD) asset files
+* Added types Example and Template to create project dialog box
+* Fixed Python not working since last update (incompatibility with Brython 3.12.0 to be investigated later)
+* Removed old documentation files from the project
+
 ### Update 2023-11-13
 * New help section: "Examples"
   * Available under Tutorials / Examples https://microstudio.dev/tutorials/examples/
