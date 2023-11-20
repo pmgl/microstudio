@@ -22,12 +22,22 @@ class @ExportFeatures
       folders = @getFoldersWithTypes()
       projectInfo = @prepareExportProjectInfo(project)
 
+      date = new Date()
+      date.setTime(project.last_modified)
+      yyyy = String(date.getFullYear()).padStart(4,'0000')
+      mm = String(date.getMonth()).padStart(2,'0')
+      dd = String(date.getDay()).padStart(2,'0')
+      HH = String(date.getHours()).padStart(2,'0')
+      MM = String(date.getMinutes()).padStart(2,'0')
+      SS = String(date.getSeconds()).padStart(2,'0')
+      last_modified = "#{yyyy}#{mm}#{dd}-#{HH}#{MM}#{SS}"
+
       zip = new JSZip
 
       queue = new JobQueue ()=>
         zip.generateAsync({type:"nodebuffer"}).then (content)=>
           res.setHeader("Content-Type", "application/zip")
-          res.setHeader("Content-Disposition","attachement; filename=\"#{project.slug}_archive.zip\"")
+          res.setHeader("Content-Disposition","attachement; filename=\"#{project.slug}_#{last_modified}_archive.zip\"")
           res.send content
 
       zip.file("project.json", JSON.stringify projectInfo)
