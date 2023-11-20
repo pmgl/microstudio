@@ -23,13 +23,15 @@ class @ExportFeatures
       projectInfo = @prepareExportProjectInfo(project)
 
       date = new Date()
-      date.setTime(project.last_modified)
-      yyyy = String(date.getFullYear()).padStart(4,'0000')
-      mm = String(date.getMonth()).padStart(2,'0')
-      dd = String(date.getDay()).padStart(2,'0')
-      HH = String(date.getHours()).padStart(2,'0')
-      MM = String(date.getMinutes()).padStart(2,'0')
-      SS = String(date.getSeconds()).padStart(2,'0')
+      if project.last_modified
+        date.setTime(project.last_modified)
+        
+      yyyy = (date.getFullYear()).toString().padStart(4,'0000')
+      mm = (date.getMonth()+1).toString().padStart(2,'0')
+      dd = (date.getDate()).toString().padStart(2,'0')
+      HH = (date.getHours()).toString().padStart(2,'0')
+      MM = (date.getMinutes()).toString().padStart(2,'0')
+      SS = (date.getSeconds()).toString().padStart(2,'0')
       last_modified = "#{yyyy}#{mm}#{dd}-#{HH}#{MM}#{SS}"
 
       zip = new JSZip

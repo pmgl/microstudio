@@ -1,7 +1,7 @@
 ## Changelog
 
 ### Update 2023-11-20
-* Text assets (TXT, CSV, OBJ, MD) can be edited in microStudio
+* Text assets (TXT, CSV, OBJ, JSON, MD) can be edited in microStudio
 * Support for markdown (.MD) asset files
 * Added types Example and Template to create project dialog box
 * Fixed Python not working since last update (incompatibility with Brython 3.12.0 to be investigated later)
