@@ -1,5 +1,5 @@
-this.About = (function() {
-  function About(app) {
+this.About = class About {
+  constructor(app) {
     this.app = app;
     this.current = "about";
     this.loaded = {};
@@ -7,43 +7,39 @@ this.About = (function() {
     this.init();
   }
 
-  About.prototype.init = function() {
+  init() {
     var i, len, ref, results, s;
     ref = this.sections;
     results = [];
     for (i = 0, len = ref.length; i < len; i++) {
       s = ref[i];
-      results.push((function(_this) {
-        return function(s) {
-          return document.getElementById("about-menu-" + s).addEventListener("click", function() {
-            return _this.setSection(s);
-          });
-        };
-      })(this)(s));
+      results.push(((s) => {
+        return document.getElementById(`about-menu-${s}`).addEventListener("click", () => {
+          return this.setSection(s);
+        });
+      })(s));
     }
     return results;
-  };
+  }
 
-  About.prototype.setSection = function(section) {
+  setSection(section) {
     var i, len, ref, s;
     this.current = section;
     ref = this.sections;
     for (i = 0, len = ref.length; i < len; i++) {
       s = ref[i];
       if (s === section) {
-        document.getElementById("about-menu-" + s).classList.add("selected");
+        document.getElementById(`about-menu-${s}`).classList.add("selected");
       } else {
-        document.getElementById("about-menu-" + s).classList.remove("selected");
+        document.getElementById(`about-menu-${s}`).classList.remove("selected");
       }
     }
-    return this.load(section, (function(_this) {
-      return function(text) {
-        return _this.update(text);
-      };
-    })(this));
-  };
+    return this.load(section, (text) => {
+      return this.update(text);
+    });
+  }
 
-  About.prototype.load = function(section, callback) {
+  load(section, callback) {
     var ref, req;
     if (this.loaded[section] != null) {
       if (callback != null) {
@@ -52,27 +48,25 @@ this.About = (function() {
       return;
     }
     req = new XMLHttpRequest();
-    req.onreadystatechange = (function(_this) {
-      return function(event) {
-        if (req.readyState === XMLHttpRequest.DONE) {
-          if (req.status === 200) {
-            _this.loaded[section] = req.responseText;
-            if (callback != null) {
-              return callback(_this.loaded[section]);
-            }
+    req.onreadystatechange = (event) => {
+      if (req.readyState === XMLHttpRequest.DONE) {
+        if (req.status === 200) {
+          this.loaded[section] = req.responseText;
+          if (callback != null) {
+            return callback(this.loaded[section]);
           }
         }
-      };
-    })(this);
-    if (((ref = this.app.translator.lang) === "fr" || ref === "it" || ref === "pt" || ref === "ru") && section !== "changelog") {
-      req.open("GET", location.origin + ("/doc/" + this.app.translator.lang + "/" + section + ".md"));
+      }
+    };
+    if (((ref = this.app.translator.lang) === "fr" || ref === "it" || ref === "pt") && section !== "changelog") {
+      req.open("GET", location.origin + `/doc/${this.app.translator.lang}/${section}.md`);
     } else {
-      req.open("GET", location.origin + ("/doc/en/" + section + ".md"));
+      req.open("GET", location.origin + `/doc/en/${section}.md`);
     }
     return req.send();
-  };
+  }
 
-  About.prototype.update = function(doc) {
+  update(doc) {
     var e, element, i, len, list;
     element = document.getElementById("about-content");
     element.innerHTML = DOMPurify.sanitize(marked(doc));
@@ -81,8 +75,6 @@ this.About = (function() {
       e = list[i];
       e.target = "_blank";
     }
-  };
+  }
 
-  return About;
-
-})();
+};
