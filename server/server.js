@@ -79,6 +79,12 @@ this.Server = class Server {
       this.stats.unique("ip_addresses", req.connection.remoteAddress);
       referrer = req.get("Referrer");
       if ((referrer != null) && !referrer.startsWith("http://localhost") && !referrer.startsWith("https://microstudio.io") && !referrer.startsWith("https://microstudio.dev")) {
+        if (referrer.includes("=")) {
+          referrer = referrer.substring(0, referrer.indexOf("="));
+        }
+        if (referrer.length > 120) {
+          referrer = referrer.substring(0, 120);
+        }
         return this.stats.unique("referrer|" + referrer, req.connection.remoteAddress);
       }
     });

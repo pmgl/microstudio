@@ -60,6 +60,11 @@ class @Server
       @stats.unique("ip_addresses",req.connection.remoteAddress)
       referrer = req.get("Referrer")
       if referrer? and not referrer.startsWith("http://localhost") and not referrer.startsWith("https://microstudio.io") and not referrer.startsWith("https://microstudio.dev")
+        if referrer.includes("=")
+          referrer = referrer.substring(0,referrer.indexOf("="))
+
+        if referrer.length > 120
+          referrer = referrer.substring(0,120)
         @stats.unique("referrer|"+referrer,req.connection.remoteAddress)
 
     app.use(compression())
