@@ -7,7 +7,7 @@ class @SoundEditor extends Manager
     @list_change_event = "soundlist"
     @get_item = "getSound"
     @use_thumbnails = true
-    @extensions = ["wav"]
+    @extensions = ["wav","ogg","flac"]
     @update_list = "updateSoundList"
 
     @init()
@@ -24,7 +24,7 @@ class @SoundEditor extends Manager
   createAsset:(folder)->
     input = document.createElement "input"
     input.type = "file"
-    input.accept = ".wav"
+    input.accept = ".wav,.ogg,.flac"
     input.addEventListener "change",(event)=>
       files = event.target.files
       if files.length>=1
@@ -49,6 +49,7 @@ class @SoundEditor extends Manager
         console.info decoded
         thumbnailer = new SoundThumbnailer(decoded,96,64)
         name = file.name.split(".")[0]
+        ext = file.name.split(".")[1].toLowerCase()
         name = @findNewFilename name,"getSound",folder
         if folder? then name = folder.getFullDashPath()+"-"+name
         if folder? then folder.setOpen true
@@ -66,7 +67,7 @@ class @SoundEditor extends Manager
           @app.client.sendRequest {
             name: "write_project_file"
             project: @app.project.id
-            file: "sounds/#{name}.wav"
+            file: "sounds/#{name}.#{ext}"
             properties: {}
             content: data
             thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]

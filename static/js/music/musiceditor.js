@@ -6,7 +6,7 @@ this.MusicEditor = class MusicEditor extends Manager {
     this.list_change_event = "musiclist";
     this.get_item = "getMusic";
     this.use_thumbnails = true;
-    this.extensions = ["mp3"];
+    this.extensions = ["mp3", "ogg", "flac"];
     this.update_list = "updateMusicList";
     this.init();
   }
@@ -24,7 +24,7 @@ this.MusicEditor = class MusicEditor extends Manager {
     var input;
     input = document.createElement("input");
     input.type = "file";
-    input.accept = ".mp3";
+    input.accept = ".mp3,.ogg,.flac";
     input.addEventListener("change", (event) => {
       var f, files, i, len;
       files = event.target.files;
@@ -52,10 +52,11 @@ this.MusicEditor = class MusicEditor extends Manager {
       }
       audioContext = new AudioContext();
       return audioContext.decodeAudioData(reader.result, (decoded) => {
-        var music, name, r2, thumbnailer;
+        var ext, music, name, r2, thumbnailer;
         console.info(decoded);
         thumbnailer = new SoundThumbnailer(decoded, 192, 64, "hsl(200,80%,60%)");
         name = file.name.split(".")[0];
+        ext = file.name.split(".")[1].toLowerCase();
         name = this.findNewFilename(name, "getMusic", folder);
         if (folder != null) {
           name = folder.getFullDashPath() + "-" + name;
@@ -75,7 +76,7 @@ this.MusicEditor = class MusicEditor extends Manager {
           return this.app.client.sendRequest({
             name: "write_project_file",
             project: this.app.project.id,
-            file: `music/${name}.mp3`,
+            file: `music/${name}.${ext}`,
             properties: {},
             content: data,
             thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]

@@ -495,7 +495,7 @@ this.ProjectManager = class ProjectManager {
         return;
       }
     }
-    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.file)) {
+    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|ogg|flac|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.file)) {
       console.info(`wrong file name: ${data.file}`);
       return;
     }
@@ -557,11 +557,11 @@ this.ProjectManager = class ProjectManager {
     if (data.dest.length > 250) {
       return;
     }
-    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.source)) {
+    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|ogg|flac|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.source)) {
       console.info(`wrong source name: ${data.source}`);
       return;
     }
-    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.dest)) {
+    if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|ogg|flac|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.dest)) {
       console.info(`wrong dest name: ${data.dest}`);
       return;
     }
@@ -653,7 +653,7 @@ this.ProjectManager = class ProjectManager {
       if (files.length > 0) {
         filename = files.splice(0, 1)[0];
         value = contents.files[filename];
-        if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(filename)) {
+        if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|ogg|flac|md|glb|obj|jpg|ttf|txt|csv)$/.test(filename)) {
           dest = filename;
           d = dest.split("/");
           while (d.length > 2) {

@@ -586,8 +586,8 @@ this.WebApp = class WebApp {
       });
     });
     // sound files for player and all
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sounds\/[A-Za-z0-9_-]+.wav$/, (req, res) => {
-      var access, project, s, sound, user;
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sounds\/[A-Za-z0-9_-]+.(wav|ogg|flac)$/, (req, res) => {
+      var access, ext, project, s, sound, user;
       s = req.path.split("/");
       access = this.getProjectAccess(req, res);
       if (access == null) {
@@ -596,9 +596,10 @@ this.WebApp = class WebApp {
       user = access.user;
       project = access.project;
       sound = s[s.length - 1];
+      ext = sound.split(".")[1];
       return this.server.content.files.read(`${user.id}/${project.id}/sounds/${sound}`, "binary", (content) => {
         if (content != null) {
-          res.setHeader("Content-Type", "audio/wav");
+          res.setHeader("Content-Type", `audio/${ext}`);
           return res.send(content);
         } else {
           console.info(`couldn't read file: ${req.path}`);
@@ -607,8 +608,8 @@ this.WebApp = class WebApp {
       });
     });
     // music files for player and all
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/music\/[A-Za-z0-9_-]+.mp3$/, (req, res) => {
-      var access, music, project, s, user;
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/music\/[A-Za-z0-9_-]+.(mp3|ogg|flac)$/, (req, res) => {
+      var access, ext, music, project, s, user;
       s = req.path.split("/");
       access = this.getProjectAccess(req, res);
       if (access == null) {
@@ -617,9 +618,10 @@ this.WebApp = class WebApp {
       user = access.user;
       project = access.project;
       music = s[s.length - 1];
+      ext = music.split(".")[1];
       return this.server.content.files.read(`${user.id}/${project.id}/music/${music}`, "binary", (content) => {
         if (content != null) {
-          res.setHeader("Content-Type", "audio/mp3");
+          res.setHeader("Content-Type", `audio/${ext}`);
           return res.send(content);
         } else {
           console.info(`couldn't read file: ${req.path}`);

@@ -8,7 +8,7 @@ class @MusicEditor extends Manager
     @get_item = "getMusic"
     @use_thumbnails = true
 
-    @extensions = ["mp3"]
+    @extensions = ["mp3","ogg","flac"]
     @update_list = "updateMusicList"
 
     @init()
@@ -22,7 +22,7 @@ class @MusicEditor extends Manager
   createAsset:(folder)->
     input = document.createElement "input"
     input.type = "file"
-    input.accept = ".mp3"
+    input.accept = ".mp3,.ogg,.flac"
     input.addEventListener "change",(event)=>
       files = event.target.files
       if files.length>=1
@@ -46,6 +46,7 @@ class @MusicEditor extends Manager
         console.info decoded
         thumbnailer = new SoundThumbnailer(decoded,192,64,"hsl(200,80%,60%)")
         name = file.name.split(".")[0]
+        ext = file.name.split(".")[1].toLowerCase()
         name = @findNewFilename name,"getMusic",folder
         if folder? then name = folder.getFullDashPath()+"-"+name
         if folder? then folder.setOpen true
@@ -63,7 +64,7 @@ class @MusicEditor extends Manager
           @app.client.sendRequest {
             name: "write_project_file"
             project: @app.project.id
-            file: "music/#{name}.mp3"
+            file: "music/#{name}.#{ext}"
             properties: {}
             content: data
             thumbnail: thumbnailer.canvas.toDataURL().split(",")[1]

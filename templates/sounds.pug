@@ -4,7 +4,9 @@ div.assets-left
     i.fa.fa-folder-plus.create-folder-button(title=translator.get("New Folder"))
   div.assets-drop
     div <i class="fas fa-arrow-circle-down"></i>
-    div #{translator.get("You can drop WAV files here")}
+    div #{translator.get("You can drop audio files here, in WAV, Ogg or FLAC format.")}
+    div(style="margin-top: 20px")
+      small #{translator.get("Note: Ogg files cannot be played back on Safari / iOS.")}
 
   div.create-asset-button#create-sound-button(style="display:none") <i class="fa fa-plus-square"></i> #{translator.get("Add Sound")}
 

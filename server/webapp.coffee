@@ -514,7 +514,7 @@ class @WebApp
           res.status(404).send("Error 404")
 
     # sound files for player and all
-    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sounds\/[A-Za-z0-9_-]+.wav$/,(req,res)=>
+    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/sounds\/[A-Za-z0-9_-]+.(wav|ogg|flac)$/,(req,res)=>
       s = req.path.split("/")
       access = @getProjectAccess req,res
       return if not access?
@@ -522,10 +522,11 @@ class @WebApp
       user = access.user
       project = access.project
       sound = s[s.length-1]
+      ext = sound.split(".")[1]
 
       @server.content.files.read "#{user.id}/#{project.id}/sounds/#{sound}","binary",(content)=>
         if content?
-          res.setHeader("Content-Type", "audio/wav")
+          res.setHeader("Content-Type", "audio/#{ext}")
           res.send content
         else
           console.info "couldn't read file: #{req.path}"
@@ -533,7 +534,7 @@ class @WebApp
 
 
     # music files for player and all
-    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/music\/[A-Za-z0-9_-]+.mp3$/,(req,res)=>
+    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/music\/[A-Za-z0-9_-]+.(mp3|ogg|flac)$/,(req,res)=>
       s = req.path.split("/")
       access = @getProjectAccess req,res
       return if not access?
@@ -541,10 +542,11 @@ class @WebApp
       user = access.user
       project = access.project
       music = s[s.length-1]
+      ext = music.split(".")[1]
 
       @server.content.files.read "#{user.id}/#{project.id}/music/#{music}","binary",(content)=>
         if content?
-          res.setHeader("Content-Type", "audio/mp3")
+          res.setHeader("Content-Type", "audio/#{ext}")
           res.send content
         else
           console.info "couldn't read file: #{req.path}"

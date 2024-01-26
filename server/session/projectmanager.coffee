@@ -316,7 +316,7 @@ class @ProjectManager
 
     if data.content.length > 1000000 # large file, check allowed storage
       remaining = session.user.max_storage - session.user.getTotalSize()
-      
+
       if data.content.length/4*3 >= remaining
         if session.user.flags.guest
           session.showError "File too large. Create an account for more storage space."
@@ -331,7 +331,7 @@ class @ProjectManager
 
         return
 
-    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.file)
+    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|ogg|flac|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.file)
       console.info "wrong file name: #{data.file}"
       return
 
@@ -380,11 +380,11 @@ class @ProjectManager
     return if typeof data.dest != "string"
     return if data.dest.length>250
 
-    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.source)
+    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|ogg|flac|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.source)
       console.info "wrong source name: #{data.source}"
       return
 
-    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.dest)
+    if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|ogg|flac|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.dest)
       console.info "wrong dest name: #{data.dest}"
       return
 
@@ -462,7 +462,7 @@ class @ProjectManager
         filename = files.splice(0,1)[0]
         value = contents.files[filename]
 
-        if /^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(filename)
+        if /^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|ogg|flac|md|glb|obj|jpg|ttf|txt|csv)$/.test(filename)
           dest = filename
           d = dest.split("/")
           while d.length>2
