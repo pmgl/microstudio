@@ -356,6 +356,9 @@ class App
           @user.info.achievements = msg.achievements
           @user_progress.checkAchievements()
 
+      when "show_error"
+        @appui.showNotification(@translator.get(msg.error))
+
   updateProjectUserList:(msg)->
     if @project? and msg.project == @project.id
       @project.users = msg.users

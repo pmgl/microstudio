@@ -1,5 +1,5 @@
-this.SpriteFrame = (function() {
-  function SpriteFrame(sprite, width, height) {
+this.SpriteFrame = class SpriteFrame {
+  constructor(sprite, width, height) {
     this.sprite = sprite;
     this.width = width;
     this.height = height;
@@ -9,21 +9,21 @@ this.SpriteFrame = (function() {
     this.canvas.height = this.height;
   }
 
-  SpriteFrame.prototype.clone = function() {
+  clone() {
     var sf;
     sf = new SpriteFrame(this.sprite, this.width, this.height);
     sf.getContext().drawImage(this.canvas, 0, 0);
     return sf;
-  };
+  }
 
-  SpriteFrame.prototype.getContext = function() {
+  getContext() {
     if (this.canvas == null) {
       return null;
     }
     return this.context = this.getCanvas().getContext("2d");
-  };
+  }
 
-  SpriteFrame.prototype.getCanvas = function() {
+  getCanvas() {
     var c;
     if (this.canvas == null) {
       return null;
@@ -36,32 +36,26 @@ this.SpriteFrame = (function() {
       this.canvas = c;
     }
     return this.canvas;
-  };
+  }
 
-  SpriteFrame.prototype.setPixel = function(x, y, color, alpha) {
+  setPixel(x, y, color, alpha = 1) {
     var c;
-    if (alpha == null) {
-      alpha = 1;
-    }
     c = this.getContext();
     c.globalAlpha = alpha;
     c.fillStyle = color;
     c.fillRect(x, y, 1, 1);
     return c.globalAlpha = 1;
-  };
+  }
 
-  SpriteFrame.prototype.erasePixel = function(x, y, alpha) {
+  erasePixel(x, y, alpha = 1) {
     var c, data;
-    if (alpha == null) {
-      alpha = 1;
-    }
     c = this.getContext();
     data = c.getImageData(x, y, 1, 1);
     data.data[3] *= 1 - alpha;
     return c.putImageData(data, x, y);
-  };
+  }
 
-  SpriteFrame.prototype.getRGB = function(x, y) {
+  getRGB(x, y) {
     var c, data;
     if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
       return [0, 0, 0];
@@ -69,13 +63,13 @@ this.SpriteFrame = (function() {
     c = this.getContext();
     data = c.getImageData(x, y, 1, 1);
     return data.data;
-  };
+  }
 
-  SpriteFrame.prototype.clear = function() {
+  clear() {
     return this.getContext().clearRect(0, 0, this.canvas.width, this.canvas.height);
-  };
+  }
 
-  SpriteFrame.prototype.resize = function(w, h) {
+  resize(w, h) {
     var c;
     if (w === this.width && h === this.height) {
       return;
@@ -85,20 +79,18 @@ this.SpriteFrame = (function() {
     this.context = null;
     this.width = w;
     return this.height = h;
-  };
+  }
 
-  SpriteFrame.prototype.load = function(img) {
+  load(img) {
     this.resize(img.width, img.height);
     this.clear();
     return this.canvas.getContext("2d").drawImage(img, 0, 0);
-  };
+  }
 
-  SpriteFrame.prototype.copyFrom = function(frame) {
+  copyFrom(frame) {
     this.resize(frame.width, frame.height);
     this.clear();
     return this.getContext().drawImage(frame.canvas, 0, 0);
-  };
+  }
 
-  return SpriteFrame;
-
-})();
+};

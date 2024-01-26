@@ -308,7 +308,29 @@ class @ProjectManager
     return if not @canWrite session.user
     return if @project.deleted
     return if not data.file?
-    return if data.content? and data.content.length>10000000 # max file size 10 megabytes
+    return if not data.content?
+
+    if data.content.length > 40000000 # absolute max file size 30 megabytes
+      session.showError "File too large."
+      return
+
+    if data.content.length > 1000000 # large file, check allowed storage
+      remaining = session.user.max_storage - session.user.getTotalSize()
+      
+      if data.content.length/4*3 >= remaining
+        if session.user.flags.guest
+          session.showError "File too large. Create an account for more storage space."
+        else
+          session.showError "File too large. You account is out of storage space."
+
+        if data.request_id? # response to trigger the asset list update
+          session.send
+            name: "write_project_file"
+            size: data.content.length
+            request_id: data.request_id
+
+        return
+
     if not /^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.file)
       console.info "wrong file name: #{data.file}"
       return

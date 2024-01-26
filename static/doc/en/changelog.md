@@ -1,7 +1,7 @@
 ## Changelog
 
 ### Update 2023-12-05
-* Project export now includes date an time in file name (thx HomineLudens!)
+* Project export now includes date and time in file name (thx HomineLudens!)
 
 ### Update 2023-11-20
 * Text assets (TXT, CSV, OBJ, JSON, MD) can be edited in microStudio

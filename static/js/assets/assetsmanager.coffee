@@ -113,7 +113,7 @@ class @AssetsManager extends Manager
 
     reader.addEventListener "load",()=>
       console.info "file read, size = "+ reader.result.length
-      return if reader.result.length>6000000
+      return if reader.result.length > 30000000 # client-side file size limit 30 Mb
 
 
       name = @findNewFilename name,"getAsset",folder

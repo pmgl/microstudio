@@ -143,7 +143,7 @@ this.AssetsManager = class AssetsManager extends Manager {
     reader.addEventListener("load", () => {
       var asset, canvas, data;
       console.info("file read, size = " + reader.result.length);
-      if (reader.result.length > 6000000) {
+      if (reader.result.length > 30000000) { // client-side file size limit 30 Mb
         return;
       }
       name = this.findNewFilename(name, "getAsset", folder);

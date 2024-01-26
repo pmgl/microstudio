@@ -41,7 +41,7 @@ class @SoundEditor extends Manager
     reader.addEventListener "load",()=>
       file_size = reader.result.byteLength
       console.info "file read, size = "+ file_size
-      if file_size > 5000000
+      if file_size > 30000000   # client side limit 30 Mb
         @app.appui.showNotification(@app.translator.get("Audio file is too heavy"))
         return
       audioContext = new AudioContext()

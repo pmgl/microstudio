@@ -461,6 +461,9 @@ App = class App {
           this.user.info.achievements = msg.achievements;
           return this.user_progress.checkAchievements();
         }
+        break;
+      case "show_error":
+        return this.appui.showNotification(this.translator.get(msg.error));
     }
   }
 

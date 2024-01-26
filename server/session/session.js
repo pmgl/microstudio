@@ -2148,6 +2148,13 @@ this.Session = class Session {
     });
   }
 
+  showError(text) {
+    return this.send({
+      name: "show_error",
+      error: text
+    });
+  }
+
   buildProject(msg) {
     var build, project;
     if (this.user == null) {

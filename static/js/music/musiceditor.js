@@ -46,7 +46,7 @@ this.MusicEditor = class MusicEditor extends Manager {
       var audioContext, file_size;
       file_size = reader.result.byteLength;
       console.info("file read, size = " + file_size);
-      if (file_size > 5000000) {
+      if (file_size > 30000000) { // client-side limit to 30 Mb
         this.app.appui.showNotification(this.app.translator.get("Music file is too heavy"));
         return;
       }

@@ -1,12 +1,11 @@
-var FILE_TYPES,
-  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var FILE_TYPES;
 
 FILE_TYPES = require(__dirname + "/../file_types.js");
 
-this.ProjectManager = (function() {
-  function ProjectManager(project1) {
+this.ProjectManager = class ProjectManager {
+  constructor(project1) {
+    this.importFiles = this.importFiles.bind(this);
     this.project = project1;
-    this.importFiles = bind(this.importFiles, this);
     this.users = [];
     this.listeners = [];
     this.files = {};
@@ -14,9 +13,9 @@ this.ProjectManager = (function() {
     this.project.manager = this;
   }
 
-  ProjectManager.prototype.canRead = function(user) {
+  canRead(user) {
     var i, len, link, ref;
-    if (user === this.project.owner || this.project["public"]) {
+    if (user === this.project.owner || this.project.public) {
       return true;
     }
     ref = this.project.users;
@@ -27,11 +26,11 @@ this.ProjectManager = (function() {
       }
     }
     return false;
-  };
+  }
 
-  ProjectManager.prototype.canReadProject = function(user, project) {
+  canReadProject(user, project) {
     var i, len, link, ref;
-    if (user === project.owner || project["public"]) {
+    if (user === project.owner || project.public) {
       return true;
     }
     ref = project.users;
@@ -42,9 +41,9 @@ this.ProjectManager = (function() {
       }
     }
     return false;
-  };
+  }
 
-  ProjectManager.prototype.canWrite = function(user) {
+  canWrite(user) {
     var i, len, link, ref;
     if (user === this.project.owner) {
       return true;
@@ -57,26 +56,26 @@ this.ProjectManager = (function() {
       }
     }
     return false;
-  };
+  }
 
-  ProjectManager.prototype.canWriteOptions = function(user) {
+  canWriteOptions(user) {
     return this.project.owner === user;
-  };
+  }
 
-  ProjectManager.prototype.addUser = function(user) {
+  addUser(user) {
     if (this.users.indexOf(user) < 0) {
       this.users.push(user);
     }
     return this.sendCurrentLocks(user);
-  };
+  }
 
-  ProjectManager.prototype.addListener = function(listener) {
+  addListener(listener) {
     if (this.listeners.indexOf(listener) < 0) {
       return this.listeners.push(listener);
     }
-  };
+  }
 
-  ProjectManager.prototype.removeSession = function(session) {
+  removeSession(session) {
     var file, index, lock, ref;
     index = this.users.indexOf(session);
     if (index >= 0) {
@@ -89,17 +88,17 @@ this.ProjectManager = (function() {
         lock.time = 0;
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.removeListener = function(listener) {
+  removeListener(listener) {
     var index;
     index = this.listeners.indexOf(listener);
     if (index >= 0) {
       return this.listeners.splice(index, 1);
     }
-  };
+  }
 
-  ProjectManager.prototype.lockFile = function(user, file) {
+  lockFile(user, file) {
     var lock;
     lock = this.locks[file];
     if (lock != null) {
@@ -120,14 +119,14 @@ this.ProjectManager = (function() {
       this.propagateLock(user, file);
       return true;
     }
-  };
+  }
 
-  ProjectManager.prototype.sendCurrentLocks = function(user) {
+  sendCurrentLocks(user) {
     var file, lock, ref;
     ref = this.locks;
     for (file in ref) {
       lock = ref[file];
-      if (Date.now() < lock.time) {
+      if (Date.now() < lock.time) { //and lock.user.user != user.user
         user.send({
           name: "project_file_locked",
           project: this.project.id,
@@ -136,9 +135,9 @@ this.ProjectManager = (function() {
         });
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.canWrite = function(user, file) {
+  canWrite(user, file) {
     var lock;
     lock = this.locks[file];
     if (lock != null) {
@@ -146,9 +145,9 @@ this.ProjectManager = (function() {
     } else {
       return true;
     }
-  };
+  }
 
-  ProjectManager.prototype.getFileVersion = function(file) {
+  getFileVersion(file) {
     var info;
     info = this.project.getFileInfo(file);
     if (info.version != null) {
@@ -156,13 +155,13 @@ this.ProjectManager = (function() {
     } else {
       return 0;
     }
-  };
+  }
 
-  ProjectManager.prototype.setFileVersion = function(file, version) {
+  setFileVersion(file, version) {
     return this.project.setFileInfo(file, "version", version);
-  };
+  }
 
-  ProjectManager.prototype.getFileSize = function(file) {
+  getFileSize(file) {
     var info;
     info = this.project.getFileInfo(file);
     if (info.size != null) {
@@ -170,13 +169,13 @@ this.ProjectManager = (function() {
     } else {
       return 0;
     }
-  };
+  }
 
-  ProjectManager.prototype.setFileSize = function(file, size) {
+  setFileSize(file, size) {
     return this.project.setFileInfo(file, "size", size);
-  };
+  }
 
-  ProjectManager.prototype.getFileProperties = function(file) {
+  getFileProperties(file) {
     var info;
     info = this.project.getFileInfo(file);
     if (info.properties != null) {
@@ -184,13 +183,13 @@ this.ProjectManager = (function() {
     } else {
       return {};
     }
-  };
+  }
 
-  ProjectManager.prototype.setFileProperties = function(file, properties) {
+  setFileProperties(file, properties) {
     return this.project.setFileInfo(file, "properties", properties);
-  };
+  }
 
-  ProjectManager.prototype.propagateUserListChange = function() {
+  propagateUserListChange() {
     var i, len, ref, user;
     ref = this.users;
     for (i = 0, len = ref.length; i < len; i++) {
@@ -203,9 +202,9 @@ this.ProjectManager = (function() {
         });
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.propagateLock = function(user, file) {
+  propagateLock(user, file) {
     var i, len, ref, u;
     ref = this.users;
     for (i = 0, len = ref.length; i < len; i++) {
@@ -219,9 +218,9 @@ this.ProjectManager = (function() {
         });
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.propagateFileChange = function(author, file, version, content, properties) {
+  propagateFileChange(author, file, version, content, properties) {
     var i, j, len, len1, listener, ref, ref1, user;
     ref = this.users;
     for (i = 0, len = ref.length; i < len; i++) {
@@ -244,9 +243,9 @@ this.ProjectManager = (function() {
         listener.sendProjectFileUpdated(file.split("/")[0], file.split("/")[1].split(".")[0], version, content, properties);
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.propagateFileDeleted = function(author, file) {
+  propagateFileDeleted(author, file) {
     var i, j, len, len1, listener, ref, ref1, user;
     ref = this.users;
     for (i = 0, len = ref.length; i < len; i++) {
@@ -266,9 +265,9 @@ this.ProjectManager = (function() {
         listener.sendProjectFileDeleted(file.split("/")[0], file.split("/")[1]);
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.propagateOptions = function(author) {
+  propagateOptions(author) {
     var i, j, len, len1, listener, ref, ref1, user;
     ref = this.users;
     for (i = 0, len = ref.length; i < len; i++) {
@@ -283,7 +282,7 @@ this.ProjectManager = (function() {
           controls: this.project.controls,
           orientation: this.project.orientation,
           aspect: this.project.aspect,
-          "public": this.project["public"]
+          public: this.project.public
         });
       }
     }
@@ -299,13 +298,13 @@ this.ProjectManager = (function() {
           controls: this.project.controls,
           orientation: this.project.orientation,
           aspect: this.project.aspect,
-          "public": this.project["public"]
+          public: this.project.public
         });
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.inviteUser = function(source, user) {
+  inviteUser(source, user) {
     var i, len, li, ref;
     if (source.user === this.project.owner) {
       this.project.inviteUser(user);
@@ -316,9 +315,9 @@ this.ProjectManager = (function() {
         li.getProjectList();
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.acceptInvite = function(user) {
+  acceptInvite(user) {
     var i, j, len, len1, li, link, ref, ref1;
     ref = this.project.users;
     for (i = 0, len = ref.length; i < len; i++) {
@@ -333,9 +332,9 @@ this.ProjectManager = (function() {
         }
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.removeUser = function(source, user) {
+  removeUser(source, user) {
     var i, j, len, len1, li, link, ref, ref1;
     if (source.user === this.project.owner || source.user === user) {
       ref = this.project.users;
@@ -352,33 +351,31 @@ this.ProjectManager = (function() {
         }
       }
     }
-  };
+  }
 
-  ProjectManager.prototype.listFiles = function(folder, callback) {
+  listFiles(folder, callback) {
     var file;
-    file = this.project.owner.id + "/" + this.project.id + "/" + folder;
-    return this.project.content.files.list(file, (function(_this) {
-      return function(files) {
-        var f, i, len, res;
-        res = [];
-        files = files || [];
-        for (i = 0, len = files.length; i < len; i++) {
-          f = files[i];
-          if (!f.startsWith(".")) {
-            res.push({
-              file: f,
-              version: _this.getFileVersion(folder + "/" + f),
-              size: _this.getFileSize(folder + "/" + f),
-              properties: _this.getFileProperties(folder + "/" + f)
-            });
-          }
+    file = `${this.project.owner.id}/${this.project.id}/${folder}`;
+    return this.project.content.files.list(file, (files) => {
+      var f, i, len, res;
+      res = [];
+      files = files || [];
+      for (i = 0, len = files.length; i < len; i++) {
+        f = files[i];
+        if (!f.startsWith(".")) {
+          res.push({
+            file: f,
+            version: this.getFileVersion(folder + "/" + f),
+            size: this.getFileSize(folder + "/" + f),
+            properties: this.getFileProperties(folder + "/" + f)
+          });
         }
-        return callback(res);
-      };
-    })(this));
-  };
+      }
+      return callback(res);
+    });
+  }
 
-  ProjectManager.prototype.getFileVersions = function(callback) {
+  getFileVersions(callback) {
     var folder, funk, jobs, res, t;
     res = {};
     jobs = [];
@@ -387,88 +384,83 @@ this.ProjectManager = (function() {
       res[t.property] = {};
       jobs.push(t);
     }
-    funk = (function(_this) {
-      return function() {
-        var job;
-        if (jobs.length > 0) {
-          job = jobs.splice(0, 1)[0];
-          return _this.listFiles(job.folder, function(files) {
-            var ext, f, i, len, name;
-            for (i = 0, len = files.length; i < len; i++) {
-              f = files[i];
-              name = f.file.split(".")[0];
-              ext = f.file.split(".")[1];
-              res[job.property][name] = {
-                version: f.version,
-                properties: f.properties,
-                ext: ext
-              };
-            }
-            return funk();
-          });
-        } else {
-          return callback(res);
-        }
-      };
-    })(this);
+    funk = () => {
+      var job;
+      if (jobs.length > 0) {
+        job = jobs.splice(0, 1)[0];
+        return this.listFiles(job.folder, (files) => {
+          var ext, f, i, len, name;
+          for (i = 0, len = files.length; i < len; i++) {
+            f = files[i];
+            name = f.file.split(".")[0];
+            ext = f.file.split(".")[1];
+            res[job.property][name] = {
+              version: f.version,
+              properties: f.properties,
+              ext: ext
+            };
+          }
+          return funk();
+        });
+      } else {
+        return callback(res);
+      }
+    };
     return funk();
-  };
+  }
 
-  ProjectManager.prototype.listProjectFiles = function(session, data) {
+  listProjectFiles(session, data) {
     var file;
     if (!this.canRead(session.user)) {
       return console.log("unauthorized user");
     }
-    file = this.project.owner.id + "/" + this.project.id + "/" + data.folder;
-    return this.project.content.files.list(file, (function(_this) {
-      return function(files) {
-        var f, i, len, res;
-        res = [];
-        files = files || [];
-        for (i = 0, len = files.length; i < len; i++) {
-          f = files[i];
-          if (!f.startsWith(".")) {
-            res.push({
-              file: f,
-              version: _this.getFileVersion(data.folder + "/" + f),
-              size: _this.getFileSize(data.folder + "/" + f),
-              properties: _this.getFileProperties(data.folder + "/" + f)
-            });
-          }
+    file = `${this.project.owner.id}/${this.project.id}/${data.folder}`;
+    return this.project.content.files.list(file, (files) => {
+      var f, i, len, res;
+      res = [];
+      files = files || [];
+      for (i = 0, len = files.length; i < len; i++) {
+        f = files[i];
+        if (!f.startsWith(".")) {
+          res.push({
+            file: f,
+            version: this.getFileVersion(data.folder + "/" + f),
+            size: this.getFileSize(data.folder + "/" + f),
+            properties: this.getFileProperties(data.folder + "/" + f)
+          });
         }
-        return session.send({
-          name: "list_project_files",
-          files: res,
-          request_id: data.request_id
-        });
-      };
-    })(this));
-  };
+      }
+      return session.send({
+        name: "list_project_files",
+        files: res,
+        request_id: data.request_id
+      });
+    });
+  }
 
-  ProjectManager.prototype.readProjectFile = function(session, data) {
+  readProjectFile(session, data) {
     var encoding, file;
+    //console.info "projectmanager.readProjectFile"
     if (!this.canRead(session.user)) {
       return;
     }
-    file = this.project.owner.id + "/" + this.project.id + "/" + data.file;
+    file = `${this.project.owner.id}/${this.project.id}/${data.file}`;
     encoding = data.file.endsWith(".ms") || data.file.endsWith(".json") || data.file.endsWith(".md") ? "text" : "base64";
-    return this.project.content.files.read(file, encoding, (function(_this) {
-      return function(content) {
-        var out;
-        out = data.file.endsWith(".ms") || data.file.endsWith(".json") || data.file.endsWith(".md") ? "utf8" : "base64";
-        if (content != null) {
-          return session.send({
-            name: "read_project_file",
-            content: content.toString(out),
-            request_id: data.request_id
-          });
-        }
-      };
-    })(this));
-  };
+    return this.project.content.files.read(file, encoding, (content) => {
+      var out;
+      out = data.file.endsWith(".ms") || data.file.endsWith(".json") || data.file.endsWith(".md") ? "utf8" : "base64";
+      if (content != null) {
+        return session.send({
+          name: "read_project_file",
+          content: content.toString(out),
+          request_id: data.request_id
+        });
+      }
+    });
+  }
 
-  ProjectManager.prototype.writeProjectFile = function(session, data) {
-    var content, f, file, ref, th, version;
+  writeProjectFile(session, data) {
+    var content, f, file, ref, remaining, th, version;
     if (!this.canWrite(session.user)) {
       return;
     }
@@ -478,46 +470,66 @@ this.ProjectManager = (function() {
     if (data.file == null) {
       return;
     }
-    if ((data.content != null) && data.content.length > 10000000) {
+    if (data.content == null) {
       return;
     }
+    if (data.content.length > 40000000) { // absolute max file size 30 megabytes
+      session.showError("File too large.");
+      return;
+    }
+    if (data.content.length > 1000000) { // large file, check allowed storage
+      remaining = session.user.max_storage - session.user.getTotalSize();
+      if (data.content.length / 4 * 3 >= remaining) {
+        if (session.user.flags.guest) {
+          session.showError("File too large. Create an account for more storage space.");
+        } else {
+          session.showError("File too large. You account is out of storage space.");
+        }
+        if (data.request_id != null) {
+          session.send({
+            name: "write_project_file",
+            size: data.content.length,
+            request_id: data.request_id
+          }); // response to trigger the asset list update
+        }
+        return;
+      }
+    }
     if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.file)) {
-      console.info("wrong file name: " + data.file);
+      console.info(`wrong file name: ${data.file}`);
       return;
     }
     version = this.getFileVersion(data.file);
-    if (version === 0) {
+    if (version === 0) { // new file
       if (!session.server.rate_limiter.accept("create_file_user", session.user.id)) {
         return;
       }
     }
-    file = this.project.owner.id + "/" + this.project.id + "/" + data.file;
+    file = `${this.project.owner.id}/${this.project.id}/${data.file}`;
     if (data.content != null) {
       if ((ref = data.file.split(".")[1]) === "ms" || ref === "json" || ref === "md" || ref === "txt" || ref === "csv") {
         content = data.content;
       } else {
         content = new Buffer(data.content, "base64");
       }
-      this.project.content.files.write(file, content, (function(_this) {
-        return function() {
-          version += 1;
-          _this.setFileVersion(data.file, version);
-          _this.setFileSize(data.file, content.length);
-          if (data.properties != null) {
-            _this.setFileProperties(data.file, data.properties);
-          }
-          if (data.request_id != null) {
-            session.send({
-              name: "write_project_file",
-              version: version,
-              size: content.length,
-              request_id: data.request_id
-            });
-          }
-          _this.propagateFileChange(session, data.file, version, data.content, data.properties);
-          return _this.project.touch();
-        };
-      })(this));
+      this.project.content.files.write(file, content, () => {
+        version += 1;
+        this.setFileVersion(data.file, version);
+        this.setFileSize(data.file, content.length);
+        if (data.properties != null) {
+          this.setFileProperties(data.file, data.properties);
+        }
+        if (data.request_id != null) {
+          session.send({
+            name: "write_project_file",
+            version: version,
+            size: content.length,
+            request_id: data.request_id
+          });
+        }
+        this.propagateFileChange(session, data.file, version, data.content, data.properties);
+        return this.project.touch();
+      });
     }
     if (data.thumbnail != null) {
       th = new Buffer(data.thumbnail, "base64");
@@ -525,15 +537,13 @@ this.ProjectManager = (function() {
       f[2] += "_th";
       f[3] = f[3].split(".")[0] + ".png";
       f = f.join("/");
-      return this.project.content.files.write(f, th, (function(_this) {
-        return function() {
-          return console.info("thumbnail saved");
-        };
-      })(this));
+      return this.project.content.files.write(f, th, () => {
+        return console.info("thumbnail saved");
+      });
     }
-  };
+  }
 
-  ProjectManager.prototype.renameProjectFile = function(session, data) {
+  renameProjectFile(session, data) {
     var dest, source;
     if (!this.canWrite(session.user)) {
       return;
@@ -548,64 +558,62 @@ this.ProjectManager = (function() {
       return;
     }
     if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.source)) {
-      console.info("wrong source name: " + data.source);
+      console.info(`wrong source name: ${data.source}`);
       return;
     }
     if (!/^(ms|sprites|maps|sounds|music|doc|assets)\/[a-z0-9_]{1,40}(-[a-z0-9_]{1,40}){0,10}.(ms|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(data.dest)) {
-      console.info("wrong dest name: " + data.dest);
+      console.info(`wrong dest name: ${data.dest}`);
       return;
     }
-    source = this.project.owner.id + "/" + this.project.id + "/" + data.source;
-    dest = this.project.owner.id + "/" + this.project.id + "/" + data.dest;
-    return this.project.content.files.read(source, "binary", (function(_this) {
-      return function(content) {
-        if (content != null) {
-          return _this.project.content.files.write(dest, content, function() {
-            _this.setFileProperties(data.dest, _this.getFileProperties(data.source));
-            _this.setFileVersion(data.dest, _this.getFileVersion(data.source));
-            _this.project.deleteFileInfo(data.source);
-            _this.setFileSize(data.dest, content.length);
-            _this.project.touch();
-            return _this.project.content.files["delete"](source, function() {
-              if (data.thumbnail) {
-                source = source.split("/");
-                source[2] += "_th";
-                source[3] = source[3].split(".")[0] + ".png";
-                source = source.join("/");
-                dest = dest.split("/");
-                dest[2] += "_th";
-                dest[3] = dest[3].split(".")[0] + ".png";
-                dest = dest.join("/");
-                return _this.project.content.files.read(source, "binary", function(thumbnail) {
-                  if (thumbnail != null) {
-                    return _this.project.content.files.write(dest, thumbnail, function() {
-                      return _this.project.content.files["delete"](source, function() {
-                        session.send({
-                          name: "rename_project_file",
-                          request_id: data.request_id
-                        });
-                        _this.propagateFileDeleted(session, data.source);
-                        return _this.propagateFileChange(session, data.dest, 0, null, {});
+    source = `${this.project.owner.id}/${this.project.id}/${data.source}`;
+    dest = `${this.project.owner.id}/${this.project.id}/${data.dest}`;
+    return this.project.content.files.read(source, "binary", (content) => {
+      if (content != null) {
+        return this.project.content.files.write(dest, content, () => {
+          this.setFileProperties(data.dest, this.getFileProperties(data.source));
+          this.setFileVersion(data.dest, this.getFileVersion(data.source));
+          this.project.deleteFileInfo(data.source);
+          this.setFileSize(data.dest, content.length);
+          this.project.touch();
+          return this.project.content.files.delete(source, () => {
+            if (data.thumbnail) {
+              source = source.split("/");
+              source[2] += "_th";
+              source[3] = source[3].split(".")[0] + ".png";
+              source = source.join("/");
+              dest = dest.split("/");
+              dest[2] += "_th";
+              dest[3] = dest[3].split(".")[0] + ".png";
+              dest = dest.join("/");
+              return this.project.content.files.read(source, "binary", (thumbnail) => {
+                if (thumbnail != null) {
+                  return this.project.content.files.write(dest, thumbnail, () => {
+                    return this.project.content.files.delete(source, () => {
+                      session.send({
+                        name: "rename_project_file",
+                        request_id: data.request_id
                       });
+                      this.propagateFileDeleted(session, data.source);
+                      return this.propagateFileChange(session, data.dest, 0, null, {});
                     });
-                  }
-                });
-              } else {
-                session.send({
-                  name: "rename_project_file",
-                  request_id: data.request_id
-                });
-                _this.propagateFileDeleted(session, data.source);
-                return _this.propagateFileChange(session, data.dest, 0, null, {});
-              }
-            });
+                  });
+                }
+              });
+            } else {
+              session.send({
+                name: "rename_project_file",
+                request_id: data.request_id
+              });
+              this.propagateFileDeleted(session, data.source);
+              return this.propagateFileChange(session, data.dest, 0, null, {});
+            }
           });
-        }
-      };
-    })(this));
-  };
+        });
+      }
+    });
+  }
 
-  ProjectManager.prototype.deleteProjectFile = function(session, data) {
+  deleteProjectFile(session, data) {
     var f, file;
     if (!this.canWrite(session.user)) {
       return;
@@ -613,89 +621,83 @@ this.ProjectManager = (function() {
     if (data.file == null) {
       return;
     }
-    file = this.project.owner.id + "/" + this.project.id + "/" + data.file;
-    this.project.content.files["delete"](file, (function(_this) {
-      return function() {
-        _this.project.deleteFileInfo(data.file);
-        if (data.request_id != null) {
-          session.send({
-            name: "delete_project_file",
-            request_id: data.request_id
-          });
-        }
-        _this.propagateFileDeleted(session, data.file);
-        return _this.project.touch();
-      };
-    })(this));
+    file = `${this.project.owner.id}/${this.project.id}/${data.file}`;
+    this.project.content.files.delete(file, () => {
+      this.project.deleteFileInfo(data.file);
+      if (data.request_id != null) {
+        session.send({
+          name: "delete_project_file",
+          request_id: data.request_id
+        });
+      }
+      this.propagateFileDeleted(session, data.file);
+      return this.project.touch();
+    });
     if (data.thumbnail) {
       f = file.split("/");
       f[2] += "_th";
       f[3] = f[3].split(".")[0] + ".png";
       f = f.join("/");
-      return this.project.content.files["delete"](f, (function(_this) {
-        return function() {};
-      })(this));
+      return this.project.content.files.delete(f, () => {});
     }
-  };
+  }
 
-  ProjectManager.prototype.importFiles = function(contents, callback) {
+  importFiles(contents, callback) {
     var filename, files, funk;
     files = [];
     for (filename in contents.files) {
       files.push(filename);
     }
-    funk = (function(_this) {
-      return function() {
-        var d, dest, end, err, ref, type, value;
-        if (files.length > 0) {
-          filename = files.splice(0, 1)[0];
-          value = contents.files[filename];
-          if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(filename)) {
-            dest = filename;
-            d = dest.split("/");
-            while (d.length > 2) {
-              end = d.splice(d.length - 1, 1)[0];
-              d[d.length - 1] += "-" + end;
-              dest = d.join("/");
-            }
-            if (dest.endsWith(".js")) {
-              dest = dest.replace(".js", ".ms");
-            }
-            if (dest.endsWith(".py")) {
-              dest = dest.replace(".py", ".ms");
-            }
-            if (dest.endsWith(".lua")) {
-              dest = dest.replace(".lua", ".ms");
-            }
-            type = (ref = dest.split(".")[1]) === "ms" || ref === "json" || ref === "md" || ref === "txt" || ref === "csv" ? "string" : "nodebuffer";
-            try {
-              return contents.file(filename).async(type).then((function(fileContent) {
-                if (fileContent != null) {
-                  return _this.project.content.files.write(_this.project.owner.id + "/" + _this.project.id + "/" + dest, fileContent, funk);
-                } else {
-                  return funk();
-                }
-              }), function() {
+    funk = () => {
+      var d, dest, end, err, ref, type, value;
+      if (files.length > 0) {
+        filename = files.splice(0, 1)[0];
+        value = contents.files[filename];
+        if (/^(ms|sprites|maps|sounds|music|doc|assets|sounds_th|music_th|assets_th)\/[a-z0-9_]{1,40}([-\/][a-z0-9_]{1,40}){0,10}.(ms|py|js|lua|png|json|wav|mp3|md|glb|obj|jpg|ttf|txt|csv)$/.test(filename)) {
+          dest = filename;
+          d = dest.split("/");
+          while (d.length > 2) {
+            end = d.splice(d.length - 1, 1)[0];
+            d[d.length - 1] += `-${end}`;
+            dest = d.join("/");
+          }
+          if (dest.endsWith(".js")) {
+            dest = dest.replace(".js", ".ms");
+          }
+          if (dest.endsWith(".py")) {
+            dest = dest.replace(".py", ".ms");
+          }
+          if (dest.endsWith(".lua")) {
+            dest = dest.replace(".lua", ".ms");
+          }
+          type = (ref = dest.split(".")[1]) === "ms" || ref === "json" || ref === "md" || ref === "txt" || ref === "csv" ? "string" : "nodebuffer";
+          try {
+            return contents.file(filename).async(type).then(((fileContent) => {
+              if (fileContent != null) {
+                return this.project.content.files.write(`${this.project.owner.id}/${this.project.id}/${dest}`, fileContent, funk);
+              } else {
                 return funk();
-              });
-            } catch (error) {
-              err = error;
-              console.error(err);
-              console.log(filename);
+              }
+            }), () => {
               return funk();
-            }
-          } else {
+            });
+          } catch (error) {
+            err = error;
+            console.error(err);
+            console.log(filename);
             return funk();
           }
         } else {
-          return callback();
+          return funk();
         }
-      };
-    })(this);
+      } else {
+        return callback();
+      }
+    };
     return funk();
-  };
+  }
 
-  ProjectManager.prototype.syncFiles = function(session, data, source) {
+  syncFiles(session, data, source) {
     var funk, ops, syncFile;
     ops = data.ops;
     if (!this.canWrite(session.user)) {
@@ -704,83 +706,77 @@ this.ProjectManager = (function() {
     if (!Array.isArray(ops)) {
       return;
     }
-    syncFile = (function(_this) {
-      return function(f, callback) {
-        var file;
-        file = source.owner.id + "/" + source.id + "/" + f;
-        return source.content.files.read(file, "binary", function(content) {
-          var th;
-          if (content != null) {
-            file = _this.project.owner.id + "/" + _this.project.id + "/" + f;
-            _this.project.content.files.write(file, content, function() {
-              if (callback != null) {
-                return callback();
-              }
-            });
-            if (f.startsWith("assets/") || f.startsWith("sounds/") || f.startsWith("music/")) {
-              th = f.split("/");
-              th[0] += "_th";
-              th[1] = th[1].split(".")[0] + ".png";
-              f = th.join("/");
-              file = source.owner.id + "/" + source.id + "/" + f;
-              return source.content.files.read(file, "binary", function(content) {
-                if (content != null) {
-                  file = _this.project.owner.id + "/" + _this.project.id + "/" + f;
-                  return _this.project.content.files.write(file, content, function() {});
-                }
-              });
-            }
-          } else {
+    syncFile = (f, callback) => {
+      var file;
+      file = `${source.owner.id}/${source.id}/${f}`;
+      return source.content.files.read(file, "binary", (content) => {
+        var th;
+        if (content != null) {
+          file = `${this.project.owner.id}/${this.project.id}/${f}`;
+          this.project.content.files.write(file, content, () => {
             if (callback != null) {
               return callback();
             }
-          }
-        });
-      };
-    })(this);
-    funk = (function(_this) {
-      return function() {
-        var f, file, op;
-        if (ops.length > 0) {
-          op = ops.splice(0, 1)[0];
-          if (!((op.file != null) && (op.file.path != null) && (op.file.version != null) && (op.file.size != null))) {
-            return;
-          }
-          if (op.op === "sync") {
-            f = op.file;
-            return syncFile(f.path, function() {
-              _this.setFileVersion(f.path, f.version);
-              _this.setFileSize(f.path, f.size);
-              if (f.properties != null) {
-                _this.setFileProperties(f.path, f.properties);
+          });
+          if (f.startsWith("assets/") || f.startsWith("sounds/") || f.startsWith("music/")) {
+            th = f.split("/");
+            th[0] += "_th";
+            th[1] = th[1].split(".")[0] + ".png";
+            f = th.join("/");
+            file = `${source.owner.id}/${source.id}/${f}`;
+            return source.content.files.read(file, "binary", (content) => {
+              if (content != null) {
+                file = `${this.project.owner.id}/${this.project.id}/${f}`;
+                return this.project.content.files.write(file, content, () => {});
               }
-              funk();
-              return _this.propagateFileChange(null, f.path, f.version, void 0, f.properties || {});
-            });
-          } else if (op.op === "delete") {
-            f = op.file;
-            file = _this.project.owner.id + "/" + _this.project.id + "/" + f.path;
-            return _this.project.content.files["delete"](file, function() {
-              _this.project.deleteFileInfo(f.path);
-              funk();
-              return _this.propagateFileDeleted(null, f.path);
             });
           }
         } else {
-          session.send({
-            name: "sync_project_files",
-            status: "done",
-            request_id: data.request_id
-          });
-          return _this.project.touch();
+          if (callback != null) {
+            return callback();
+          }
         }
-      };
-    })(this);
+      });
+    };
+    funk = () => {
+      var f, file, op;
+      if (ops.length > 0) {
+        op = ops.splice(0, 1)[0];
+        if (!((op.file != null) && (op.file.path != null) && (op.file.version != null) && (op.file.size != null))) {
+          return;
+        }
+        if (op.op === "sync") {
+          f = op.file;
+          return syncFile(f.path, () => {
+            this.setFileVersion(f.path, f.version);
+            this.setFileSize(f.path, f.size);
+            if (f.properties != null) {
+              this.setFileProperties(f.path, f.properties);
+            }
+            funk();
+            return this.propagateFileChange(null, f.path, f.version, void 0, f.properties || {});
+          });
+        } else if (op.op === "delete") {
+          f = op.file;
+          file = `${this.project.owner.id}/${this.project.id}/${f.path}`;
+          return this.project.content.files.delete(file, () => {
+            this.project.deleteFileInfo(f.path);
+            funk();
+            return this.propagateFileDeleted(null, f.path);
+          });
+        }
+      } else {
+        session.send({
+          name: "sync_project_files",
+          status: "done",
+          request_id: data.request_id
+        });
+        return this.project.touch();
+      }
+    };
     return funk();
-  };
+  }
 
-  return ProjectManager;
-
-})();
+};
 
 module.exports = this.ProjectManager;

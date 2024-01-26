@@ -1493,6 +1493,11 @@ class @Session
       name: "user_stats"
       stats: @user.progress.exportStats()
 
+  showError:(text)->
+    @send
+      name: "show_error"
+      error: text
+
   buildProject:(msg)->
     return @sendError("not connected") if not @user?
 
