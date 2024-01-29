@@ -41,7 +41,15 @@ TutorialsPage = class TutorialsPage {
       s = ref[j];
       results.push(((s) => {
         return document.getElementById(`tutorials-${s}`).addEventListener("click", () => {
-          return this.setSection(s);
+          if (window.ms_standalone) {
+            if (s === "community") {
+              return window.open("https://microstudio.dev/tutorials/community/", "_blank");
+            } else if (s === "examples") {
+              return window.open("https://microstudio.dev/tutorials/examples/", "_blank");
+            }
+          } else {
+            return this.setSection(s);
+          }
         });
       })(s));
     }

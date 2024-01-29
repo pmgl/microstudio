@@ -29,7 +29,13 @@ class TutorialsPage
     for s in @sections
       do (s)=>
         document.getElementById("tutorials-#{s}").addEventListener "click",()=>
-          @setSection(s)
+          if window.ms_standalone
+            if s == "community"
+              window.open("https://microstudio.dev/tutorials/community/","_blank")
+            else if s == "examples"
+              window.open("https://microstudio.dev/tutorials/examples/","_blank")
+          else
+            @setSection(s)
 
   pushState:()->
     if @current == "core"
