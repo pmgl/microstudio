@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2024-01-29
+* Assets (sounds, music, other assets) max size is now 30 Mb
+* Added support for Ogg and FLAC encoded files in the sounds tab and music tab
+  (Both formats solve the looping problems we have with mp3 ; be aware that Ogg is not supported
+  on Safari and iOS)
+
 ### Update 2023-12-05
 * Project export now includes date and time in file name (thx HomineLudens!)
 
