@@ -59,9 +59,7 @@ this.Runner = class Runner {
       return new Promise((resolve,reject)=>{
         let blob = new Blob([program])
         let url = URL.createObjectURL(blob)
-
         let w = new Worker(url)
-        let waiting = true
         w.onerror = (e)=>{
           this.microvm.context.location = {
             token: {
@@ -69,7 +67,6 @@ this.Runner = class Runner {
               column: e.colno
             }
           };
-          waiting = false
           reject(e.message);
         }
       })
