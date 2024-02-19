@@ -511,7 +511,20 @@ class @Processor
             obj = obj.class
             v = obj[name]
 
-          stack[--stack_index] = if v? then v else 0
+          if not v?
+            v = 0
+            if not routine.ref[op_index].nowarning
+              routine.ref[op_index].nowarning = true
+              if not Array.isArray(obj)
+                token = routine.ref[op_index].token
+                id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+                context.warnings.using_undefined_variable[id] =
+                  file: token.tokenizer.filename
+                  line: token.line
+                  column: token.column
+                  expression: name
+
+          stack[--stack_index] = v
           op_index++
 
         when 17 # OPCODE_LOAD_PROPERTY_OBJECT
@@ -771,7 +784,20 @@ class @Processor
             obj = obj.class
             v = obj[name]
 
-          stack[++stack_index] = if v? then v else 0
+          if not v?
+            v = 0
+            if not routine.ref[op_index].nowarning
+              routine.ref[op_index].nowarning = true
+              if not Array.isArray(obj)
+                token = routine.ref[op_index].token
+                id = token.tokenizer.filename+"-"+token.line+"-"+token.column
+                context.warnings.using_undefined_variable[id] =
+                  file: token.tokenizer.filename
+                  line: token.line
+                  column: token.column
+                  expression: name
+
+          stack[++stack_index] = v
           op_index++
 
         when 40 # OPCODE_EQ

@@ -220,6 +220,8 @@ class Compiler
       return
     else if op.operation == "and"
       jump = @routine.createLabel "and"
+      op.term1.nowarning = true
+      op.term2.nowarning = true
       @compile op.term1
       @routine.JUMPN_NOPOP jump,op
       @routine.POP op
@@ -227,6 +229,8 @@ class Compiler
       @routine.setLabel jump
     else if op.operation == "or"
       jump = @routine.createLabel "or"
+      op.term1.nowarning = true
+      op.term2.nowarning = true
       @compile op.term1
       @routine.JUMPY_NOPOP jump,op
       @routine.POP op
@@ -251,6 +255,7 @@ class Compiler
       @routine.NEGATE expression
 
   compileNot:(expression)->
+    expression.expression.nowarning = true
     @compile expression.expression
     @routine.NOT expression
 
@@ -284,6 +289,9 @@ class Compiler
       @routine.LOAD_VARIABLE v,variable
 
   compileField:(field)->
+    if field.expression.identifier == "keyboard" or field.expression.identifier == "gamepad"
+      field.nowarning = true
+
     c = field.chain[field.chain.length-1]
     if c instanceof Program.Value and c.value == "type"
       if field.chain.length == 1
@@ -587,6 +595,7 @@ class Compiler
     for i in [0..chain.length-1] by 1
       condition_next = @routine.createLabel "condition_next"
       c = chain[i]
+      c.condition.nowarning = true
       @compile c.condition
       @routine.JUMPN condition_next
       @locals.push()

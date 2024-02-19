@@ -620,7 +620,23 @@ this.Processor = class Processor {
             obj = obj.class;
             v = obj[name];
           }
-          stack[--stack_index] = v != null ? v : 0;
+          if (v == null) {
+            v = 0;
+            if (!routine.ref[op_index].nowarning) {
+              routine.ref[op_index].nowarning = true;
+              if (!Array.isArray(obj)) {
+                token = routine.ref[op_index].token;
+                id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+                context.warnings.using_undefined_variable[id] = {
+                  file: token.tokenizer.filename,
+                  line: token.line,
+                  column: token.column,
+                  expression: name
+                };
+              }
+            }
+          }
+          stack[--stack_index] = v;
           op_index++;
           break;
         case 17: // OPCODE_LOAD_PROPERTY_OBJECT
@@ -883,7 +899,23 @@ this.Processor = class Processor {
             obj = obj.class;
             v = obj[name];
           }
-          stack[++stack_index] = v != null ? v : 0;
+          if (v == null) {
+            v = 0;
+            if (!routine.ref[op_index].nowarning) {
+              routine.ref[op_index].nowarning = true;
+              if (!Array.isArray(obj)) {
+                token = routine.ref[op_index].token;
+                id = token.tokenizer.filename + "-" + token.line + "-" + token.column;
+                context.warnings.using_undefined_variable[id] = {
+                  file: token.tokenizer.filename,
+                  line: token.line,
+                  column: token.column,
+                  expression: name
+                };
+              }
+            }
+          }
+          stack[++stack_index] = v;
           op_index++;
           break;
         case 40: // OPCODE_EQ

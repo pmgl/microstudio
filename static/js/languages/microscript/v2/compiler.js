@@ -274,6 +274,8 @@ Compiler = (function() {
         }
       } else if (op.operation === "and") {
         jump = this.routine.createLabel("and");
+        op.term1.nowarning = true;
+        op.term2.nowarning = true;
         this.compile(op.term1);
         this.routine.JUMPN_NOPOP(jump, op);
         this.routine.POP(op);
@@ -281,6 +283,8 @@ Compiler = (function() {
         return this.routine.setLabel(jump);
       } else if (op.operation === "or") {
         jump = this.routine.createLabel("or");
+        op.term1.nowarning = true;
+        op.term2.nowarning = true;
         this.compile(op.term1);
         this.routine.JUMPY_NOPOP(jump, op);
         this.routine.POP(op);
@@ -309,6 +313,7 @@ Compiler = (function() {
     }
 
     compileNot(expression) {
+      expression.expression.nowarning = true;
       this.compile(expression.expression);
       return this.routine.NOT(expression);
     }
@@ -351,6 +356,9 @@ Compiler = (function() {
 
     compileField(field) {
       var c, i, id, index, j, k, len, ref, ref1;
+      if (field.expression.identifier === "keyboard" || field.expression.identifier === "gamepad") {
+        field.nowarning = true;
+      }
       c = field.chain[field.chain.length - 1];
       if (c instanceof Program.Value && c.value === "type") {
         if (field.chain.length === 1) {
@@ -673,6 +681,7 @@ Compiler = (function() {
       for (i = j = 0, ref = chain.length - 1; j <= ref; i = j += 1) {
         condition_next = this.routine.createLabel("condition_next");
         c = chain[i];
+        c.condition.nowarning = true;
         this.compile(c.condition);
         this.routine.JUMPN(condition_next);
         this.locals.push();
