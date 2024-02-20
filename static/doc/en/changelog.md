@@ -1,7 +1,7 @@
 ## Changelog
 
 ### Update 2024-02-20
-* display warning when accessing unexisting object field
+* display warning when accessing unexisting object field (microScript 2.0)
 
 ### Update 2024-01-29
 * Assets (sounds, music, other assets) max size is now 30 Mb
