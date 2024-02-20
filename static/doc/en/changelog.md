@@ -1,5 +1,8 @@
 ## Changelog
 
+### Update 2024-02-20
+* display warning when accessing unexisting object field
+
 ### Update 2024-01-29
 * Assets (sounds, music, other assets) max size is now 30 Mb
 * Added support for Ogg and FLAC encoded files in the sounds tab and music tab
