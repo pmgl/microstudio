@@ -2,26 +2,34 @@ var fs;
 
 fs = require("fs");
 
-this.Concatenator = class Concatenator {
-  constructor(webapp) {
-    var k, key, ref, ref1, ref2, v, value;
+this.Concatenator = (function() {
+  function Concatenator(webapp) {
+    var fn, k, key, ref, ref1, ref2, v, value;
     this.webapp = webapp;
-    this.webapp.app.get(/^\/all.js$/, (req, res) => {
-      res.setHeader("Content-Type", "text/javascript");
-      return res.send(this.webapp_js_concat);
-    });
-    this.webapp.app.get(/^\/all.css$/, (req, res) => {
-      res.setHeader("Content-Type", "text/css");
-      return res.send(this.webapp_css_concat);
-    });
-    this.webapp.app.get(/^\/play.js$/, (req, res) => {
-      res.setHeader("Content-Type", "text/javascript");
-      return res.send(this.player_js_concat);
-    });
-    this.webapp.app.get(/^\/server.js$/, (req, res) => {
-      res.setHeader("Content-Type", "text/javascript");
-      return res.send(this.server_js_concat);
-    });
+    this.webapp.app.get(/^\/all.js$/, (function(_this) {
+      return function(req, res) {
+        res.setHeader("Content-Type", "text/javascript");
+        return res.send(_this.webapp_js_concat);
+      };
+    })(this));
+    this.webapp.app.get(/^\/all.css$/, (function(_this) {
+      return function(req, res) {
+        res.setHeader("Content-Type", "text/css");
+        return res.send(_this.webapp_css_concat);
+      };
+    })(this));
+    this.webapp.app.get(/^\/play.js$/, (function(_this) {
+      return function(req, res) {
+        res.setHeader("Content-Type", "text/javascript");
+        return res.send(_this.player_js_concat);
+      };
+    })(this));
+    this.webapp.app.get(/^\/server.js$/, (function(_this) {
+      return function(req, res) {
+        res.setHeader("Content-Type", "text/javascript");
+        return res.send(_this.server_js_concat);
+      };
+    })(this));
     this.alt_player_base = ['/js/util/canvas2d.js', "/js/languages/microscript/random.js", "/js/runtime/microvm.js", "/js/runtime/mpserverconnection.js", '/js/runtime/runtime.js', '/js/runtime/watcher.js', '/js/runtime/projectinterface.js', '/js/runtime/timemachine.js', '/js/runtime/assetmanager.js', '/js/runtime/keyboard.js', '/js/runtime/gamepad.js', '/js/runtime/sprite.js', '/js/runtime/msimage.js', '/js/runtime/map.js', "/js/runtime/audio/audio.js", "/js/runtime/audio/beeper.js", "/js/runtime/audio/sound.js", "/js/runtime/audio/music.js", '/js/play/player.js', '/js/play/playerclient.js'];
     this.alt_players = {
       m2d: {
@@ -51,7 +59,7 @@ this.Concatenator = class Concatenator {
             lib: ["/lib/pixijs/v7/pixi.min.js"],
             lib_path: ["../static/lib/pixijs/v7/pixi.min.js"],
             scripts: ['/js/runtime/pixi/screen.js', '/js/runtime/pixi/pixi.js'],
-            default: true
+            "default": true
           }
         }
       },
@@ -78,7 +86,7 @@ this.Concatenator = class Concatenator {
             lib: ["/lib/babylonjs/v6/babylon.js", "/lib/babylonjs/v6/babylonjs.loaders.min.js"],
             lib_path: ["../static/lib/babylonjs/v6/babylon.js", "../static/lib/babylonjs/v6/babylonjs.loaders.min.js"],
             scripts: ['/js/runtime/babylon/screen.js', '/js/runtime/babylon/babylon.js'],
-            default: true
+            "default": true
           }
         }
       }
@@ -104,7 +112,7 @@ this.Concatenator = class Concatenator {
             name: "version 0.19",
             lib: "/lib/matterjs/v019/matter.min.js",
             lib_path: "../static/lib/matterjs/v019/matter.min.js",
-            default: true
+            "default": true
           }
         }
       },
@@ -149,29 +157,32 @@ this.Concatenator = class Concatenator {
       }
     };
     ref = this.alt_players;
-    for (key in ref) {
-      value = ref[key];
-      ((key, value) => {
+    fn = (function(_this) {
+      return function(key, value) {
         var k, ref1, results, v;
-        this.webapp.app.get(new RegExp(`^\\/${key}.js$`), (req, res) => {
+        _this.webapp.app.get(new RegExp("^\\/" + key + ".js$"), function(req, res) {
           res.setHeader("Content-Type", "text/javascript");
-          return res.send(this[`${key}_js_concat`]);
+          return res.send(_this[key + "_js_concat"]);
         });
         if (value.versions) {
           ref1 = value.versions;
           results = [];
           for (k in ref1) {
             v = ref1[k];
-            results.push(((k, v) => {
-              return this.webapp.app.get(new RegExp(`^\\/${k}.js$`), (req, res) => {
+            results.push((function(k, v) {
+              return _this.webapp.app.get(new RegExp("^\\/" + k + ".js$"), function(req, res) {
                 res.setHeader("Content-Type", "text/javascript");
-                return res.send(this[`${k}_js_concat`]);
+                return res.send(_this[k + "_js_concat"]);
               });
             })(k, v));
           }
           return results;
         }
-      })(key, value);
+      };
+    })(this);
+    for (key in ref) {
+      value = ref[key];
+      fn(key, value);
     }
     this.webapp_css = ["/css/style.css", "/css/home.css", "/css/doc.css", "/css/code.css", "/css/debug.css", "/css/assets.css", "/css/sprites.css", "/css/sounds.css", "/css/synth.css", "/css/music.css", "/css/maps.css", "/css/publish.css", "/css/explore.css", "/css/options.css", "/css/sync.css", "/css/user.css", "/css/media.css", "/css/terminal.css", "/css/tutorial.css", "/css/md.css", "/css/common.css"];
     this.webapp_js = ["/js/languages/microscript/random.js", "/js/languages/microscript/v2/parser.js", "/js/languages/microscript/v2/program.js", "/js/languages/microscript/v2/token.js", "/js/languages/microscript/v2/tokenizer.js", "/js/languages/microscript/microscript.js", "/js/languages/python/python.js", "/js/languages/javascript/javascript.js", "/js/languages/lua/lua.js", "/js/client/client.js", "/js/util/confirm.js", "/js/util/canvas2d.js", "/js/util/regexlib.js", "/js/util/inputvalidator.js", "/js/util/translator.js", "/js/manager.js", "/js/folderview.js", "/js/about/about.js", "/js/doc/documentation.js", "/js/doceditor/doceditor.js", "/js/editor/editor.js", "/js/editor/runwindow.js", "/js/editor/projectaccess.js", "/js/editor/rulercanvas.js", "/js/editor/valuetool.js", "/js/editor/libmanager.js", "/js/options/options.js", "/js/options/tabmanager.js", "/js/options/pluginview.js", "/js/sync/sync.js", "/js/publish/publish.js", "/js/publish/appbuild.js", "/js/explore/explore.js", "/js/explore/projectdetails.js", "/js/user/usersettings.js", "/js/user/translationapp.js", "/js/user/progress.js", "/js/spriteeditor/drawtool.js", "/js/spriteeditor/spritelist.js", "/js/spriteeditor/spriteeditor.js", "/js/spriteeditor/colorpicker.js", "/js/spriteeditor/spriteview.js", "/js/spriteeditor/animationpanel.js", "/js/spriteeditor/autopalette.js", "/js/spriteeditor/sprite.js", "/js/spriteeditor/spriteframe.js", "/js/mapeditor/mapview.js", "/js/mapeditor/mapeditor.js", "/js/mapeditor/tilepicker.js", "/js/mapeditor/map.js", "/js/assets/assetsmanager.js", "/js/assets/modelviewer.js", "/js/assets/imageviewer.js", "/js/assets/textviewer.js", "/js/assets/fontviewer.js", "/js/sound/soundeditor.js", "/js/sound/soundthumbnailer.js", "/js/music/musiceditor.js", "/js/util/undo.js", "/js/util/random.js", "/js/util/splitbar.js", "/js/util/pixelartscaler.js", "/js/runtime/microvm.js", "/js/debug/debug.js", "/js/debug/watch.js", "/js/debug/timemachine.js", "/js/terminal/terminal.js", "/js/project/project.js", "/js/project/projectfolder.js", "/js/project/projectsource.js", "/js/project/projectsprite.js", "/js/project/projectmap.js", "/js/project/projectasset.js", "/js/project/projectsound.js", "/js/project/projectmusic.js", "/js/appui/floatingwindow.js", "/js/appui/appui.js", "/js/app.js", "/js/appstate.js", "/js/tutorial/tutorials.js", "/js/tutorial/tutorial.js", "/js/tutorial/tutorialwindow.js", "/js/tutorial/highlighter.js", "/js/tutorial/tutorialspage.js"];
@@ -181,19 +192,19 @@ this.Concatenator = class Concatenator {
     ref1 = this.alt_players;
     for (key in ref1) {
       value = ref1[key];
-      this[`${key}_js`] = this.alt_player_base.concat(value.scripts);
+      this[key + "_js"] = this.alt_player_base.concat(value.scripts);
       if (value.versions) {
         ref2 = value.versions;
         for (k in ref2) {
           v = ref2[k];
-          this[`${k}_js`] = this.alt_player_base.concat(v.scripts);
+          this[k + "_js"] = this.alt_player_base.concat(v.scripts);
         }
       }
     }
     this.refresh();
   }
 
-  refresh() {
+  Concatenator.prototype.refresh = function() {
     var k, key, ref, ref1, v, value;
     this.concat(this.webapp_js, "webapp_js_concat");
     this.concat(this.player_js, "player_js_concat");
@@ -202,35 +213,35 @@ this.Concatenator = class Concatenator {
     ref = this.alt_players;
     for (key in ref) {
       value = ref[key];
-      this.concat(this[`${key}_js`], `${key}_js_concat`);
+      this.concat(this[key + "_js"], key + "_js_concat");
       if (value.versions != null) {
         ref1 = value.versions;
         for (k in ref1) {
           v = ref1[k];
-          this.concat(this[`${k}_js`], `${k}_js_concat`);
+          this.concat(this[k + "_js"], k + "_js_concat");
         }
       }
     }
     return this.concat(this.webapp_css, "webapp_css_concat");
-  }
+  };
 
-  getHomeJSFiles() {
+  Concatenator.prototype.getHomeJSFiles = function() {
     if (this.webapp.server.use_cache && (this.webapp_js_concat != null)) {
       return ["/all.js"];
     } else {
       return this.webapp_js;
     }
-  }
+  };
 
-  getHomeCSSFiles() {
+  Concatenator.prototype.getHomeCSSFiles = function() {
     if (this.webapp.server.use_cache && (this.webapp_css_concat != null)) {
       return ["/all.css"];
     } else {
       return this.webapp_css;
     }
-  }
+  };
 
-  findAltPlayer(graphics) {
+  Concatenator.prototype.findAltPlayer = function(graphics) {
     var id, player;
     if ((graphics != null) && typeof graphics === "string") {
       graphics = graphics.toLowerCase();
@@ -245,18 +256,18 @@ this.Concatenator = class Concatenator {
       }
     }
     return null;
-  }
+  };
 
-  getPlayerJSFiles(graphics) {
+  Concatenator.prototype.getPlayerJSFiles = function(graphics) {
     var player;
     if ((graphics != null) && typeof graphics === "string") {
       graphics = graphics.toLowerCase();
       player = this.findAltPlayer(graphics);
       if (player != null) {
         if (this.webapp.server.use_cache && (this.babylon_js_concat != null)) {
-          return player.lib.concat([`/${graphics}.js`]);
+          return player.lib.concat(["/" + graphics + ".js"]);
         } else {
-          return player.lib.concat(this[`${graphics}_js`]);
+          return player.lib.concat(this[graphics + "_js"]);
         }
       } else {
         if (this.webapp.server.use_cache && (this.player_js_concat != null)) {
@@ -266,30 +277,30 @@ this.Concatenator = class Concatenator {
         }
       }
     }
-  }
+  };
 
-  getServerJSFiles() {
+  Concatenator.prototype.getServerJSFiles = function() {
     if (this.webapp.server.use_cache && (this.server_js_concat != null)) {
       return ["/server.js"];
     } else {
       return this.server_js;
     }
-  }
+  };
 
-  getEngineExport(graphics) {
+  Concatenator.prototype.getEngineExport = function(graphics) {
     if ((graphics != null) && typeof graphics === "string") {
       graphics = graphics.toLowerCase();
-      return this[`${graphics}_js_concat`] || this.player_js_concat;
+      return this[graphics + "_js_concat"] || this.player_js_concat;
     } else {
       return this.player_js_concat;
     }
-  }
+  };
 
-  getServerEngineExport() {
+  Concatenator.prototype.getServerEngineExport = function() {
     return this.server_export_js_concat;
-  }
+  };
 
-  findOptionalLib(lib) {
+  Concatenator.prototype.findOptionalLib = function(lib) {
     var id, l;
     if (typeof lib !== "string") {
       return false;
@@ -305,9 +316,9 @@ this.Concatenator = class Concatenator {
     } else {
       return false;
     }
-  }
+  };
 
-  concat(files, variable, callback) {
+  Concatenator.prototype.concat = function(files, variable, callback) {
     var f, funk, list, res;
     list = (function() {
       var i, len, results;
@@ -319,28 +330,32 @@ this.Concatenator = class Concatenator {
       return results;
     })();
     res = "";
-    funk = () => {
-      if (list.length > 0) {
-        f = list.splice(0, 1)[0];
-        f = "../static" + f;
-        return fs.readFile(f, (err, data) => {
-          if ((data != null) && (err == null)) {
-            res += data + "\n";
-            return funk();
-          } else if (err) {
-            return console.info(err);
+    funk = (function(_this) {
+      return function() {
+        if (list.length > 0) {
+          f = list.splice(0, 1)[0];
+          f = "../static" + f;
+          return fs.readFile(f, function(err, data) {
+            if ((data != null) && (err == null)) {
+              res += data + "\n";
+              return funk();
+            } else if (err) {
+              return console.info(err);
+            }
+          });
+        } else {
+          _this[variable] = res;
+          if (callback != null) {
+            return callback();
           }
-        });
-      } else {
-        this[variable] = res;
-        if (callback != null) {
-          return callback();
         }
-      }
-    };
+      };
+    })(this);
     return funk();
-  }
+  };
 
-};
+  return Concatenator;
+
+})();
 
 module.exports = this.Concatenator;

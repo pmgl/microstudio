@@ -16,8 +16,8 @@ Forum = require(__dirname + "/../forum/forum.js");
 
 Cleaner = require(__dirname + "/cleaner.js");
 
-this.Content = class Content {
-  constructor(server, db, files) {
+this.Content = (function() {
+  function Content(server, db, files) {
     this.server = server;
     this.db = db;
     this.files = files;
@@ -38,46 +38,52 @@ this.Content = class Content {
     this.plugin_projects = [];
     this.library_projects = [];
     this.updatePublicProjects();
-    console.info(`Content loaded: ${this.user_count} users and ${this.project_count} projects`);
-    this.top_interval = setInterval((() => {
-      return this.sortPublicProjects();
-    }), 10001);
-    this.log_interval = setInterval((() => {
-      return this.statusLog();
-    }), 6000);
+    console.info("Content loaded: " + this.user_count + " users and " + this.project_count + " projects");
+    this.top_interval = setInterval(((function(_this) {
+      return function() {
+        return _this.sortPublicProjects();
+      };
+    })(this)), 10001);
+    this.log_interval = setInterval(((function(_this) {
+      return function() {
+        return _this.statusLog();
+      };
+    })(this)), 6000);
     this.translator = new Translator(this);
     this.forum = new Forum(this);
     this.cleaner = new Cleaner(this);
   }
 
-  close() {
+  Content.prototype.close = function() {
     clearInterval(this.top_interval);
     clearInterval(this.log_interval);
     this.forum.close();
     if (this.cleaner != null) {
       return this.cleaner.stop();
     }
-  }
+  };
 
-  statusLog() {
-    return usage(process.pid, (err, result) => {
-      if (result == null) {
-        return;
-      }
-      console.info("------------");
-      console.info(`${new Date().toString()}`);
-      console.info(`cpu: ${Math.round(result.cpu)}%`);
-      console.info(`memory: ${Math.round(result.memory / 1000000)} mb`);
-      console.info(`users: ${this.user_count}`);
-      console.info(`projects: ${this.project_count}`);
-      this.current_cpu = Math.round(result.cpu);
-      this.current_memory = Math.round(result.memory / 1000000);
-      this.server.stats.max("cpu_max", Math.round(result.cpu));
-      return this.server.stats.max("memory_max", this.current_memory);
-    });
-  }
+  Content.prototype.statusLog = function() {
+    return usage(process.pid, (function(_this) {
+      return function(err, result) {
+        if (result == null) {
+          return;
+        }
+        console.info("------------");
+        console.info("" + (new Date().toString()));
+        console.info("cpu: " + (Math.round(result.cpu)) + "%");
+        console.info("memory: " + (Math.round(result.memory / 1000000)) + " mb");
+        console.info("users: " + _this.user_count);
+        console.info("projects: " + _this.project_count);
+        _this.current_cpu = Math.round(result.cpu);
+        _this.current_memory = Math.round(result.memory / 1000000);
+        _this.server.stats.max("cpu_max", Math.round(result.cpu));
+        return _this.server.stats.max("memory_max", _this.current_memory);
+      };
+    })(this));
+  };
 
-  load() {
+  Content.prototype.load = function() {
     var j, k, l, len, len1, len2, projects, record, token, tokens, user, users;
     users = this.db.list("users");
     for (j = 0, len = users.length; j < len; j++) {
@@ -112,9 +118,9 @@ this.Content = class Content {
       this.loadProject(record);
     }
     this.initLikes();
-  }
+  };
 
-  loadUser(record) {
+  Content.prototype.loadUser = function(record) {
     var data, user;
     data = record.get();
     user = new User(this, record);
@@ -130,9 +136,9 @@ this.Content = class Content {
     this.users_by_nick[user.nick] = user;
     this.user_count++;
     return user;
-  }
+  };
 
-  loadProject(record) {
+  Content.prototype.loadProject = function(record) {
     var data, project;
     data = record.get();
     project = new Project(this, record);
@@ -142,9 +148,9 @@ this.Content = class Content {
       this.project_count++;
     }
     return project;
-  }
+  };
 
-  loadTags(project) {
+  Content.prototype.loadTags = function(project) {
     var j, len, ref, t, tag;
     ref = project.tags;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -157,9 +163,9 @@ this.Content = class Content {
       }
       tag.add(project);
     }
-  }
+  };
 
-  loadToken(record) {
+  Content.prototype.loadToken = function(record) {
     var data, token;
     data = record.get();
     token = new Token(this, record);
@@ -167,9 +173,9 @@ this.Content = class Content {
       this.tokens[token.value] = token;
     }
     return token;
-  }
+  };
 
-  initLikes() {
+  Content.prototype.initLikes = function() {
     var f, j, key, len, ref, ref1, user;
     ref = this.users;
     for (key in ref) {
@@ -182,9 +188,9 @@ this.Content = class Content {
         }
       }
     }
-  }
+  };
 
-  updatePublicProjects() {
+  Content.prototype.updatePublicProjects = function() {
     var key, project, ref;
     this.hot_projects = [];
     this.top_projects = [];
@@ -194,7 +200,7 @@ this.Content = class Content {
     ref = this.projects;
     for (key in ref) {
       project = ref[key];
-      if (project.public && !project.unlisted && project.owner.flags["validated"] && !project.deleted && !project.owner.flags["censored"]) {
+      if (project["public"] && !project.unlisted && project.owner.flags["validated"] && !project.deleted && !project.owner.flags["censored"]) {
         this.hot_projects.push(project);
         this.top_projects.push(project);
         this.new_projects.push(project);
@@ -207,9 +213,9 @@ this.Content = class Content {
       }
     }
     return this.sortPublicProjects();
-  }
+  };
 
-  sortPublicProjects() {
+  Content.prototype.sortPublicProjects = function() {
     var fade, maxLikes, note, now, time;
     time = Date.now();
     this.top_projects.sort(function(a, b) {
@@ -244,10 +250,10 @@ this.Content = class Content {
     this.hot_projects.sort(function(a, b) {
       return note(b) - note(a);
     });
-    return console.info(`Sorting public projects took: ${Date.now() - time} ms`);
-  }
+    return console.info("Sorting public projects took: " + (Date.now() - time) + " ms");
+  };
 
-  setProjectPublic(project, pub) {
+  Content.prototype.setProjectPublic = function(project, pub) {
     var index;
     project.set("public", pub);
     if (pub && project.first_published === 0) {
@@ -270,7 +276,6 @@ this.Content = class Content {
         return this.library_projects.push(project);
       }
     } else {
-      //@sortPublicProjects()
       index = this.hot_projects.indexOf(project);
       if (index >= 0) {
         this.hot_projects.splice(index, 1);
@@ -292,12 +297,12 @@ this.Content = class Content {
         return this.library_projects.splice(index, 1);
       }
     }
-  }
+  };
 
-  setProjectType(project, type) {
+  Content.prototype.setProjectType = function(project, type) {
     var index;
     project.set("type", type);
-    if (project.public) {
+    if (project["public"]) {
       if (project.type === "plugin") {
         if (this.plugin_projects.indexOf(project) < 0) {
           this.plugin_projects.push(project);
@@ -319,9 +324,9 @@ this.Content = class Content {
         }
       }
     }
-  }
+  };
 
-  projectDeleted(project) {
+  Content.prototype.projectDeleted = function(project) {
     var index;
     this.project_count -= 1;
     index = this.hot_projects.indexOf(project);
@@ -344,9 +349,9 @@ this.Content = class Content {
     if (index >= 0) {
       return this.library_projects.splice(index, 1);
     }
-  }
+  };
 
-  addProjectTag(project, t) {
+  Content.prototype.addProjectTag = function(project, t) {
     var tag;
     tag = this.tags[t];
     if (tag == null) {
@@ -355,17 +360,17 @@ this.Content = class Content {
       this.sorted_tags.push(tag);
     }
     return tag.add(project);
-  }
+  };
 
-  removeProjectTag(project, t) {
+  Content.prototype.removeProjectTag = function(project, t) {
     var tag;
     tag = this.tags[t];
     if (tag != null) {
       return tag.remove(project);
     }
-  }
+  };
 
-  setProjectTags(project, tags) {
+  Content.prototype.setProjectTags = function(project, tags) {
     var j, k, len, len1, ref, t;
     ref = project.tags;
     for (j = 0, len = ref.length; j < len; j++) {
@@ -381,15 +386,15 @@ this.Content = class Content {
       }
     }
     return project.set("tags", tags);
-  }
+  };
 
-  createUser(data) {
+  Content.prototype.createUser = function(data) {
     var record;
     record = this.db.create("users", data);
     return this.loadUser(record);
-  }
+  };
 
-  createToken(user) {
+  Content.prototype.createToken = function(user) {
     var chars, i, j, record, value;
     value = "";
     chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -402,23 +407,23 @@ this.Content = class Content {
       date_created: Date.now()
     });
     return this.loadToken(record);
-  }
+  };
 
-  findUserByNick(nick) {
+  Content.prototype.findUserByNick = function(nick) {
     return this.users_by_nick[nick];
-  }
+  };
 
-  findUserByEmail(email) {
+  Content.prototype.findUserByEmail = function(email) {
     return this.users_by_email[email];
-  }
+  };
 
-  changeUserNick(user, nick) {
+  Content.prototype.changeUserNick = function(user, nick) {
     delete this.users_by_nick[user.nick];
     user.set("nick", nick);
     return this.users_by_nick[nick] = user;
-  }
+  };
 
-  changeUserEmail(user, email) {
+  Content.prototype.changeUserEmail = function(user, email) {
     if (user.email != null) {
       delete this.users_by_email[user.email];
     } else {
@@ -426,9 +431,9 @@ this.Content = class Content {
     }
     user.set("email", email);
     return this.users_by_email[email] = user;
-  }
+  };
 
-  userDeleted(user) {
+  Content.prototype.userDeleted = function(user) {
     delete this.users_by_nick[user.nick];
     if (user.email != null) {
       delete this.users_by_email[user.email];
@@ -436,14 +441,17 @@ this.Content = class Content {
       this.guest_count -= 1;
     }
     return this.user_count -= 1;
-  }
+  };
 
-  findToken(token) {
+  Content.prototype.findToken = function(token) {
     return this.tokens[token];
-  }
+  };
 
-  createProject(owner, data, callback, empty = false) {
+  Content.prototype.createProject = function(owner, data, callback, empty) {
     var content, count, d, project, record, slug;
+    if (empty == null) {
+      empty = false;
+    }
     slug = data.slug;
     if (owner.findProjectBySlug(slug)) {
       count = 2;
@@ -457,7 +465,7 @@ this.Content = class Content {
       slug: data.slug,
       tags: [],
       likes: [],
-      public: data.public || false,
+      "public": data["public"] || false,
       date_created: Date.now(),
       last_modified: Date.now(),
       deleted: false,
@@ -484,21 +492,23 @@ this.Content = class Content {
       } else {
         content = DEFAULT_CODE.microscript;
       }
-      return this.files.write(`${owner.id}/${project.id}/ms/main.ms`, content, () => {
-        return this.files.copyFile("../static/img/defaultappicon.png", `${owner.id}/${project.id}/sprites/icon.png`, () => {
-          return callback(project);
-        });
-      });
+      return this.files.write(owner.id + "/" + project.id + "/ms/main.ms", content, (function(_this) {
+        return function() {
+          return _this.files.copyFile("../static/img/defaultappicon.png", owner.id + "/" + project.id + "/sprites/icon.png", function() {
+            return callback(project);
+          });
+        };
+      })(this));
     }
-  }
+  };
 
-  getConsoleGameList() {
+  Content.prototype.getConsoleGameList = function() {
     var key, list, p, ref;
     list = [];
     ref = this.projects;
     for (key in ref) {
       p = ref[key];
-      if (p.public && !p.deleted) {
+      if (p["public"] && !p.deleted) {
         list.push({
           author: p.owner.nick,
           slug: p.slug,
@@ -507,9 +517,9 @@ this.Content = class Content {
       }
     }
     return list;
-  }
+  };
 
-  sendValidationMail(user) {
+  Content.prototype.sendValidationMail = function(user) {
     var subject, text, token, translator;
     if (user.email == null) {
       return;
@@ -519,11 +529,11 @@ this.Content = class Content {
     subject = translator.get("Microstudio e-mail validation");
     text = translator.get("Thank you for using Microstudio!") + "\n\n";
     text += translator.get("Click on the link below to validate your e-mail address:") + "\n\n";
-    text += `https://microstudio.dev/v/${user.id}/${token}` + "\n\n";
+    text += ("https://microstudio.dev/v/" + user.id + "/" + token) + "\n\n";
     return this.server.mailer.sendMail(user.email, subject, text);
-  }
+  };
 
-  sendPasswordRecoveryMail(user) {
+  Content.prototype.sendPasswordRecoveryMail = function(user) {
     var subject, text, token, translator;
     if (user.email == null) {
       return;
@@ -532,26 +542,28 @@ this.Content = class Content {
     translator = this.translator.getTranslator(user.language);
     subject = translator.get("Reset your microStudio password");
     text = translator.get("Click on the link below to choose a new microStudio password:") + "\n\n";
-    text += `https://microstudio.dev/pw/${user.id}/${token}` + "\n\n";
+    text += ("https://microstudio.dev/pw/" + user.id + "/" + token) + "\n\n";
     return this.server.mailer.sendMail(user.email, subject, text);
-  }
+  };
 
-  checkValidationToken(user, token) {
+  Content.prototype.checkValidationToken = function(user, token) {
     return token === user.getValidationToken();
-  }
+  };
 
-  validateEMailAddress(user, token) {
+  Content.prototype.validateEMailAddress = function(user, token) {
     var translator;
-    console.info(`verifying ${token} against ${user.getValidationToken()}`);
+    console.info("verifying " + token + " against " + (user.getValidationToken()));
     if ((token != null) && token.length > 0 && this.checkValidationToken(user, token)) {
       user.resetValidationToken();
       user.setFlag("validated", true);
       translator = this.translator.getTranslator(user.language);
       return user.notify(translator.get("Your e-mail address is now validated"));
     }
-  }
+  };
 
-};
+  return Content;
+
+})();
 
 DEFAULT_CODE = {
   python: "def init():\n  pass\n\ndef update():\n  pass\n\ndef draw():\n  pass",

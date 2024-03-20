@@ -1,20 +1,25 @@
-this.AppState = class AppState {
-  constructor(app) {
+this.AppState = (function() {
+  function AppState(app) {
     this.app = app;
-    window.addEventListener("popstate", (event) => {
-      return this.popState();
-    });
+    window.addEventListener("popstate", (function(_this) {
+      return function(event) {
+        return _this.popState();
+      };
+    })(this));
   }
 
-  pushState(name, path, obj = {}) {
-    console.info(`pushing state\nname=${name}\npath=${path}`);
+  AppState.prototype.pushState = function(name, path, obj) {
+    if (obj == null) {
+      obj = {};
+    }
+    console.info("pushing state\nname=" + name + "\npath=" + path);
     if ((history.state != null) && history.state.name !== name) {
       obj.name = name;
       return history.pushState(obj, "", path);
     }
-  }
+  };
 
-  popState() {
+  AppState.prototype.popState = function() {
     var i, len, p, project, ref, ref1, s;
     if (history.state != null) {
       s = history.state.name.split(".");
@@ -105,17 +110,17 @@ this.AppState = class AppState {
         }
       }
     }
-  }
+  };
 
-  stateInitialized() {
+  AppState.prototype.stateInitialized = function() {
     console.info("state initialized");
     return this.app.documentation.stateInitialized();
-  }
+  };
 
-  initState() {
+  AppState.prototype.initState = function() {
     var i, len, p, path, project, ref, s, tab;
     if (location.pathname.startsWith("/login/")) {
-      path = this.app.translator.lang !== "en" ? `/${this.app.translator.lang}/` : "/";
+      path = this.app.translator.lang !== "en" ? "/" + this.app.translator.lang + "/" : "/";
       history.replaceState({
         name: "home"
       }, "", path);
@@ -132,7 +137,7 @@ this.AppState = class AppState {
       ref = ["about", "tutorials", "explore", "documentation"];
       for (i = 0, len = ref.length; i < len; i++) {
         p = ref[i];
-        if (location.pathname.startsWith(`/${p}/`) || location.pathname === `/${p}`) {
+        if (location.pathname.startsWith("/" + p + "/") || location.pathname === ("/" + p)) {
           history.replaceState({
             name: p
           }, "", location.pathname);
@@ -151,23 +156,25 @@ this.AppState = class AppState {
             if (path[2]) {
               this.app.tutorials.tutorials_page.setSection(path[2], false);
               history.replaceState({
-                name: `tutorials.${path[2]}`
+                name: "tutorials." + path[2]
               }, "", location.pathname);
               if (path[2] === "examples") {
                 if (path[3] && path[4]) {
                   this.app.tutorials.tutorials_page.reloadExample(path[3], path[4]);
                   history.replaceState({
-                    name: `tutorials.${path[2]}.${path[3]}.${path[4]}`
+                    name: "tutorials." + path[2] + "." + path[3] + "." + path[4]
                   }, "", location.pathname);
                 }
               }
             }
           }
-          this.app.appui.setMainSection(((p) => {
-            return {
-              "documentation": "help"
-            }[p] || p;
-          })(p));
+          this.app.appui.setMainSection(((function(_this) {
+            return function(p) {
+              return {
+                "documentation": "help"
+              }[p] || p;
+            };
+          })(this))(p));
           this.stateInitialized();
           return;
         }
@@ -178,7 +185,7 @@ this.AppState = class AppState {
           project = s[2];
           tab = s[3];
           history.replaceState({
-            name: `project.${s[2]}.${s[3]}`
+            name: "project." + s[2] + "." + s[3]
           }, "", location.pathname);
         } else if (location.pathname.startsWith("/user/") && s[2]) {
           switch (s[2]) {
@@ -201,7 +208,7 @@ this.AppState = class AppState {
           }, "", "/projects/");
         }
       } else {
-        path = this.app.translator.lang !== "en" ? `/${this.app.translator.lang}/` : "/";
+        path = this.app.translator.lang !== "en" ? "/" + this.app.translator.lang + "/" : "/";
         history.replaceState({
           name: "home"
         }, "", path);
@@ -209,9 +216,9 @@ this.AppState = class AppState {
       }
     }
     return this.stateInitialized();
-  }
+  };
 
-  projectsFetched() {
+  AppState.prototype.projectsFetched = function() {
     var path, project, tuto, user;
     if ((history.state != null) && (history.state.name != null)) {
       if (history.state.name.startsWith("project.")) {
@@ -226,24 +233,30 @@ this.AppState = class AppState {
         path.splice(path.length - 1, 1);
       }
       path = path.join("/");
-      path = location.origin + `/${path}/doc/doc.md?v=${Date.now()}`;
+      path = location.origin + ("/" + path + "/doc/doc.md?v=" + (Date.now()));
       console.info(path);
       tuto = new Tutorial(path, false);
-      tuto.load(() => {
-        return this.app.tutorial.start(tuto);
-      }, (err) => {
-        console.info(err);
-        alert(this.app.translator.get("Tutorial not found"));
-        return history.replaceState({
-          name: "home"
-        }, "", "/");
-      });
-      this.app.client.listen("project_file_updated", (msg) => {
-        if (msg.type === "doc" && msg.file === "doc") {
-          tuto.update(msg.data);
-          return this.app.tutorial.update();
-        }
-      });
+      tuto.load((function(_this) {
+        return function() {
+          return _this.app.tutorial.start(tuto);
+        };
+      })(this), (function(_this) {
+        return function(err) {
+          console.info(err);
+          alert(_this.app.translator.get("Tutorial not found"));
+          return history.replaceState({
+            name: "home"
+          }, "", "/");
+        };
+      })(this));
+      this.app.client.listen("project_file_updated", (function(_this) {
+        return function(msg) {
+          if (msg.type === "doc" && msg.file === "doc") {
+            tuto.update(msg.data);
+            return _this.app.tutorial.update();
+          }
+        };
+      })(this));
       user = location.pathname.split("/")[2];
       project = location.pathname.split("/")[3];
       return this.app.client.send({
@@ -252,6 +265,8 @@ this.AppState = class AppState {
         project: project
       });
     }
-  }
+  };
 
-};
+  return AppState;
+
+})();

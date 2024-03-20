@@ -1,5 +1,5 @@
-this.Runtime = class Runtime {
-  constructor(url1, sources, resources, listener) {
+this.Runtime = (function() {
+  function Runtime(url1, sources, resources, listener) {
     this.url = url1;
     this.sources = sources;
     this.resources = resources;
@@ -12,19 +12,24 @@ this.Runtime = class Runtime {
     this.asset_manager = new AssetManager(this);
     this.previous_init = null;
     this.report_errors = true;
-    this.log = (text) => {
-      return this.listener.log(text);
-    };
+    this.log = (function(_this) {
+      return function(text) {
+        return _this.listener.log(text);
+      };
+    })(this);
     this.update_memory = {};
     this.servers = [];
   }
 
-  addServer(server) {
+  Runtime.prototype.addServer = function(server) {
     return this.servers.push(server);
-  }
+  };
 
-  updateSource(file, src, reinit = false) {
+  Runtime.prototype.updateSource = function(file, src, reinit) {
     var err, init;
+    if (reinit == null) {
+      reinit = false;
+    }
     if (this.vm == null) {
       return false;
     }
@@ -68,9 +73,9 @@ this.Runtime = class Runtime {
         return false;
       }
     }
-  }
+  };
 
-  start() {
+  Runtime.prototype.start = function() {
     var j, key, len, m, name, ref, ref1, value;
     if (window.ms_async_load) {
       this.startReady();
@@ -80,9 +85,11 @@ this.Runtime = class Runtime {
       for (j = 0, len = ref.length; j < len; j++) {
         m = ref[j];
         name = m.file.split(".")[0].replace(/-/g, "/");
-        this.maps[name] = LoadMap(this.url + `maps/${m.file}?v=${m.version}`, () => {
-          return this.checkStartReady();
-        });
+        this.maps[name] = LoadMap(this.url + ("maps/" + m.file + "?v=" + m.version), (function(_this) {
+          return function() {
+            return _this.checkStartReady();
+          };
+        })(this));
         this.maps[name].name = name;
       }
     } else if (this.resources.maps != null) {
@@ -96,9 +103,9 @@ this.Runtime = class Runtime {
       }
     }
     this.checkStartReady();
-  }
+  };
 
-  checkStartReady() {
+  Runtime.prototype.checkStartReady = function() {
     var count, key, ready, ref, value;
     count = 0;
     ready = 0;
@@ -122,18 +129,20 @@ this.Runtime = class Runtime {
     if (!this.started) {
       return this.startReady();
     }
-  }
+  };
 
-  startReady() {
+  Runtime.prototype.startReady = function() {
     var err, file, global, init, j, len, lib, meta, namespace, ref, ref1, src;
     this.started = true;
     meta = {
-      print: (text) => {
-        if ((typeof text === "object" || typeof text === "function") && (this.vm != null)) {
-          text = this.vm.runner.toString(text);
-        }
-        return this.listener.log(text);
-      }
+      print: (function(_this) {
+        return function(text) {
+          if ((typeof text === "object" || typeof text === "function") && (_this.vm != null)) {
+            text = _this.vm.runner.toString(text);
+          }
+          return _this.listener.log(text);
+        };
+      })(this)
     };
     global = {
       sprites: this.sprites,
@@ -158,12 +167,16 @@ this.Runtime = class Runtime {
     namespace = location.pathname + "[server]";
     this.vm = new MicroVM(meta, global, namespace, location.hash === "#transpiler");
     this.vm.context.global.Server = MPServer;
-    this.vm.context.global.system.pause = () => {
-      return this.listener.codePaused();
-    };
-    this.vm.context.global.system.exit = () => {
-      return this.exit();
-    };
+    this.vm.context.global.system.pause = (function(_this) {
+      return function() {
+        return _this.listener.codePaused();
+      };
+    })(this);
+    this.vm.context.global.system.exit = (function(_this) {
+      return function() {
+        return _this.exit();
+      };
+    })(this);
     if (!window.ms_async_load) {
       this.vm.context.global.system.loading = 100;
     }
@@ -197,25 +210,27 @@ this.Runtime = class Runtime {
     this.last_time = Date.now();
     this.current_frame = 0;
     this.floating_frame = 0;
-    this.clock_interval = setInterval((() => {
-      return this.clock();
-    }), 16);
+    this.clock_interval = setInterval(((function(_this) {
+      return function() {
+        return _this.clock();
+      };
+    })(this)), 16);
     this.watcher = new Watcher(this);
     return this.listener.postMessage({
       name: "started"
     });
-  }
+  };
 
-  updateMaps() {
+  Runtime.prototype.updateMaps = function() {
     var key, map, ref;
     ref = this.maps;
     for (key in ref) {
       map = ref[key];
       map.needs_update = true;
     }
-  }
+  };
 
-  runCommand(command, callback) {
+  Runtime.prototype.runCommand = function(command, callback) {
     var err, res, warnings;
     try {
       warnings = this.vm.context.warnings;
@@ -239,27 +254,27 @@ this.Runtime = class Runtime {
       err = error;
       return this.listener.reportError(err);
     }
-  }
+  };
 
-  projectFileUpdated(type, file, version, data, properties) {
+  Runtime.prototype.projectFileUpdated = function(type, file, version, data, properties) {
     switch (type) {
       case "maps":
         return this.updateMap(file, version, data);
       case "ms":
         return this.updateCode(file, version, data);
     }
-  }
+  };
 
-  projectFileDeleted(type, file) {
+  Runtime.prototype.projectFileDeleted = function(type, file) {
     switch (type) {
       case "maps":
         return delete this.maps[file.substring(0, file.length - 5).replace(/-/g, "/")];
     }
-  }
+  };
 
-  projectOptionsUpdated(msg) {}
+  Runtime.prototype.projectOptionsUpdated = function(msg) {};
 
-  updateMap(name, version, data) {
+  Runtime.prototype.updateMap = function(name, version, data) {
     var m, url;
     name = name.replace(/-/g, "/");
     if (data != null) {
@@ -274,7 +289,7 @@ this.Runtime = class Runtime {
         return this.maps[name].name = name;
       }
     } else {
-      url = this.url + `maps/${name}.json?v=${version}`;
+      url = this.url + ("maps/" + name + ".json?v=" + version);
       m = this.maps[name];
       if (m != null) {
         return m.loadFile(url);
@@ -283,9 +298,9 @@ this.Runtime = class Runtime {
         return this.maps[name].name = name;
       }
     }
-  }
+  };
 
-  updateCode(name, version, data) {
+  Runtime.prototype.updateCode = function(name, version, data) {
     var req, url;
     if (data != null) {
       this.sources[name] = data;
@@ -294,28 +309,30 @@ this.Runtime = class Runtime {
       }
       return this.updateSource(name, data, true);
     } else {
-      url = this.url + `ms/${name}.ms?v=${version}`;
+      url = this.url + ("ms/" + name + ".ms?v=" + version);
       req = new XMLHttpRequest();
-      req.onreadystatechange = (event) => {
-        if (req.readyState === XMLHttpRequest.DONE) {
-          if (req.status === 200) {
-            this.sources[name] = req.responseText;
-            return this.updateSource(name, this.sources[name], true);
+      req.onreadystatechange = (function(_this) {
+        return function(event) {
+          if (req.readyState === XMLHttpRequest.DONE) {
+            if (req.status === 200) {
+              _this.sources[name] = req.responseText;
+              return _this.updateSource(name, _this.sources[name], true);
+            }
           }
-        }
-      };
+        };
+      })(this);
       req.open("GET", url);
       return req.send();
     }
-  }
+  };
 
-  stop() {
+  Runtime.prototype.stop = function() {
     this.stopped = true;
     clearInterval(this.clock_interval);
     return this.audio.cancelBeeps();
-  }
+  };
 
-  stepForward() {
+  Runtime.prototype.stepForward = function() {
     if (this.stopped) {
       this.updateCall();
       if (this.vm.runner.tick != null) {
@@ -323,22 +340,24 @@ this.Runtime = class Runtime {
       }
       return this.watcher.update();
     }
-  }
+  };
 
-  resume() {
+  Runtime.prototype.resume = function() {
     if (this.stopped) {
       this.stopped = false;
-      return this.clock_interval = setInterval((() => {
-        return this.clock();
-      }), 16);
+      return this.clock_interval = setInterval(((function(_this) {
+        return function() {
+          return _this.clock();
+        };
+      })(this)), 16);
     }
-  }
+  };
 
-  clock() {
+  Runtime.prototype.clock = function() {
     return this.timer();
-  }
+  };
 
-  timer() {
+  Runtime.prototype.timer = function() {
     var ds, dt, fps, i, j, ref, time;
     if (this.stopped) {
       return;
@@ -363,9 +382,9 @@ this.Runtime = class Runtime {
     if (ds > 0) {
       return this.watcher.update();
     }
-  }
+  };
 
-  updateControls() {
+  Runtime.prototype.updateControls = function() {
     var j, len, ref, results, s;
     ref = this.servers;
     results = [];
@@ -374,15 +393,17 @@ this.Runtime = class Runtime {
       results.push(s.update());
     }
     return results;
-  }
+  };
 
-  updateCall() {
+  Runtime.prototype.updateCall = function() {
     var err;
     if (this.vm.runner.triggers_controls_update) {
       if (this.vm.runner.updateControls == null) {
-        this.vm.runner.updateControls = () => {
-          return this.updateControls();
-        };
+        this.vm.runner.updateControls = (function(_this) {
+          return function() {
+            return _this.updateControls();
+          };
+        })(this);
       }
     } else {
       this.updateControls();
@@ -401,9 +422,9 @@ this.Runtime = class Runtime {
         return this.listener.reportError(err);
       }
     }
-  }
+  };
 
-  reportWarnings() {
+  Runtime.prototype.reportWarnings = function() {
     var key, ref, ref1, ref2, ref3, value;
     if (this.vm != null) {
       ref = this.vm.context.warnings.invoking_non_function;
@@ -467,19 +488,17 @@ this.Runtime = class Runtime {
         }
       }
     }
-  }
+  };
 
-  exit() {
+  Runtime.prototype.exit = function() {
     var err;
     this.stop();
     try {
-      // microStudio embedded exit
       this.listener.exit();
     } catch (error) {
       err = error;
     }
     try {
-      // TODO: Cordova exit, this might work
       if ((navigator.app != null) && (navigator.app.exitApp != null)) {
         navigator.app.exitApp();
       }
@@ -487,22 +506,21 @@ this.Runtime = class Runtime {
       err = error;
     }
     try {
-      // TODO: Electron exit, may already be covered by window.close()
-
-      // Windowed mode exit
       return window.close();
     } catch (error) {
       err = error;
     }
-  }
+  };
 
-};
+  return Runtime;
+
+})();
 
 this.System = {
   javascript: function(s) {
     var err, f, res;
     try {
-      f = eval(`res = function(global) { ${s} }`);
+      f = eval("res = function(global) { " + s + " }");
       res = f.call(player.runtime.vm.context.global, player.runtime.vm.context.global);
     } catch (error) {
       err = error;

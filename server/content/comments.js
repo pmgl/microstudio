@@ -1,13 +1,13 @@
 var Comment;
 
-this.Comments = class Comments {
-  constructor(project, data) {
+this.Comments = (function() {
+  function Comments(project, data) {
     this.project = project;
     this.comments = [];
     this.load(data);
   }
 
-  load(data) {
+  Comments.prototype.load = function(data) {
     var c, j, len, user;
     if ((data != null) && data.length > 0) {
       for (j = 0, len = data.length; j < len; j++) {
@@ -18,9 +18,9 @@ this.Comments = class Comments {
         }
       }
     }
-  }
+  };
 
-  save() {
+  Comments.prototype.save = function() {
     var c, j, len, ref, res;
     res = [];
     ref = this.comments;
@@ -34,9 +34,9 @@ this.Comments = class Comments {
       });
     }
     return this.project.set("comments", res, false);
-  }
+  };
 
-  getAll() {
+  Comments.prototype.getAll = function() {
     var c, i, j, len, ref, res;
     res = [];
     ref = this.comments;
@@ -56,35 +56,33 @@ this.Comments = class Comments {
       }
     }
     return res;
-  }
+  };
 
-  get(id) {
+  Comments.prototype.get = function(id) {
     return this.comments[id];
-  }
+  };
 
-  add(user, text) {
+  Comments.prototype.add = function(user, text) {
     this.comments.push(new Comment(this, user, {
       text: text,
       flags: {},
       time: Date.now()
     }));
     return this.save();
-  }
+  };
 
-  remove(comment) {
+  Comments.prototype.remove = function(comment) {
     if (comment != null) {
       return comment.flags.deleted = true;
     }
-  }
+  };
 
-};
+  return Comments;
 
-// index = @comments.indexOf(comment)
-// if index>=0
-//   @comments.splice(index,1)
-//   @save()
-Comment = class Comment {
-  constructor(comments, user1, data) {
+})();
+
+Comment = (function() {
+  function Comment(comments, user1, data) {
     this.comments = comments;
     this.user = user1;
     this.text = data.text;
@@ -92,15 +90,17 @@ Comment = class Comment {
     this.time = data.time;
   }
 
-  edit(text1) {
+  Comment.prototype.edit = function(text1) {
     this.text = text1;
     return this.comments.save();
-  }
+  };
 
-  remove() {
+  Comment.prototype.remove = function() {
     return this.comments.remove(this);
-  }
+  };
 
-};
+  return Comment;
+
+})();
 
 module.exports = this.Comments;

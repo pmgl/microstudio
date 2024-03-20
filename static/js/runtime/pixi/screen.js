@@ -1,5 +1,5 @@
-this.Screen = class Screen {
-  constructor(runtime) {
+this.Screen = (function() {
+  function Screen(runtime) {
     this.runtime = runtime;
     this.renderer = new PIXI.Renderer({
       width: 200,
@@ -21,31 +21,33 @@ this.Screen = class Screen {
     };
   }
 
-  getInterface() {
+  Screen.prototype.getInterface = function() {
     var screen;
-    if (this.interface != null) {
-      return this.interface;
+    if (this["interface"] != null) {
+      return this["interface"];
     }
     screen = this;
-    return this.interface = {
+    return this["interface"] = {
       width: this.width,
       height: this.height,
-      render: (stage) => {
-        return screen.render(stage);
-      }
+      render: (function(_this) {
+        return function(stage) {
+          return screen.render(stage);
+        };
+      })(this)
     };
-  }
+  };
 
-  updateInterface() {
-    this.interface.width = this.width;
-    return this.interface.height = this.height;
-  }
+  Screen.prototype.updateInterface = function() {
+    this["interface"].width = this.width;
+    return this["interface"].height = this.height;
+  };
 
-  initDraw() {}
+  Screen.prototype.initDraw = function() {};
 
-  clear() {}
+  Screen.prototype.clear = function() {};
 
-  resize() {
+  Screen.prototype.resize = function() {
     var ch, cw, h, min, r, ratio, w;
     cw = window.innerWidth;
     ch = window.innerHeight;
@@ -111,49 +113,67 @@ this.Screen = class Screen {
     this.renderer.resize(w, h);
     this.width = w;
     return this.height = h;
-  }
+  };
 
-  render(stage) {
+  Screen.prototype.render = function(stage) {
     this.renderer.render(stage);
     if (this.take_picture_callback != null) {
       this.take_picture_callback(this.canvas.toDataURL());
       return this.take_picture_callback = null;
     }
-  }
+  };
 
-  startControl(element) {
+  Screen.prototype.startControl = function(element) {
     this.element = element;
-    document.addEventListener("touchstart", (event) => {
-      return this.touchStart(event);
-    });
-    document.addEventListener("touchmove", (event) => {
-      return this.touchMove(event);
-    });
-    document.addEventListener("touchend", (event) => {
-      return this.touchRelease(event);
-    });
-    document.addEventListener("touchcancel", (event) => {
-      return this.touchRelease(event);
-    });
-    document.addEventListener("mousedown", (event) => {
-      return this.mouseDown(event);
-    });
-    document.addEventListener("mousemove", (event) => {
-      return this.mouseMove(event);
-    });
-    document.addEventListener("mouseup", (event) => {
-      return this.mouseUp(event);
-    });
-    document.addEventListener("mousewheel", (event) => {
-      return this.mouseWheel(event);
-    });
-    document.addEventListener("DOMMouseScroll", (event) => {
-      return this.mouseWheel(event);
-    });
+    document.addEventListener("touchstart", (function(_this) {
+      return function(event) {
+        return _this.touchStart(event);
+      };
+    })(this));
+    document.addEventListener("touchmove", (function(_this) {
+      return function(event) {
+        return _this.touchMove(event);
+      };
+    })(this));
+    document.addEventListener("touchend", (function(_this) {
+      return function(event) {
+        return _this.touchRelease(event);
+      };
+    })(this));
+    document.addEventListener("touchcancel", (function(_this) {
+      return function(event) {
+        return _this.touchRelease(event);
+      };
+    })(this));
+    document.addEventListener("mousedown", (function(_this) {
+      return function(event) {
+        return _this.mouseDown(event);
+      };
+    })(this));
+    document.addEventListener("mousemove", (function(_this) {
+      return function(event) {
+        return _this.mouseMove(event);
+      };
+    })(this));
+    document.addEventListener("mouseup", (function(_this) {
+      return function(event) {
+        return _this.mouseUp(event);
+      };
+    })(this));
+    document.addEventListener("mousewheel", (function(_this) {
+      return function(event) {
+        return _this.mouseWheel(event);
+      };
+    })(this));
+    document.addEventListener("DOMMouseScroll", (function(_this) {
+      return function(event) {
+        return _this.mouseWheel(event);
+      };
+    })(this));
     return this.ratio = devicePixelRatio;
-  }
+  };
 
-  touchStart(event) {
+  Screen.prototype.touchStart = function(event) {
     var b, i, j, min, ref, t, x, y;
     event.preventDefault();
     event.stopPropagation();
@@ -173,9 +193,9 @@ this.Screen = class Screen {
       this.mouse.left = 1;
     }
     return false;
-  }
+  };
 
-  touchMove(event) {
+  Screen.prototype.touchMove = function(event) {
     var b, i, j, min, ref, t, x, y;
     event.preventDefault();
     event.stopPropagation();
@@ -193,9 +213,9 @@ this.Screen = class Screen {
       }
     }
     return false;
-  }
+  };
 
-  touchRelease(event) {
+  Screen.prototype.touchRelease = function(event) {
     var i, j, ref, t, x, y;
     for (i = j = 0, ref = event.changedTouches.length - 1; j <= ref; i = j += 1) {
       t = event.changedTouches[i];
@@ -208,9 +228,9 @@ this.Screen = class Screen {
       this.mouse.middle = 0;
     }
     return false;
-  }
+  };
 
-  mouseDown(event) {
+  Screen.prototype.mouseDown = function(event) {
     var b, min, x, y;
     this.mousepressed = true;
     b = this.canvas.getBoundingClientRect();
@@ -221,7 +241,6 @@ this.Screen = class Screen {
       x: x,
       y: y
     };
-    //console.info @touches["mouse"]
     this.mouse.x = x;
     this.mouse.y = y;
     switch (event.button) {
@@ -236,9 +255,9 @@ this.Screen = class Screen {
     }
     this.mouse.pressed = Math.min(1, this.mouse.left + this.mouse.right + this.mouse.middle);
     return false;
-  }
+  };
 
-  mouseMove(event) {
+  Screen.prototype.mouseMove = function(event) {
     var b, min, x, y;
     event.preventDefault();
     b = this.canvas.getBoundingClientRect();
@@ -252,9 +271,9 @@ this.Screen = class Screen {
     this.mouse.x = x;
     this.mouse.y = y;
     return false;
-  }
+  };
 
-  mouseUp(event) {
+  Screen.prototype.mouseUp = function(event) {
     var b, min, x, y;
     delete this.touches["mouse"];
     b = this.canvas.getBoundingClientRect();
@@ -275,19 +294,21 @@ this.Screen = class Screen {
     }
     this.mouse.pressed = Math.min(1, this.mouse.left + this.mouse.right + this.mouse.middle);
     return false;
-  }
+  };
 
-  mouseWheel(e) {
+  Screen.prototype.mouseWheel = function(e) {
     e.preventDefault();
     if (e.wheelDelta < 0 || e.detail > 0) {
       return this.wheel = -1;
     } else {
       return this.wheel = 1;
     }
-  }
+  };
 
-  takePicture(take_picture_callback) {
+  Screen.prototype.takePicture = function(take_picture_callback) {
     this.take_picture_callback = take_picture_callback;
-  }
+  };
 
-};
+  return Screen;
+
+})();

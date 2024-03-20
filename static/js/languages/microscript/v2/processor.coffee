@@ -47,7 +47,7 @@ class @Processor
       proc.stack[++proc.stack_index] = arguments.length
 
       if routine.uses_arguments
-        a = [...arguments]
+        a = structuredClone(arguments)
         for i in [0..a.length-1] by 1
           if not a[i]?
             a[i] = 0
@@ -73,7 +73,7 @@ class @Processor
       proc.stack[++proc.stack_index] = arguments.length
 
       if routine.uses_arguments
-        a = [...arguments]
+        a = structuredClone(arguments)
         for i in [0..a.length-1] by 1
           if not a[i]?
             a[i] = 0

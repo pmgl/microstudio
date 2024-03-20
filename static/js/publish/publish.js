@@ -1,41 +1,53 @@
-this.Publish = class Publish {
-  constructor(app) {
+this.Publish = (function() {
+  function Publish(app) {
     this.app = app;
-    this.app.appui.setAction("publish-button", () => {
-      return this.setProjectPublic(true);
-    });
-    this.app.appui.setAction("unpublish-button", () => {
-      return this.setProjectPublic(false);
-    });
-    this.tags_validator = new InputValidator(document.getElementById("publish-add-tags"), document.getElementById("publish-add-tags-button"), null, (value) => {
-      return this.addTags(value[0]);
-    });
+    this.app.appui.setAction("publish-button", (function(_this) {
+      return function() {
+        return _this.setProjectPublic(true);
+      };
+    })(this));
+    this.app.appui.setAction("unpublish-button", (function(_this) {
+      return function() {
+        return _this.setProjectPublic(false);
+      };
+    })(this));
+    this.tags_validator = new InputValidator(document.getElementById("publish-add-tags"), document.getElementById("publish-add-tags-button"), null, (function(_this) {
+      return function(value) {
+        return _this.addTags(value[0]);
+      };
+    })(this));
     this.description_save = 0;
-    document.querySelector("#publish-box-textarea").addEventListener("input", () => {
-      return this.description_save = Date.now() + 2000;
-    });
-    setInterval((() => {
-      return this.checkDescriptionSave();
-    }), 1000);
+    document.querySelector("#publish-box-textarea").addEventListener("input", (function(_this) {
+      return function() {
+        return _this.description_save = Date.now() + 2000;
+      };
+    })(this));
+    setInterval(((function(_this) {
+      return function() {
+        return _this.checkDescriptionSave();
+      };
+    })(this)), 1000);
     this.builders = [];
     this.builders.push(new AppBuild(this.app, "android"));
     this.builders.push(new AppBuild(this.app, "windows"));
     this.builders.push(new AppBuild(this.app, "macos"));
     this.builders.push(new AppBuild(this.app, "linux"));
     this.builders.push(new AppBuild(this.app, "raspbian"));
-    document.getElementById("publish-listed").addEventListener("change", () => {
-      if (this.app.project != null) {
-        this.app.project.unlisted = !document.getElementById("publish-listed").checked;
-        this.app.options.optionChanged("unlisted", !document.getElementById("publish-listed").checked);
-        this.sendProjectPublic(this.app.project.public);
-        return this.updateCheckList();
-      }
-    });
+    document.getElementById("publish-listed").addEventListener("change", (function(_this) {
+      return function() {
+        if (_this.app.project != null) {
+          _this.app.project.unlisted = !document.getElementById("publish-listed").checked;
+          _this.app.options.optionChanged("unlisted", !document.getElementById("publish-listed").checked);
+          _this.sendProjectPublic(_this.app.project["public"]);
+          return _this.updateCheckList();
+        }
+      };
+    })(this));
   }
 
-  loadProject(project) {
+  Publish.prototype.loadProject = function(project) {
     var b, build, j, len, public_url, ref;
-    if (project.public) {
+    if (project["public"]) {
       document.getElementById("publish-box").style.display = "none";
       document.getElementById("unpublish-box").style.display = "block";
     } else {
@@ -45,7 +57,7 @@ this.Publish = class Publish {
     document.getElementById("publish-validate-first").style.display = this.app.user.flags["validated"] ? "none" : "block";
     document.getElementById("publish-listed").checked = !project.unlisted;
     this.updateCheckList();
-    public_url = `${location.origin.replace(".dev", ".io")}/i/${this.app.project.owner.nick}/${this.app.project.slug}/`;
+    public_url = (location.origin.replace(".dev", ".io")) + "/i/" + this.app.project.owner.nick + "/" + this.app.project.slug + "/";
     document.getElementById("publish-public-link").href = public_url;
     document.getElementById("publish-public-link").innerText = public_url;
     document.querySelector("#publish-box-textarea").value = project.description;
@@ -57,53 +69,56 @@ this.Publish = class Publish {
       document.querySelector("#publish-box .publish-button").classList.add("disabled");
     }
     b = document.querySelector("#html-export .publish-button");
-    b.onclick = () => {
-      var loc;
-      loc = `/${project.owner.nick}/${project.slug}/`;
-      if (!project.public) {
-        loc += project.code + "/";
-      }
-      return window.location = loc + "publish/html/?v=" + Date.now();
-    };
+    b.onclick = (function(_this) {
+      return function() {
+        var loc;
+        loc = "/" + project.owner.nick + "/" + project.slug + "/";
+        if (!project["public"]) {
+          loc += project.code + "/";
+        }
+        return window.location = loc + "publish/html/?v=" + Date.now();
+      };
+    })(this);
     b = document.querySelector("#server-export .publish-button");
-    b.onclick = () => {
-      var loc;
-      loc = `/${project.owner.nick}/${project.slug}/`;
-      if (!project.public) {
-        loc += project.code + "/";
-      }
-      return window.location = loc + "publish/html/?server&v=" + Date.now();
-    };
+    b.onclick = (function(_this) {
+      return function() {
+        var loc;
+        loc = "/" + project.owner.nick + "/" + project.slug + "/";
+        if (!project["public"]) {
+          loc += project.code + "/";
+        }
+        return window.location = loc + "publish/html/?server&v=" + Date.now();
+      };
+    })(this);
     ref = this.builders;
     for (j = 0, len = ref.length; j < len; j++) {
       build = ref[j];
       build.loadProject(project);
     }
     this.updateServerExport();
-  }
+  };
 
-  updateServerExport() {
+  Publish.prototype.updateServerExport = function() {
     return document.querySelector("#publish-box-server").style.display = (this.app.project != null) && this.app.project.networking ? "block" : "none";
-  }
+  };
 
-  updateCheckList() {
+  Publish.prototype.updateCheckList = function() {
     var project;
     project = this.app.project;
-    if (project.public && !project.unlisted && !this.app.user.flags.approved && !project.flags.approved) {
+    if (project["public"] && !project.unlisted && !this.app.user.flags.approved && !project.flags.approved) {
       return document.getElementById("publish-checklist").style.display = "block";
     } else {
       return document.getElementById("publish-checklist").style.display = "none";
     }
-  }
+  };
 
-  updateTags() {
-    var j, len, list, ref, t;
+  Publish.prototype.updateTags = function() {
+    var fn, j, len, list, ref, t;
     list = document.getElementById("publish-tag-list");
     list.innerHTML = "";
     ref = this.app.project.tags;
-    for (j = 0, len = ref.length; j < len; j++) {
-      t = ref[j];
-      ((t) => {
+    fn = (function(_this) {
+      return function(t) {
         var e, i, span;
         e = document.createElement("div");
         t = t.replace(/[<>&;"']/g, "");
@@ -113,16 +128,20 @@ this.Publish = class Publish {
         i = document.createElement("i");
         i.classList.add("fa");
         i.classList.add("fa-times-circle");
-        i.addEventListener("click", () => {
-          return this.removeTag(t);
+        i.addEventListener("click", function() {
+          return _this.removeTag(t);
         });
         e.appendChild(i);
         return list.appendChild(e);
-      })(t);
+      };
+    })(this);
+    for (j = 0, len = ref.length; j < len; j++) {
+      t = ref[j];
+      fn(t);
     }
-  }
+  };
 
-  removeTag(t) {
+  Publish.prototype.removeTag = function(t) {
     var tags;
     tags = this.app.project.tags;
     if (tags.indexOf(t) >= 0) {
@@ -131,13 +150,15 @@ this.Publish = class Publish {
         name: "set_project_tags",
         project: this.app.project.id,
         tags: tags
-      }, (msg) => {
-        return this.updateTags();
-      });
+      }, (function(_this) {
+        return function(msg) {
+          return _this.updateTags();
+        };
+      })(this));
     }
-  }
+  };
 
-  addTags(value) {
+  Publish.prototype.addTags = function(value) {
     var change, j, len, tags, v;
     tags = this.app.project.tags;
     value = value.toLowerCase().split(",");
@@ -155,21 +176,26 @@ this.Publish = class Publish {
         name: "set_project_tags",
         project: this.app.project.id,
         tags: tags
-      }, (msg) => {
-        this.updateTags();
-        return this.tags_validator.reset();
-      });
+      }, (function(_this) {
+        return function(msg) {
+          _this.updateTags();
+          return _this.tags_validator.reset();
+        };
+      })(this));
     }
-  }
+  };
 
-  projectUpdate(type) {
+  Publish.prototype.projectUpdate = function(type) {
     switch (type) {
       case "tags":
         return this.updateTags();
     }
-  }
+  };
 
-  checkDescriptionSave(force = false) {
+  Publish.prototype.checkDescriptionSave = function(force) {
+    if (force == null) {
+      force = false;
+    }
     if (this.description_save > 0 && (Date.now() > this.description_save || force)) {
       this.description_save = 0;
       this.app.project.description = document.querySelector("#publish-box-textarea").value;
@@ -178,11 +204,13 @@ this.Publish = class Publish {
         project: this.app.project.id,
         option: "description",
         value: document.querySelector("#publish-box-textarea").value
-      }, (msg) => {});
+      }, (function(_this) {
+        return function(msg) {};
+      })(this));
     }
-  }
+  };
 
-  setProjectPublic(pub) {
+  Publish.prototype.setProjectPublic = function(pub) {
     if (pub && !this.app.user.flags["validated"]) {
       return;
     }
@@ -195,22 +223,26 @@ this.Publish = class Publish {
     this.checkDescriptionSave(true);
     this.sendProjectPublic(pub);
     return this.updateCheckList();
-  }
+  };
 
-  sendProjectPublic(pub) {
+  Publish.prototype.sendProjectPublic = function(pub) {
     if (this.app.project != null) {
       return this.app.client.sendRequest({
         name: "set_project_public",
         project: this.app.project.id,
-        public: pub
-      }, (msg) => {
-        if (msg.public != null) {
-          this.app.project.public = msg.public;
-          this.app.project.notifyListeners("public");
-          return this.loadProject(this.app.project);
-        }
-      });
+        "public": pub
+      }, (function(_this) {
+        return function(msg) {
+          if (msg["public"] != null) {
+            _this.app.project["public"] = msg["public"];
+            _this.app.project.notifyListeners("public");
+            return _this.loadProject(_this.app.project);
+          }
+        };
+      })(this));
     }
-  }
+  };
 
-};
+  return Publish;
+
+})();

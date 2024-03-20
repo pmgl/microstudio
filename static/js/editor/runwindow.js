@@ -1,60 +1,90 @@
-this.RunWindow = class RunWindow {
-  constructor(app) {
+this.RunWindow = (function() {
+  function RunWindow(app) {
     this.app = app;
-    this.app.appui.setAction("run-button", () => {
-      return this.play();
-    });
-    this.app.appui.setAction("pause-button", () => {
-      return this.pause();
-    });
-    this.app.appui.setAction("reload-button", () => {
-      return this.reload();
-    });
-    this.app.appui.setAction("run-button-win", () => {
-      return this.play();
-    });
-    this.app.appui.setAction("pause-button-win", () => {
-      return this.pause();
-    });
-    this.app.appui.setAction("reload-button-win", () => {
-      return this.reload();
-    });
-    this.app.appui.setAction("detach-button", () => {
-      return this.detach();
-    });
-    this.app.appui.setAction("qrcode-button", () => {
-      return this.showQRCode();
-    });
-    this.app.appui.setAction("take-picture-button", () => {
-      return this.takePicture();
-    });
-    this.app.appui.setAction("step-forward-button", () => {
-      return this.stepForward();
-    });
-    this.app.appui.setAction("step-forward-button-win", () => {
-      return this.stepForward();
-    });
+    this.app.appui.setAction("run-button", (function(_this) {
+      return function() {
+        return _this.play();
+      };
+    })(this));
+    this.app.appui.setAction("pause-button", (function(_this) {
+      return function() {
+        return _this.pause();
+      };
+    })(this));
+    this.app.appui.setAction("reload-button", (function(_this) {
+      return function() {
+        return _this.reload();
+      };
+    })(this));
+    this.app.appui.setAction("run-button-win", (function(_this) {
+      return function() {
+        return _this.play();
+      };
+    })(this));
+    this.app.appui.setAction("pause-button-win", (function(_this) {
+      return function() {
+        return _this.pause();
+      };
+    })(this));
+    this.app.appui.setAction("reload-button-win", (function(_this) {
+      return function() {
+        return _this.reload();
+      };
+    })(this));
+    this.app.appui.setAction("detach-button", (function(_this) {
+      return function() {
+        return _this.detach();
+      };
+    })(this));
+    this.app.appui.setAction("qrcode-button", (function(_this) {
+      return function() {
+        return _this.showQRCode();
+      };
+    })(this));
+    this.app.appui.setAction("take-picture-button", (function(_this) {
+      return function() {
+        return _this.takePicture();
+      };
+    })(this));
+    this.app.appui.setAction("step-forward-button", (function(_this) {
+      return function() {
+        return _this.stepForward();
+      };
+    })(this));
+    this.app.appui.setAction("step-forward-button-win", (function(_this) {
+      return function() {
+        return _this.stepForward();
+      };
+    })(this));
     if (window.ms_standalone) {
       document.getElementById("qrcode-button").style.display = "none";
     }
-    this.app.appui.setAction("clear-button", () => {
-      return this.clear();
-    });
-    this.app.appui.setAction("console-options-button", () => {
-      return this.toggleConsoleOptions();
-    });
+    this.app.appui.setAction("clear-button", (function(_this) {
+      return function() {
+        return _this.clear();
+      };
+    })(this));
+    this.app.appui.setAction("console-options-button", (function(_this) {
+      return function() {
+        return _this.toggleConsoleOptions();
+      };
+    })(this));
     this.rulercanvas = new RulerCanvas(this.app);
-    window.addEventListener("resize", () => {
-      return this.windowResized();
-    });
+    window.addEventListener("resize", (function(_this) {
+      return function() {
+        return _this.windowResized();
+      };
+    })(this));
     this.terminal = new Terminal(this);
-    window.addEventListener("message", (msg) => {
-      var iframe;
-      iframe = document.getElementById("runiframe");
-      if ((iframe != null) && msg.source === iframe.contentWindow) {
-        return this.messageReceived(msg.data);
-      }
-    });
+    window.addEventListener("message", (function(_this) {
+      return function(msg) {
+        var iframe;
+        iframe = document.getElementById("runiframe");
+        if ((iframe != null) && msg.source === iframe.contentWindow) {
+          return _this.messageReceived(msg.data);
+        }
+      };
+    })(this));
     this.command_table = {};
     this.command_id = 0;
     this.floating_window = new FloatingWindow(this.app, "run-window", this);
@@ -66,23 +96,31 @@ this.RunWindow = class RunWindow {
     this.server_bar = new ServerBar(this.app);
   }
 
-  initWarnings() {
-    document.getElementById("console-options-warning-undefined").addEventListener("change", () => {
-      this.warning_undefined = document.getElementById("console-options-warning-undefined").checked;
-      return localStorage.setItem("console_warning_undefined", this.warning_undefined);
-    });
-    document.getElementById("console-options-warning-nonfunction").addEventListener("change", () => {
-      this.warning_nonfunction = document.getElementById("console-options-warning-nonfunction").checked;
-      return localStorage.setItem("console_warning_nonfunction", this.warning_nonfunction);
-    });
-    document.getElementById("console-options-warning-assign").addEventListener("change", () => {
-      this.warning_assign = document.getElementById("console-options-warning-assign").checked;
-      return localStorage.setItem("console_warning_assign", this.warning_assign);
-    });
-    document.getElementById("console-options-warning-condition").addEventListener("change", () => {
-      this.warning_condition = document.getElementById("console-options-warning-condition").checked;
-      return localStorage.setItem("console_warning_condition", this.warning_condition);
-    });
+  RunWindow.prototype.initWarnings = function() {
+    document.getElementById("console-options-warning-undefined").addEventListener("change", (function(_this) {
+      return function() {
+        _this.warning_undefined = document.getElementById("console-options-warning-undefined").checked;
+        return localStorage.setItem("console_warning_undefined", _this.warning_undefined);
+      };
+    })(this));
+    document.getElementById("console-options-warning-nonfunction").addEventListener("change", (function(_this) {
+      return function() {
+        _this.warning_nonfunction = document.getElementById("console-options-warning-nonfunction").checked;
+        return localStorage.setItem("console_warning_nonfunction", _this.warning_nonfunction);
+      };
+    })(this));
+    document.getElementById("console-options-warning-assign").addEventListener("change", (function(_this) {
+      return function() {
+        _this.warning_assign = document.getElementById("console-options-warning-assign").checked;
+        return localStorage.setItem("console_warning_assign", _this.warning_assign);
+      };
+    })(this));
+    document.getElementById("console-options-warning-condition").addEventListener("change", (function(_this) {
+      return function() {
+        _this.warning_condition = document.getElementById("console-options-warning-condition").checked;
+        return localStorage.setItem("console_warning_condition", _this.warning_condition);
+      };
+    })(this));
     this.warning_undefined = localStorage.getItem("console_warning_undefined") === "true" || false;
     this.warning_nonfunction = localStorage.getItem("console_warning_nonfunction") !== "false";
     this.warning_assign = localStorage.getItem("console_warning_assign") !== "false";
@@ -91,9 +129,9 @@ this.RunWindow = class RunWindow {
     document.getElementById("console-options-warning-nonfunction").checked = this.warning_nonfunction;
     document.getElementById("console-options-warning-assign").checked = this.warning_assign;
     return document.getElementById("console-options-warning-condition").checked = this.warning_condition;
-  }
+  };
 
-  detach() {
+  RunWindow.prototype.detach = function() {
     var b, device, wincontent;
     if (this.app.project.networking) {
       return new FloatingRunWindow(this.app);
@@ -117,13 +155,13 @@ this.RunWindow = class RunWindow {
         return document.getElementById("runtime").style.display = "none";
       }
     }
-  }
+  };
 
-  floatingWindowResized() {
+  RunWindow.prototype.floatingWindowResized = function() {
     return this.windowResized();
-  }
+  };
 
-  floatingWindowClosed() {
+  RunWindow.prototype.floatingWindowClosed = function() {
     var container, device;
     if (!this.detached) {
       return;
@@ -140,24 +178,25 @@ this.RunWindow = class RunWindow {
       document.getElementById("runtime").style.display = "block";
       return this.windowResized();
     }
-  }
+  };
 
-  run() {
+  RunWindow.prototype.run = function() {
     var code, device, origin, src, url;
     src = this.app.editor.editor.getValue();
     device = document.getElementById("device");
-    code = this.app.project.public ? "" : `${this.app.project.code}/`;
-    url = `${location.origin.replace(".dev", ".io")}/${this.app.project.owner.nick}/${this.app.project.slug}/${code}`;
-    origin = `${location.origin.replace(".dev", ".io")}`;
-    return this.app.project.savePendingChanges(() => {
-      device.innerHTML = `<iframe id='runiframe' allow='autoplay ${origin}; gamepad ${origin}; midi ${origin}; camera ${origin}; microphone ${origin}' src='${url}?debug'></iframe>`;
-      //document.getElementById("runiframe").focus()
-      this.windowResized();
-      return document.getElementById("take-picture-button").style.display = "inline-block";
-    });
-  }
+    code = this.app.project["public"] ? "" : this.app.project.code + "/";
+    url = (location.origin.replace(".dev", ".io")) + "/" + this.app.project.owner.nick + "/" + this.app.project.slug + "/" + code;
+    origin = "" + (location.origin.replace(".dev", ".io"));
+    return this.app.project.savePendingChanges((function(_this) {
+      return function() {
+        device.innerHTML = "<iframe id='runiframe' allow='autoplay " + origin + "; gamepad " + origin + "; midi " + origin + "; camera " + origin + "; microphone " + origin + "' src='" + url + "?debug'></iframe>";
+        _this.windowResized();
+        return document.getElementById("take-picture-button").style.display = "inline-block";
+      };
+    })(this));
+  };
 
-  reload() {
+  RunWindow.prototype.reload = function() {
     this.terminal.clear();
     this.run();
     document.getElementById("run-button").classList.add("selected");
@@ -169,9 +208,9 @@ this.RunWindow = class RunWindow {
     document.getElementById("step-forward-button").style.display = "none";
     document.getElementById("step-forward-button-win").style.display = "none";
     return this.propagate("reload");
-  }
+  };
 
-  play() {
+  RunWindow.prototype.play = function() {
     if (document.getElementById("runiframe") != null) {
       return this.resume();
     } else {
@@ -186,9 +225,9 @@ this.RunWindow = class RunWindow {
       document.getElementById("step-forward-button-win").style.display = "none";
       return this.propagate("play");
     }
-  }
+  };
 
-  pause() {
+  RunWindow.prototype.pause = function() {
     var e;
     e = document.getElementById("runiframe");
     if (e != null) {
@@ -205,19 +244,19 @@ this.RunWindow = class RunWindow {
     document.getElementById("step-forward-button").style.display = "inline-block";
     document.getElementById("step-forward-button-win").style.display = "inline-block";
     return this.propagate("pause");
-  }
+  };
 
-  isPaused() {
+  RunWindow.prototype.isPaused = function() {
     return document.getElementById("pause-button").classList.contains("selected") || document.getElementById("pause-button-win").classList.contains("selected");
-  }
+  };
 
-  stepForward() {
+  RunWindow.prototype.stepForward = function() {
     return this.postMessage({
       name: "step_forward"
     });
-  }
+  };
 
-  resume() {
+  RunWindow.prototype.resume = function() {
     var e;
     e = document.getElementById("runiframe");
     if (e != null) {
@@ -235,9 +274,9 @@ this.RunWindow = class RunWindow {
     document.getElementById("step-forward-button").style.display = "none";
     document.getElementById("step-forward-button-win").style.display = "none";
     return this.propagate("resume");
-  }
+  };
 
-  resetButtons() {
+  RunWindow.prototype.resetButtons = function() {
     document.getElementById("run-button").classList.remove("selected");
     document.getElementById("pause-button").classList.add("selected");
     document.getElementById("reload-button").classList.add("selected");
@@ -246,13 +285,13 @@ this.RunWindow = class RunWindow {
     document.getElementById("reload-button-win").classList.add("selected");
     document.getElementById("step-forward-button").style.display = "none";
     return document.getElementById("step-forward-button-win").style.display = "none";
-  }
+  };
 
-  clear() {
+  RunWindow.prototype.clear = function() {
     return this.terminal.clear();
-  }
+  };
 
-  toggleConsoleOptions() {
+  RunWindow.prototype.toggleConsoleOptions = function() {
     var div;
     div = document.getElementById("console-options");
     if (div.getBoundingClientRect().height <= 41) {
@@ -262,31 +301,35 @@ this.RunWindow = class RunWindow {
       div.style.height = "0px";
       document.getElementById("terminal-view").style.top = "40px";
     }
-    return setTimeout((() => {
-      return this.app.appui.runtime_splitbar.update();
-    }), 600);
-  }
+    return setTimeout(((function(_this) {
+      return function() {
+        return _this.app.appui.runtime_splitbar.update();
+      };
+    })(this)), 600);
+  };
 
-  updateCode(file, src) {
+  RunWindow.prototype.updateCode = function(file, src) {
     var iframe;
     if (this.error_check != null) {
       clearTimeout(this.error_check);
     }
     this.error_buffer = [];
-    this.error_check = setTimeout((() => {
-      var err, i, len, ref, results;
-      this.error_check = null;
-      if (this.terminal.error_lines > 0) {
-        this.terminal.clear();
-      }
-      ref = this.error_buffer;
-      results = [];
-      for (i = 0, len = ref.length; i < len; i++) {
-        err = ref[i];
-        results.push(this.logError(err));
-      }
-      return results;
-    }), 3000);
+    this.error_check = setTimeout(((function(_this) {
+      return function() {
+        var err, i, len, ref, results;
+        _this.error_check = null;
+        if (_this.terminal.error_lines > 0) {
+          _this.terminal.clear();
+        }
+        ref = _this.error_buffer;
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          err = ref[i];
+          results.push(_this.logError(err));
+        }
+        return results;
+      };
+    })(this)), 3000);
     src = this.app.editor.editor.getValue();
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -296,9 +339,9 @@ this.RunWindow = class RunWindow {
         code: src
       }), "*");
     }
-  }
+  };
 
-  updateSprite(name) {
+  RunWindow.prototype.updateSprite = function(name) {
     var data, iframe, properties, sprite;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -317,9 +360,9 @@ this.RunWindow = class RunWindow {
         }), "*");
       }
     }
-  }
+  };
 
-  updateMap(name) {
+  RunWindow.prototype.updateMap = function(name) {
     var data, iframe, map;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -333,9 +376,9 @@ this.RunWindow = class RunWindow {
         }), "*");
       }
     }
-  }
+  };
 
-  windowResized() {
+  RunWindow.prototype.windowResized = function() {
     var c, ch, cw, h, r, ratio, w;
     r = document.getElementById("device");
     c = document.getElementById("device").firstChild;
@@ -350,8 +393,6 @@ this.RunWindow = class RunWindow {
       "2x1": 2 / 1,
       "1x1": 1 / 1
     }[this.app.project.aspect];
-    //if not ratio? and @app.project.orientation in ["portrait","landscape"]
-    //  ratio = 16/9
     if (ratio != null) {
       switch (this.app.project.orientation) {
         case "portrait":
@@ -380,14 +421,14 @@ this.RunWindow = class RunWindow {
       h = ch;
     }
     if (c != null) {
-      c.style["margin-top"] = "0px"; //{}Math.round((ch-h)/2)+"px"
+      c.style["margin-top"] = "0px";
       c.style.width = Math.round(cw) + "px";
       c.style.height = Math.round(ch) + "px";
     }
     return this.rulercanvas.resize(Math.round(w), Math.round(h), Math.round((ch - h) / 2));
-  }
+  };
 
-  logError(err) {
+  RunWindow.prototype.logError = function(err) {
     var error, text;
     if (this.error_check != null) {
       this.error_buffer.push(err);
@@ -439,13 +480,12 @@ this.RunWindow = class RunWindow {
         return this.terminal.error(error);
       }
     } else {
-      return this.terminal.error(`${error}`);
+      return this.terminal.error("" + error);
     }
-  }
+  };
 
-  annotateWarning(warning, info) {
+  RunWindow.prototype.annotateWarning = function(warning, info) {
     var source;
-    //    if @app.editor.selected_source == info.file
     source = this.app.project.getSource(info.file);
     if (source != null) {
       if (source.annotations == null) {
@@ -459,9 +499,9 @@ this.RunWindow = class RunWindow {
       });
       return this.app.project.notifyListeners("annotations");
     }
-  }
+  };
 
-  messageReceived(msg) {
+  RunWindow.prototype.messageReceived = function(msg) {
     var c, e, err, iframe, source;
     try {
       msg = JSON.parse(msg);
@@ -489,7 +529,6 @@ this.RunWindow = class RunWindow {
           source = this.app.project.getSource(msg.file);
           if (source != null) {
             if ((source.annotations != null) && source.annotations.length > 0) {
-              // @terminal.clear()
               source.annotations = [];
               return this.app.project.notifyListeners("annotations");
             }
@@ -549,9 +588,9 @@ this.RunWindow = class RunWindow {
     } catch (error1) {
       err = error1;
     }
-  }
+  };
 
-  runCommand(command, output_callback) {
+  RunWindow.prototype.runCommand = function(command, output_callback) {
     var iframe, parser;
     this.nesting = 0;
     if (command.trim().length === 0) {
@@ -595,9 +634,9 @@ this.RunWindow = class RunWindow {
       };
       return this.play();
     }
-  }
+  };
 
-  projectOpened() {
+  RunWindow.prototype.projectOpened = function() {
     var iframe;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -607,9 +646,9 @@ this.RunWindow = class RunWindow {
     this.updateServerBar();
     this.app.appui.server_splitbar.update();
     return this.app.appui.debug_splitbar.update();
-  }
+  };
 
-  updateServerBar() {
+  RunWindow.prototype.updateServerBar = function() {
     if ((this.app.project != null) && this.app.project.networking) {
       document.getElementById("runtime").classList.add("server-open");
       document.querySelector("#detach-button i").classList.remove("fa-window-restore");
@@ -620,9 +659,9 @@ this.RunWindow = class RunWindow {
       document.querySelector("#detach-button i").classList.remove("fa-table");
     }
     return this.server_bar.update(this.app.project);
-  }
+  };
 
-  projectClosed() {
+  RunWindow.prototype.projectClosed = function() {
     var i, iframe, len, list, w;
     this.floating_window.close();
     iframe = document.getElementById("runiframe");
@@ -641,16 +680,16 @@ this.RunWindow = class RunWindow {
     }
     document.querySelector("#runtime-server-view").innerHTML = "";
     this.app.appui.server_splitbar.closed1 = true;
-  }
+  };
 
-  hideQRCode() {
+  RunWindow.prototype.hideQRCode = function() {
     if (this.qrcode != null) {
       document.body.removeChild(this.qrcode);
       return this.qrcode = null;
     }
-  }
+  };
 
-  showQRCode() {
+  RunWindow.prototype.showQRCode = function() {
     var qrcode, url;
     if (this.app.project != null) {
       if (this.qrcode != null) {
@@ -659,37 +698,39 @@ this.RunWindow = class RunWindow {
         url = location.origin.replace(".dev", ".io") + "/";
         url += this.app.project.owner.nick + "/";
         url += this.app.project.slug + "/";
-        if (!this.app.project.public) {
+        if (!this.app.project["public"]) {
           url += this.app.project.code + "/";
         }
         return qrcode = QRCode.toDataURL(url, {
           margin: 2,
           scale: 8
-        }, (err, url) => {
-          var img;
-          if ((err == null) && (url != null)) {
-            img = new Image;
-            img.src = url;
-            return img.onload = () => {
-              var b;
-              b = document.getElementById("qrcode-button").getBoundingClientRect();
-              img.style.position = "absolute";
-              img.style.top = `${b.y + b.height + 20}px`;
-              img.style.left = `${Math.min(b.x + b.width / 2 - 132, window.innerWidth - img.width - 10)}px`;
-              img.style["z-index"] = 20;
-              this.qrcode = img;
-              this.qrcode.addEventListener("click", () => {
-                return this.showQRCode();
-              });
-              return document.body.appendChild(this.qrcode);
-            };
-          }
-        });
+        }, (function(_this) {
+          return function(err, url) {
+            var img;
+            if ((err == null) && (url != null)) {
+              img = new Image;
+              img.src = url;
+              return img.onload = function() {
+                var b;
+                b = document.getElementById("qrcode-button").getBoundingClientRect();
+                img.style.position = "absolute";
+                img.style.top = (b.y + b.height + 20) + "px";
+                img.style.left = (Math.min(b.x + b.width / 2 - 132, window.innerWidth - img.width - 10)) + "px";
+                img.style["z-index"] = 20;
+                _this.qrcode = img;
+                _this.qrcode.addEventListener("click", function() {
+                  return _this.showQRCode();
+                });
+                return document.body.appendChild(_this.qrcode);
+              };
+            }
+          };
+        })(this));
       }
     }
-  }
+  };
 
-  takePicture() {
+  RunWindow.prototype.takePicture = function() {
     var iframe;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
@@ -697,24 +738,24 @@ this.RunWindow = class RunWindow {
         name: "take_picture"
       }), "*");
     }
-  }
+  };
 
-  hidePicture() {
+  RunWindow.prototype.hidePicture = function() {
     if (this.picture != null) {
       document.body.removeChild(this.picture);
       return this.picture = null;
     }
-  }
+  };
 
-  showPicture(data) {
+  RunWindow.prototype.showPicture = function(data) {
     var b, button, div, img, save_button, set_button;
     this.hidePicture();
     this.picture = div = document.createElement("div");
     div.classList.add("show-picture");
     div.style.position = "absolute";
     b = document.getElementById("take-picture-button").getBoundingClientRect();
-    div.style.top = `${b.y + b.height + 20}px`;
-    div.style.left = `${Math.min(b.x + b.width / 2 - 180, window.innerWidth - 360 - 10)}px`;
+    div.style.top = (b.y + b.height + 20) + "px";
+    div.style.left = (Math.min(b.x + b.width / 2 - 180, window.innerWidth - 360 - 10)) + "px";
     document.body.appendChild(div);
     img = new Image;
     img.src = data;
@@ -724,88 +765,96 @@ this.RunWindow = class RunWindow {
     save_button = document.createElement("div");
     save_button.innerText = this.app.translator.get("Save");
     save_button.classList.add("save");
-    save_button.addEventListener("click", () => {
-      return this.savePicture(data, save_button);
-    });
+    save_button.addEventListener("click", (function(_this) {
+      return function() {
+        return _this.savePicture(data, save_button);
+      };
+    })(this));
     div.appendChild(save_button);
     div.appendChild(document.createElement("br"));
     set_button = document.createElement("div");
     set_button.innerText = this.app.translator.get("Set as project poster image");
-    set_button.addEventListener("click", () => {
-      return this.setAsPoster(data, set_button);
-    });
+    set_button.addEventListener("click", (function(_this) {
+      return function() {
+        return _this.setAsPoster(data, set_button);
+      };
+    })(this));
     div.appendChild(set_button);
     div.appendChild(document.createElement("br"));
     button = document.createElement("div");
     button.innerText = this.app.translator.get("Close");
     button.classList.add("close");
-    button.addEventListener("click", () => {
-      return this.hidePicture();
-    });
+    button.addEventListener("click", (function(_this) {
+      return function() {
+        return _this.hidePicture();
+      };
+    })(this));
     return div.appendChild(button);
-  }
+  };
 
-  savePicture(data, button) {
+  RunWindow.prototype.savePicture = function(data, button) {
     var link;
     link = document.createElement("a");
     link.setAttribute("href", data);
-    link.setAttribute("download", `${this.app.project.slug}.png`);
+    link.setAttribute("download", this.app.project.slug + ".png");
     link.click();
     return button.style.display = "none";
-  }
+  };
 
-  setAsPoster(data, button) {
+  RunWindow.prototype.setAsPoster = function(data, button) {
     var img;
     button.style.display = "none";
     img = new Image;
     img.src = data;
-    return img.onload = () => {
-      var canvas, h, ih, iw, poster, r, w;
-      canvas = document.createElement("canvas");
-      iw = img.width;
-      ih = img.height;
-      if (iw < ih) {
-        h = Math.min(360, ih);
-        r = h / ih * 1.2;
-        canvas.width = w = h / 9 * 16;
-        canvas.height = h;
-        canvas.getContext("2d").fillStyle = "#000";
-        canvas.getContext("2d").fillRect(0, 0, canvas.width, canvas.height);
-        canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
-      } else {
-        w = Math.min(640, iw, ih / 9 * 16);
-        h = w / 16 * 9;
-        r = Math.max(w / img.width, h / img.height);
-        canvas.width = w;
-        canvas.height = h;
-        canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
-      }
-      data = canvas.toDataURL().split(",")[1];
-      poster = this.app.project.getSprite("poster");
-      return this.app.client.sendRequest({
-        name: "write_project_file",
-        project: this.app.project.id,
-        file: "sprites/poster.png",
-        properties: {
-          frames: 1,
-          fps: 5
-        },
-        content: data
-      }, (msg) => {
-        this.app.project.updateSpriteList();
-        if (poster != null) {
-          return poster.reload();
+    return img.onload = (function(_this) {
+      return function() {
+        var canvas, h, ih, iw, poster, r, w;
+        canvas = document.createElement("canvas");
+        iw = img.width;
+        ih = img.height;
+        if (iw < ih) {
+          h = Math.min(360, ih);
+          r = h / ih * 1.2;
+          canvas.width = w = h / 9 * 16;
+          canvas.height = h;
+          canvas.getContext("2d").fillStyle = "#000";
+          canvas.getContext("2d").fillRect(0, 0, canvas.width, canvas.height);
+          canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
+        } else {
+          w = Math.min(640, iw, ih / 9 * 16);
+          h = w / 16 * 9;
+          r = Math.max(w / img.width, h / img.height);
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext("2d").drawImage(img, w / 2 - r * img.width / 2, h / 2 - r * img.height / 2, img.width * r, img.height * r);
         }
-      });
-    };
-  }
+        data = canvas.toDataURL().split(",")[1];
+        poster = _this.app.project.getSprite("poster");
+        return _this.app.client.sendRequest({
+          name: "write_project_file",
+          project: _this.app.project.id,
+          file: "sprites/poster.png",
+          properties: {
+            frames: 1,
+            fps: 5
+          },
+          content: data
+        }, function(msg) {
+          _this.app.project.updateSpriteList();
+          if (poster != null) {
+            return poster.reload();
+          }
+        });
+      };
+    })(this);
+  };
 
-  hideAll() {
+  RunWindow.prototype.hideAll = function() {
     this.hideQRCode();
     return this.hidePicture();
-  }
+  };
 
-  exit() {
+  RunWindow.prototype.exit = function() {
     this.projectClosed();
     document.getElementById("run-button").classList.remove("selected");
     document.getElementById("pause-button").classList.remove("selected");
@@ -814,25 +863,25 @@ this.RunWindow = class RunWindow {
     document.getElementById("pause-button-win").classList.remove("selected");
     document.getElementById("reload-button-win").classList.remove("selected");
     return this.propagate("exit");
-  }
+  };
 
-  postMessage(data) {
+  RunWindow.prototype.postMessage = function(data) {
     var iframe;
     iframe = document.getElementById("runiframe");
     if (iframe != null) {
       return iframe.contentWindow.postMessage(JSON.stringify(data), "*");
     }
-  }
+  };
 
-  addMessageListener(name, callback) {
+  RunWindow.prototype.addMessageListener = function(name, callback) {
     return this.message_listeners[name] = callback;
-  }
+  };
 
-  addListener(callback) {
+  RunWindow.prototype.addListener = function(callback) {
     return this.listeners.push(callback);
-  }
+  };
 
-  propagate(event) {
+  RunWindow.prototype.propagate = function(event) {
     var i, l, len, ref, results;
     ref = this.listeners;
     results = [];
@@ -841,25 +890,33 @@ this.RunWindow = class RunWindow {
       results.push(l(event));
     }
     return results;
-  }
+  };
 
-};
+  return RunWindow;
 
-this.ServerBar = class ServerBar {
-  constructor(app) {
+})();
+
+this.ServerBar = (function() {
+  function ServerBar(app) {
     this.app = app;
-    document.getElementById("start-server-button").addEventListener("click", () => {
-      return this.startServer(true);
-    });
-    document.getElementById("start-server-tab-button").addEventListener("click", () => {
-      return this.startServer(false);
-    });
-    document.getElementById("stop-server-button").addEventListener("click", () => {
-      return this.stopServer();
-    });
+    document.getElementById("start-server-button").addEventListener("click", (function(_this) {
+      return function() {
+        return _this.startServer(true);
+      };
+    })(this));
+    document.getElementById("start-server-tab-button").addEventListener("click", (function(_this) {
+      return function() {
+        return _this.startServer(false);
+      };
+    })(this));
+    document.getElementById("stop-server-button").addEventListener("click", (function(_this) {
+      return function() {
+        return _this.stopServer();
+      };
+    })(this));
   }
 
-  update(project) {
+  ServerBar.prototype.update = function(project) {
     this.project = project;
     if ((this.project != null) && this.project.networking) {
       if (this.watcher != null) {
@@ -871,9 +928,9 @@ this.ServerBar = class ServerBar {
       delete this.watcher;
     }
     return this.forced_stop = false;
-  }
+  };
 
-  setStatus(status, message) {
+  ServerBar.prototype.setStatus = function(status, message) {
     if (status === "running" && !this.forced_stop) {
       document.querySelector("#serverbar .status").classList.add("running");
       document.getElementById("start-server-button").style.display = "none";
@@ -886,16 +943,16 @@ this.ServerBar = class ServerBar {
       document.getElementById("stop-server-button").style.display = "none";
     }
     return document.querySelector("#serverbar .status-info").innerText = message;
-  }
+  };
 
-  startServer(embedded) {
+  ServerBar.prototype.startServer = function(embedded) {
     var iframe, parent, url;
     this.forced_stop = false;
     if (this.app.project != null) {
       url = dev_domain + "/";
       url += this.app.project.owner.nick + "/";
       url += this.app.project.slug + "/";
-      if (!this.app.project.public) {
+      if (!this.app.project["public"]) {
         url += this.app.project.code + "/";
       }
       url += "?server";
@@ -904,16 +961,16 @@ this.ServerBar = class ServerBar {
       } else {
         parent = document.getElementById("runtime-server-view");
         parent.style.overflow = "hidden";
-        iframe = `<iframe src="${url}" style="position: absolute ; top: 0 ; left: 0 ; width: 100% ; height: 100% ; border: none ;"></iframe>`;
+        iframe = "<iframe src=\"" + url + "\" style=\"position: absolute ; top: 0 ; left: 0 ; width: 100% ; height: 100% ; border: none ;\"></iframe>";
         parent.innerHTML = iframe;
         this.app.appui.server_splitbar.closed1 = false;
         this.app.appui.server_splitbar.update();
         return this.app.appui.debug_splitbar.update();
       }
     }
-  }
+  };
 
-  stopServer() {
+  ServerBar.prototype.stopServer = function() {
     document.getElementById("runtime-server-view").innerHTML = "";
     this.app.appui.server_splitbar.closed1 = true;
     this.app.appui.server_splitbar.update();
@@ -923,22 +980,26 @@ this.ServerBar = class ServerBar {
       this.server_tab = null;
     }
     return this.forced_stop = true;
-  }
+  };
 
-};
+  return ServerBar;
 
-this.ServerWatcher = class ServerWatcher {
-  constructor(app, server_bar) {
+})();
+
+this.ServerWatcher = (function() {
+  function ServerWatcher(app, server_bar) {
     this.app = app;
     this.server_bar = server_bar;
     this.project = this.app.project;
     this.watch();
-    this.interval = setInterval((() => {
-      return this.watch();
-    }), 1000);
+    this.interval = setInterval(((function(_this) {
+      return function() {
+        return _this.watch();
+      };
+    })(this)), 1000);
   }
 
-  watch() {
+  ServerWatcher.prototype.watch = function() {
     var err;
     if ((this.socket != null) && this.socket.readyState <= 1) {
       if (this.socket.readyState === 1) {
@@ -953,50 +1014,54 @@ this.ServerWatcher = class ServerWatcher {
         }
         delete this.socket;
       }
-      return this.getRelay((address) => {
-        return this.connect(address);
-      });
+      return this.getRelay((function(_this) {
+        return function(address) {
+          return _this.connect(address);
+        };
+      })(this));
     }
-  }
+  };
 
-  sendCheck() {
+  ServerWatcher.prototype.sendCheck = function() {
     var err;
     try {
       return this.socket.send(JSON.stringify({
         name: "mp_server_status",
-        server_id: `${this.project.owner.nick}/${this.project.slug}`
+        server_id: this.project.owner.nick + "/" + this.project.slug
       }));
     } catch (error1) {
       err = error1;
       return console.error(err);
     }
-  }
+  };
 
-  getRelay(callback) {
+  ServerWatcher.prototype.getRelay = function(callback) {
     if (this.relay != null) {
       return callback(this.relay);
     }
     return this.app.client.sendRequest({
       name: "get_relay_server"
-    }, (msg) => {
-      var address;
-      if (msg.name === "error") {
-        return this.server_bar.setStatus("error", msg.error);
-      } else {
-        address = msg.address;
-        if (address === "self") {
-          address = location.origin.replace("http", "ws");
+    }, (function(_this) {
+      return function(msg) {
+        var address;
+        if (msg.name === "error") {
+          return _this.server_bar.setStatus("error", msg.error);
+        } else {
+          address = msg.address;
+          if (address === "self") {
+            address = location.origin.replace("http", "ws");
+          }
+          return callback(_this.relay = address);
         }
-        return callback(this.relay = address);
-      }
-    });
-  }
+      };
+    })(this));
+  };
 
-  stop() {
+  ServerWatcher.prototype.stop = function() {
     return clearInterval(this.interval);
-  }
+  };
 
-  connect(address) {
+  ServerWatcher.prototype.connect = function(address) {
     var err;
     try {
       this.socket = new WebSocket(address);
@@ -1004,39 +1069,47 @@ this.ServerWatcher = class ServerWatcher {
       err = error1;
       this.server_bar.setStatus("error", this.app.translator.get("Relay service unreachable"));
     }
-    this.socket.onerror = () => {
-      return this.server_bar.setStatus("error", this.app.translator.get("Relay service unreachable"));
-    };
-    this.socket.onmessage = (msg) => {
-      console.info("received: " + msg.data);
-      try {
-        msg = JSON.parse(msg.data);
-        if (msg.name === "mp_server_status") {
-          if (msg.running) {
-            return this.server_bar.setStatus("running", this.app.translator.get("Running"));
-          } else {
-            return this.server_bar.setStatus("stopped", this.app.translator.get("Server is not running"));
+    this.socket.onerror = (function(_this) {
+      return function() {
+        return _this.server_bar.setStatus("error", _this.app.translator.get("Relay service unreachable"));
+      };
+    })(this);
+    this.socket.onmessage = (function(_this) {
+      return function(msg) {
+        console.info("received: " + msg.data);
+        try {
+          msg = JSON.parse(msg.data);
+          if (msg.name === "mp_server_status") {
+            if (msg.running) {
+              return _this.server_bar.setStatus("running", _this.app.translator.get("Running"));
+            } else {
+              return _this.server_bar.setStatus("stopped", _this.app.translator.get("Server is not running"));
+            }
           }
+        } catch (error1) {
+          err = error1;
+          return console.error(err);
         }
-      } catch (error1) {
-        err = error1;
-        return console.error(err);
-      }
-    };
-    return this.socket.onopen = () => {
-      return this.sendCheck();
-    };
-  }
+      };
+    })(this);
+    return this.socket.onopen = (function(_this) {
+      return function() {
+        return _this.sendCheck();
+      };
+    })(this);
+  };
 
-};
+  return ServerWatcher;
 
-this.FloatingRunWindow = class FloatingRunWindow {
-  constructor(app) {
+})();
+
+this.FloatingRunWindow = (function() {
+  function FloatingRunWindow(app) {
     var bounds, code, div, height, id, left, origin, parent, top, url, width;
     this.app = app;
-    code = this.app.project.public ? "" : `${this.app.project.code}/`;
-    url = `${location.origin.replace(".dev", ".io")}/${this.app.project.owner.nick}/${this.app.project.slug}/${code}`;
-    origin = `${location.origin.replace(".dev", ".io")}`;
+    code = this.app.project["public"] ? "" : this.app.project.code + "/";
+    url = (location.origin.replace(".dev", ".io")) + "/" + this.app.project.owner.nick + "/" + this.app.project.slug + "/" + code;
+    origin = "" + (location.origin.replace(".dev", ".io"));
     bounds = document.querySelector("#device").getBoundingClientRect();
     if (FloatingRunWindow.offset == null) {
       FloatingRunWindow.offset = 0;
@@ -1053,23 +1126,29 @@ this.FloatingRunWindow = class FloatingRunWindow {
     }
     FloatingRunWindow.offset = (FloatingRunWindow.offset + 40) % 200;
     div = document.createElement("div");
-    div.style = `top: ${top}px; left: ${left}px; width: ${width}px; height: ${height}px; display: block; z-index: 11;`;
+    div.style = "top: " + top + "px; left: " + left + "px; width: " + width + "px; height: " + height + "px; display: block; z-index: 11;";
     div.classList.add("floating-window");
     div.classList.add("fw-run");
     div.style.position = "absolute";
     div.id = id = "fw-run-" + FloatingRunWindow.id++;
-    div.innerHTML = `<div class="content" style="padding: 1px ; top: 0px ; bottom: 0px ; left: 0 ; right: 0 ;">\n  <iframe allow="autoplay ${origin}; gamepad ${origin}; midi ${origin}" src="${url}?debug" style="width: 100% ; height: 100% ; border: none ;" class=""></iframe>\n</div>\n<div class="titlebar" style="background: rgba(128,128,128,.25)">\n  <div class="title">Client ${FloatingRunWindow.id - 1}</div>\n  <i class="minify fas fa-times-circle" style="background:none;"></i>\n</div>\n<div class="navigation" style="background: none ; pointer-events: none ;"><i class="resize fa fa-grip-horizontal" style="pointer-events: auto ; color: rgba(255,255,255,.5) ; background: rgba(0,0,0,.25) ; border-radius: 40px ; right: -5px ; bottom: -5px ;"></i></div>`;
+    div.innerHTML = "<div class=\"content\" style=\"padding: 1px ; top: 0px ; bottom: 0px ; left: 0 ; right: 0 ;\">\n  <iframe allow=\"autoplay " + origin + "; gamepad " + origin + "; midi " + origin + "\" src=\"" + url + "?debug\" style=\"width: 100% ; height: 100% ; border: none ;\" class=\"\"></iframe>\n</div>\n<div class=\"titlebar\" style=\"background: rgba(128,128,128,.25)\">\n  <div class=\"title\">Client " + (FloatingRunWindow.id - 1) + "</div>\n  <i class=\"minify fas fa-times-circle\" style=\"background:none;\"></i>\n</div>\n<div class=\"navigation\" style=\"background: none ; pointer-events: none ;\"><i class=\"resize fa fa-grip-horizontal\" style=\"pointer-events: auto ; color: rgba(255,255,255,.5) ; background: rgba(0,0,0,.25) ; border-radius: 40px ; right: -5px ; bottom: -5px ;\"></i></div>";
     parent = document.querySelector("#runtime .devicecontainer");
     parent.appendChild(div);
-    div.querySelector(".titlebar").addEventListener("mouseup", () => {
-      console.info("focusing window");
-      return div.querySelector("iframe").contentWindow.focus();
-    });
+    div.querySelector(".titlebar").addEventListener("mouseup", (function(_this) {
+      return function() {
+        console.info("focusing window");
+        return div.querySelector("iframe").contentWindow.focus();
+      };
+    })(this));
     new FloatingWindow(this.app, id, {
-      floatingWindowClosed: () => {
-        return parent.removeChild(div);
-      }
+      floatingWindowClosed: (function(_this) {
+        return function() {
+          return parent.removeChild(div);
+        };
+      })(this)
     });
   }
 
-};
+  return FloatingRunWindow;
+
+})();

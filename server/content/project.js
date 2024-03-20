@@ -4,8 +4,8 @@ Comments = require(__dirname + "/comments.js");
 
 fs = require("fs");
 
-ProjectLink = class ProjectLink {
-  constructor(project, data) {
+ProjectLink = (function() {
+  function ProjectLink(project, data) {
     this.project = project;
     this.user = this.project.content.users[data.user];
     this.accepted = data.accepted;
@@ -14,22 +14,24 @@ ProjectLink = class ProjectLink {
     }
   }
 
-  accept() {
+  ProjectLink.prototype.accept = function() {
     if (!this.accepted) {
       this.accepted = true;
       return this.project.saveUsers();
     }
-  }
+  };
 
-  remove() {
+  ProjectLink.prototype.remove = function() {
     this.project.removeUser(this);
     return this.user.removeLink(this.project.id);
-  }
+  };
 
-};
+  return ProjectLink;
 
-this.Project = class Project {
-  constructor(content, record) {
+})();
+
+this.Project = (function() {
+  function Project(content, record) {
     var data, j, len, link, ref, u;
     this.content = content;
     this.record = record;
@@ -51,7 +53,7 @@ this.Project = class Project {
       this.flags = data.flags || {};
       this.description = data.description || "";
       this.likes = 0;
-      this.public = data.public;
+      this["public"] = data["public"];
       this.unlisted = data.unlisted;
       this.date_created = data.date_created;
       this.last_modified = data.last_modified;
@@ -96,7 +98,7 @@ this.Project = class Project {
     }
   }
 
-  createCode() {
+  Project.prototype.createCode = function() {
     var code, i, j, letters;
     letters = "ABCDEFGHJKMNPRSTUVWXYZ23456789";
     code = "";
@@ -105,36 +107,39 @@ this.Project = class Project {
     }
     this.set("code", code);
     return code;
-  }
+  };
 
-  touch() {
+  Project.prototype.touch = function() {
     var data;
     this.last_modified = Date.now();
     data = this.record.get();
     data.last_modified = this.last_modified;
     return this.record.set(data);
-  }
+  };
 
-  set(prop, value, update_local = true) {
+  Project.prototype.set = function(prop, value, update_local) {
     var data;
+    if (update_local == null) {
+      update_local = true;
+    }
     data = this.record.get();
     data[prop] = value;
     this.record.set(data);
     if (update_local) {
       return this[prop] = value;
     }
-  }
+  };
 
-  setTitle(title) {
+  Project.prototype.setTitle = function(title) {
     if ((title != null) && title.trim().length > 0 && title.length < 50) {
       this.set("title", title);
       return true;
     } else {
       return false;
     }
-  }
+  };
 
-  setSlug(slug) {
+  Project.prototype.setSlug = function(slug) {
     if ((slug != null) && /^([a-z0-9_][a-z0-9_-]{0,29})$/.test(slug)) {
       if (this.owner.findProjectBySlug(slug) != null) {
         return false;
@@ -144,52 +149,52 @@ this.Project = class Project {
     } else {
       return false;
     }
-  }
+  };
 
-  setCode(code) {
+  Project.prototype.setCode = function(code) {
     if ((code != null) && /^([a-zA-Z0-9_][a-zA-Z0-9_-]{0,29})$/.test(code)) {
       this.set("code", code);
       return true;
     } else {
       return false;
     }
-  }
+  };
 
-  setType(type) {
+  Project.prototype.setType = function(type) {
     return this.set("type", type);
-  }
+  };
 
-  setOrientation(orientation) {
+  Project.prototype.setOrientation = function(orientation) {
     return this.set("orientation", orientation);
-  }
+  };
 
-  setAspect(aspect) {
+  Project.prototype.setAspect = function(aspect) {
     return this.set("aspect", aspect);
-  }
+  };
 
-  setGraphics(graphics) {
+  Project.prototype.setGraphics = function(graphics) {
     return this.set("graphics", graphics);
-  }
+  };
 
-  setFlag(flag, value) {
+  Project.prototype.setFlag = function(flag, value) {
     if (value) {
       this.flags[flag] = value;
     } else {
       delete this.flags[flag];
     }
     return this.set("flags", this.flags);
-  }
+  };
 
-  setProperty(prop, value) {
+  Project.prototype.setProperty = function(prop, value) {
     if (value != null) {
       this.properties[prop] = value;
     } else {
       delete this.properties[prop];
     }
     return this.set("properties", this.properties);
-  }
+  };
 
-  saveUsers() {
+  Project.prototype.saveUsers = function() {
     var data, j, len, link, ref;
     data = [];
     ref = this.users;
@@ -201,9 +206,9 @@ this.Project = class Project {
       });
     }
     return this.set("users", data, false);
-  }
+  };
 
-  inviteUser(user) {
+  Project.prototype.inviteUser = function(user) {
     var j, len, link, ref;
     if (user === this.owner) {
       return;
@@ -223,18 +228,18 @@ this.Project = class Project {
       this.users.push(link);
       return this.saveUsers();
     }
-  }
+  };
 
-  removeUser(link) {
+  Project.prototype.removeUser = function(link) {
     var index;
     index = this.users.indexOf(link);
     if (index >= 0) {
       this.users.splice(index, 1);
       return this.saveUsers();
     }
-  }
+  };
 
-  listUsers() {
+  Project.prototype.listUsers = function() {
     var j, len, link, list, ref;
     list = [];
     ref = this.users;
@@ -249,9 +254,9 @@ this.Project = class Project {
       }
     }
     return list;
-  }
+  };
 
-  delete() {
+  Project.prototype["delete"] = function() {
     var folder, i, j, link, ref;
     this.deleted = true;
     this.record.set({
@@ -263,37 +268,37 @@ this.Project = class Project {
       link.remove();
     }
     delete this.manager;
-    folder = `${this.owner.id}/${this.id}`;
+    folder = this.owner.id + "/" + this.id;
     this.content.files.deleteFolder(folder);
-  }
+  };
 
-  getFileInfo(file) {
+  Project.prototype.getFileInfo = function(file) {
     return this.files[file] || {};
-  }
+  };
 
-  setFileInfo(file, key, value) {
+  Project.prototype.setFileInfo = function(file, key, value) {
     var info;
     info = this.getFileInfo(file);
     info[key] = value;
     this.files[file] = info;
     this.set("files", this.files);
     return this.update_project_size = true;
-  }
+  };
 
-  deleteFileInfo(file) {
+  Project.prototype.deleteFileInfo = function(file) {
     delete this.files[file];
     this.set("files", this.files);
     return this.update_project_size = true;
-  }
+  };
 
-  getSize() {
+  Project.prototype.getSize = function() {
     if (this.update_project_size) {
       this.updateProjectSize();
     }
     return this.byte_size;
-  }
+  };
 
-  updateProjectSize() {
+  Project.prototype.updateProjectSize = function() {
     var file, key, ref;
     this.byte_size = 0;
     this.update_project_size = false;
@@ -304,78 +309,84 @@ this.Project = class Project {
         this.byte_size += file.size;
       }
     }
-  }
+  };
 
-  filenameChanged(previous, next) {
+  Project.prototype.filenameChanged = function(previous, next) {
     if (this.files[previous] != null) {
       this.files[next] = this.files[previous];
       delete this.files[previous];
       return this.set("files", this.files);
     }
-  }
+  };
 
-  fileDeleted(file) {
+  Project.prototype.fileDeleted = function(file) {
     if (this.files[file]) {
       delete this.files[file];
       return this.set("files", this.files);
     }
-  }
+  };
 
-  updateFileSizes(callback) {
+  Project.prototype.updateFileSizes = function(callback) {
     var list, maps, process, source, sprites;
-    source = "../files/" + this.content.files.sanitize(`${this.owner.id}/${this.id}/ms`);
-    sprites = "../files/" + this.content.files.sanitize(`${this.owner.id}/${this.id}/sprites`);
-    maps = "../files/" + this.content.files.sanitize(`${this.owner.id}/${this.id}/maps`);
+    source = "../files/" + this.content.files.sanitize(this.owner.id + "/" + this.id + "/ms");
+    sprites = "../files/" + this.content.files.sanitize(this.owner.id + "/" + this.id + "/sprites");
+    maps = "../files/" + this.content.files.sanitize(this.owner.id + "/" + this.id + "/maps");
     list = [];
-    process = () => {
-      var f, file;
-      if (list.length > 0) {
-        f = list.splice(0, 1)[0];
-        file = "../files/" + this.content.files.sanitize(`${this.owner.id}/${this.id}/${f}`);
-        return fs.lstat(file, (err, stat) => {
-          if ((stat != null) && (stat.size != null)) {
-            this.setFileInfo(f, "size", stat.size);
+    process = (function(_this) {
+      return function() {
+        var f, file;
+        if (list.length > 0) {
+          f = list.splice(0, 1)[0];
+          file = "../files/" + _this.content.files.sanitize(_this.owner.id + "/" + _this.id + "/" + f);
+          return fs.lstat(file, function(err, stat) {
+            if ((stat != null) && (stat.size != null)) {
+              _this.setFileInfo(f, "size", stat.size);
+            }
+            return setTimeout((function() {
+              return process();
+            }), 0);
+          });
+        } else {
+          if (callback != null) {
+            return callback();
           }
-          return setTimeout((() => {
-            return process();
-          }), 0);
-        });
-      } else {
-        if (callback != null) {
-          return callback();
         }
-      }
-    };
-    return fs.readdir(source, (err, files) => {
-      var f, j, len;
-      if (files) {
-        for (j = 0, len = files.length; j < len; j++) {
-          f = files[j];
-          list.push(`ms/${f}`);
-        }
-      }
-      return fs.readdir(sprites, (err, files) => {
-        var k, len1;
+      };
+    })(this);
+    return fs.readdir(source, (function(_this) {
+      return function(err, files) {
+        var f, j, len;
         if (files) {
-          for (k = 0, len1 = files.length; k < len1; k++) {
-            f = files[k];
-            list.push(`sprites/${f}`);
+          for (j = 0, len = files.length; j < len; j++) {
+            f = files[j];
+            list.push("ms/" + f);
           }
         }
-        return fs.readdir(maps, (err, files) => {
-          var l, len2;
+        return fs.readdir(sprites, function(err, files) {
+          var k, len1;
           if (files) {
-            for (l = 0, len2 = files.length; l < len2; l++) {
-              f = files[l];
-              list.push(`maps/${f}`);
+            for (k = 0, len1 = files.length; k < len1; k++) {
+              f = files[k];
+              list.push("sprites/" + f);
             }
           }
-          return process();
+          return fs.readdir(maps, function(err, files) {
+            var l, len2;
+            if (files) {
+              for (l = 0, len2 = files.length; l < len2; l++) {
+                f = files[l];
+                list.push("maps/" + f);
+              }
+            }
+            return process();
+          });
         });
-      });
-    });
-  }
+      };
+    })(this));
+  };
 
-};
+  return Project;
+
+})();
 
 module.exports = this.Project;

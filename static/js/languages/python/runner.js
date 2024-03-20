@@ -1,62 +1,69 @@
-this.Runner = class Runner {
-  constructor(microvm) {
+this.Runner = (function() {
+  function Runner(microvm) {
     this.microvm = microvm;
   }
 
-  init() {
+  Runner.prototype.init = function() {
     var kd, key, src;
     this.initialized = true;
     window.ctx = this.microvm.context.global;
     src = "";
     for (key in this.microvm.context.global) {
       kd = key;
-      src += `${kd} =  window.ctx.${key}\n`;
+      src += kd + " =  window.ctx." + key + "\n";
     }
     window.stdout = {
-      write: (text) => {
-        return this.microvm.context.meta.print(text);
-      }
+      write: (function(_this) {
+        return function(text) {
+          return _this.microvm.context.meta.print(text);
+        };
+      })(this)
     };
     window.stderr = {
-      write: (text) => {
-        var f, file, i, len, line, t;
-        if (Array.isArray(text)) {
-          line = 1;
-          file = "";
-          for (i = 0, len = text.length; i < len; i++) {
-            t = text[i];
-            f = t.split("File");
-            if (f[1] != null) {
-              f = f[1].split('"');
-              if ((f[1] != null) && f[1].length > 0) {
-                file = f[1];
+      write: (function(_this) {
+        return function(text) {
+          var f, file, i, len, line, t;
+          if (Array.isArray(text)) {
+            line = 1;
+            file = "";
+            for (i = 0, len = text.length; i < len; i++) {
+              t = text[i];
+              f = t.split("File");
+              if (f[1] != null) {
+                f = f[1].split('"');
+                if ((f[1] != null) && f[1].length > 0) {
+                  file = f[1];
+                }
+              }
+              t = t.split(" line ");
+              if (t[1] != null) {
+                line = t[1].split("\n")[0].split(",")[0];
               }
             }
-            t = t.split(" line ");
-            if (t[1] != null) {
-              line = t[1].split("\n")[0].split(",")[0];
-            }
+            _this.microvm.context.location = {
+              token: {
+                file: file,
+                line: line,
+                column: 0,
+                error_text: text[text.length - 1].replace("\n", "")
+              }
+            };
+            throw text[text.length - 1].replace("\n", "");
+          } else {
+            throw text;
           }
-          this.microvm.context.location = {
-            token: {
-              file: file,
-              line: line,
-              column: 0,
-              error_text: text[text.length - 1].replace("\n", "")
-            }
-          };
-          throw text[text.length - 1].replace("\n", "");
-        } else {
-          throw text;
-        }
-      }
+        };
+      })(this)
     };
     src += "import sys\n\nsys.stdout = window.stdout\n\nsys.stderr = window.stderr\n\n";
     return this.run(src);
-  }
+  };
 
-  run(program, name = "") {
+  Runner.prototype.run = function(program, name) {
     var err, res;
+    if (name == null) {
+      name = "";
+    }
     if (!this.initialized) {
       this.init();
     }
@@ -69,9 +76,9 @@ this.Runner = class Runner {
       err = error;
       throw err.toString();
     }
-  }
+  };
 
-  call(name, args) {
+  Runner.prototype.call = function(name, args) {
     var err;
     if ((name === "draw" || name === "update" || name === "init" || name === "serverInit" || name === "serverUpdate") && typeof window[name] === "function") {
       try {
@@ -83,14 +90,16 @@ this.Runner = class Runner {
     } else {
 
     }
-  }
+  };
 
-  toString(obj) {
+  Runner.prototype.toString = function(obj) {
     if (obj != null) {
       return obj.toString();
     } else {
       return "none";
     }
-  }
+  };
 
-};
+  return Runner;
+
+})();

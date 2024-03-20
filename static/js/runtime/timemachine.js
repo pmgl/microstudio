@@ -1,5 +1,5 @@
-this.TimeMachine = class TimeMachine {
-  constructor(runtime) {
+this.TimeMachine = (function() {
+  function TimeMachine(runtime) {
     this.runtime = runtime;
     this.history = [];
     this.record_index = 0;
@@ -10,7 +10,7 @@ this.TimeMachine = class TimeMachine {
     this.loop_length = 60 * 4;
   }
 
-  step() {
+  TimeMachine.prototype.step = function() {
     var end, err, histo, i, index, j, ref, ref1, start;
     if (this.recording) {
       try {
@@ -41,9 +41,9 @@ this.TimeMachine = class TimeMachine {
         return console.error(err);
       }
     }
-  }
+  };
 
-  messageReceived(data) {
+  TimeMachine.prototype.messageReceived = function(data) {
     var pos;
     switch (data.command) {
       case "start_recording":
@@ -87,23 +87,25 @@ this.TimeMachine = class TimeMachine {
       case "stop_looping":
         return this.stopLooping();
     }
-  }
+  };
 
-  stopLooping() {
+  TimeMachine.prototype.stopLooping = function() {
     if (this.looping) {
       this.looping = false;
       this.replay_position = this.loop_start;
       return this.sendStatus();
     }
-  }
+  };
 
-  loop() {
+  TimeMachine.prototype.loop = function() {
     if (!this.looping) {
       return;
     }
-    requestAnimationFrame(() => {
-      return this.loop();
-    });
+    requestAnimationFrame((function(_this) {
+      return function() {
+        return _this.loop();
+      };
+    })(this));
     if (this.loop_index === 0) {
       this.replay_position = this.loop_start;
       this.replay(true);
@@ -121,9 +123,9 @@ this.TimeMachine = class TimeMachine {
       this.resetControls();
     }
     return this.sendStatus();
-  }
+  };
 
-  stepBackward() {
+  TimeMachine.prototype.stepBackward = function() {
     if (this.replay_position + 1 >= this.record_length) {
       return;
     }
@@ -131,9 +133,9 @@ this.TimeMachine = class TimeMachine {
     this.replay_position += 1;
     this.replay();
     return this.sendStatus();
-  }
+  };
 
-  stepForward() {
+  TimeMachine.prototype.stepForward = function() {
     if (this.replay_position <= 1) {
       return;
     }
@@ -141,9 +143,9 @@ this.TimeMachine = class TimeMachine {
     this.replay_position--;
     this.replay();
     return this.sendStatus();
-  }
+  };
 
-  replayControls() {
+  TimeMachine.prototype.replayControls = function() {
     var index;
     if (this.replay_position >= this.record_length) {
       return;
@@ -156,9 +158,9 @@ this.TimeMachine = class TimeMachine {
     this.copyGlobal(this.history[index].gamepad, this.runtime.vm.context.global.gamepad);
     this.copyGlobal(this.history[index].touch, this.runtime.vm.context.global.touch);
     return this.copyGlobal(this.history[index].mouse, this.runtime.vm.context.global.mouse);
-  }
+  };
 
-  resetControls() {
+  TimeMachine.prototype.resetControls = function() {
     var mouse, touch;
     this.runtime.keyboard.reset();
     touch = this.runtime.vm.context.global.touch;
@@ -169,24 +171,23 @@ this.TimeMachine = class TimeMachine {
     mouse.left = 0;
     mouse.right = 0;
     return mouse.middle = 0;
-  }
+  };
 
-  replay(clone = false) {
+  TimeMachine.prototype.replay = function(clone) {
     var index;
+    if (clone == null) {
+      clone = false;
+    }
     index = (this.record_index - this.replay_position + this.max_length) % this.max_length;
     this.copyGlobal((clone ? this.storableHistory(this.history[index]) : this.history[index]), this.runtime.vm.context.global);
-    //@runtime.vm.context.global = if clone then @storableHistory(@history[index]) else @history[index]
-    //@runtime.vm.context.meta.global = @runtime.vm.context.global
-    //@runtime.vm.context.object = @runtime.vm.context.global
-    //@runtime.vm.context.local = @runtime.vm.context.global
     this.runtime.vm.call("draw");
     if (this.runtime.vm.runner.tick != null) {
       this.runtime.vm.runner.tick();
     }
     return this.runtime.watchStep();
-  }
+  };
 
-  copyGlobal(source, dest) {
+  TimeMachine.prototype.copyGlobal = function(source, dest) {
     var key, value;
     for (key in source) {
       value = source[key];
@@ -202,9 +203,9 @@ this.TimeMachine = class TimeMachine {
         delete dest[key];
       }
     }
-  }
+  };
 
-  sendStatus() {
+  TimeMachine.prototype.sendStatus = function() {
     return this.runtime.listener.postMessage({
       name: "time_machine",
       command: "status",
@@ -212,32 +213,13 @@ this.TimeMachine = class TimeMachine {
       head: this.record_length - this.replay_position,
       max: this.max_length
     });
-  }
+  };
 
-  storableHistory(value) {
+  TimeMachine.prototype.storableHistory = function(value) {
     var clones, global, refs;
     global = this.runtime.vm.context.global;
-    this.excluded = [
-      global.screen,
-      global.system,
-      //global.keyboard
-      global.audio,
-      //global.gamepad
-      //global.touch
-      //global.mouse
-      global.sprites,
-      global.maps,
-      global.sounds,
-      global.music,
-      global.assets,
-      global.asset_manager,
-      global.fonts,
-      global.storage,
-      window
-    ];
+    this.excluded = [global.screen, global.system, global.audio, global.sprites, global.maps, global.sounds, global.music, global.assets, global.asset_manager, global.fonts, global.storage, window];
     if (global.PIXI != null) {
-      // for key,value of window
-      //   @excluded.push value
       this.excluded.push(global.PIXI);
     }
     if (global.BABYLON != null) {
@@ -276,9 +258,9 @@ this.TimeMachine = class TimeMachine {
     refs = [];
     clones = [];
     return this.makeStorableObject(value, refs, clones);
-  }
+  };
 
-  makeStorableObject(value, refs, clones) {
+  TimeMachine.prototype.makeStorableObject = function(value, refs, clones) {
     var i, index, j, key, len, res, v;
     if (value == null) {
       return value;
@@ -327,6 +309,8 @@ this.TimeMachine = class TimeMachine {
     } else {
       return value;
     }
-  }
+  };
 
-};
+  return TimeMachine;
+
+})();

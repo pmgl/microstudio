@@ -1,6 +1,6 @@
-this.Documentation = class Documentation {
-  constructor(app) {
-    var e, j, k, len1, len2, list;
+this.Documentation = (function() {
+  function Documentation(app) {
+    var e, fn, fn1, j, k, len1, len2, list;
     this.app = app;
     this.doc = "";
     this.help = {};
@@ -8,93 +8,120 @@ this.Documentation = class Documentation {
     this.title_elements = [];
     this.sections = {};
     list = document.getElementsByClassName("help-section-category");
-    for (j = 0, len1 = list.length; j < len1; j++) {
-      e = list[j];
-      ((e) => {
+    fn = (function(_this) {
+      return function(e) {
         var title;
         title = e.getElementsByClassName("help-section-title")[0];
-        return title.addEventListener("click", () => {
+        return title.addEventListener("click", function() {
           if (e.classList.contains("collapsed")) {
             e.classList.remove("collapsed");
           } else {
             e.classList.add("collapsed");
           }
-          return this.updateViewPos();
+          return _this.updateViewPos();
         });
-      })(e);
+      };
+    })(this);
+    for (j = 0, len1 = list.length; j < len1; j++) {
+      e = list[j];
+      fn(e);
     }
     list = document.getElementsByClassName("help-section-button");
-    for (k = 0, len2 = list.length; k < len2; k++) {
-      e = list[k];
-      ((e) => {
-        return e.addEventListener("click", () => {
+    fn1 = (function(_this) {
+      return function(e) {
+        return e.addEventListener("click", function() {
           var id, split;
           split = e.id.split("-");
           split.splice(0, 1);
           id = split.join("-");
-          return this.setSection(id);
+          return _this.setSection(id);
         });
-      })(e);
+      };
+    })(this);
+    for (k = 0, len2 = list.length; k < len2; k++) {
+      e = list[k];
+      fn1(e);
     }
-    window.addEventListener("resize", () => {
-      return this.updateViewPos();
-    });
+    window.addEventListener("resize", (function(_this) {
+      return function() {
+        return _this.updateViewPos();
+      };
+    })(this));
   }
 
-  stateInitialized() {
-    return this.load("API", (src) => {
-      this.buildLiveHelp(src, "API");
-      if (!this.current_section) {
-        return setTimeout((() => {
-          return this.setSection("Quickstart", (() => {
-            return this.buildLiveHelp(this.doc, "Quickstart");
-          }), null, false);
-        }), 100);
-      } else {
-        return this.load("Quickstart", (src) => {
-          return this.buildLiveHelp(src, "Quickstart");
-        });
-      }
-    });
-  }
+  Documentation.prototype.stateInitialized = function() {
+    return this.load("API", (function(_this) {
+      return function(src) {
+        _this.buildLiveHelp(src, "API");
+        if (!_this.current_section) {
+          return setTimeout((function() {
+            return _this.setSection("Quickstart", (function() {
+              return _this.buildLiveHelp(_this.doc, "Quickstart");
+            }), null, false);
+          }), 100);
+        } else {
+          return _this.load("Quickstart", function(src) {
+            return _this.buildLiveHelp(src, "Quickstart");
+          });
+        }
+      };
+    })(this));
+  };
 
-  pushState() {
+  Documentation.prototype.pushState = function() {
     if (this.current_section) {
-      return this.app.app_state.pushState(`documentation.${this.current_section}`, `/documentation/${this.current_section}/`);
+      return this.app.app_state.pushState("documentation." + this.current_section, "/documentation/" + this.current_section + "/");
     } else {
       return this.app.app_state.pushState("documentation", "/documentation/");
     }
-  }
+  };
 
-  setSection(id, callback, url, push_state = true) {
-    var e, j, len1, list;
+  Documentation.prototype.setSection = function(id, callback, url, push_state) {
+    var e, fn, j, len1, list;
+    if (push_state == null) {
+      push_state = true;
+    }
     this.current_section = id;
     if (push_state) {
       this.pushState();
     }
-    this.load((url != null ? url : id), (doc1) => {
-      this.doc = doc1;
-      this.update();
-      if (callback != null) {
-        return callback();
-      }
-    });
+    this.load((url != null ? url : id), (function(_this) {
+      return function(doc1) {
+        _this.doc = doc1;
+        _this.update();
+        if (callback != null) {
+          return callback();
+        }
+      };
+    })(this));
     list = document.getElementsByClassName("help-section-button");
-    for (j = 0, len1 = list.length; j < len1; j++) {
-      e = list[j];
-      ((e) => {
-        if (e.id === `documentation-${id}`) {
+    fn = (function(_this) {
+      return function(e) {
+        if (e.id === ("documentation-" + id)) {
           e.classList.add("selected");
           return e.parentNode.parentNode.classList.remove("collapsed");
         } else {
           return e.classList.remove("selected");
         }
-      })(e);
+      };
+    })(this);
+    for (j = 0, len1 = list.length; j < len1; j++) {
+      e = list[j];
+      fn(e);
     }
-  }
+  };
 
-  load(id = "Quickstart", callback = (function() {}), lang = this.app.translator.lang) {
+  Documentation.prototype.load = function(id, callback, lang) {
     var ref1, req, url;
+    if (id == null) {
+      id = "Quickstart";
+    }
+    if (callback == null) {
+      callback = (function() {});
+    }
+    if (lang == null) {
+      lang = this.app.translator.lang;
+    }
     if (this.sections[id] != null) {
       return callback(this.sections[id]);
     }
@@ -102,33 +129,35 @@ this.Documentation = class Documentation {
       lang = "en";
     }
     req = new XMLHttpRequest();
-    req.onreadystatechange = (event) => {
-      if (req.readyState === XMLHttpRequest.DONE) {
-        if (req.status === 200) {
-          this.sections[id] = req.responseText;
-          return callback(this.sections[id]);
-        } else if (lang !== "en") {
-          return this.load(id, callback, "en");
+    req.onreadystatechange = (function(_this) {
+      return function(event) {
+        if (req.readyState === XMLHttpRequest.DONE) {
+          if (req.status === 200) {
+            _this.sections[id] = req.responseText;
+            return callback(_this.sections[id]);
+          } else if (lang !== "en") {
+            return _this.load(id, callback, "en");
+          }
         }
-      }
-    };
+      };
+    })(this);
     if (id.startsWith("http")) {
       url = id;
     } else {
-      url = `/microstudio.wiki/${lang}/${lang}-${id}.md`;
+      url = "/microstudio.wiki/" + lang + "/" + lang + "-" + id + ".md";
     }
     req.open("GET", url);
     return req.send();
-  }
+  };
 
-  updateViewPos() {
+  Documentation.prototype.updateViewPos = function() {
     var doc, sections;
     sections = document.getElementById("help-sections");
     doc = document.getElementById("help-document");
-    return doc.style.top = `${sections.offsetHeight}px`;
-  }
+    return doc.style.top = sections.offsetHeight + "px";
+  };
 
-  update() {
+  Documentation.prototype.update = function() {
     var e, element, j, len1, list;
     if (this.doc == null) {
       return;
@@ -144,27 +173,24 @@ this.Documentation = class Documentation {
       e = list[j];
       e.target = "_blank";
     }
-    //lexer = new marked.Lexer({})
-    //console.info lexer.lex @doc
     this.buildToc();
     return this.updateViewPos();
-  }
+  };
 
-  buildToc() {
-    var e, element, j, len1, ref1, toc;
+  Documentation.prototype.buildToc = function() {
+    var e, element, fn, j, len1, ref1, toc;
     element = document.getElementById("documentation");
     toc = document.getElementById("help-list");
     toc.innerHTML = "";
     ref1 = element.childNodes;
-    for (j = 0, len1 = ref1.length; j < len1; j++) {
-      e = ref1[j];
-      ((e) => {
+    fn = (function(_this) {
+      return function(e) {
         var h;
         switch (e.tagName) {
           case "H1":
             h = document.createElement("h1");
             h.innerText = e.innerText;
-            h.addEventListener("click", () => {
+            h.addEventListener("click", function() {
               return e.scrollIntoView(true, {
                 behavior: "smooth"
               });
@@ -173,7 +199,7 @@ this.Documentation = class Documentation {
           case "H2":
             h = document.createElement("h2");
             h.innerText = e.innerText;
-            h.addEventListener("click", () => {
+            h.addEventListener("click", function() {
               return e.scrollIntoView(true, {
                 behavior: "smooth"
               });
@@ -182,18 +208,22 @@ this.Documentation = class Documentation {
           case "H3":
             h = document.createElement("h3");
             h.innerText = e.innerText;
-            h.addEventListener("click", () => {
+            h.addEventListener("click", function() {
               return e.scrollIntoView(true, {
                 behavior: "smooth"
               });
             });
             return toc.appendChild(h);
         }
-      })(e);
+      };
+    })(this);
+    for (j = 0, len1 = ref1.length; j < len1; j++) {
+      e = ref1[j];
+      fn(e);
     }
-  }
+  };
 
-  buildLiveHelp(src, section) {
+  Documentation.prototype.buildLiveHelp = function(src, section) {
     var content, current_section, index, line, lines, ref, slugger, tline;
     lines = src.split("\n");
     index = 0;
@@ -255,10 +285,13 @@ this.Documentation = class Documentation {
       }
       index++;
     }
-  }
+  };
 
-  findSuggestMatch(line, position = 0) {
+  Documentation.prototype.findSuggestMatch = function(line, position) {
     var best, err, i, index, j, k, key, known_prefixes, l, len, len1, len2, len3, len4, m, n, o, p, prefixes, q, r, ref1, ref2, ref3, ref4, ref5, res, s, split, table, v, value, within;
+    if (position == null) {
+      position = 0;
+    }
     res = [];
     best = 0;
     ref1 = this.suggest;
@@ -320,7 +353,7 @@ this.Documentation = class Documentation {
           for (q = 0, len4 = known_prefixes.length; q < len4; q++) {
             p = known_prefixes[q];
             if ((split[1] != null) && split[1].startsWith(p)) {
-              v.ref = `${split[0]}.${p}...`;
+              v.ref = split[0] + "." + p + "...";
             }
           }
         }
@@ -339,9 +372,9 @@ this.Documentation = class Documentation {
       }
     }
     return res;
-  }
+  };
 
-  findHelpMatch(line) {
+  Documentation.prototype.findHelpMatch = function(line) {
     var key, ref1, res, value;
     res = [];
     ref1 = this.help;
@@ -352,35 +385,36 @@ this.Documentation = class Documentation {
       }
     }
     return res;
-  }
+  };
 
-  getPluginsSection() {
+  Documentation.prototype.getPluginsSection = function() {
     var help_sections, plugins_section;
     help_sections = document.getElementById("help-sections");
     plugins_section = document.getElementById("help-plugins");
     if (plugins_section == null) {
       plugins_section = document.createElement("div");
       plugins_section.classList.add("help-section-category");
-      //plugins_section.classList.add "collapsed"
       plugins_section.classList.add("bg-green");
       plugins_section.id = "help-plugins";
       help_sections.appendChild(plugins_section);
-      plugins_section.innerHTML = `<div class="help-section-title">\n  <i class="fa"></i><span>${this.app.translator.get("Plug-ins")}</span>\n</div>\n<div class="help-section-content"></div>`;
-      plugins_section.querySelector(".help-section-title").addEventListener("click", () => {
-        if (plugins_section.classList.contains("collapsed")) {
-          plugins_section.classList.remove("collapsed");
-        } else {
-          plugins_section.classList.add("collapsed");
-        }
-        return this.updateViewPos();
-      });
+      plugins_section.innerHTML = "<div class=\"help-section-title\">\n  <i class=\"fa\"></i><span>" + (this.app.translator.get("Plug-ins")) + "</span>\n</div>\n<div class=\"help-section-content\"></div>";
+      plugins_section.querySelector(".help-section-title").addEventListener("click", (function(_this) {
+        return function() {
+          if (plugins_section.classList.contains("collapsed")) {
+            plugins_section.classList.remove("collapsed");
+          } else {
+            plugins_section.classList.add("collapsed");
+          }
+          return _this.updateViewPos();
+        };
+      })(this));
     }
     return plugins_section;
-  }
+  };
 
-  addPlugin(id, title, link) {
+  Documentation.prototype.addPlugin = function(id, title, link) {
     var doc, plugins_section;
-    id = `documentation-${id}`;
+    id = "documentation-" + id;
     if (!document.getElementById(id)) {
       plugins_section = this.getPluginsSection();
       doc = document.createElement("div");
@@ -388,16 +422,18 @@ this.Documentation = class Documentation {
       doc.classList.add("help-section-button");
       doc.innerText = title;
       plugins_section.querySelector(".help-section-content").appendChild(doc);
-      doc.addEventListener("click", () => {
-        return this.setSection(link);
-      });
+      doc.addEventListener("click", (function(_this) {
+        return function() {
+          return _this.setSection(link);
+        };
+      })(this));
       return this.updateViewPos();
     }
-  }
+  };
 
-  removePlugin(id) {
+  Documentation.prototype.removePlugin = function(id) {
     var element, parent;
-    id = `documentation-${id}`;
+    id = "documentation-" + id;
     element = document.getElementById(id);
     if (element != null) {
       parent = element.parentNode;
@@ -407,44 +443,45 @@ this.Documentation = class Documentation {
       }
       return this.updateViewPos();
     }
-  }
+  };
 
-  removeAllPlugins() {
+  Documentation.prototype.removeAllPlugins = function() {
     var plugins_section;
     plugins_section = document.getElementById("help-plugins");
     if (plugins_section != null) {
       plugins_section.parentNode.removeChild(plugins_section);
       return this.updateViewPos();
     }
-  }
+  };
 
-  getLibsSection() {
+  Documentation.prototype.getLibsSection = function() {
     var help_sections, libs_section;
     help_sections = document.getElementById("help-sections");
     libs_section = document.getElementById("help-libraries");
     if (libs_section == null) {
       libs_section = document.createElement("div");
       libs_section.classList.add("help-section-category");
-      //libs_section.classList.add "collapsed"
       libs_section.classList.add("bg-purple");
       libs_section.id = "help-libraries";
       help_sections.appendChild(libs_section);
-      libs_section.innerHTML = `<div class="help-section-title">\n  <i class="fa"></i><span>${this.app.translator.get("Libraries in use")}</span>\n</div>\n<div class="help-section-content"></div>`;
-      libs_section.querySelector(".help-section-title").addEventListener("click", () => {
-        if (libs_section.classList.contains("collapsed")) {
-          libs_section.classList.remove("collapsed");
-        } else {
-          libs_section.classList.add("collapsed");
-        }
-        return this.updateViewPos();
-      });
+      libs_section.innerHTML = "<div class=\"help-section-title\">\n  <i class=\"fa\"></i><span>" + (this.app.translator.get("Libraries in use")) + "</span>\n</div>\n<div class=\"help-section-content\"></div>";
+      libs_section.querySelector(".help-section-title").addEventListener("click", (function(_this) {
+        return function() {
+          if (libs_section.classList.contains("collapsed")) {
+            libs_section.classList.remove("collapsed");
+          } else {
+            libs_section.classList.add("collapsed");
+          }
+          return _this.updateViewPos();
+        };
+      })(this));
     }
     return libs_section;
-  }
+  };
 
-  addLib(id, title, link) {
+  Documentation.prototype.addLib = function(id, title, link) {
     var doc, libs_section;
-    id = `documentation-${id}`;
+    id = "documentation-" + id;
     if (!document.getElementById(id)) {
       libs_section = this.getLibsSection();
       doc = document.createElement("div");
@@ -452,16 +489,18 @@ this.Documentation = class Documentation {
       doc.classList.add("help-section-button");
       doc.innerText = title;
       libs_section.querySelector(".help-section-content").appendChild(doc);
-      doc.addEventListener("click", () => {
-        return this.setSection(link);
-      });
+      doc.addEventListener("click", (function(_this) {
+        return function() {
+          return _this.setSection(link);
+        };
+      })(this));
       return this.updateViewPos();
     }
-  }
+  };
 
-  removeLib(id) {
+  Documentation.prototype.removeLib = function(id) {
     var element, parent;
-    id = `documentation-${id}`;
+    id = "documentation-" + id;
     element = document.getElementById(id);
     if (element != null) {
       parent = element.parentNode;
@@ -471,15 +510,17 @@ this.Documentation = class Documentation {
       }
       return this.updateViewPos();
     }
-  }
+  };
 
-  removeAllLibs() {
+  Documentation.prototype.removeAllLibs = function() {
     var libs_section;
     libs_section = document.getElementById("help-libraries");
     if (libs_section != null) {
       libs_section.parentNode.removeChild(libs_section);
       return this.updateViewPos();
     }
-  }
+  };
 
-};
+  return Documentation;
+
+})();

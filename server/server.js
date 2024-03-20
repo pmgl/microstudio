@@ -1,4 +1,5 @@
-var BuildManager, Content, DB, FileStorage, RateLimiter, Session, WebApp, WebSocket, compression, cookieParser, express, fs, path, process;
+var BuildManager, Content, DB, FileStorage, RateLimiter, Session, WebApp, WebSocket, compression, cookieParser, express, fs, path, process,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 compression = require("compression");
 
@@ -28,19 +29,19 @@ WebSocket = require("ws");
 
 process = require("process");
 
-this.Server = class Server {
-  constructor(config = {}, callback1) {
-    this.exit = this.exit.bind(this);
-    this.config = config;
+this.Server = (function() {
+  function Server(config, callback1) {
+    this.config = config != null ? config : {};
     this.callback = callback1;
+    this.exit = bind(this.exit, this);
     process.chdir(__dirname);
     this.app_data = this.config.app_data || "..";
-    this.mailer = { // STUB
+    this.mailer = {
       sendMail: function(recipient, subject, text) {
-        return console.info(`send mail to:${recipient} subject:${subject} text:${text}`);
+        return console.info("send mail to:" + recipient + " subject:" + subject + " text:" + text);
       }
     };
-    this.stats = { // STUB
+    this.stats = {
       set: function(name, value) {},
       max: function(name, value) {},
       unique: function(name, id) {},
@@ -57,37 +58,41 @@ this.Server = class Server {
       this.PORT = this.config.port || 8080;
       this.PROD = false;
     }
-    this.loadPlugins(() => {
-      return this.create();
-    });
+    this.loadPlugins((function(_this) {
+      return function() {
+        return _this.create();
+      };
+    })(this));
   }
 
-  create() {
+  Server.prototype.create = function() {
     var app, folder, i, len, plugin, ref, static_files;
     app = express();
     static_files = "../static";
     this.date_started = Date.now();
     this.rate_limiter = new RateLimiter(this);
-    app.use((req, res, next) => {
-      var referrer;
-      if (this.rate_limiter.accept("request", "general") && this.rate_limiter.accept("request_ip", req.connection.remoteAddress)) {
-        next();
-      } else {
-        res.status(500).send("");
-      }
-      this.stats.inc("http_requests");
-      this.stats.unique("ip_addresses", req.connection.remoteAddress);
-      referrer = req.get("Referrer");
-      if ((referrer != null) && !referrer.startsWith("http://localhost") && !referrer.startsWith("https://microstudio.io") && !referrer.startsWith("https://microstudio.dev")) {
-        if (referrer.includes("=")) {
-          referrer = referrer.substring(0, referrer.indexOf("="));
+    app.use((function(_this) {
+      return function(req, res, next) {
+        var referrer;
+        if (_this.rate_limiter.accept("request", "general") && _this.rate_limiter.accept("request_ip", req.connection.remoteAddress)) {
+          next();
+        } else {
+          res.status(500).send("");
         }
-        if (referrer.length > 120) {
-          referrer = referrer.substring(0, 120);
+        _this.stats.inc("http_requests");
+        _this.stats.unique("ip_addresses", req.connection.remoteAddress);
+        referrer = req.get("Referrer");
+        if ((referrer != null) && !referrer.startsWith("http://localhost") && !referrer.startsWith("https://microstudio.io") && !referrer.startsWith("https://microstudio.dev")) {
+          if (referrer.includes("=")) {
+            referrer = referrer.substring(0, referrer.indexOf("="));
+          }
+          if (referrer.length > 120) {
+            referrer = referrer.substring(0, 120);
+          }
+          return _this.stats.unique("referrer|" + referrer, req.connection.remoteAddress);
         }
-        return this.stats.unique("referrer|" + referrer, req.connection.remoteAddress);
-      }
-    });
+      };
+    })(this));
     app.use(compression());
     app.use(cookieParser());
     ref = this.plugins;
@@ -95,71 +100,73 @@ this.Server = class Server {
       plugin = ref[i];
       if (plugin.getStaticFolder != null) {
         folder = plugin.getStaticFolder();
-        app.use(express.static(folder));
+        app.use(express["static"](folder));
       }
     }
-    app.use(express.static(static_files));
-    app.use("/microstudio.wiki", express.static("../microstudio.wiki", {
+    app.use(express["static"](static_files));
+    app.use("/microstudio.wiki", express["static"]("../microstudio.wiki", {
       dotfiles: "ignore"
     }));
-    app.use("/lib/fontlib/ubuntu", express.static("node_modules/@fontsource/ubuntu"));
-    app.use("/lib/fontlib/ubuntu-mono", express.static("node_modules/@fontsource/ubuntu-mono"));
-    app.use("/lib/fontlib/source-sans-pro", express.static("node_modules/@fontsource/source-sans-pro"));
-    app.use("/lib/fontlib/fontawesome", express.static("node_modules/@fortawesome/fontawesome-free"));
-    app.use("/lib/ace", express.static("node_modules/ace-builds/src-min"));
-    app.use("/lib/marked/marked.js", express.static("node_modules/marked/marked.min.js"));
-    app.use("/lib/dompurify/purify.js", express.static("node_modules/dompurify/dist/purify.min.js"));
-    app.use("/lib/jquery/jquery.js", express.static("node_modules/jquery/dist/jquery.min.js"));
-    app.use("/lib/jquery-ui", express.static("node_modules/jquery-ui-dist"));
+    app.use("/lib/fontlib/ubuntu", express["static"]("node_modules/@fontsource/ubuntu"));
+    app.use("/lib/fontlib/ubuntu-mono", express["static"]("node_modules/@fontsource/ubuntu-mono"));
+    app.use("/lib/fontlib/source-sans-pro", express["static"]("node_modules/@fontsource/source-sans-pro"));
+    app.use("/lib/fontlib/fontawesome", express["static"]("node_modules/@fortawesome/fontawesome-free"));
+    app.use("/lib/ace", express["static"]("node_modules/ace-builds/src-min"));
+    app.use("/lib/marked/marked.js", express["static"]("node_modules/marked/marked.min.js"));
+    app.use("/lib/dompurify/purify.js", express["static"]("node_modules/dompurify/dist/purify.min.js"));
+    app.use("/lib/jquery/jquery.js", express["static"]("node_modules/jquery/dist/jquery.min.js"));
+    app.use("/lib/jquery-ui", express["static"]("node_modules/jquery-ui-dist"));
     if (this.config.brython_path) {
-      app.use("/lib/brython", express.static(this.config.brython_path));
+      app.use("/lib/brython", express["static"](this.config.brython_path));
     } else {
-      app.use("/lib/brython", express.static("node_modules/brython"));
+      app.use("/lib/brython", express["static"]("node_modules/brython"));
     }
-    app.use("/lib/fengari", express.static("node_modules/fengari-web/dist"));
-    app.use("/lib/qrcode", express.static("node_modules/qrcode/build"));
-    app.use("/lib/wavefile", express.static("node_modules/wavefile/dist"));
-    app.use("/lib/lamejs/lame.min.js", express.static("node_modules/lamejs/lame.min.js"));
-    return this.db = new DB(`${this.app_data}/data`, (db) => {
-      var j, len1, ref1;
-      ref1 = this.plugins;
-      for (j = 0, len1 = ref1.length; j < len1; j++) {
-        plugin = ref1[j];
-        if (plugin.dbLoaded != null) {
-          plugin.dbLoaded(db);
-        }
-      }
-      if (this.PROD) {
-        return require('greenlock-express').init({
-          packageRoot: __dirname,
-          configDir: "./greenlock.d",
-          maintainerEmail: "contact@microstudio.dev",
-          cluster: false
-        }).ready((glx) => {
-          this.httpserver = glx.httpsServer();
-          this.use_cache = true;
-          glx.serveApp(app);
-          return this.start(app, db);
-        });
-      } else if (this.config.standalone) {
-        this.use_cache = false;
-        return this.httpserver = require("http").createServer(app).listen(this.PORT, "127.0.0.1", () => {
-          this.PORT = this.httpserver.address().port;
-          this.start(app, db);
-          console.info(`standalone running on port ${this.PORT}`);
-          if (this.callback != null) {
-            return this.callback();
+    app.use("/lib/fengari", express["static"]("node_modules/fengari-web/dist"));
+    app.use("/lib/qrcode", express["static"]("node_modules/qrcode/build"));
+    app.use("/lib/wavefile", express["static"]("node_modules/wavefile/dist"));
+    app.use("/lib/lamejs/lame.min.js", express["static"]("node_modules/lamejs/lame.min.js"));
+    return this.db = new DB(this.app_data + "/data", (function(_this) {
+      return function(db) {
+        var j, len1, ref1;
+        ref1 = _this.plugins;
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          plugin = ref1[j];
+          if (plugin.dbLoaded != null) {
+            plugin.dbLoaded(db);
           }
-        });
-      } else {
-        this.httpserver = require("http").createServer(app).listen(this.PORT);
-        this.use_cache = false;
-        return this.start(app, db);
-      }
-    });
-  }
+        }
+        if (_this.PROD) {
+          return require('greenlock-express').init({
+            packageRoot: __dirname,
+            configDir: "./greenlock.d",
+            maintainerEmail: "contact@microstudio.dev",
+            cluster: false
+          }).ready(function(glx) {
+            _this.httpserver = glx.httpsServer();
+            _this.use_cache = true;
+            glx.serveApp(app);
+            return _this.start(app, db);
+          });
+        } else if (_this.config.standalone) {
+          _this.use_cache = false;
+          return _this.httpserver = require("http").createServer(app).listen(_this.PORT, "127.0.0.1", function() {
+            _this.PORT = _this.httpserver.address().port;
+            _this.start(app, db);
+            console.info("standalone running on port " + _this.PORT);
+            if (_this.callback != null) {
+              return _this.callback();
+            }
+          });
+        } else {
+          _this.httpserver = require("http").createServer(app).listen(_this.PORT);
+          _this.use_cache = false;
+          return _this.start(app, db);
+        }
+      };
+    })(this));
+  };
 
-  start(app, db) {
+  Server.prototype.start = function(app, db) {
     var i, l, len, ref;
     this.active_users = 0;
     this.io = new WebSocket.Server({
@@ -167,16 +174,20 @@ this.Server = class Server {
       maxPayload: 40000000
     });
     this.sessions = [];
-    this.io.on("connection", (socket, request) => {
-      socket.request = request;
-      socket.remoteAddress = request.connection.remoteAddress;
-      return this.sessions.push(new Session(this, socket));
-    });
+    this.io.on("connection", (function(_this) {
+      return function(socket, request) {
+        socket.request = request;
+        socket.remoteAddress = request.connection.remoteAddress;
+        return _this.sessions.push(new Session(_this, socket));
+      };
+    })(this));
     console.info("MAX PAYLOAD = " + this.io.options.maxPayload);
-    this.session_check = setInterval((() => {
-      return this.sessionCheck();
-    }), 10000);
-    this.content = new Content(this, db, new FileStorage(`${this.app_data}/files`));
+    this.session_check = setInterval(((function(_this) {
+      return function() {
+        return _this.sessionCheck();
+      };
+    })(this)), 10000);
+    this.content = new Content(this, db, new FileStorage(this.app_data + "/files"));
     this.build_manager = new BuildManager(this);
     this.webapp = new WebApp(this, app);
     ref = this.webapp.languages;
@@ -184,30 +195,33 @@ this.Server = class Server {
       l = ref[i];
       this.content.translator.createLanguage(l);
     }
-    process.on('SIGINT', () => {
-      console.log("caught INT signal");
-      return this.exit();
-    });
-    process.on('SIGTERM', () => {
-      console.log("caught TERM signal");
-      return this.exit();
-    });
-    //process.on 'SIGKILL', ()=>
-    //  console.log "caught KILL signal"
-    //  @exit()
-    return this.exitcheck = setInterval((() => {
-      if (fs.existsSync("exit")) {
-        this.exit();
-        fs.unlinkSync("exit");
-      }
-      if (fs.existsSync("update")) {
-        this.webapp.concatenator.refresh();
-        return fs.unlinkSync("update");
-      }
-    }), 2000);
-  }
+    process.on('SIGINT', (function(_this) {
+      return function() {
+        console.log("caught INT signal");
+        return _this.exit();
+      };
+    })(this));
+    process.on('SIGTERM', (function(_this) {
+      return function() {
+        console.log("caught TERM signal");
+        return _this.exit();
+      };
+    })(this));
+    return this.exitcheck = setInterval(((function(_this) {
+      return function() {
+        if (fs.existsSync("exit")) {
+          _this.exit();
+          fs.unlinkSync("exit");
+        }
+        if (fs.existsSync("update")) {
+          _this.webapp.concatenator.refresh();
+          return fs.unlinkSync("update");
+        }
+      };
+    })(this)), 2000);
+  };
 
-  exit() {
+  Server.prototype.exit = function() {
     if (this.exited) {
       process.exit(0);
     }
@@ -220,12 +234,14 @@ this.Server = class Server {
     clearInterval(this.exitcheck);
     clearInterval(this.session_check);
     this.exited = true;
-    return setTimeout((() => {
-      return this.exit();
-    }), 5000);
-  }
+    return setTimeout(((function(_this) {
+      return function() {
+        return _this.exit();
+      };
+    })(this)), 5000);
+  };
 
-  sessionCheck() {
+  Server.prototype.sessionCheck = function() {
     var i, len, ref, s;
     ref = this.sessions;
     for (i = 0, len = ref.length; i < len; i++) {
@@ -234,55 +250,59 @@ this.Server = class Server {
         s.timeCheck();
       }
     }
-  }
+  };
 
-  sessionClosed(session) {
+  Server.prototype.sessionClosed = function(session) {
     var index;
     index = this.sessions.indexOf(session);
     if (index >= 0) {
       return this.sessions.splice(index, 1);
     }
-  }
+  };
 
-  loadPlugins(callback) {
+  Server.prototype.loadPlugins = function(callback) {
     this.plugins = [];
-    return fs.readdir("../plugins", (err, files) => {
-      var funk;
-      if (files == null) {
-        files = [];
-      }
-      funk = () => {
-        var f;
-        if (files.length === 0) {
-          return callback();
-        } else {
-          f = files.splice(0, 1)[0];
-          return this.loadPlugin(`../plugins/${f}`, funk);
+    return fs.readdir("../plugins", (function(_this) {
+      return function(err, files) {
+        var funk;
+        if (files == null) {
+          files = [];
         }
+        funk = function() {
+          var f;
+          if (files.length === 0) {
+            return callback();
+          } else {
+            f = files.splice(0, 1)[0];
+            return _this.loadPlugin("../plugins/" + f, funk);
+          }
+        };
+        return funk();
       };
-      return funk();
-    });
-  }
+    })(this));
+  };
 
-  loadPlugin(folder, callback) {
+  Server.prototype.loadPlugin = function(folder, callback) {
     var Plugin, err, p;
-    if (fs.existsSync(`${folder}/index.js`)) {
+    if (fs.existsSync(folder + "/index.js")) {
       try {
-        Plugin = require(`${folder}/index.js`);
+        Plugin = require(folder + "/index.js");
         p = new Plugin(this);
         this.plugins.push(p);
-        console.info(`loaded plugin ${folder}`);
+        console.info("loaded plugin " + folder);
       } catch (error) {
         err = error;
         console.error(err);
       }
       return callback();
     } else {
-      console.info(`plugin ${folder} has no index.js`);
+      console.info("plugin " + folder + " has no index.js");
       return callback();
     }
-  }
+  };
 
-};
+  return Server;
+
+})();
 
 module.exports = this.Server;

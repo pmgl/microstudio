@@ -1,37 +1,43 @@
-this.MPServerConnection = class MPServerConnection {
-  constructor(address) {
+this.MPServerConnection = (function() {
+  function MPServerConnection(address) {
     var impl;
     this.status = "connecting";
     impl = new MPServerConnectionImpl(this, address);
-    this.send = (data) => {
-      var err;
-      try {
-        impl.sendMessage(data);
-        return "sent";
-      } catch (error) {
-        err = error;
-        console.error(err);
-        return err.toString();
-      }
-    };
-    this.close = () => {
-      var err;
-      try {
-        return impl.close();
-      } catch (error) {
-        err = error;
-        return console.error(err);
-      }
-    };
+    this.send = (function(_this) {
+      return function(data) {
+        var err;
+        try {
+          impl.sendMessage(data);
+          return "sent";
+        } catch (error) {
+          err = error;
+          console.error(err);
+          return err.toString();
+        }
+      };
+    })(this);
+    this.close = (function(_this) {
+      return function() {
+        var err;
+        try {
+          return impl.close();
+        } catch (error) {
+          err = error;
+          return console.error(err);
+        }
+      };
+    })(this);
     this.messages = [];
   }
 
-};
+  return MPServerConnection;
 
-this.MPServerConnectionImpl = class MPServerConnectionImpl {
-  constructor(_interface, address1) {
+})();
+
+this.MPServerConnectionImpl = (function() {
+  function MPServerConnectionImpl(_interface, address1) {
     var err;
-    this.interface = _interface;
+    this["interface"] = _interface;
     this.address = address1;
     this.status = "connecting";
     this.buffer = [];
@@ -39,9 +45,11 @@ this.MPServerConnectionImpl = class MPServerConnectionImpl {
       this.connect(this.address);
     } else {
       try {
-        this.getRelay((address) => {
-          return this.connect(address);
-        });
+        this.getRelay((function(_this) {
+          return function(address) {
+            return _this.connect(address);
+          };
+        })(this));
       } catch (error) {
         err = error;
         console.error(err);
@@ -51,66 +59,74 @@ this.MPServerConnectionImpl = class MPServerConnectionImpl {
     player.runtime.addConnection(this);
   }
 
-  getRelay(callback) {
+  MPServerConnectionImpl.prototype.getRelay = function(callback) {
     return player.client.sendRequest({
       name: "get_relay_server"
-    }, (msg) => {
-      var address;
-      if (msg.name === "error") {
-        this.interface.status = "error";
-        return this.interface.error = msg.error;
-      } else {
-        address = msg.address;
-        if (address === "self") {
-          address = location.origin.replace("http", "ws");
+    }, (function(_this) {
+      return function(msg) {
+        var address;
+        if (msg.name === "error") {
+          _this["interface"].status = "error";
+          return _this["interface"].error = msg.error;
+        } else {
+          address = msg.address;
+          if (address === "self") {
+            address = location.origin.replace("http", "ws");
+          }
+          return callback(address);
         }
-        return callback(address);
-      }
-    });
-  }
+      };
+    })(this));
+  };
 
-  connect(address) {
+  MPServerConnectionImpl.prototype.connect = function(address) {
     this.socket = new WebSocket(address);
-    this.socket.onmessage = (msg) => {
-      var err;
-      try {
-        msg = JSON.parse(msg.data);
-        switch (msg.name) {
-          case "mp_server_message":
-            return this.messages.push(msg.data);
+    this.socket.onmessage = (function(_this) {
+      return function(msg) {
+        var err;
+        try {
+          msg = JSON.parse(msg.data);
+          switch (msg.name) {
+            case "mp_server_message":
+              return _this.messages.push(msg.data);
+          }
+        } catch (error) {
+          err = error;
+          return console.error(err);
         }
-      } catch (error) {
-        err = error;
-        return console.error(err);
-      }
-    };
-    this.socket.onopen = () => {
-      var i, len, m, ref;
-      this.interface.status = "connected";
-      this.send({
-        name: "mp_client_connection",
-        server_id: ms_project_id
-      });
-      ref = this.buffer;
-      for (i = 0, len = ref.length; i < len; i++) {
-        m = ref[i];
-        this.sendMessage(m);
-      }
-      return this.buffer = [];
-    };
-    return this.socket.onclose = () => {
-      return this.interface.status = "disconnected";
-    };
-  }
+      };
+    })(this);
+    this.socket.onopen = (function(_this) {
+      return function() {
+        var i, len, m, ref;
+        _this["interface"].status = "connected";
+        _this.send({
+          name: "mp_client_connection",
+          server_id: ms_project_id
+        });
+        ref = _this.buffer;
+        for (i = 0, len = ref.length; i < len; i++) {
+          m = ref[i];
+          _this.sendMessage(m);
+        }
+        return _this.buffer = [];
+      };
+    })(this);
+    return this.socket.onclose = (function(_this) {
+      return function() {
+        return _this["interface"].status = "disconnected";
+      };
+    })(this);
+  };
 
-  update() {
-    if (this.messages.length > 0 || this.interface.messages.length > 0) {
-      this.interface.messages = this.messages;
+  MPServerConnectionImpl.prototype.update = function() {
+    if (this.messages.length > 0 || this["interface"].messages.length > 0) {
+      this["interface"].messages = this.messages;
       return this.messages = [];
     }
-  }
+  };
 
-  sendMessage(data) {
+  MPServerConnectionImpl.prototype.sendMessage = function(data) {
     if ((this.socket != null) && this.socket.readyState === 1) {
       return this.send({
         name: "mp_client_message",
@@ -119,14 +135,16 @@ this.MPServerConnectionImpl = class MPServerConnectionImpl {
     } else {
       return this.buffer.push(data);
     }
-  }
+  };
 
-  send(data) {
+  MPServerConnectionImpl.prototype.send = function(data) {
     return this.socket.send(JSON.stringify(data));
-  }
+  };
 
-  close() {
+  MPServerConnectionImpl.prototype.close = function() {
     return this.socket.close();
-  }
+  };
 
-};
+  return MPServerConnectionImpl;
+
+})();

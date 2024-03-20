@@ -1,85 +1,96 @@
-this.Player = class Player {
-  constructor(listener) {
+this.Player = (function() {
+  function Player(listener) {
     this.listener = listener;
-    //src = document.getElementById("code").innerText
     this.source_count = 0;
     this.sources = {};
     this.resources = resources;
     this.request_id = 1;
     this.pending_requests = {};
     this.sources.main = server_code;
-    // player = new Player() must return before the server is started
-    // to ensure global.player is defined
-    setTimeout((() => {
-      return this.start();
-    }), 1);
+    setTimeout(((function(_this) {
+      return function() {
+        return _this.start();
+      };
+    })(this)), 1);
   }
 
-  start() {
+  Player.prototype.start = function() {
     this.runtime = new Runtime("", this.sources, resources, this);
     this.terminal = new Terminal(this);
     this.terminal.start();
     this.runtime.start();
-    return setInterval((() => {
-      return this.runtime.clock();
-    }), 16);
-  }
+    return setInterval(((function(_this) {
+      return function() {
+        return _this.runtime.clock();
+      };
+    })(this)), 16);
+  };
 
-  runCommand(cmd) {}
+  Player.prototype.runCommand = function(cmd) {};
 
-  reportError(err) {
+  Player.prototype.reportError = function(err) {
     return this.terminal.error(err);
-  }
+  };
 
-  log(text) {
+  Player.prototype.log = function(text) {
     return this.terminal.echo(text);
-  }
+  };
 
-  exit() {}
+  Player.prototype.exit = function() {};
 
-  call(name, args) {
+  Player.prototype.call = function(name, args) {
     if ((this.runtime != null) && (this.runtime.vm != null)) {
       return this.runtime.vm.call(name, args);
     }
-  }
+  };
 
-  setGlobal(name, value) {
+  Player.prototype.setGlobal = function(name, value) {
     if ((this.runtime != null) && (this.runtime.vm != null)) {
       return this.runtime.vm.context.global[name] = value;
     }
-  }
+  };
 
-  exec(command, callback) {
+  Player.prototype.exec = function(command, callback) {
     if (this.runtime != null) {
       return this.runtime.runCommand(command, callback);
     }
-  }
+  };
 
-  postMessage(message) {
+  Player.prototype.postMessage = function(message) {
     return console.info(JSON.stringify(message));
-  }
+  };
 
-};
+  return Player;
 
-this.Terminal = class Terminal {
-  constructor(runwindow) {
+})();
+
+this.Terminal = (function() {
+  function Terminal(runwindow) {
     this.runwindow = runwindow;
   }
 
-  start() {}
+  Terminal.prototype.start = function() {};
 
-  validateLine(v) {}
+  Terminal.prototype.validateLine = function(v) {};
 
-  setTrailingCaret() {}
+  Terminal.prototype.setTrailingCaret = function() {};
 
-  echo(text, scroll = false, classname) {
+  Terminal.prototype.echo = function(text, scroll, classname) {
+    if (scroll == null) {
+      scroll = false;
+    }
     return console.info(text);
-  }
+  };
 
-  error(text, scroll = false) {
+  Terminal.prototype.error = function(text, scroll) {
+    if (scroll == null) {
+      scroll = false;
+    }
     return console.error(text);
-  }
+  };
 
-  clear() {}
+  Terminal.prototype.clear = function() {};
 
-};
+  return Terminal;
+
+})();

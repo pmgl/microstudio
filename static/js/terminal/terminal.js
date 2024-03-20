@@ -1,12 +1,14 @@
-this.Terminal = class Terminal {
-  constructor(runwindow, tid = "terminal") {
+this.Terminal = (function() {
+  function Terminal(runwindow, tid) {
     this.runwindow = runwindow;
-    this.tid = tid;
+    this.tid = tid != null ? tid : "terminal";
     this.localStorage = localStorage;
     this.commands = {
-      clear: () => {
-        return this.clear();
-      }
+      clear: (function(_this) {
+        return function() {
+          return _this.clear();
+        };
+      })(this)
     };
     this.loadHistory();
     this.buffer = [];
@@ -14,7 +16,7 @@ this.Terminal = class Terminal {
     this.error_lines = 0;
   }
 
-  loadHistory() {
+  Terminal.prototype.loadHistory = function() {
     var err;
     this.history = [];
     try {
@@ -24,98 +26,108 @@ this.Terminal = class Terminal {
     } catch (error) {
       err = error;
     }
-  }
+  };
 
-  saveHistory() {
+  Terminal.prototype.saveHistory = function() {
     return this.localStorage.setItem("console_history", JSON.stringify(this.history));
-  }
+  };
 
-  start() {
+  Terminal.prototype.start = function() {
     if (this.started) {
       return;
     }
     this.started = true;
-    document.getElementById(`${this.tid}`).addEventListener("mousedown", (event) => {
-      this.pressed = true;
-      this.moved = false;
-      return true;
-    });
-    document.getElementById(`${this.tid}`).addEventListener("mousemove", (event) => {
-      if (this.pressed) {
-        this.moved = true;
-      }
-      return true;
-    });
-    document.getElementById(`${this.tid}`).addEventListener("mouseup", (event) => {
-      if (!this.moved) {
-        document.getElementById(`${this.tid}-input`).focus();
-      }
-      this.moved = false;
-      this.pressed = false;
-      return true;
-    });
-    document.getElementById(`${this.tid}-input`).addEventListener("paste", (event) => {
-      var j, len, line, s, text;
-      text = event.clipboardData.getData("text/plain");
-      s = text.split("\n");
-      if (s.length > 1) {
-        event.preventDefault();
-        for (j = 0, len = s.length; j < len; j++) {
-          line = s[j];
-          document.getElementById(`${this.tid}-input`).value = "";
-          this.validateLine(line);
+    document.getElementById("" + this.tid).addEventListener("mousedown", (function(_this) {
+      return function(event) {
+        _this.pressed = true;
+        _this.moved = false;
+        return true;
+      };
+    })(this));
+    document.getElementById("" + this.tid).addEventListener("mousemove", (function(_this) {
+      return function(event) {
+        if (_this.pressed) {
+          _this.moved = true;
         }
-      } else {
-        return false;
-      }
-    });
-    //document.getElementById("#{@tid}-input").value = s[0]
-    document.getElementById(`${this.tid}-input`).addEventListener("keydown", (event) => {
-      var v;
-      // console.info event.key
-      if (event.key === "Enter") {
-        v = document.getElementById(`${this.tid}-input`).value;
-        document.getElementById(`${this.tid}-input`).value = "";
-        this.validateLine(v);
-        return this.force_scroll = true;
-      } else if (event.key === "ArrowUp") {
-        if (this.history_index == null) {
-          this.history_index = this.history.length - 1;
-          this.current_input = document.getElementById(`${this.tid}-input`).value;
+        return true;
+      };
+    })(this));
+    document.getElementById("" + this.tid).addEventListener("mouseup", (function(_this) {
+      return function(event) {
+        if (!_this.moved) {
+          document.getElementById(_this.tid + "-input").focus();
+        }
+        _this.moved = false;
+        _this.pressed = false;
+        return true;
+      };
+    })(this));
+    document.getElementById(this.tid + "-input").addEventListener("paste", (function(_this) {
+      return function(event) {
+        var j, len, line, s, text;
+        text = event.clipboardData.getData("text/plain");
+        s = text.split("\n");
+        if (s.length > 1) {
+          event.preventDefault();
+          for (j = 0, len = s.length; j < len; j++) {
+            line = s[j];
+            document.getElementById(_this.tid + "-input").value = "";
+            _this.validateLine(line);
+          }
         } else {
-          this.history_index = Math.max(0, this.history_index - 1);
+          return false;
         }
-        if (this.history_index === this.history.length - 1) {
-          this.current_input = document.getElementById(`${this.tid}-input`).value;
+      };
+    })(this));
+    document.getElementById(this.tid + "-input").addEventListener("keydown", (function(_this) {
+      return function(event) {
+        var v;
+        if (event.key === "Enter") {
+          v = document.getElementById(_this.tid + "-input").value;
+          document.getElementById(_this.tid + "-input").value = "";
+          _this.validateLine(v);
+          return _this.force_scroll = true;
+        } else if (event.key === "ArrowUp") {
+          if (_this.history_index == null) {
+            _this.history_index = _this.history.length - 1;
+            _this.current_input = document.getElementById(_this.tid + "-input").value;
+          } else {
+            _this.history_index = Math.max(0, _this.history_index - 1);
+          }
+          if (_this.history_index === _this.history.length - 1) {
+            _this.current_input = document.getElementById(_this.tid + "-input").value;
+          }
+          if (_this.history_index >= 0 && _this.history_index < _this.history.length) {
+            document.getElementById(_this.tid + "-input").value = _this.history[_this.history_index];
+            return _this.setTrailingCaret();
+          }
+        } else if (event.key === "ArrowDown") {
+          if (_this.history_index === _this.history.length) {
+            return;
+          }
+          if (_this.history_index != null) {
+            _this.history_index = Math.min(_this.history.length, _this.history_index + 1);
+          } else {
+            return;
+          }
+          if (_this.history_index >= 0 && _this.history_index < _this.history.length) {
+            document.getElementById(_this.tid + "-input").value = _this.history[_this.history_index];
+            return _this.setTrailingCaret();
+          } else if (_this.history_index === _this.history.length) {
+            document.getElementById(_this.tid + "-input").value = _this.current_input;
+            return _this.setTrailingCaret();
+          }
         }
-        if (this.history_index >= 0 && this.history_index < this.history.length) {
-          document.getElementById(`${this.tid}-input`).value = this.history[this.history_index];
-          return this.setTrailingCaret();
-        }
-      } else if (event.key === "ArrowDown") {
-        if (this.history_index === this.history.length) {
-          return;
-        }
-        if (this.history_index != null) {
-          this.history_index = Math.min(this.history.length, this.history_index + 1);
-        } else {
-          return;
-        }
-        if (this.history_index >= 0 && this.history_index < this.history.length) {
-          document.getElementById(`${this.tid}-input`).value = this.history[this.history_index];
-          return this.setTrailingCaret();
-        } else if (this.history_index === this.history.length) {
-          document.getElementById(`${this.tid}-input`).value = this.current_input;
-          return this.setTrailingCaret();
-        }
-      }
-    });
-    return setInterval((() => {
-      return this.update();
-    }), 16);
-  }
+      };
+    })(this));
+    return setInterval(((function(_this) {
+      return function() {
+        return _this.update();
+      };
+    })(this)), 16);
+  };
 
-  validateLine(v) {
+  Terminal.prototype.validateLine = function(v) {
     var i, j, ref;
     this.history_index = null;
     if (v.trim().length > 0 && v !== this.history[this.history.length - 1]) {
@@ -125,39 +137,41 @@ this.Terminal = class Terminal {
       }
       this.saveHistory();
     }
-    this.echo(`${v}`, true, "input");
+    this.echo("" + v, true, "input");
     if (this.commands[v.trim()] != null) {
       return this.commands[v.trim()]();
     } else {
       this.runwindow.runCommand(v);
       if (this.runwindow.multiline) {
-        document.querySelector(`#${this.tid}-input-gt i`).classList.add("fa-ellipsis-v");
+        document.querySelector("#" + this.tid + "-input-gt i").classList.add("fa-ellipsis-v");
         for (i = j = 0, ref = this.runwindow.nesting * 2 - 1; j <= ref; i = j += 1) {
-          document.getElementById(`${this.tid}-input`).value += " ";
+          document.getElementById(this.tid + "-input").value += " ";
         }
         return this.setTrailingCaret();
       } else {
-        return document.querySelector(`#${this.tid}-input-gt i`).classList.remove("fa-ellipsis-v");
+        return document.querySelector("#" + this.tid + "-input-gt i").classList.remove("fa-ellipsis-v");
       }
     }
-  }
+  };
 
-  setTrailingCaret() {
-    return setTimeout((() => {
-      var val;
-      val = document.getElementById(`${this.tid}-input`).value;
-      return document.getElementById(`${this.tid}-input`).setSelectionRange(val.length, val.length);
-    }), 0);
-  }
+  Terminal.prototype.setTrailingCaret = function() {
+    return setTimeout(((function(_this) {
+      return function() {
+        var val;
+        val = document.getElementById(_this.tid + "-input").value;
+        return document.getElementById(_this.tid + "-input").setSelectionRange(val.length, val.length);
+      };
+    })(this)), 0);
+  };
 
-  update() {
+  Terminal.prototype.update = function() {
     var container, div, e, element, j, len, ref, t;
     if (this.buffer.length > 0) {
       if (this.force_scroll) {
         this.scroll = true;
         this.force_scroll = false;
       } else {
-        e = document.getElementById(`${this.tid}-view`);
+        e = document.getElementById(this.tid + "-view");
         this.scroll = Math.abs(e.getBoundingClientRect().height + e.scrollTop - e.scrollHeight) < 10;
       }
       div = document.createDocumentFragment();
@@ -168,23 +182,26 @@ this.Terminal = class Terminal {
         t = ref[j];
         container.appendChild(element = this.echoReal(t.text, t.classname));
       }
-      document.getElementById(`${this.tid}-lines`).appendChild(div);
+      document.getElementById(this.tid + "-lines").appendChild(div);
       if (this.scroll) {
         element.scrollIntoView();
       }
       this.length += this.buffer.length;
       return this.buffer = [];
     }
-  }
+  };
 
-  echo(text, scroll = false, classname) {
+  Terminal.prototype.echo = function(text, scroll, classname) {
+    if (scroll == null) {
+      scroll = false;
+    }
     this.buffer.push({
       text: text,
       classname: classname
     });
-  }
+  };
 
-  echoReal(text, classname) {
+  Terminal.prototype.echoReal = function(text, classname) {
     var d, div, i;
     div = document.createElement("div");
     if (classname === "input") {
@@ -202,30 +219,35 @@ this.Terminal = class Terminal {
     }
     this.truncate();
     return div;
-  }
+  };
 
-  error(text, scroll = false) {
+  Terminal.prototype.error = function(text, scroll) {
+    if (scroll == null) {
+      scroll = false;
+    }
     this.echo(text, scroll, "error");
     return this.error_lines += 1;
-  }
+  };
 
-  truncate() {
+  Terminal.prototype.truncate = function() {
     var c, e;
-    e = document.getElementById(`${this.tid}-lines`);
+    e = document.getElementById(this.tid + "-lines");
     while (this.length > 10000 && (e.firstChild != null)) {
       c = e.firstChild.children.length;
       e.removeChild(e.firstChild);
       this.length -= c;
     }
-  }
+  };
 
-  clear() {
-    document.getElementById(`${this.tid}-lines`).innerHTML = "";
+  Terminal.prototype.clear = function() {
+    document.getElementById(this.tid + "-lines").innerHTML = "";
     this.buffer = [];
     this.length = 0;
     this.error_lines = 0;
-    document.querySelector(`#${this.tid}-input-gt i`).classList.remove("fa-ellipsis-v");
+    document.querySelector("#" + this.tid + "-input-gt i").classList.remove("fa-ellipsis-v");
     return delete this.runwindow.multiline;
-  }
+  };
 
-};
+  return Terminal;
+
+})();

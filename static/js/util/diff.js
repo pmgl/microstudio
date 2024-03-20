@@ -60,8 +60,7 @@ diff = function(before, after) {
     return [].concat(diff(before.slice(0, best_bi), after.slice(0, best_ai)), [
       {
         type: "=",
-        data: after.slice(best_ai,
-      best_ai + best_length)
+        data: after.slice(best_ai, best_ai + best_length)
       }
     ], diff(before.slice(best_bi + best_length, before.length), after.slice(best_ai + best_length, after.length)));
   }

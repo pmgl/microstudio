@@ -2,39 +2,44 @@ var RelayService;
 
 RelayService = require(__dirname + "/relayservice.js");
 
-this.RelaySession = class RelaySession {
-  constructor(server, socket) {
+this.RelaySession = (function() {
+  function RelaySession(server, socket) {
     this.server = server;
     this.socket = socket;
-    this.socket.on("message", (msg) => {
-      this.messageReceived(msg);
-      return this.last_active = Date.now();
-    });
-    this.socket.on("close", () => {
-      this.server.sessionClosed(this);
-      return this.disconnected();
-    });
-    this.socket.on("error", (err) => {
-      console.error("WS ERROR");
-      return console.error(err);
-    });
+    this.socket.on("message", (function(_this) {
+      return function(msg) {
+        _this.messageReceived(msg);
+        return _this.last_active = Date.now();
+      };
+    })(this));
+    this.socket.on("close", (function(_this) {
+      return function() {
+        _this.server.sessionClosed(_this);
+        return _this.disconnected();
+      };
+    })(this));
+    this.socket.on("error", (function(_this) {
+      return function(err) {
+        console.error("WS ERROR");
+        return console.error(err);
+      };
+    })(this));
     this.commands = {};
     this.relay_service = new RelayService(this);
   }
 
-  register(name, callback) {
+  RelaySession.prototype.register = function(name, callback) {
     return this.commands[name] = callback;
-  }
+  };
 
-  disconnected() {}
+  RelaySession.prototype.disconnected = function() {};
 
-  messageReceived(msg) {
+  RelaySession.prototype.messageReceived = function(msg) {
     var c, err;
     if (typeof msg !== "string") {
       return this.bufferReceived(msg);
     }
     try {
-      //console.info msg
       msg = JSON.parse(msg);
       if (msg.name != null) {
         c = this.commands[msg.name];
@@ -46,16 +51,18 @@ this.RelaySession = class RelaySession {
       err = error;
       return console.info(err);
     }
-  }
+  };
 
-  send(data) {
+  RelaySession.prototype.send = function(data) {
     return this.socket.send(JSON.stringify(data));
-  }
+  };
 
-  serverTokenCheck(token, server_id, callback) {
+  RelaySession.prototype.serverTokenCheck = function(token, server_id, callback) {
     return this.server.serverTokenCheck(token, server_id, callback);
-  }
+  };
 
-};
+  return RelaySession;
+
+})();
 
 module.exports = this.RelaySession;

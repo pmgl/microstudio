@@ -1,9 +1,9 @@
-this.Runner = class Runner {
-  constructor(microvm) {
+this.Runner = (function() {
+  function Runner(microvm) {
     this.microvm = microvm;
   }
 
-  init() {
+  Runner.prototype.init = function() {
     this.initialized = true;
     this.system = this.microvm.context.global.system;
     this.system.preemptive = 1;
@@ -27,19 +27,21 @@ this.Runner = class Runner {
       }
     };
     this.microvm.context.global.List = {
-      sortList: (f) => {
-        var funk;
-        if ((f != null) && f instanceof Program.Function) {
-          funk = function(a, b) {
-            return f.call(this.microvm.context.global, [a, b], true);
-          };
-        } else if ((f != null) && typeof f === "function") {
-          funk = f;
-        }
-        return this.sort(funk);
-      },
+      sortList: (function(_this) {
+        return function(f) {
+          var funk;
+          if ((f != null) && f instanceof Program.Function) {
+            funk = function(a, b) {
+              return f.call(this.microvm.context.global, [a, b], true);
+            };
+          } else if ((f != null) && typeof f === "function") {
+            funk = f;
+          }
+          return _this.sort(funk);
+        };
+      })(this),
       "+": function(a, b, self) {
-        if (!self) { // not +=, clone array a
+        if (!self) {
           a = [...a];
         }
         if (Array.isArray(b)) {
@@ -51,7 +53,7 @@ this.Runner = class Runner {
       },
       "-": function(a, b, self) {
         var index;
-        if (!self) { // not -=, clone array a
+        if (!self) {
           a = [...a];
         }
         index = a.indexOf(b);
@@ -87,9 +89,9 @@ this.Runner = class Runner {
     this.cpu_load = 0;
     this.microvm.context.meta.print("microScript 2.0");
     return this.triggers_controls_update = true;
-  }
+  };
 
-  run(src, filename, callback) {
+  Runner.prototype.run = function(src, filename, callback) {
     var compiler, err, id, j, len, parser, program, ref, result, w;
     if (!this.initialized) {
       this.init();
@@ -141,19 +143,19 @@ this.Runner = class Runner {
     this.main_thread.addCall(compiler.routine);
     this.tick();
     return result;
-  }
+  };
 
-  call(name, args) {
+  Runner.prototype.call = function(name, args) {
     var f, routine;
     if (name === "draw" || name === "update" || name === "serverUpdate") {
       if (this.microvm.context.global[name] != null) {
-        this.main_thread.addCall(`${name}()`);
+        this.main_thread.addCall(name + "()");
       }
       return;
     }
     if (this.microvm.context.global[name] != null) {
       if ((args == null) || !args.length) {
-        return this.main_thread.addCall(`${name}()`);
+        return this.main_thread.addCall(name + "()");
       } else {
         routine = this.microvm.context.global[name];
         if (routine instanceof Routine) {
@@ -166,21 +168,21 @@ this.Runner = class Runner {
     } else {
       return 0;
     }
-  }
+  };
 
-  toString(obj) {
+  Runner.prototype.toString = function(obj) {
     return Program.toString(obj);
-  }
+  };
 
-  process(thread, time_limit) {
+  Runner.prototype.process = function(thread, time_limit) {
     var processor;
     processor = thread.processor;
     processor.time_limit = time_limit;
     this.current_thread = thread;
     return processor.run(this.microvm.context);
-  }
+  };
 
-  tick() {
+  Runner.prototype.tick = function() {
     var dt, frame_time, i, index, j, k, len, load, margin, processing, processor, ref, ref1, t, time, time_limit, time_out;
     if (this.system.fps != null) {
       this.fps = this.fps * .9 + this.system.fps * .1;
@@ -193,7 +195,7 @@ this.Runner = class Runner {
       margin = Math.floor(1000 / this.fps * .8);
     }
     time = Date.now();
-    time_limit = time + 100; // allow more time to prevent interrupting main_thread in the middle of a draw()
+    time_limit = time + 100;
     time_out = this.system.preemptive ? time_limit : 2e308;
     processor = this.main_thread.processor;
     if (!processor.done) {
@@ -209,7 +211,7 @@ this.Runner = class Runner {
     while (processor.done && Date.now() < time_out && this.main_thread.loadNext()) {
       this.process(this.main_thread, time_out);
     }
-    time_limit = time + margin; // secondary threads get remaining time
+    time_limit = time + margin;
     time_out = this.system.preemptive ? time_limit : 2e308;
     processing = true;
     while (processing) {
@@ -266,7 +268,7 @@ this.Runner = class Runner {
       t = this.threads[i];
       if (t.terminated) {
         this.threads.splice(i, 1);
-        index = this.system.threads.indexOf(t.interface);
+        index = this.system.threads.indexOf(t["interface"]);
         if (index >= 0) {
           this.system.threads.splice(index, 1);
         }
@@ -277,9 +279,9 @@ this.Runner = class Runner {
     load = t / dt * 100;
     this.cpu_load = this.cpu_load * .9 + load * .1;
     this.system.cpu_load = Math.min(100, Math.round(this.cpu_load));
-  }
+  };
 
-  createThread(routine, delay, repeat) {
+  Runner.prototype.createThread = function(routine, delay, repeat) {
     var i, j, ref, t;
     t = new Thread(this);
     t.routine = routine;
@@ -289,52 +291,60 @@ this.Runner = class Runner {
       t.repeat = repeat;
       t.delay = delay;
     }
-    this.system.threads.push(t.interface);
+    this.system.threads.push(t["interface"]);
     for (i = j = 0, ref = routine.import_values.length - 1; j <= ref; i = j += 1) {
       if (routine.import_values[i] === routine) {
-        routine.import_values[i] = t.interface;
+        routine.import_values[i] = t["interface"];
       }
     }
-    return t.interface;
-  }
+    return t["interface"];
+  };
 
-  sleep(value) {
+  Runner.prototype.sleep = function(value) {
     if (this.current_thread != null) {
       return this.current_thread.sleep_until = Date.now() + Math.max(0, value);
     }
-  }
+  };
 
-};
+  return Runner;
 
-this.Thread = class Thread {
-  constructor(runner) {
+})();
+
+this.Thread = (function() {
+  function Thread(runner) {
     this.runner = runner;
     this.loop = false;
     this.processor = new Processor(this.runner);
     this.paused = false;
     this.terminated = false;
     this.next_calls = [];
-    this.interface = {
-      pause: () => {
-        return this.pause();
-      },
-      resume: () => {
-        return this.resume();
-      },
-      stop: () => {
-        return this.stop();
-      },
+    this["interface"] = {
+      pause: (function(_this) {
+        return function() {
+          return _this.pause();
+        };
+      })(this),
+      resume: (function(_this) {
+        return function() {
+          return _this.resume();
+        };
+      })(this),
+      stop: (function(_this) {
+        return function() {
+          return _this.stop();
+        };
+      })(this),
       status: "running"
     };
   }
 
-  addCall(call) {
+  Thread.prototype.addCall = function(call) {
     if (this.next_calls.indexOf(call) < 0) {
       return this.next_calls.push(call);
     }
-  }
+  };
 
-  loadNext() {
+  Thread.prototype.loadNext = function() {
     var compiler, f, parser, program;
     if (this.next_calls.length > 0) {
       f = this.next_calls.splice(0, 1)[0];
@@ -354,32 +364,34 @@ this.Thread = class Thread {
     } else {
       return false;
     }
-  }
+  };
 
-  pause() {
-    if (this.interface.status === "running") {
-      this.interface.status = "paused";
+  Thread.prototype.pause = function() {
+    if (this["interface"].status === "running") {
+      this["interface"].status = "paused";
       this.paused = true;
       return 1;
     } else {
       return 0;
     }
-  }
+  };
 
-  resume() {
-    if (this.interface.status === "paused") {
-      this.interface.status = "running";
+  Thread.prototype.resume = function() {
+    if (this["interface"].status === "paused") {
+      this["interface"].status = "running";
       this.paused = false;
       return 1;
     } else {
       return 0;
     }
-  }
+  };
 
-  stop() {
-    this.interface.status = "stopped";
+  Thread.prototype.stop = function() {
+    this["interface"].status = "stopped";
     this.terminated = true;
     return 1;
-  }
+  };
 
-};
+  return Thread;
+
+})();

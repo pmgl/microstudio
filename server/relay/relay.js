@@ -4,28 +4,30 @@ WebSocket = require("ws");
 
 RelaySession = require(__dirname + "/relaysession.js");
 
-Relay = class Relay {
-  constructor(config = {}) {
-    this.config = config;
+Relay = (function() {
+  function Relay(config) {
+    this.config = config != null ? config : {};
     this.sessions = [];
     this.create();
     this.token_requests = {};
   }
 
-  create() {
+  Relay.prototype.create = function() {
     this.io = new WebSocket.Server({
       port: this.config.relay_port
     });
     this.sessions = [];
-    this.io.on("connection", (socket, request) => {
-      socket.request = request;
-      socket.remoteAddress = request.connection.remoteAddress;
-      return this.sessions.push(new RelaySession(this, socket));
-    });
+    this.io.on("connection", (function(_this) {
+      return function(socket, request) {
+        socket.request = request;
+        socket.remoteAddress = request.connection.remoteAddress;
+        return _this.sessions.push(new RelaySession(_this, socket));
+      };
+    })(this));
     return this.startClient();
-  }
+  };
 
-  startClient() {
+  Relay.prototype.startClient = function() {
     var err, interval, msg;
     try {
       console.info("connecting to main server...");
@@ -35,83 +37,99 @@ Relay = class Relay {
         key: this.config.key,
         address: this.config.relay_address
       });
-      this.client.on("open", () => {
-        console.info("connected to main server");
-        return this.client.send(msg);
-      });
-      this.client.on("message", (msg) => {
-        var data;
-        try {
-          data = JSON.parse(msg.data);
-          if (data.name === "check_server_token") {
-            if (data.valid && (this.token_requests[data.token] != null)) {
-              this.token_requests[data.token]();
-              return delete this.token_requests[data.token];
+      this.client.on("open", (function(_this) {
+        return function() {
+          console.info("connected to main server");
+          return _this.client.send(msg);
+        };
+      })(this));
+      this.client.on("message", (function(_this) {
+        return function(msg) {
+          var data;
+          try {
+            data = JSON.parse(msg.data);
+            if (data.name === "check_server_token") {
+              if (data.valid && (_this.token_requests[data.token] != null)) {
+                _this.token_requests[data.token]();
+                return delete _this.token_requests[data.token];
+              }
             }
+          } catch (error) {}
+        };
+      })(this));
+      interval = setInterval(((function(_this) {
+        return function() {
+          var err;
+          try {
+            return _this.client.send(msg);
+          } catch (error) {
+            err = error;
           }
-        } catch (error) {}
-      });
-      interval = setInterval((() => {
-        var err;
-        try {
-          return this.client.send(msg);
-        } catch (error) {
-          err = error;
-        }
-      }), 60000);
-      this.client.on("error", (err) => {
-        console.info(err);
-        clearInterval(interval);
-        setTimeout((() => {
-          return this.startClient();
-        }), 5000);
-        return this.client.close();
-      });
-      return this.client.on("close", (msg) => {
-        clearInterval(interval);
-        return setTimeout((() => {
-          return this.startClient();
-        }), 5000);
-      });
+        };
+      })(this)), 60000);
+      this.client.on("error", (function(_this) {
+        return function(err) {
+          console.info(err);
+          clearInterval(interval);
+          setTimeout((function() {
+            return _this.startClient();
+          }), 5000);
+          return _this.client.close();
+        };
+      })(this));
+      return this.client.on("close", (function(_this) {
+        return function(msg) {
+          clearInterval(interval);
+          return setTimeout((function() {
+            return _this.startClient();
+          }), 5000);
+        };
+      })(this));
     } catch (error) {
       err = error;
       console.error(err);
       if (interval != null) {
         clearInterval(interval);
       }
-      return setTimeout((() => {
-        return this.startClient();
-      }), 5000);
+      return setTimeout(((function(_this) {
+        return function() {
+          return _this.startClient();
+        };
+      })(this)), 5000);
     }
-  }
+  };
 
-  sessionClosed(session) {
+  Relay.prototype.sessionClosed = function(session) {
     var index;
     index = this.sessions.indexOf(session);
     if (index >= 0) {
       return this.sessions.splice(index, 1);
     }
-  }
+  };
 
-  serverTokenCheck(token, server_id, callback) {
+  Relay.prototype.serverTokenCheck = function(token, server_id, callback) {
     this.token_requests[token] = callback();
     return this.client.send(JSON.stringify({
       name: "check_server_token",
       server_id: server_id,
       token: token
     }));
-  }
+  };
 
-};
+  return Relay;
+
+})();
 
 fs = require("fs");
 
-fs.readFile(__dirname + "/config.json", (err, data) => {
-  if (!err) {
-    this.config = JSON.parse(data);
-    console.info("config.json loaded");
-  } else {
-    console.info("No config.json file found, running with default settings");
-  }
-  return this.relay = new Relay(this.config);
-});
+fs.readFile(__dirname + "/config.json", (function(_this) {
+  return function(err, data) {
+    if (!err) {
+      _this.config = JSON.parse(data);
+      console.info("config.json loaded");
+    } else {
+      console.info("No config.json file found, running with default settings");
+    }
+    return _this.relay = new Relay(_this.config);
+  };
+})(this));

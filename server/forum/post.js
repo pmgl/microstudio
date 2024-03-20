@@ -5,8 +5,8 @@ sanitizeHTML = require("sanitize-html");
 
 allowedTags = sanitizeHTML.defaults.allowedTags.concat(["img"]);
 
-this.ForumPost = class ForumPost {
-  constructor(category, record) {
+this.ForumPost = (function() {
+  function ForumPost(category, record) {
     var data;
     this.category = category;
     this.record = record;
@@ -26,7 +26,6 @@ this.ForumPost = class ForumPost {
     this.likes = data.likes || [];
     this.watch = data.watch || [];
     this.users_watching = [];
-    // @reactions = data.reactions or []
     this.pinned = data.pinned;
     this.replies = [];
     this.slug = this.slugify(this.title);
@@ -37,18 +36,18 @@ this.ForumPost = class ForumPost {
     this.reverse = data.reverse;
   }
 
-  isDeleted() {
+  ForumPost.prototype.isDeleted = function() {
     return this.deleted || (this.author == null) || this.author.flags.deleted;
-  }
+  };
 
-  addReply(reply) {
+  ForumPost.prototype.addReply = function(reply) {
     this.replies.push(reply);
     if (!reply.deleted) {
       return this.addPeople(reply.author);
     }
-  }
+  };
 
-  addPeople(author) {
+  ForumPost.prototype.addPeople = function(author) {
     var i, len, p, ref;
     this.sort_people = true;
     ref = this.people;
@@ -63,9 +62,9 @@ this.ForumPost = class ForumPost {
       author: author,
       replies: 1
     });
-  }
+  };
 
-  getPeople() {
+  ForumPost.prototype.getPeople = function() {
     if (this.sort_people) {
       this.sort_people = false;
       this.people.sort(function(a, b) {
@@ -73,35 +72,35 @@ this.ForumPost = class ForumPost {
       });
     }
     return this.people;
-  }
+  };
 
-  set(prop, value) {
+  ForumPost.prototype.set = function(prop, value) {
     var data;
     data = this.record.get();
     data[prop] = value;
     this.record.set(data);
     return this[prop] = value;
-  }
+  };
 
-  setCategoryId(id) {
+  ForumPost.prototype.setCategoryId = function(id) {
     var data;
     data = this.record.get();
     data["category"] = id;
     return this.record.set(data);
-  }
+  };
 
-  edit(text) {
+  ForumPost.prototype.edit = function(text) {
     this.set("text", text);
     this.set("edits", this.edits + 1);
     return this.updateActivity();
-  }
+  };
 
-  setTitle(title) {
+  ForumPost.prototype.setTitle = function(title) {
     this.set("title", title);
     return this.slug = this.slugify(this.title);
-  }
+  };
 
-  addLike(id) {
+  ForumPost.prototype.addLike = function(id) {
     var index;
     index = this.likes.indexOf(id);
     if (index < 0) {
@@ -109,9 +108,9 @@ this.ForumPost = class ForumPost {
       this.set("likes", this.likes);
     }
     return this.likes.length;
-  }
+  };
 
-  removeLike(id) {
+  ForumPost.prototype.removeLike = function(id) {
     var index;
     index = this.likes.indexOf(id);
     if (index >= 0) {
@@ -119,40 +118,40 @@ this.ForumPost = class ForumPost {
       this.set("likes", this.likes);
     }
     return this.likes.length;
-  }
+  };
 
-  isLiked(id) {
+  ForumPost.prototype.isLiked = function(id) {
     return this.likes.indexOf(id) >= 0;
-  }
+  };
 
-  addWatch(id) {
+  ForumPost.prototype.addWatch = function(id) {
     var index;
     index = this.watch.indexOf(id);
     if (index < 0) {
       this.watch.push(id);
       return this.set("watch", this.watch);
     }
-  }
+  };
 
-  removeWatch(id) {
+  ForumPost.prototype.removeWatch = function(id) {
     var index;
     index = this.watch.indexOf(id);
     if (index >= 0) {
       this.watch.splice(index, 1);
       return this.set("watch", this.watch);
     }
-  }
+  };
 
-  isWatching(id) {
+  ForumPost.prototype.isWatching = function(id) {
     return this.watch.indexOf(id) >= 0;
-  }
+  };
 
-  view(ip) {
+  ForumPost.prototype.view = function(ip) {
     if (ip == null) {
       return;
     }
     if ((this.views_buffer == null) || Date.now() > this.views_buffer_expiration) {
-      this.views_buffer_expiration = Date.now() + 2 * 60 * 60 * 1000; // one view per 2 hours per ip
+      this.views_buffer_expiration = Date.now() + 2 * 60 * 60 * 1000;
       this.views_buffer = {};
     }
     if (this.views_buffer[ip]) {
@@ -160,38 +159,40 @@ this.ForumPost = class ForumPost {
     }
     this.views_buffer[ip] = true;
     return this.set("views", this.views + 1);
-  }
+  };
 
-  updateActivity() {
+  ForumPost.prototype.updateActivity = function() {
     this.set("activity", Date.now());
     return this.category.updateActivity();
-  }
+  };
 
-  getPath() {
+  ForumPost.prototype.getPath = function() {
     var path;
     path = "/";
     if (this.category.language !== "en") {
-      path += `${this.category.language}/`;
+      path += this.category.language + "/";
     }
-    path += `community/${this.category.slug}/`;
-    return path += `${this.slug}/${this.id}/`;
-  }
+    path += "community/" + this.category.slug + "/";
+    return path += this.slug + "/" + this.id + "/";
+  };
 
-  slugify(text) {
+  ForumPost.prototype.slugify = function(text) {
     var res;
     res = text.normalize('NFD').replace(/[\s]/g, "-").replace(/[^a-zA-Z0-9_-]/g, "").toLowerCase();
     if (res.length === 0) {
       res = "_";
     }
     return res;
-  }
+  };
 
-  getHTMLText() {
+  ForumPost.prototype.getHTMLText = function() {
     return sanitizeHTML(marked(this.text), {
       allowedTags: allowedTags
     });
-  }
+  };
 
-};
+  return ForumPost;
+
+})();
 
 module.exports = this.ForumPost;

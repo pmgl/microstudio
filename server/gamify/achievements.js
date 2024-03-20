@@ -1,5 +1,5 @@
-this.Achievement = class {
-  constructor(props) {
+this.Achievement = (function() {
+  function _Class(props) {
     this.id = props.id;
     this.name = props.name;
     this.description = props.description;
@@ -9,16 +9,18 @@ this.Achievement = class {
     this.xp = props.xp || 0;
   }
 
-};
+  return _Class;
 
-this.Achievements = new class {
-  constructor() {
+})();
+
+this.Achievements = new ((function() {
+  function _Class() {
     this.list = [];
     this.by_stat = {};
     this.by_id = {};
   }
 
-  add(a) {
+  _Class.prototype.add = function(a) {
     var by_stat;
     this.list.push(a);
     this.by_id[a.id] = a;
@@ -29,12 +31,12 @@ this.Achievements = new class {
       }
       return by_stat.push(a);
     }
-  }
+  };
 
-};
+  return _Class;
 
-// Code achievements
-//#########################
+})());
+
 this.Achievements.add(new this.Achievement({
   id: "code/al_khwarizmi",
   name: "Al Khwarizmi",
@@ -155,8 +157,6 @@ this.Achievements.add(new this.Achievement({
   xp: 6000
 }));
 
-// Art achievements
-//#########################
 this.Achievements.add(new this.Achievement({
   id: "art/cave_art",
   name: "Cave Art",
@@ -247,8 +247,6 @@ this.Achievements.add(new this.Achievement({
   xp: 5000
 }));
 
-// Level design achievements
-//##########################
 this.Achievements.add(new this.Achievement({
   id: "level_design/level1",
   name: "Level Design Rookie",
@@ -348,8 +346,6 @@ this.Achievements.add(new this.Achievement({
   xp: 5500
 }));
 
-// Tutorial achievements
-//##########################
 this.Achievements.add(new this.Achievement({
   id: "tutorials/tutorial_tour",
   name: "microStudio Tourist",
@@ -378,8 +374,6 @@ this.Achievements.add(new this.Achievement({
   xp: 2000
 }));
 
-// Community achievements
-//#########################
 this.Achievements.add(new this.Achievement({
   id: "community/5_likes",
   name: "Recognition",

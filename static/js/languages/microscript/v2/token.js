@@ -1,5 +1,5 @@
-this.Token = class Token {
-  constructor(tokenizer, type, value, string_value) {
+this.Token = (function() {
+  function Token(tokenizer, type, value, string_value) {
     this.tokenizer = tokenizer;
     this.type = type;
     this.value = value;
@@ -16,11 +16,13 @@ this.Token = class Token {
     this.is_binary_operator = (this.type >= 30 && this.type <= 39) || (this.type >= 200 && this.type <= 201) || (this.type >= 2 && this.type <= 7);
   }
 
-  toString() {
+  Token.prototype.toString = function() {
     return this.value + " : " + this.type;
-  }
+  };
 
-};
+  return Token;
+
+})();
 
 this.Token.TYPE_EQUALS = 1;
 
@@ -46,8 +48,6 @@ this.Token.TYPE_OPEN_BRACE = 20;
 
 this.Token.TYPE_CLOSED_BRACE = 21;
 
-// @Token.TYPE_OPEN_CURLY_BRACE = 22
-// @Token.TYPE_CLOSED_CURLY_BRACE = 23
 this.Token.TYPE_OPEN_BRACKET = 24;
 
 this.Token.TYPE_CLOSED_BRACKET = 25;

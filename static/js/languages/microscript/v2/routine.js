@@ -1,5 +1,5 @@
-this.Routine = class Routine {
-  constructor(num_args) {
+this.Routine = (function() {
+  function Routine(num_args) {
     this.num_args = num_args;
     this.ops = [];
     this.opcodes = [];
@@ -14,7 +14,7 @@ this.Routine = class Routine {
     this.import_self = -1;
   }
 
-  clone() {
+  Routine.prototype.clone = function() {
     var r;
     r = new Routine(this.num_args);
     r.opcodes = this.opcodes;
@@ -23,24 +23,27 @@ this.Routine = class Routine {
     r.locals_size = this.locals_size;
     r.uses_arguments = this.uses_arguments;
     return r;
-  }
+  };
 
-  createLabel(str = "label") {
+  Routine.prototype.createLabel = function(str) {
     var name;
+    if (str == null) {
+      str = "label";
+    }
     return name = ":" + str + "_" + this.label_count++;
-  }
+  };
 
-  setLabel(name) {
+  Routine.prototype.setLabel = function(name) {
     return this.labels[name] = this.opcodes.length;
-  }
+  };
 
-  optimize() {
+  Routine.prototype.optimize = function() {
     if (this.transpile) {
       new Transpiler().transpile(this);
     }
-  }
+  };
 
-  removeable(index) {
+  Routine.prototype.removeable = function(index) {
     var label, ref1, value;
     ref1 = this.labels;
     for (label in ref1) {
@@ -50,9 +53,9 @@ this.Routine = class Routine {
       }
     }
     return true;
-  }
+  };
 
-  remove(index) {
+  Routine.prototype.remove = function(index) {
     var label, ref1, value;
     ref1 = this.labels;
     for (label in ref1) {
@@ -67,12 +70,12 @@ this.Routine = class Routine {
     this.arg1.splice(index, 1);
     this.ref.splice(index, 1);
     return true;
-  }
+  };
 
-  resolveLabels() {
+  Routine.prototype.resolveLabels = function() {
     var i, j, ref1, ref2, ref3, results;
     results = [];
-    for (i = j = 0, ref1 = this.opcodes.length - 1; (0 <= ref1 ? j <= ref1 : j >= ref1); i = 0 <= ref1 ? ++j : --j) {
+    for (i = j = 0, ref1 = this.opcodes.length - 1; 0 <= ref1 ? j <= ref1 : j >= ref1; i = 0 <= ref1 ? ++j : --j) {
       if ((ref2 = this.opcodes[i]) === OPCODES.JUMP || ref2 === OPCODES.JUMPY || ref2 === OPCODES.JUMPN || ref2 === OPCODES.JUMPY_NOPOP || ref2 === OPCODES.JUMPN_NOPOP) {
         if (this.labels[this.arg1[i]]) {
           results.push(this.arg1[i] = this.labels[this.arg1[i]]);
@@ -90,16 +93,22 @@ this.Routine = class Routine {
       }
     }
     return results;
-  }
+  };
 
-  OP(code, ref, v1 = 0) {
+  Routine.prototype.OP = function(code, ref, v1) {
+    if (v1 == null) {
+      v1 = 0;
+    }
     this.opcodes.push(code);
     this.arg1.push(v1);
     return this.ref.push(ref);
-  }
+  };
 
-  OP_INSERT(code, ref, v1 = 0, index) {
+  Routine.prototype.OP_INSERT = function(code, ref, v1, index) {
     var label, ref1, value;
+    if (v1 == null) {
+      v1 = 0;
+    }
     this.opcodes.splice(index, 0, code);
     this.arg1.splice(index, 0, v1);
     this.ref.splice(index, 0, ref);
@@ -110,261 +119,267 @@ this.Routine = class Routine {
         this.labels[label] += 1;
       }
     }
-  }
+  };
 
-  TYPE(ref) {
+  Routine.prototype.TYPE = function(ref) {
     return this.OP(OPCODES.TYPE, ref);
-  }
+  };
 
-  VARIABLE_TYPE(variable, ref) {
+  Routine.prototype.VARIABLE_TYPE = function(variable, ref) {
     return this.OP(OPCODES.VARIABLE_TYPE, ref, variable);
-  }
+  };
 
-  PROPERTY_TYPE(ref) {
+  Routine.prototype.PROPERTY_TYPE = function(ref) {
     return this.OP(OPCODES.PROPERTY_TYPE, ref);
-  }
+  };
 
-  LOAD_THIS(ref) {
+  Routine.prototype.LOAD_THIS = function(ref) {
     return this.OP(OPCODES.LOAD_THIS, ref);
-  }
+  };
 
-  LOAD_GLOBAL(ref) {
+  Routine.prototype.LOAD_GLOBAL = function(ref) {
     return this.OP(OPCODES.LOAD_GLOBAL, ref);
-  }
+  };
 
-  LOAD_VALUE(value, ref) {
+  Routine.prototype.LOAD_VALUE = function(value, ref) {
     return this.OP(OPCODES.LOAD_VALUE, ref, value);
-  }
+  };
 
-  LOAD_LOCAL(index, ref) {
+  Routine.prototype.LOAD_LOCAL = function(index, ref) {
     return this.OP(OPCODES.LOAD_LOCAL, ref, index);
-  }
+  };
 
-  LOAD_VARIABLE(variable, ref) {
+  Routine.prototype.LOAD_VARIABLE = function(variable, ref) {
     return this.OP(OPCODES.LOAD_VARIABLE, ref, variable);
-  }
+  };
 
-  LOAD_LOCAL_OBJECT(index, ref) {
+  Routine.prototype.LOAD_LOCAL_OBJECT = function(index, ref) {
     return this.OP(OPCODES.LOAD_LOCAL_OBJECT, ref, index);
-  }
+  };
 
-  LOAD_VARIABLE_OBJECT(variable, ref) {
+  Routine.prototype.LOAD_VARIABLE_OBJECT = function(variable, ref) {
     return this.OP(OPCODES.LOAD_VARIABLE_OBJECT, ref, variable);
-  }
+  };
 
-  POP(ref) {
+  Routine.prototype.POP = function(ref) {
     return this.OP(OPCODES.POP, ref);
-  }
+  };
 
-  LOAD_PROPERTY(ref) {
+  Routine.prototype.LOAD_PROPERTY = function(ref) {
     return this.OP(OPCODES.LOAD_PROPERTY, ref);
-  }
+  };
 
-  LOAD_PROPERTY_OBJECT(ref) {
+  Routine.prototype.LOAD_PROPERTY_OBJECT = function(ref) {
     return this.OP(OPCODES.LOAD_PROPERTY_OBJECT, ref);
-  }
+  };
 
-  CREATE_OBJECT(ref) {
+  Routine.prototype.CREATE_OBJECT = function(ref) {
     return this.OP(OPCODES.CREATE_OBJECT, ref);
-  }
+  };
 
-  MAKE_OBJECT(ref) {
+  Routine.prototype.MAKE_OBJECT = function(ref) {
     return this.OP(OPCODES.MAKE_OBJECT, ref);
-  }
+  };
 
-  CREATE_ARRAY(ref) {
+  Routine.prototype.CREATE_ARRAY = function(ref) {
     return this.OP(OPCODES.CREATE_ARRAY, ref);
-  }
+  };
 
-  CREATE_CLASS(parent_var, ref) {
+  Routine.prototype.CREATE_CLASS = function(parent_var, ref) {
     return this.OP(OPCODES.CREATE_CLASS, ref, parent_var);
-  }
+  };
 
-  UPDATE_CLASS(variable, ref) {
+  Routine.prototype.UPDATE_CLASS = function(variable, ref) {
     return this.OP(OPCODES.UPDATE_CLASS, ref, variable);
-  }
+  };
 
-  NEW_CALL(args, ref) {
+  Routine.prototype.NEW_CALL = function(args, ref) {
     return this.OP(OPCODES.NEW_CALL, ref, args);
-  }
+  };
 
-  ADD(ref, self = 0) {
+  Routine.prototype.ADD = function(ref, self) {
+    if (self == null) {
+      self = 0;
+    }
     return this.OP(OPCODES.ADD, ref, self);
-  }
+  };
 
-  SUB(ref, self = 0) {
+  Routine.prototype.SUB = function(ref, self) {
+    if (self == null) {
+      self = 0;
+    }
     return this.OP(OPCODES.SUB, ref, self);
-  }
+  };
 
-  MUL(ref) {
+  Routine.prototype.MUL = function(ref) {
     return this.OP(OPCODES.MUL, ref);
-  }
+  };
 
-  DIV(ref) {
+  Routine.prototype.DIV = function(ref) {
     return this.OP(OPCODES.DIV, ref);
-  }
+  };
 
-  MODULO(ref) {
+  Routine.prototype.MODULO = function(ref) {
     return this.OP(OPCODES.MODULO, ref);
-  }
+  };
 
-  BINARY_AND(ref) {
+  Routine.prototype.BINARY_AND = function(ref) {
     return this.OP(OPCODES.BINARY_AND, ref);
-  }
+  };
 
-  BINARY_OR(ref) {
+  Routine.prototype.BINARY_OR = function(ref) {
     return this.OP(OPCODES.BINARY_OR, ref);
-  }
+  };
 
-  SHIFT_LEFT(ref) {
+  Routine.prototype.SHIFT_LEFT = function(ref) {
     return this.OP(OPCODES.SHIFT_LEFT, ref);
-  }
+  };
 
-  SHIFT_RIGHT(ref) {
+  Routine.prototype.SHIFT_RIGHT = function(ref) {
     return this.OP(OPCODES.SHIFT_RIGHT, ref);
-  }
+  };
 
-  NEGATE(ref) {
+  Routine.prototype.NEGATE = function(ref) {
     return this.OP(OPCODES.NEGATE, ref);
-  }
+  };
 
-  LOAD_PROPERTY_ATOP(ref) {
+  Routine.prototype.LOAD_PROPERTY_ATOP = function(ref) {
     return this.OP(OPCODES.LOAD_PROPERTY_ATOP, ref);
-  }
+  };
 
-  EQ(ref) {
+  Routine.prototype.EQ = function(ref) {
     return this.OP(OPCODES.EQ, ref);
-  }
+  };
 
-  NEQ(ref) {
+  Routine.prototype.NEQ = function(ref) {
     return this.OP(OPCODES.NEQ, ref);
-  }
+  };
 
-  LT(ref) {
+  Routine.prototype.LT = function(ref) {
     return this.OP(OPCODES.LT, ref);
-  }
+  };
 
-  GT(ref) {
+  Routine.prototype.GT = function(ref) {
     return this.OP(OPCODES.GT, ref);
-  }
+  };
 
-  LTE(ref) {
+  Routine.prototype.LTE = function(ref) {
     return this.OP(OPCODES.LTE, ref);
-  }
+  };
 
-  GTE(ref) {
+  Routine.prototype.GTE = function(ref) {
     return this.OP(OPCODES.GTE, ref);
-  }
+  };
 
-  NOT(ref) {
+  Routine.prototype.NOT = function(ref) {
     return this.OP(OPCODES.NOT, ref);
-  }
+  };
 
-  FORLOOP_INIT(iterator, ref) {
+  Routine.prototype.FORLOOP_INIT = function(iterator, ref) {
     return this.OP(OPCODES.FORLOOP_INIT, ref, iterator);
-  }
+  };
 
-  FORLOOP_CONTROL(args, ref) {
+  Routine.prototype.FORLOOP_CONTROL = function(args, ref) {
     return this.OP(OPCODES.FORLOOP_CONTROL, ref, args);
-  }
+  };
 
-  FORIN_INIT(args, ref) {
+  Routine.prototype.FORIN_INIT = function(args, ref) {
     return this.OP(OPCODES.FORIN_INIT, ref, args);
-  }
+  };
 
-  FORIN_CONTROL(args, ref) {
+  Routine.prototype.FORIN_CONTROL = function(args, ref) {
     return this.OP(OPCODES.FORIN_CONTROL, ref, args);
-  }
+  };
 
-  JUMP(index, ref) {
+  Routine.prototype.JUMP = function(index, ref) {
     return this.OP(OPCODES.JUMP, ref, index);
-  }
+  };
 
-  JUMPY(index, ref) {
+  Routine.prototype.JUMPY = function(index, ref) {
     return this.OP(OPCODES.JUMPY, ref, index);
-  }
+  };
 
-  JUMPN(index, ref) {
+  Routine.prototype.JUMPN = function(index, ref) {
     return this.OP(OPCODES.JUMPN, ref, index);
-  }
+  };
 
-  JUMPY_NOPOP(index, ref) {
+  Routine.prototype.JUMPY_NOPOP = function(index, ref) {
     return this.OP(OPCODES.JUMPY_NOPOP, ref, index);
-  }
+  };
 
-  JUMPN_NOPOP(index, ref) {
+  Routine.prototype.JUMPN_NOPOP = function(index, ref) {
     return this.OP(OPCODES.JUMPN_NOPOP, ref, index);
-  }
+  };
 
-  STORE_LOCAL(index, ref) {
+  Routine.prototype.STORE_LOCAL = function(index, ref) {
     return this.OP(OPCODES.STORE_LOCAL, ref, index);
-  }
+  };
 
-  STORE_VARIABLE(field, ref) {
+  Routine.prototype.STORE_VARIABLE = function(field, ref) {
     return this.OP(OPCODES.STORE_VARIABLE, ref, field);
-  }
+  };
 
-  CREATE_PROPERTY(ref) {
+  Routine.prototype.CREATE_PROPERTY = function(ref) {
     return this.OP(OPCODES.CREATE_PROPERTY, ref);
-  }
+  };
 
-  STORE_PROPERTY(ref) {
+  Routine.prototype.STORE_PROPERTY = function(ref) {
     return this.OP(OPCODES.STORE_PROPERTY, ref);
-  }
+  };
 
-  LOAD_ROUTINE(value, ref) {
+  Routine.prototype.LOAD_ROUTINE = function(value, ref) {
     return this.OP(OPCODES.LOAD_ROUTINE, ref, value);
-  }
+  };
 
-  FUNCTION_CALL(args, ref) {
+  Routine.prototype.FUNCTION_CALL = function(args, ref) {
     return this.OP(OPCODES.FUNCTION_CALL, ref, args);
-  }
+  };
 
-  FUNCTION_APPLY_VARIABLE(args, ref) {
+  Routine.prototype.FUNCTION_APPLY_VARIABLE = function(args, ref) {
     return this.OP(OPCODES.FUNCTION_APPLY_VARIABLE, ref, args);
-  }
+  };
 
-  FUNCTION_APPLY_PROPERTY(args, ref) {
+  Routine.prototype.FUNCTION_APPLY_PROPERTY = function(args, ref) {
     return this.OP(OPCODES.FUNCTION_APPLY_PROPERTY, ref, args);
-  }
+  };
 
-  SUPER_CALL(args, ref) {
+  Routine.prototype.SUPER_CALL = function(args, ref) {
     return this.OP(OPCODES.SUPER_CALL, ref, args);
-  }
+  };
 
-  RETURN(ref) {
+  Routine.prototype.RETURN = function(ref) {
     return this.OP(OPCODES.RETURN, ref);
-  }
+  };
 
-  AFTER(ref) {
+  Routine.prototype.AFTER = function(ref) {
     return this.OP(OPCODES.AFTER, ref);
-  }
+  };
 
-  EVERY(ref) {
+  Routine.prototype.EVERY = function(ref) {
     return this.OP(OPCODES.EVERY, ref);
-  }
+  };
 
-  DO(ref) {
+  Routine.prototype.DO = function(ref) {
     return this.OP(OPCODES.DO, ref);
-  }
+  };
 
-  SLEEP(ref) {
+  Routine.prototype.SLEEP = function(ref) {
     return this.OP(OPCODES.SLEEP, ref);
-  }
+  };
 
-  DELETE(ref) {
+  Routine.prototype.DELETE = function(ref) {
     return this.OP(OPCODES.DELETE, ref);
-  }
+  };
 
-  UNARY_OP(f, ref) {
+  Routine.prototype.UNARY_OP = function(f, ref) {
     return this.OP(OPCODES.UNARY_OP, ref, f);
-  }
+  };
 
-  BINARY_OP(f, ref) {
+  Routine.prototype.BINARY_OP = function(f, ref) {
     return this.OP(OPCODES.BINARY_OP, ref, f);
-  }
+  };
 
-  toString() {
+  Routine.prototype.toString = function() {
     var i, j, len, op, ref1, s;
     s = "";
     ref1 = this.opcodes;
@@ -372,18 +387,19 @@ this.Routine = class Routine {
       op = ref1[i];
       s += OPCODES[op];
       if (this.arg1[i] != null) {
-        //if typeof @arg1[i] != "function"
-        s += ` ${this.arg1[i]}`;
+        s += " " + this.arg1[i];
       }
       s += "\n";
     }
     return s;
-  }
+  };
 
-};
+  return Routine;
 
-this.OPCODES_CLASS = class OPCODES_CLASS {
-  constructor() {
+})();
+
+this.OPCODES_CLASS = (function() {
+  function OPCODES_CLASS() {
     this.table = {};
     this.set("TYPE", 1);
     this.set("VARIABLE_TYPE", 2);
@@ -452,11 +468,13 @@ this.OPCODES_CLASS = class OPCODES_CLASS {
     this.set("SLEEP", 113);
   }
 
-  set(op, code) {
+  OPCODES_CLASS.prototype.set = function(op, code) {
     this[op] = code;
     return this[code] = op;
-  }
+  };
 
-};
+  return OPCODES_CLASS;
+
+})();
 
 this.OPCODES = new this.OPCODES_CLASS;

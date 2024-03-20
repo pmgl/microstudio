@@ -1,18 +1,17 @@
-this.Highlighter = class Highlighter {
-  constructor(tutorial) {
+this.Highlighter = (function() {
+  function Highlighter(tutorial) {
     this.tutorial = tutorial;
     this.shown = false;
     this.canvas = document.getElementById("highlighter");
     this.arrow = document.getElementById("highlighter-arrow");
   }
 
-  highlight(ref, auto) {
+  Highlighter.prototype.highlight = function(ref, auto) {
     var element, h, rect, w, x, y;
     if (ref != null) {
       element = document.querySelector(ref);
     }
     if (element != null) {
-      // open main menu when it is collapsed
       if (ref.indexOf(".titlemenu") >= 0 && (document.getElementById("main-menu-button").offsetParent != null)) {
         element = document.getElementById("main-menu-button");
       }
@@ -28,19 +27,21 @@ this.Highlighter = class Highlighter {
       h = Math.floor(rect.height * 1) + 40;
       this.canvas.width = w;
       this.canvas.height = h;
-      this.canvas.style.width = `${w}px`;
-      this.canvas.style.height = `${h}px`;
-      this.canvas.style.top = `${Math.round(y - h / 2)}px`;
-      this.canvas.style.left = `${Math.round(x - w / 2)}px`;
+      this.canvas.style.width = w + "px";
+      this.canvas.style.height = h + "px";
+      this.canvas.style.top = (Math.round(y - h / 2)) + "px";
+      this.canvas.style.left = (Math.round(x - w / 2)) + "px";
       this.canvas.style.display = "block";
       this.shown = true;
       this.updateCanvas();
       if (this.timeout != null) {
         clearTimeout(this.timeout);
       }
-      this.timeout = setTimeout((() => {
-        return this.justHide();
-      }), 6000);
+      this.timeout = setTimeout(((function(_this) {
+        return function() {
+          return _this.justHide();
+        };
+      })(this)), 6000);
       if (auto) {
         return this.setAuto(element);
       } else {
@@ -51,60 +52,70 @@ this.Highlighter = class Highlighter {
     } else {
       return this.hide();
     }
-  }
+  };
 
-  setAuto(element) {
+  Highlighter.prototype.setAuto = function(element) {
     var f;
     if (element.tagName === "INPUT" && element.type === "text") {
-      f = (event) => {
-        if (event.key === "Enter") {
-          this.tutorial.nextStep();
-          return element.removeEventListener("keydown", f);
-        }
-      };
+      f = (function(_this) {
+        return function(event) {
+          if (event.key === "Enter") {
+            _this.tutorial.nextStep();
+            return element.removeEventListener("keydown", f);
+          }
+        };
+      })(this);
       element.addEventListener("keydown", f);
       if (this.remove_event_listener != null) {
         this.remove_event_listener();
       }
-      return this.remove_event_listener = () => {
-        return element.removeEventListener("keydown", f);
-      };
+      return this.remove_event_listener = (function(_this) {
+        return function() {
+          return element.removeEventListener("keydown", f);
+        };
+      })(this);
     } else {
-      f = () => {
-        this.tutorial.nextStep();
-        return element.removeEventListener("click", f);
-      };
+      f = (function(_this) {
+        return function() {
+          _this.tutorial.nextStep();
+          return element.removeEventListener("click", f);
+        };
+      })(this);
       element.addEventListener("click", f);
       if (this.remove_event_listener != null) {
         this.remove_event_listener();
       }
-      return this.remove_event_listener = () => {
-        return element.removeEventListener("click", f);
-      };
+      return this.remove_event_listener = (function(_this) {
+        return function() {
+          return element.removeEventListener("click", f);
+        };
+      })(this);
     }
-  }
+  };
 
-  hide() {
+  Highlighter.prototype.hide = function() {
     this.shown = false;
     this.canvas.style.display = "none";
     if (this.remove_event_listener != null) {
       return this.remove_event_listener();
     }
-  }
+  };
 
-  justHide() {
+  Highlighter.prototype.justHide = function() {
     this.shown = false;
     return this.canvas.style.display = "none";
-  }
+  };
 
-  updateCanvas() {
+  Highlighter.prototype.updateCanvas = function() {
     var amount, context, grd, h, i, j, ref1, w, x, y;
     if (!this.shown) {
       return;
     }
-    requestAnimationFrame(() => {
-      return this.updateCanvas();
-    });
+    requestAnimationFrame((function(_this) {
+      return function() {
+        return _this.updateCanvas();
+      };
+    })(this));
     context = this.canvas.getContext("2d");
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (this.highlighted.getBoundingClientRect().width === 0) {
@@ -133,8 +144,9 @@ this.Highlighter = class Highlighter {
       y = y > 0 ? Math.sqrt(y) : -Math.sqrt(-y);
       context.lineTo(this.canvas.width / 2 + x * w, this.canvas.height / 2 + y * h);
     }
-    //context.ellipse(@canvas.width/2,@canvas.height/2,w,h,Math.PI,Math.PI*2*Math.min(1,amount),0,true)
     return context.stroke();
-  }
+  };
 
-};
+  return Highlighter;
+
+})();

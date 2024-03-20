@@ -1,15 +1,23 @@
-this.MicroVM = class MicroVM {
-  constructor(meta = {}, global = {}, namespace1 = "/microstudio", preserve_ls = false) {
+this.MicroVM = (function() {
+  function MicroVM(meta, global, namespace1, preserve_ls) {
     var ctx, err;
-    this.namespace = namespace1;
-    this.preserve_ls = preserve_ls;
+    if (meta == null) {
+      meta = {};
+    }
+    if (global == null) {
+      global = {};
+    }
+    this.namespace = namespace1 != null ? namespace1 : "/microstudio";
+    this.preserve_ls = preserve_ls != null ? preserve_ls : false;
     if (meta.print == null) {
-      meta.print = (text) => {
-        if (typeof text === "object" && (this.runner != null)) {
-          text = this.runner.toString(text);
-        }
-        return console.info(text);
-      };
+      meta.print = (function(_this) {
+        return function(text) {
+          if (typeof text === "object" && (_this.runner != null)) {
+            text = _this.runner.toString(text);
+          }
+          return console.info(text);
+        };
+      })(this);
     }
     Array.prototype.insert = function(e) {
       this.splice(0, 0, e);
@@ -127,8 +135,8 @@ this.MicroVM = class MicroVM {
     };
     meta.random = new Random(0);
     meta.PI = Math.PI;
-    meta.true = 1;
-    meta.false = 0;
+    meta["true"] = 1;
+    meta["false"] = 0;
     global.system = {
       time: Date.now,
       language: navigator.language,
@@ -139,24 +147,28 @@ this.MicroVM = class MicroVM {
         touch: "ontouchstart" in window ? 1 : 0,
         gamepad: 0
       },
-      prompt: (text, callback) => {
-        return setTimeout((() => {
-          var args, result;
-          global.mouse.pressed = 0;
-          global.touch.touching = 0;
-          result = window.prompt(text);
-          if ((callback != null) && typeof callback === "function") {
-            args = [(result != null ? 1 : 0), result];
-            this.context.timeout = Date.now() + 1000;
-            return callback.apply(null, args);
-          }
-        }), 0);
-      },
-      say: (text) => {
-        return setTimeout((() => {
-          return window.alert(text);
-        }), 0);
-      }
+      prompt: (function(_this) {
+        return function(text, callback) {
+          return setTimeout((function() {
+            var args, result;
+            global.mouse.pressed = 0;
+            global.touch.touching = 0;
+            result = window.prompt(text);
+            if ((callback != null) && typeof callback === "function") {
+              args = [(result != null ? 1 : 0), result];
+              _this.context.timeout = Date.now() + 1000;
+              return callback.apply(null, args);
+            }
+          }), 0);
+        };
+      })(this),
+      say: (function(_this) {
+        return function(text) {
+          return setTimeout((function() {
+            return window.alert(text);
+          }), 0);
+        };
+      })(this)
     };
     try {
       global.system.inputs.keyboard = window.matchMedia("(pointer:fine)").matches ? 1 : 0;
@@ -193,7 +205,7 @@ this.MicroVM = class MicroVM {
     this.runner = new Runner(this);
   }
 
-  clearWarnings() {
+  MicroVM.prototype.clearWarnings = function() {
     return this.context.warnings = {
       using_undefined_variable: {},
       assigning_field_to_undefined: {},
@@ -201,19 +213,25 @@ this.MicroVM = class MicroVM {
       assigning_api_variable: {},
       assignment_as_condition: {}
     };
-  }
+  };
 
-  setMeta(key, value) {
+  MicroVM.prototype.setMeta = function(key, value) {
     return this.context.meta[key] = value;
-  }
+  };
 
-  setGlobal(key, value) {
+  MicroVM.prototype.setGlobal = function(key, value) {
     return this.context.global[key] = value;
-  }
+  };
 
-  run(program, timeout = 3000, filename = "", callback) {
+  MicroVM.prototype.run = function(program, timeout, filename, callback) {
     var err, res;
     this.program = program;
+    if (timeout == null) {
+      timeout = 3000;
+    }
+    if (filename == null) {
+      filename = "";
+    }
     this.error_info = null;
     this.context.timeout = Date.now() + timeout;
     this.context.stack_size = 0;
@@ -236,7 +254,7 @@ this.MicroVM = class MicroVM {
           line: this.context.location.token.line,
           column: this.context.location.token.column
         };
-        console.info(`Error at line: ${this.context.location.token.line} column: ${this.context.location.token.column}`);
+        console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
       } else {
         this.error_info = {
           error: err,
@@ -246,10 +264,16 @@ this.MicroVM = class MicroVM {
       console.error(err);
       return this.storage_service.check();
     }
-  }
+  };
 
-  call(name, args = [], timeout = 3000) {
+  MicroVM.prototype.call = function(name, args, timeout) {
     var err, res;
+    if (args == null) {
+      args = [];
+    }
+    if (timeout == null) {
+      timeout = 3000;
+    }
     this.error_info = null;
     this.context.timeout = Date.now() + timeout;
     this.context.stack_size = 0;
@@ -273,18 +297,18 @@ this.MicroVM = class MicroVM {
         };
       }
       if ((this.context.location != null) && (this.context.location.token != null)) {
-        console.info(`Error at line: ${this.context.location.token.line} column: ${this.context.location.token.column}`);
+        console.info("Error at line: " + this.context.location.token.line + " column: " + this.context.location.token.column);
       }
       return this.storage_service.check();
     }
-  }
+  };
 
-  createStorageService() {
+  MicroVM.prototype.createStorageService = function() {
     var err, error, ls, namespace, s, service, storage, write_storage;
     try {
       ls = window.localStorage;
     } catch (error1) {
-      error = error1; // in incognito mode, embedded by an iframe, localStorage isn't available
+      error = error1;
       console.info("localStorage not available");
       return service = {
         api: {
@@ -307,7 +331,7 @@ this.MicroVM = class MicroVM {
     write_storage = false;
     namespace = this.namespace;
     try {
-      s = ls.getItem(`ms${namespace}`);
+      s = ls.getItem("ms" + namespace);
       if (s) {
         storage = JSON.parse(s);
       }
@@ -316,46 +340,52 @@ this.MicroVM = class MicroVM {
     }
     return service = {
       api: {
-        set: (name, value) => {
-          value = this.storableObject(value);
-          if ((name != null) && (value != null)) {
-            storage[name] = value;
-            write_storage = true;
-          }
-          return value;
-        },
-        get: (name) => {
-          if (name != null) {
-            if (storage[name] != null) {
-              return storage[name];
+        set: (function(_this) {
+          return function(name, value) {
+            value = _this.storableObject(value);
+            if ((name != null) && (value != null)) {
+              storage[name] = value;
+              write_storage = true;
+            }
+            return value;
+          };
+        })(this),
+        get: (function(_this) {
+          return function(name) {
+            if (name != null) {
+              if (storage[name] != null) {
+                return storage[name];
+              } else {
+                return 0;
+              }
             } else {
               return 0;
             }
-          } else {
-            return 0;
-          }
-        }
+          };
+        })(this)
       },
-      check: () => {
-        if (write_storage) {
-          write_storage = false;
-          try {
-            return ls.setItem(`ms${namespace}`, JSON.stringify(storage));
-          } catch (error1) {
-            err = error1;
+      check: (function(_this) {
+        return function() {
+          if (write_storage) {
+            write_storage = false;
+            try {
+              return ls.setItem("ms" + namespace, JSON.stringify(storage));
+            } catch (error1) {
+              err = error1;
+            }
           }
-        }
-      }
+        };
+      })(this)
     };
-  }
+  };
 
-  storableObject(value) {
+  MicroVM.prototype.storableObject = function(value) {
     var referenced;
     referenced = [this.context.global.screen, this.context.global.system, this.context.global.keyboard, this.context.global.audio, this.context.global.gamepad, this.context.global.touch, this.context.global.mouse, this.context.global.sprites, this.context.global.maps];
     return this.makeStorableObject(value, referenced);
-  }
+  };
 
-  makeStorableObject(value, referenced) {
+  MicroVM.prototype.makeStorableObject = function(value, referenced) {
     var i, j, key, len, res, v;
     if (value == null) {
       return value;
@@ -395,6 +425,8 @@ this.MicroVM = class MicroVM {
     } else {
       return value;
     }
-  }
+  };
 
-};
+  return MicroVM;
+
+})();

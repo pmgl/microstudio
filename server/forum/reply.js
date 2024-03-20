@@ -5,8 +5,8 @@ sanitizeHTML = require("sanitize-html");
 
 allowedTags = sanitizeHTML.defaults.allowedTags.concat(["img"]);
 
-this.ForumReply = class ForumReply {
-  constructor(post, record) {
+this.ForumReply = (function() {
+  function ForumReply(post, record) {
     var data;
     this.post = post;
     this.record = record;
@@ -23,25 +23,25 @@ this.ForumReply = class ForumReply {
     this.pinned = data.pinned;
   }
 
-  isDeleted() {
+  ForumReply.prototype.isDeleted = function() {
     return this.deleted || (this.author == null) || this.author.flags.deleted;
-  }
+  };
 
-  set(prop, value) {
+  ForumReply.prototype.set = function(prop, value) {
     var data;
     data = this.record.get();
     data[prop] = value;
     this.record.set(data);
     return this[prop] = value;
-  }
+  };
 
-  edit(text) {
+  ForumReply.prototype.edit = function(text) {
     this.set("text", text);
     this.set("edits", this.edits + 1);
     return this.set("activity", Date.now());
-  }
+  };
 
-  addLike(id) {
+  ForumReply.prototype.addLike = function(id) {
     var index;
     index = this.likes.indexOf(id);
     if (index < 0) {
@@ -49,9 +49,9 @@ this.ForumReply = class ForumReply {
       this.set("likes", this.likes);
     }
     return this.likes.length;
-  }
+  };
 
-  removeLike(id) {
+  ForumReply.prototype.removeLike = function(id) {
     var index;
     index = this.likes.indexOf(id);
     if (index >= 0) {
@@ -59,23 +59,25 @@ this.ForumReply = class ForumReply {
       this.set("likes", this.likes);
     }
     return this.likes.length;
-  }
+  };
 
-  isLiked(id) {
+  ForumReply.prototype.isLiked = function(id) {
     return this.likes.indexOf(id) >= 0;
-  }
+  };
 
-  updateActivity() {
+  ForumReply.prototype.updateActivity = function() {
     this.set("activity", Date.now());
     return this.post.updateActivity();
-  }
+  };
 
-  getHTMLText() {
+  ForumReply.prototype.getHTMLText = function() {
     return sanitizeHTML(marked(this.text), {
       allowedTags: allowedTags
     });
-  }
+  };
 
-};
+  return ForumReply;
+
+})();
 
 module.exports = this.ForumReply;

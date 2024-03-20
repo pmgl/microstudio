@@ -44,7 +44,7 @@ class @WebApp
       if i==@languages.length-1
         home_exp += "|"
 
-    @reserved = ["explore","documentation","projects","about","login","user","tutorials\\/examples",,"tutorials\\/community"]
+    @reserved = ["explore","documentation","projects","about","login","user","tutorials\\/examples","tutorials\\/community"]
     @reserved_exact = ["tutorials"]
 
     for r in @reserved

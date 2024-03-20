@@ -1,45 +1,44 @@
-this.TextViewer = class TextViewer {
-  constructor(manager) {
+this.TextViewer = (function() {
+  function TextViewer(manager) {
     this.manager = manager;
     this.element = document.getElementById("text-asset-viewer");
     this.app = this.manager.app;
     this.save_delay = 3000;
     this.save_time = 0;
-    setInterval((() => {
-      return this.checkSave();
-    }), this.save_delay / 2);
+    setInterval(((function(_this) {
+      return function() {
+        return _this.checkSave();
+      };
+    })(this)), this.save_delay / 2);
   }
 
-  updateSnippet() {
+  TextViewer.prototype.updateSnippet = function() {
     switch (this.asset.ext) {
       case "json":
         return this.manager.code_snippet.set([
           {
             name: "Load JSON as object",
-            value: `loader = asset_manager.loadJSON("${this.asset.name.replace(/-/g,
-          "/")}", callback)`
+            value: "loader = asset_manager.loadJSON(\"" + (this.asset.name.replace(/-/g, "/")) + "\", callback)"
           }
         ]);
       case "csv":
         return this.manager.code_snippet.set([
           {
             name: "Load CSV file as text",
-            value: `loader = asset_manager.loadCSV("${this.asset.name.replace(/-/g,
-          "/")}", callback)`
+            value: "loader = asset_manager.loadCSV(\"" + (this.asset.name.replace(/-/g, "/")) + "\", callback)"
           }
         ]);
       case "txt":
         return this.manager.code_snippet.set([
           {
             name: "Load text file",
-            value: `loader = asset_manager.loadText("${this.asset.name.replace(/-/g,
-          "/")}", callback)`
+            value: "loader = asset_manager.loadText(\"" + (this.asset.name.replace(/-/g, "/")) + "\", callback)"
           }
         ]);
     }
-  }
+  };
 
-  view(asset) {
+  TextViewer.prototype.view = function(asset) {
     this.checkSave(true);
     this.element.style.display = "block";
     this.asset = asset;
@@ -51,9 +50,11 @@ this.TextViewer = class TextViewer {
       this.editor.setTheme("ace/theme/tomorrow_night_bright");
       this.editor.setFontSize("12px");
       this.editor.setReadOnly(false);
-      this.editor.getSession().on("change", () => {
-        return this.editorContentsChanged();
-      });
+      this.editor.getSession().on("change", (function(_this) {
+        return function() {
+          return _this.editorContentsChanged();
+        };
+      })(this));
     }
     switch (asset.ext) {
       case "json":
@@ -68,18 +69,19 @@ this.TextViewer = class TextViewer {
     if (asset.local_text != null) {
       return this.setText(asset, asset.local_text, asset.ext);
     } else {
-      return fetch(asset.getURL()).then((result) => {
-        return result.text().then((text) => {
-          return this.setText(asset, text, asset.ext);
-        });
-      });
+      return fetch(asset.getURL()).then((function(_this) {
+        return function(result) {
+          return result.text().then(function(text) {
+            return _this.setText(asset, text, asset.ext);
+          });
+        };
+      })(this));
     }
-  }
+  };
 
-  setText(asset, text, ext) {
+  TextViewer.prototype.setText = function(asset, text, ext) {
     var err;
     this.ignore_changes = true;
-    //@updateCurrentFileLock()
     if (ext === "json") {
       try {
         text = JSON.stringify(JSON.parse(text), null, '\t');
@@ -90,19 +92,21 @@ this.TextViewer = class TextViewer {
     }
     this.editor.setValue(text, -1);
     this.editor.getSession().setUndoManager(new ace.UndoManager());
-    this.manager.checkThumbnail(asset, () => {
-      var canvas;
-      console.info("Must create thumbnail");
-      canvas = this.createThumbnail(text, ext);
-      if (asset.element != null) {
-        asset.element.querySelector("img").src = canvas.toDataURL();
-      }
-      return this.manager.updateAssetIcon(asset, canvas);
-    });
+    this.manager.checkThumbnail(asset, (function(_this) {
+      return function() {
+        var canvas;
+        console.info("Must create thumbnail");
+        canvas = _this.createThumbnail(text, ext);
+        if (asset.element != null) {
+          asset.element.querySelector("img").src = canvas.toDataURL();
+        }
+        return _this.manager.updateAssetIcon(asset, canvas);
+      };
+    })(this));
     return this.ignore_changes = false;
-  }
+  };
 
-  createThumbnail(text, ext) {
+  TextViewer.prototype.createThumbnail = function(text, ext) {
     var canvas, color, context, grd, i, lines;
     canvas = document.createElement("canvas");
     canvas.width = 128;
@@ -136,9 +140,9 @@ this.TextViewer = class TextViewer {
     }
     context.restore();
     return canvas;
-  }
+  };
 
-  editorContentsChanged() {
+  TextViewer.prototype.editorContentsChanged = function() {
     document.getElementById("text-asset-viewer").style.removeProperty("background");
     if (this.ignore_changes) {
       return;
@@ -147,23 +151,26 @@ this.TextViewer = class TextViewer {
     this.save_time = Date.now();
     this.app.project.addPendingChange(this);
     if (this.asset != null) {
-      this.app.project.lockFile(`assets/${this.asset.filename}`);
+      this.app.project.lockFile("assets/" + this.asset.filename);
       return this.asset.content = this.editor.getValue();
     }
-  }
+  };
 
-  checkSave(immediate = false, callback) {
+  TextViewer.prototype.checkSave = function(immediate, callback) {
+    if (immediate == null) {
+      immediate = false;
+    }
     if (this.save_time > 0 && (immediate || Date.now() > this.save_time + this.save_delay)) {
       this.saveFile(callback);
       return this.save_time = 0;
     }
-  }
+  };
 
-  forceSave(callback) {
+  TextViewer.prototype.forceSave = function(callback) {
     return this.checkSave(true, callback);
-  }
+  };
 
-  saveFile(callback) {
+  TextViewer.prototype.saveFile = function(callback) {
     var err, json, saved;
     saved = false;
     if (this.asset.ext === "json") {
@@ -179,24 +186,30 @@ this.TextViewer = class TextViewer {
     this.app.client.sendRequest({
       name: "write_project_file",
       project: this.app.project.id,
-      file: `assets/${this.asset.filename}`,
+      file: "assets/" + this.asset.filename,
       content: this.asset.content
-    }, (msg) => {
-      saved = true;
-      if (this.save_time === 0) {
-        this.app.project.removePendingChange(this);
-      }
-      this.asset.size = msg.size;
-      if (callback != null) {
-        return callback();
-      }
-    });
-    return setTimeout((() => {
-      if (!saved) {
-        this.save_time = Date.now();
-        return console.info("retrying code save...");
-      }
-    }), 10000);
-  }
+    }, (function(_this) {
+      return function(msg) {
+        saved = true;
+        if (_this.save_time === 0) {
+          _this.app.project.removePendingChange(_this);
+        }
+        _this.asset.size = msg.size;
+        if (callback != null) {
+          return callback();
+        }
+      };
+    })(this));
+    return setTimeout(((function(_this) {
+      return function() {
+        if (!saved) {
+          _this.save_time = Date.now();
+          return console.info("retrying code save...");
+        }
+      };
+    })(this)), 10000);
+  };
 
-};
+  return TextViewer;
+
+})();

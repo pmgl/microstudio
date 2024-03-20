@@ -1,5 +1,5 @@
-this.Processor = class Processor {
-  constructor(runner) {
+this.Processor = (function() {
+  function Processor(runner) {
     this.runner = runner;
     this.locals = [];
     this.stack = [];
@@ -9,12 +9,12 @@ this.Processor = class Processor {
     this.done = true;
   }
 
-  load(routine1) {
+  Processor.prototype.load = function(routine1) {
     this.routine = routine1;
     return this.resetState();
-  }
+  };
 
-  resetState() {
+  Processor.prototype.resetState = function() {
     this.local_index = 0;
     this.stack_index = -1;
     this.op_index = 0;
@@ -25,22 +25,22 @@ this.Processor = class Processor {
     this.call_super = null;
     this.call_supername = "";
     return this.done = false;
-  }
+  };
 
-  resolveParentClass(obj, global) {
-    if ((obj.class != null) && typeof obj.class === "string") {
-      if (global[obj.class] != null) {
-        obj.class = global[obj.class];
-        return this.resolveParentClass(obj.class, global);
+  Processor.prototype.resolveParentClass = function(obj, global) {
+    if ((obj["class"] != null) && typeof obj["class"] === "string") {
+      if (global[obj["class"]] != null) {
+        obj["class"] = global[obj["class"]];
+        return this.resolveParentClass(obj["class"], global);
       }
-    } else if (obj.class != null) {
-      return this.resolveParentClass(obj.class, global);
+    } else if (obj["class"] != null) {
+      return this.resolveParentClass(obj["class"], global);
     }
-  }
+  };
 
-  applyFunction(args) {}
+  Processor.prototype.applyFunction = function(args) {};
 
-  routineAsFunction(routine, context) {
+  Processor.prototype.routineAsFunction = function(routine, context) {
     var f, proc;
     proc = new Processor(this.runner);
     f = function() {
@@ -52,7 +52,7 @@ this.Processor = class Processor {
       }
       proc.stack[++proc.stack_index] = arguments.length;
       if (routine.uses_arguments) {
-        a = [...arguments];
+        a = structuredClone(arguments);
         for (i = k = 0, ref1 = a.length - 1; k <= ref1; i = k += 1) {
           if (a[i] == null) {
             a[i] = 0;
@@ -62,11 +62,10 @@ this.Processor = class Processor {
       }
       return proc.run(context);
     };
-    //res = proc.stack[0]
     return f;
-  }
+  };
 
-  routineAsApplicableFunction(routine, context) {
+  Processor.prototype.routineAsApplicableFunction = function(routine, context) {
     var f, proc;
     proc = new Processor(this.runner);
     f = function() {
@@ -79,7 +78,7 @@ this.Processor = class Processor {
       }
       proc.stack[++proc.stack_index] = arguments.length;
       if (routine.uses_arguments) {
-        a = [...arguments];
+        a = structuredClone(arguments);
         for (i = k = 0, ref1 = a.length - 1; k <= ref1; i = k += 1) {
           if (a[i] == null) {
             a[i] = 0;
@@ -91,9 +90,9 @@ this.Processor = class Processor {
       return res = proc.stack[0];
     };
     return f;
-  }
+  };
 
-  argToNative(arg, context) {
+  Processor.prototype.argToNative = function(arg, context) {
     if (arg instanceof Routine) {
       return this.routineAsFunction(arg, context);
     } else {
@@ -103,9 +102,9 @@ this.Processor = class Processor {
         return 0;
       }
     }
-  }
+  };
 
-  modulo(context, a, b) {
+  Processor.prototype.modulo = function(context, a, b) {
     var f, obj;
     if (Array.isArray(a)) {
       obj = context.global.List;
@@ -124,8 +123,8 @@ this.Processor = class Processor {
       obj = a;
     }
     f = obj["%"];
-    while ((f == null) && (obj.class != null)) {
-      obj = obj.class;
+    while ((f == null) && (obj["class"] != null)) {
+      obj = obj["class"];
       f = obj["%"];
     }
     if (f == null) {
@@ -140,9 +139,9 @@ this.Processor = class Processor {
     } else {
       return 0;
     }
-  }
+  };
 
-  add(context, a, b, self) {
+  Processor.prototype.add = function(context, a, b, self) {
     var f, obj;
     if (Array.isArray(a)) {
       obj = context.global.List;
@@ -152,8 +151,8 @@ this.Processor = class Processor {
       obj = a;
     }
     f = obj["+"];
-    while ((f == null) && (obj.class != null)) {
-      obj = obj.class;
+    while ((f == null) && (obj["class"] != null)) {
+      obj = obj["class"];
       f = obj["+"];
     }
     if (f == null) {
@@ -172,9 +171,9 @@ this.Processor = class Processor {
     } else {
       return 0;
     }
-  }
+  };
 
-  sub(context, a, b, self) {
+  Processor.prototype.sub = function(context, a, b, self) {
     var f, obj;
     if (Array.isArray(a)) {
       obj = context.global.List;
@@ -193,8 +192,8 @@ this.Processor = class Processor {
       obj = a;
     }
     f = obj["-"];
-    while ((f == null) && (obj.class != null)) {
-      obj = obj.class;
+    while ((f == null) && (obj["class"] != null)) {
+      obj = obj["class"];
       f = obj["-"];
     }
     if (f == null) {
@@ -213,9 +212,9 @@ this.Processor = class Processor {
     } else {
       return 0;
     }
-  }
+  };
 
-  negate(context, a) {
+  Processor.prototype.negate = function(context, a) {
     var f, obj;
     if (Array.isArray(a)) {
       obj = context.global.List;
@@ -229,8 +228,8 @@ this.Processor = class Processor {
       obj = a;
     }
     f = obj["-"];
-    while ((f == null) && (obj.class != null)) {
-      obj = obj.class;
+    while ((f == null) && (obj["class"] != null)) {
+      obj = obj["class"];
       f = obj["-"];
     }
     if (f == null) {
@@ -249,9 +248,9 @@ this.Processor = class Processor {
     } else {
       return 0;
     }
-  }
+  };
 
-  mul(context, a, b, self) {
+  Processor.prototype.mul = function(context, a, b, self) {
     var f, obj;
     if (Array.isArray(a)) {
       obj = context.global.List;
@@ -270,8 +269,8 @@ this.Processor = class Processor {
       obj = a;
     }
     f = obj["*"];
-    while ((f == null) && (obj.class != null)) {
-      obj = obj.class;
+    while ((f == null) && (obj["class"] != null)) {
+      obj = obj["class"];
       f = obj["*"];
     }
     if (f == null) {
@@ -290,9 +289,9 @@ this.Processor = class Processor {
     } else {
       return 0;
     }
-  }
+  };
 
-  div(context, a, b, self) {
+  Processor.prototype.div = function(context, a, b, self) {
     var f, obj;
     if (Array.isArray(a)) {
       obj = context.global.List;
@@ -311,8 +310,8 @@ this.Processor = class Processor {
       obj = a;
     }
     f = obj["/"];
-    while ((f == null) && (obj.class != null)) {
-      obj = obj.class;
+    while ((f == null) && (obj["class"] != null)) {
+      obj = obj["class"];
       f = obj["/"];
     }
     if (f == null) {
@@ -331,9 +330,9 @@ this.Processor = class Processor {
     } else {
       return 0;
     }
-  }
+  };
 
-  band(context, a, b, self) {
+  Processor.prototype.band = function(context, a, b, self) {
     var f, obj;
     if (Array.isArray(a)) {
       obj = context.global.List;
@@ -352,8 +351,8 @@ this.Processor = class Processor {
       obj = a;
     }
     f = obj["&"];
-    while ((f == null) && (obj.class != null)) {
-      obj = obj.class;
+    while ((f == null) && (obj["class"] != null)) {
+      obj = obj["class"];
       f = obj["&"];
     }
     if (f == null) {
@@ -372,9 +371,9 @@ this.Processor = class Processor {
     } else {
       return 0;
     }
-  }
+  };
 
-  bor(context, a, b, self) {
+  Processor.prototype.bor = function(context, a, b, self) {
     var f, obj;
     if (Array.isArray(a)) {
       obj = context.global.List;
@@ -393,8 +392,8 @@ this.Processor = class Processor {
       obj = a;
     }
     f = obj["|"];
-    while ((f == null) && (obj.class != null)) {
-      obj = obj.class;
+    while ((f == null) && (obj["class"] != null)) {
+      obj = obj["class"];
       f = obj["|"];
     }
     if (f == null) {
@@ -413,9 +412,9 @@ this.Processor = class Processor {
     } else {
       return 0;
     }
-  }
+  };
 
-  run(context) {
+  Processor.prototype.run = function(context) {
     var a, arg1, args, argv, b, c, call_stack, call_stack_index, call_super, call_supername, con, cs, err, f, fc, field, global, i, i1, i2, id, index, ir, iter, iterator, j, k, key, l, len, length, local_index, locals, locals_offset, loop_by, loop_to, m, n, name, o, obj, object, op_count, op_index, opcodes, p, parent, q, r, rc, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, res, restore_op_index, routine, s, sleep_time, src, stack, stack_index, sup, t, token, u, v, value, w;
     routine = this.routine;
     opcodes = this.routine.opcodes;
@@ -437,7 +436,7 @@ this.Processor = class Processor {
     restore_op_index = -1;
     while (op_index < length) {
       switch (opcodes[op_index]) {
-        case 1: // OPCODE_TYPE
+        case 1:
           v = stack[stack_index];
           switch (typeof v) {
             case "number":
@@ -460,7 +459,7 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 2: // OPCODE_TYPE_VARIABLE
+        case 2:
           v = object[arg1[op_index]];
           if (v == null) {
             v = global[arg1[op_index]];
@@ -490,7 +489,7 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 3: // OPCODE_TYPE_PROPERTY
+        case 3:
           v = stack[stack_index - 1][stack[stack_index]];
           if (v == null) {
             stack[--stack_index] = 0;
@@ -517,30 +516,30 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 4: // OPCODE_LOAD_IMPORT
+        case 4:
           stack[++stack_index] = routine.import_values[arg1[op_index++]];
           break;
-        case 5: // OPCODE_LOAD_THIS
+        case 5:
           stack[++stack_index] = object;
           op_index++;
           break;
-        case 6: // OPCODE_LOAD_GLOBAL
+        case 6:
           stack[++stack_index] = global;
           op_index++;
           break;
-        case 10: // CODE_LOAD_VALUE
+        case 10:
           stack[++stack_index] = arg1[op_index++];
           break;
-        case 11: // OPCODE_LOAD_LOCAL
+        case 11:
           stack[++stack_index] = locals[locals_offset + arg1[op_index++]];
           break;
-        case 12: // OPCODE_LOAD_VARIABLE
+        case 12:
           name = arg1[op_index];
           v = object[name];
-          if ((v == null) && (object.class != null)) {
+          if ((v == null) && (object["class"] != null)) {
             obj = object;
-            while ((v == null) && (obj.class != null)) {
-              obj = obj.class;
+            while ((v == null) && (obj["class"] != null)) {
+              obj = obj["class"];
               v = obj[name];
             }
           }
@@ -562,7 +561,7 @@ this.Processor = class Processor {
           stack[++stack_index] = v != null ? v : 0;
           op_index++;
           break;
-        case 13: // OPCODE_LOAD_LOCAL_OBJECT
+        case 13:
           o = locals[locals_offset + arg1[op_index]];
           if (typeof o !== "object") {
             o = locals[locals_offset + arg1[op_index]] = {};
@@ -580,12 +579,12 @@ this.Processor = class Processor {
           stack[++stack_index] = o;
           op_index++;
           break;
-        case 14: // OPCODE_LOAD_VARIABLE_OBJECT
+        case 14:
           name = arg1[op_index];
           obj = object;
           v = obj[name];
-          while ((v == null) && (obj.class != null)) {
-            obj = obj.class;
+          while ((v == null) && (obj["class"] != null)) {
+            obj = obj["class"];
             v = obj[name];
           }
           if ((v == null) && (global[name] != null)) {
@@ -608,22 +607,22 @@ this.Processor = class Processor {
           stack[++stack_index] = v;
           op_index++;
           break;
-        case 15: // OPCODE_POP
+        case 15:
           stack_index--;
           op_index++;
           break;
-        case 16: // OPCODE_LOAD_PROPERTY
+        case 16:
           obj = stack[stack_index - 1];
           name = stack[stack_index];
           v = obj[name];
-          while ((v == null) && (obj.class != null)) {
-            obj = obj.class;
+          while ((v == null) && (obj["class"] != null)) {
+            obj = obj["class"];
             v = obj[name];
           }
           stack[--stack_index] = v != null ? v : 0;
           op_index++;
           break;
-        case 17: // OPCODE_LOAD_PROPERTY_OBJECT
+        case 17:
           v = stack[stack_index - 1][stack[stack_index]];
           if (typeof v !== "object") {
             v = stack[stack_index - 1][stack[stack_index]] = {};
@@ -641,55 +640,54 @@ this.Processor = class Processor {
           stack[--stack_index] = v;
           op_index++;
           break;
-        case 18: // OPCODE_CREATE_OBJECT
+        case 18:
           stack[++stack_index] = {};
           op_index++;
           break;
-        case 19: // OPCODE_MAKE_OBJECT
+        case 19:
           if (typeof stack[stack_index] !== "object") {
             stack[stack_index] = {};
           }
           op_index++;
           break;
-        case 20: // OPCODE_CREATE_ARRAY
+        case 20:
           stack[++stack_index] = [];
           op_index++;
           break;
-        case 21: // OPCODE_STORE_LOCAL
+        case 21:
           locals[locals_offset + arg1[op_index]] = stack[stack_index];
           op_index++;
           break;
-        case 22: // OPCODE_STORE_LOCAL_POP
+        case 22:
           locals[locals_offset + arg1[op_index]] = stack[stack_index--];
           op_index++;
           break;
-        case 23: // OPCODE_STORE_VARIABLE
+        case 23:
           object[arg1[op_index++]] = stack[stack_index];
           break;
-        case 24: // OPCODE_CREATE_PROPERTY
+        case 24:
           obj = stack[stack_index - 2];
           field = stack[stack_index - 1];
           obj[field] = stack[stack_index];
           stack_index -= 2;
           op_index++;
           break;
-        case 25: // OPCODE_STORE_PROPERTY
+        case 25:
           obj = stack[stack_index - 2];
           field = stack[stack_index - 1];
           stack[stack_index - 2] = obj[field] = stack[stack_index];
           stack_index -= 2;
           op_index++;
           break;
-        case 26: // OPCODE_DELETE
+        case 26:
           obj = stack[stack_index - 1];
           field = stack[stack_index];
           delete obj[field];
           stack[stack_index -= 1] = 0;
           op_index++;
           break;
-        case 27: // OPCODE_UPDATE_CLASS
+        case 27:
           name = arg1[op_index];
-          // TODO: set classname to variable name
           if ((object[name] != null) && typeof object[name] === "object") {
             obj = object[name];
             src = stack[stack_index];
@@ -702,18 +700,18 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 28: // OPCODE_CREATE_CLASS
+        case 28:
           res = {};
           parent = stack[stack_index];
           if (parent) {
-            res.class = parent;
+            res["class"] = parent;
           } else if (arg1[op_index]) {
-            res.class = arg1[op_index];
+            res["class"] = arg1[op_index];
           }
           stack[stack_index] = res;
           op_index++;
           break;
-        case 29: // OPCODE_NEW_CALL
+        case 29:
           c = stack[stack_index];
           args = arg1[op_index];
           if (typeof c === "function") {
@@ -722,17 +720,16 @@ this.Processor = class Processor {
               a.push(stack[stack_index - args + i]);
             }
             stack_index -= args;
-            // NEW CALL is followed by a POP (to get rid of constructor return value)
             stack[stack_index - 1] = new c(...a);
             op_index++;
           } else {
             this.resolveParentClass(c, global);
             res = {
-              class: c
+              "class": c
             };
             con = c.constructor;
-            while (!con && (c.class != null)) {
-              c = c.class;
+            while (!con && (c["class"] != null)) {
+              c = c["class"];
               con = c.constructor;
             }
             if ((con != null) && con instanceof Routine) {
@@ -742,7 +739,7 @@ this.Processor = class Processor {
               call_stack_index++;
               cs.routine = routine;
               cs.object = object;
-              cs.super = call_super;
+              cs["super"] = call_super;
               cs.supername = call_supername;
               cs.op_index = op_index + 1;
               locals_offset += routine.locals_size;
@@ -775,7 +772,7 @@ this.Processor = class Processor {
             }
           }
           break;
-        case 30: // OPCODE_ADD
+        case 30:
           b = stack[stack_index--];
           a = stack[stack_index];
           if (typeof a === "number") {
@@ -786,7 +783,7 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 31: // OPCODE_SUB
+        case 31:
           b = stack[stack_index--];
           a = stack[stack_index];
           if (typeof a === "number") {
@@ -797,7 +794,7 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 32: // OPCODE_MUL
+        case 32:
           b = stack[stack_index--];
           a = stack[stack_index];
           if (typeof a === "number") {
@@ -808,7 +805,7 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 33: // OPCODE_DIV
+        case 33:
           b = stack[stack_index--];
           a = stack[stack_index];
           if (typeof a === "number") {
@@ -819,7 +816,7 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 34: // OPCODE_MODULO
+        case 34:
           b = stack[stack_index--];
           a = stack[stack_index];
           if (typeof a === "number" && typeof b === "number") {
@@ -830,7 +827,7 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 35: // OPCODE_BINARY_AND
+        case 35:
           b = stack[stack_index--];
           a = stack[stack_index];
           if (typeof a === "number") {
@@ -841,7 +838,7 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 36: // OPCODE_BINARY_OR
+        case 36:
           b = stack[stack_index--];
           a = stack[stack_index];
           if (typeof a === "number") {
@@ -852,17 +849,17 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 37: // OPCODE_SHIFT_LEFT
+        case 37:
           v = stack[stack_index - 1] << stack[stack_index];
           stack[--stack_index] = isFinite(v) ? v : 0;
           op_index++;
           break;
-        case 38: // OPCODE_SHIFT_RIGHT
+        case 38:
           v = stack[stack_index - 1] >> stack[stack_index];
           stack[--stack_index] = isFinite(v) ? v : 0;
           op_index++;
           break;
-        case 39: // OPCODE_NEGATE
+        case 39:
           a = stack[stack_index];
           if (typeof a === "number") {
             stack[stack_index] = -a;
@@ -871,58 +868,57 @@ this.Processor = class Processor {
           }
           op_index++;
           break;
-        case 50: // OPCODE_NOT
+        case 50:
           stack[stack_index] = stack[stack_index] ? 0 : 1;
           op_index++;
           break;
-        case 68: // OPCODE_LOAD_PROPERTY_ATOP
+        case 68:
           obj = stack[stack_index - 1];
           name = stack[stack_index];
           v = obj[name];
-          while ((v == null) && (obj.class != null)) {
-            obj = obj.class;
+          while ((v == null) && (obj["class"] != null)) {
+            obj = obj["class"];
             v = obj[name];
           }
           stack[++stack_index] = v != null ? v : 0;
           op_index++;
           break;
-        case 40: // OPCODE_EQ
+        case 40:
           stack[stack_index - 1] = stack[stack_index] === stack[stack_index - 1] ? 1 : 0;
           stack_index--;
           op_index++;
           break;
-        case 41: // OPCODE_NEQ
+        case 41:
           stack[stack_index - 1] = stack[stack_index] !== stack[stack_index - 1] ? 1 : 0;
           stack_index--;
           op_index++;
           break;
-        case 42: // OPCODE_LT
+        case 42:
           stack[stack_index - 1] = stack[stack_index - 1] < stack[stack_index] ? 1 : 0;
           stack_index--;
           op_index++;
           break;
-        case 43: // OPCODE_GT
+        case 43:
           stack[stack_index - 1] = stack[stack_index - 1] > stack[stack_index] ? 1 : 0;
           stack_index--;
           op_index++;
           break;
-        case 44: // OPCODE_LTE
+        case 44:
           stack[stack_index - 1] = stack[stack_index - 1] <= stack[stack_index] ? 1 : 0;
           stack_index--;
           op_index++;
           break;
-        case 45: // OPCODE_GTE
+        case 45:
           stack[stack_index - 1] = stack[stack_index - 1] >= stack[stack_index] ? 1 : 0;
           stack_index--;
           op_index++;
           break;
-        case 95: // FORLOOP_INIT
-          // fix loop_by if not set
+        case 95:
           iter = arg1[op_index][0];
           loop_to = locals[locals_offset + iter + 1] = stack[stack_index - 1];
           loop_by = stack[stack_index];
           iterator = locals[locals_offset + iter];
-          stack[--stack_index] = 0; // unload 2 values and load default value
+          stack[--stack_index] = 0;
           if (loop_by === 0) {
             locals[locals_offset + iter + 2] = loop_to > iterator ? 1 : -1;
             op_index++;
@@ -935,7 +931,7 @@ this.Processor = class Processor {
             }
           }
           break;
-        case 96: // FORLOOP_CONTROL
+        case 96:
           iter = arg1[op_index][0];
           loop_by = locals[locals_offset + iter + 2];
           loop_to = locals[locals_offset + iter + 1];
@@ -951,13 +947,13 @@ this.Processor = class Processor {
             op_count = 0;
             if (Date.now() > this.time_limit) {
               restore_op_index = op_index;
-              op_index = length; // stop the loop without adding a condition statement
+              op_index = length;
             }
           }
           break;
-        case 97: // FORIN_INIT
+        case 97:
           v = stack[stack_index];
-          stack[stack_index] = 0; // default result
+          stack[stack_index] = 0;
           iterator = arg1[op_index][0];
           if (typeof v === "object") {
             if (Array.isArray(v)) {
@@ -974,19 +970,17 @@ this.Processor = class Processor {
             op_index = arg1[op_index][1];
           } else {
             value = v[0];
-            // value could be undefined if the array is sparse
             locals[locals_offset + arg1[op_index][0]] = value != null ? value : 0;
             locals[locals_offset + iterator + 2] = 0;
             op_index++;
           }
           break;
-        case 98: // FORIN_CONTROL
+        case 98:
           iterator = arg1[op_index][0];
           index = locals[locals_offset + iterator + 2] += 1;
           v = locals[locals_offset + iterator + 1];
           if (index < v.length) {
             value = v[index];
-            // value could be undefined if the array is sparse
             locals[locals_offset + iterator] = value != null ? value : 0;
             op_index = arg1[op_index][1];
           } else {
@@ -996,49 +990,49 @@ this.Processor = class Processor {
             op_count = 0;
             if (Date.now() > this.time_limit) {
               restore_op_index = op_index;
-              op_index = length; // stop the loop without adding a condition statement
+              op_index = length;
             }
           }
           break;
-        case 80: // OPCODE_JUMP
+        case 80:
           op_index = arg1[op_index];
           if (op_count++ > 100) {
             op_count = 0;
             if (Date.now() > this.time_limit) {
               restore_op_index = op_index;
-              op_index = length; // stop the loop without adding a condition statement
+              op_index = length;
             }
           }
           break;
-        case 81: // OPCODE_JUMPY
+        case 81:
           if (stack[stack_index--]) {
             op_index = arg1[op_index];
           } else {
             op_index++;
           }
           break;
-        case 82: // OPCODE_JUMPN
+        case 82:
           if (!stack[stack_index--]) {
             op_index = arg1[op_index];
           } else {
             op_index++;
           }
           break;
-        case 83: // OPCODE_JUMPY_NOPOP
+        case 83:
           if (stack[stack_index]) {
             op_index = arg1[op_index];
           } else {
             op_index++;
           }
           break;
-        case 84: // OPCODE_JUMPN_NOPOP
+        case 84:
           if (!stack[stack_index]) {
             op_index = arg1[op_index];
           } else {
             op_index++;
           }
           break;
-        case 89: // OPCODE_LOAD_ROUTINE
+        case 89:
           r = arg1[op_index++];
           rc = r.clone();
           ref3 = r.import_refs;
@@ -1053,7 +1047,7 @@ this.Processor = class Processor {
           rc.object = object;
           stack[++stack_index] = rc;
           break;
-        case 90: // OPCODE_FUNCTION_CALL
+        case 90:
           args = arg1[op_index];
           f = stack[stack_index];
           if (f instanceof Routine) {
@@ -1062,7 +1056,7 @@ this.Processor = class Processor {
             call_stack_index++;
             cs.routine = routine;
             cs.object = object;
-            cs.super = call_super;
+            cs["super"] = call_super;
             cs.supername = call_supername;
             cs.op_index = op_index + 1;
             locals_offset += routine.locals_size;
@@ -1146,13 +1140,13 @@ this.Processor = class Processor {
             op_index++;
           }
           break;
-        case 91: // OPCODE_FUNCTION_APPLY_VARIABLE
+        case 91:
           name = stack[stack_index];
           sup = obj = object;
           f = obj[name];
           if (f == null) {
-            while ((f == null) && (sup.class != null)) {
-              sup = sup.class;
+            while ((f == null) && (sup["class"] != null)) {
+              sup = sup["class"];
               f = sup[name];
             }
             if (f == null) {
@@ -1171,7 +1165,7 @@ this.Processor = class Processor {
             call_stack_index++;
             cs.routine = routine;
             cs.object = object;
-            cs.super = call_super;
+            cs["super"] = call_super;
             cs.supername = call_supername;
             cs.op_index = op_index + 1;
             locals_offset += routine.locals_size;
@@ -1254,13 +1248,13 @@ this.Processor = class Processor {
             op_index++;
           }
           break;
-        case 92: // OPCODE_FUNCTION_APPLY_PROPERTY
+        case 92:
           obj = stack[stack_index - 1];
           sup = obj;
           name = stack[stack_index];
           f = obj[name];
-          while ((f == null) && (sup.class != null)) {
-            sup = sup.class;
+          while ((f == null) && (sup["class"] != null)) {
+            sup = sup["class"];
             f = sup[name];
           }
           args = arg1[op_index];
@@ -1282,7 +1276,7 @@ this.Processor = class Processor {
             cs = call_stack[call_stack_index] || (call_stack[call_stack_index] = {});
             call_stack_index++;
             cs.object = object;
-            cs.super = call_super;
+            cs["super"] = call_super;
             cs.supername = call_supername;
             cs.routine = routine;
             cs.op_index = op_index + 1;
@@ -1367,12 +1361,12 @@ this.Processor = class Processor {
             op_index++;
           }
           break;
-        case 93: // OPCODE_SUPER_CALL
+        case 93:
           if ((call_super != null) && (call_supername != null)) {
             sup = call_super;
             f = null;
-            while ((f == null) && (sup.class != null)) {
-              sup = sup.class;
+            while ((f == null) && (sup["class"] != null)) {
+              sup = sup["class"];
               f = sup[call_supername];
             }
             if ((f != null) && f instanceof Routine) {
@@ -1380,7 +1374,7 @@ this.Processor = class Processor {
               cs = call_stack[call_stack_index] || (call_stack[call_stack_index] = {});
               call_stack_index++;
               cs.object = object;
-              cs.super = call_super;
+              cs["super"] = call_super;
               cs.supername = call_supername;
               cs.routine = routine;
               cs.op_index = op_index + 1;
@@ -1418,14 +1412,14 @@ this.Processor = class Processor {
             op_index++;
           }
           break;
-        case 94: // OPCODE_RETURN
+        case 94:
           local_index -= arg1[op_index];
           if (call_stack_index <= 0) {
             op_index = length;
           } else {
             cs = call_stack[--call_stack_index];
             object = cs.object;
-            call_super = cs.super;
+            call_super = cs["super"];
             call_supername = cs.supername;
             routine = cs.routine;
             op_index = cs.op_index;
@@ -1435,47 +1429,44 @@ this.Processor = class Processor {
             length = opcodes.length;
           }
           break;
-        case 100: // OPCODE_UNARY_FUNC
+        case 100:
           v = arg1[op_index](stack[stack_index]);
           stack[stack_index] = isFinite(v) ? v : 0;
           op_index++;
           break;
-        case 101: // OPCODE_BINARY_FUNC
+        case 101:
           v = arg1[op_index](stack[stack_index - 1], stack[stack_index]);
           stack[--stack_index] = isFinite(v) ? v : 0;
           op_index++;
           break;
-        case 110: // OPCODE_AFTER
+        case 110:
           t = this.runner.createThread(stack[stack_index - 1], stack[stack_index], false);
           stack[--stack_index] = t;
           op_index += 1;
           break;
-        // add thread to the runner thread list
-        case 111: // OPCODE_EVERY
+        case 111:
           t = this.runner.createThread(stack[stack_index - 1], stack[stack_index], true);
           stack[--stack_index] = t;
           op_index += 1;
           break;
-        // add thread to the runner thread list
-        case 112: // OPCODE_DO
+        case 112:
           t = this.runner.createThread(stack[stack_index], 0, false);
           stack[stack_index] = t;
           op_index += 1;
           break;
-        // add thread to the runner thread list
-        case 113: // OPCODE_SLEEP
+        case 113:
           sleep_time = isFinite(stack[stack_index]) ? stack[stack_index] : 0;
           this.runner.sleep(sleep_time);
           op_index += 1;
           restore_op_index = op_index;
-          op_index = length; // stop the thread
+          op_index = length;
           break;
-        case 200: // COMPILED
+        case 200:
           stack_index = arg1[op_index](stack, stack_index, locals, locals_offset, object, global);
           op_index++;
           break;
         default:
-          throw `Unsupported operation: ${opcodes[op_index]}`;
+          throw "Unsupported operation: " + opcodes[op_index];
       }
     }
     if (restore_op_index >= 0) {
@@ -1497,14 +1488,14 @@ this.Processor = class Processor {
         this.routine.callback = null;
       }
     }
-    // console.info """stack_index: #{stack_index}"""
-    // console.info stack
     if (this.log) {
       console.info("total operations: " + op_count);
-      console.info(`stack_index: ${stack_index}`);
-      console.info(`result: ${stack[stack_index]}`);
+      console.info("stack_index: " + stack_index);
+      console.info("result: " + stack[stack_index]);
     }
     return stack[stack_index];
-  }
+  };
 
-};
+  return Processor;
+
+})();

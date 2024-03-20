@@ -1,16 +1,16 @@
-this.Watcher = class Watcher {
-  constructor(runtime) {
+this.Watcher = (function() {
+  function Watcher(runtime) {
     this.runtime = runtime;
     this.vm = this.runtime.vm;
   }
 
-  update() {
+  Watcher.prototype.update = function() {
     if (this.watching_variables) {
       return this.step();
     }
-  }
+  };
 
-  watch(variables) {
+  Watcher.prototype.watch = function(variables) {
     this.watching = true;
     this.watching_variables = variables;
     this.exclusion_list = [this.vm.context.global.screen, this.vm.context.global.system, this.vm.context.global.keyboard, this.vm.context.global.audio, this.vm.context.global.gamepad, this.vm.context.global.touch, this.vm.context.global.mouse, this.vm.context.global.sprites, this.vm.context.global.maps, this.vm.context.global.sounds, this.vm.context.global.music, this.vm.context.global.assets, this.vm.context.global.asset_manager, this.vm.context.global.fonts, this.vm.context.global.storage];
@@ -48,14 +48,17 @@ this.Watcher = class Watcher {
       this.exclusion_list.push(this.vm.context.global.print);
     }
     return this.step();
-  }
+  };
 
-  stop() {
+  Watcher.prototype.stop = function() {
     return this.watching = false;
-  }
+  };
 
-  step(variables = this.watching_variables) {
+  Watcher.prototype.step = function(variables) {
     var index, j, len, res, v, value, vs;
+    if (variables == null) {
+      variables = this.watching_variables;
+    }
     if (!this.watching) {
       return;
     }
@@ -80,10 +83,16 @@ this.Watcher = class Watcher {
       name: "watch_update",
       data: res
     });
-  }
+  };
 
-  exploreValue(value, depth = 1, array_max = 10) {
+  Watcher.prototype.exploreValue = function(value, depth, array_max) {
     var i, j, key, len, res, v;
+    if (depth == null) {
+      depth = 1;
+    }
+    if (array_max == null) {
+      array_max = 10;
+    }
     if (value == null) {
       return {
         type: "number",
@@ -121,8 +130,8 @@ this.Watcher = class Watcher {
           if (value.classname) {
             v = "class " + value.classname;
           }
-          if ((value.class != null) && (value.class.classname != null)) {
-            v = value.class.classname;
+          if ((value["class"] != null) && (value["class"].classname != null)) {
+            v = value["class"].classname;
           }
           return {
             type: "object",
@@ -159,6 +168,8 @@ this.Watcher = class Watcher {
         value: value
       };
     }
-  }
+  };
 
-};
+  return Watcher;
+
+})();
