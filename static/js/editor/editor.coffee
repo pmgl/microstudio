@@ -15,19 +15,20 @@ class @Editor extends Manager
     @file_icon = "fa fa-file"
 
     @init()
-
+    ace.require("ace/ext/language_tools");
+    
     @editor = ace.edit "editor-view"
     @editor.$blockScrolling = Infinity
     @editor.setTheme("ace/theme/tomorrow_night_bright")
     @editor.getSession().setMode(@language.ace_mode)
     @editor.setFontSize("14px")
-    @editor.getSession().setOptions
+    @editor.setOptions
       tabSize: 2
       useSoftTabs: true
       useWorker: false # disables lua autocorrection ; preserves syntax coloring
-      #enableBasicAutocompletion: true
-      #enableSnippets: true
-      #enableLiveAutocompletion: true
+      enableBasicAutocompletion: true
+      enableSnippets: true
+      enableLiveAutocompletion: true
 
     @update_delay = 50
     @update_time = 0

@@ -19,15 +19,19 @@ this.Editor = (function(superClass) {
     this.update_list = "updateSourceList";
     this.file_icon = "fa fa-file";
     this.init();
+    ace.require("ace/ext/language_tools");
     this.editor = ace.edit("editor-view");
     this.editor.$blockScrolling = 2e308;
     this.editor.setTheme("ace/theme/tomorrow_night_bright");
     this.editor.getSession().setMode(this.language.ace_mode);
     this.editor.setFontSize("14px");
-    this.editor.getSession().setOptions({
+    this.editor.setOptions({
       tabSize: 2,
       useSoftTabs: true,
-      useWorker: false
+      useWorker: false,
+      enableBasicAutocompletion: true,
+      enableSnippets: true,
+      enableLiveAutocompletion: true
     });
     this.update_delay = 50;
     this.update_time = 0;
