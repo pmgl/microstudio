@@ -16,12 +16,26 @@ class @Editor extends Manager
 
     @init()
     ace.require("ace/ext/language_tools");
-    
+
     @editor = ace.edit "editor-view"
     @editor.$blockScrolling = Infinity
     @editor.setTheme("ace/theme/tomorrow_night_bright")
     @editor.getSession().setMode(@language.ace_mode)
     @editor.setFontSize("14px")
+
+    customCompleter =
+      getCompletions: (editor, session, pos, prefix, callback) ->
+        state = session.getState(pos.row)
+        completions = session.$mode.getCompletions(state, session, pos, prefix)
+        myCompletions = [
+          { value: 'screen.drawText()', score: 1, meta: 'draw text' }
+          { value: 'screen.drawRect()', score: 1, meta: 'draw rect' }
+        ]
+        completions = completions.concat(myCompletions)
+        callback(null, completions)
+
+    ace.require("ace/ext/language_tools").addCompleter(customCompleter)
+
     @editor.setOptions
       tabSize: 2
       useSoftTabs: true

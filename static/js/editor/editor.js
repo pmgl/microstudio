@@ -6,7 +6,7 @@ this.Editor = (function(superClass) {
   extend(Editor, superClass);
 
   function Editor(app) {
-    var f;
+    var customCompleter, f;
     Editor.__super__.constructor.call(this, app);
     this.language = this.app.languages.microscript;
     this.folder = "ms";
@@ -25,6 +25,27 @@ this.Editor = (function(superClass) {
     this.editor.setTheme("ace/theme/tomorrow_night_bright");
     this.editor.getSession().setMode(this.language.ace_mode);
     this.editor.setFontSize("14px");
+    customCompleter = {
+      getCompletions: function(editor, session, pos, prefix, callback) {
+        var completions, myCompletions, state;
+        state = session.getState(pos.row);
+        completions = session.$mode.getCompletions(state, session, pos, prefix);
+        myCompletions = [
+          {
+            value: 'screen.drawText()',
+            score: 1,
+            meta: 'draw text'
+          }, {
+            value: 'screen.drawRect()',
+            score: 1,
+            meta: 'draw rect'
+          }
+        ];
+        completions = completions.concat(myCompletions);
+        return callback(null, completions);
+      }
+    };
+    ace.require("ace/ext/language_tools").addCompleter(customCompleter);
     this.editor.setOptions({
       tabSize: 2,
       useSoftTabs: true,
