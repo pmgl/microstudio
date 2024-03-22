@@ -16,12 +16,60 @@ class @Editor extends Manager
 
     @init()
     ace.require("ace/ext/language_tools");
+    acorn = require("acorn")
+    fs = require("fs")
 
     @editor = ace.edit "editor-view"
     @editor.$blockScrolling = Infinity
     @editor.setTheme("ace/theme/tomorrow_night_bright")
     @editor.getSession().setMode(@language.ace_mode)
     @editor.setFontSize("14px")
+
+    analyzeFile = (filePath) ->
+      # Dateiinhalt lesen
+      content = fs.readFileSync(filePath, "utf8")
+      
+      # JavaScript-Code mit acorn analysieren, um Variablen zu extrahieren
+      ast = acorn.parse(content, { ecmaVersion: 11, sourceType: "module" })
+
+      # Array für gefundene Variablen initialisieren
+      variables = []
+
+      # AST durchlaufen und Variablen extrahieren
+      traverseAST(ast, (node) ->
+        if node.type is "VariableDeclaration"
+          node.declarations.forEach (declaration) ->
+            variables.push(declaration.id.name)
+      )
+
+      return variables
+
+    traverseAST = (node, callback) ->
+      callback(node)
+      for prop, value of node
+        if typeof value is "object" and value
+          if Array.isArray(value)
+            for item in value
+              if typeof item is "object" and item
+                traverseAST(item, callback)
+          else
+            traverseAST(value, callback)
+
+    searchVariablesInFiles = (directory) ->
+      allVariables = []
+      # Alle Dateien im Verzeichnis durchsuchen
+      files = fs.readdirSync(directory)
+      files.forEach (file) ->
+        filePath = directory + "/" + file
+        # Nur JavaScript-Dateien betrachten
+        if file.endsWith(".js")
+          # Variablen in der Datei analysieren und extrahieren
+          variables = analyzeFile(filePath)
+          allVariables = allVariables.concat(variables)
+      return allVariables
+
+    directory = "pfad/zum/deinem/projekt"
+    #allVariables = searchVariablesInFiles(directory)
 
     customCompleter =
       getCompletions: (editor, session, pos, prefix, callback) ->

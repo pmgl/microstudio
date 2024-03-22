@@ -6,7 +6,7 @@ this.Editor = (function(superClass) {
   extend(Editor, superClass);
 
   function Editor(app) {
-    var customCompleter, f;
+    var acorn, analyzeFile, customCompleter, directory, f, fs, searchVariablesInFiles, traverseAST;
     Editor.__super__.constructor.call(this, app);
     this.language = this.app.languages.microscript;
     this.folder = "ms";
@@ -20,11 +20,75 @@ this.Editor = (function(superClass) {
     this.file_icon = "fa fa-file";
     this.init();
     ace.require("ace/ext/language_tools");
+    acorn = require("acorn");
+    fs = require("fs");
     this.editor = ace.edit("editor-view");
     this.editor.$blockScrolling = 2e308;
     this.editor.setTheme("ace/theme/tomorrow_night_bright");
     this.editor.getSession().setMode(this.language.ace_mode);
     this.editor.setFontSize("14px");
+    analyzeFile = function(filePath) {
+      var ast, content, variables;
+      content = fs.readFileSync(filePath, "utf8");
+      ast = acorn.parse(content, {
+        ecmaVersion: 11,
+        sourceType: "module"
+      });
+      variables = [];
+      traverseAST(ast, function(node) {
+        if (node.type === "VariableDeclaration") {
+          return node.declarations.forEach(function(declaration) {
+            return variables.push(declaration.id.name);
+          });
+        }
+      });
+      return variables;
+    };
+    traverseAST = function(node, callback) {
+      var item, prop, results, value;
+      callback(node);
+      results = [];
+      for (prop in node) {
+        value = node[prop];
+        if (typeof value === "object" && value) {
+          if (Array.isArray(value)) {
+            results.push((function() {
+              var j, len, results1;
+              results1 = [];
+              for (j = 0, len = value.length; j < len; j++) {
+                item = value[j];
+                if (typeof item === "object" && item) {
+                  results1.push(traverseAST(item, callback));
+                } else {
+                  results1.push(void 0);
+                }
+              }
+              return results1;
+            })());
+          } else {
+            results.push(traverseAST(value, callback));
+          }
+        } else {
+          results.push(void 0);
+        }
+      }
+      return results;
+    };
+    searchVariablesInFiles = function(directory) {
+      var allVariables, files;
+      allVariables = [];
+      files = fs.readdirSync(directory);
+      files.forEach(function(file) {
+        var filePath, variables;
+        filePath = directory + "/" + file;
+        if (file.endsWith(".js")) {
+          variables = analyzeFile(filePath);
+          return allVariables = allVariables.concat(variables);
+        }
+      });
+      return allVariables;
+    };
+    directory = "pfad/zum/deinem/projekt";
     customCompleter = {
       getCompletions: function(editor, session, pos, prefix, callback) {
         var completions, myCompletions, state;
