@@ -129,7 +129,7 @@ class @Server
 
     @io = new WebSocket.Server
       server: @httpserver
-      maxPayload: 40000000
+      maxPayload: if @config.standalone then 1000000000 else 40000000
 
     @sessions = []
 

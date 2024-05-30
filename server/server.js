@@ -164,7 +164,7 @@ this.Server = class Server {
     this.active_users = 0;
     this.io = new WebSocket.Server({
       server: this.httpserver,
-      maxPayload: 40000000
+      maxPayload: this.config.standalone ? 1000000000 : 40000000
     });
     this.sessions = [];
     this.io.on("connection", (socket, request) => {

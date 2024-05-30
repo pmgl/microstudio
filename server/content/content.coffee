@@ -79,6 +79,8 @@ class @Content
           last_active: Date.now()
           creation_ip: "127.0.0.1"
 
+      @users[0].max_storage = 10000000000
+
     tokens = @db.list("tokens")
     for token in tokens
       @loadToken token

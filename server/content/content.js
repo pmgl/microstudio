@@ -100,6 +100,7 @@ this.Content = class Content {
           creation_ip: "127.0.0.1"
         });
       }
+      this.users[0].max_storage = 10000000000;
     }
     tokens = this.db.list("tokens");
     for (k = 0, len1 = tokens.length; k < len1; k++) {
