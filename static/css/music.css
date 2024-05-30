@@ -64,6 +64,31 @@
   left: 0 ;
   right: 0 ;
   bottom: 0 ;
+  background: #181C20 ;
+}
+
+#music-editor-bg {
+  position: absolute ;
+  top: 0;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  overflow: hidden ;
+}
+
+#music-editor-content {
+  position: absolute ;
+  top: 0;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  pointer-events:none ;
+}
+
+#music-editor p, #sample-editor p {
+  color: rgba(255,255,255,.75) ;
+  margin: 10px 40px ;
+  font-size: 18px ;
 }
 
 #daw-transportbar {

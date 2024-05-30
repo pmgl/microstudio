@@ -1582,8 +1582,8 @@ a.project-box {
 }
 
 .placeholder {
-  padding: 40px ;
-  color: rgba(255,255,255,.5) ;
+  padding: 40px 40px 10px 40px ;
+  color: hsl(20,60%,60%) ;
   font-size: 24px ;
   text-align: center ;
 }

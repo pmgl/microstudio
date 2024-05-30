@@ -12,7 +12,24 @@ this.SoundEditor = class SoundEditor extends Manager {
   }
 
   update() {
-    return super.update();
+    var f, img, img2;
+    super.update();
+    if (!this.img_loaded) {
+      this.img_loaded = true;
+      img = new Image();
+      img.src = "/img/mpu/mpums1.jpg";
+      document.getElementById("sample-editor-bg").appendChild(img);
+      img.style = "position: absolute; width: 70%; bottom: 0; left:0; cursor: pointer";
+      img2 = new Image();
+      img2.src = "/img/mpu/mpums2.png";
+      document.getElementById("sample-editor-content").appendChild(img2);
+      img2.style = "position: absolute; height: 60%; bottom: 20px; right:20px; cursor: pointer";
+      f = function() {
+        return window.open("https://store.steampowered.com/app/2246370/Music_Power_Up/?utm_source=microstudio", "_blank");
+      };
+      img.addEventListener("click", f);
+      return img2.addEventListener("click", f);
+    }
   }
 
   openItem(name) {

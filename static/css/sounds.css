@@ -13,4 +13,23 @@
   left: 0 ;
   right: 0 ;
   bottom: 0 ;
+  background: #181C20 ;
+}
+
+#sample-editor-bg {
+  position: absolute ;
+  top: 0;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  overflow: hidden ;
+}
+
+#sample-editor-content {
+  position: absolute ;
+  top: 0;
+  left: 0 ;
+  right: 0 ;
+  bottom: 0 ;
+  pointer-events:none ;
 }
