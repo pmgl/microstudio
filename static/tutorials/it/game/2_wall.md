@@ -68,13 +68,13 @@ end
 ### Animazione del muro
 
 Introdurremo una variabile ```posizione```. La useremo per spostare le piastrelle del muro a sinistra di una certa quantità. Riscriviamo
-riscriviamo la linea che disegna le piastrelle del muro in questo modo:
+la linea di codiche che disegna le piastrelle del muro in questo modo:
 
 ```
-    screen.drawSprite("muro",i*40-position,-80,40)
+    screen.drawSprite("muro",i*40-posizione,-80,40)
 ```
 
-Il muro non si sta ancora muovendo, perché non stiamo cambiando il valore della posizione. Iniettiamo questa linea nel corpo di
+Il muro non si sta ancora muovendo! Questo perché non stiamo cambiando il valore della posizione. Inseriamo questo codice nel corpo della 
 funzione ```update```:
 
 ```
