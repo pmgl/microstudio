@@ -73,16 +73,14 @@ this.Comments = class Comments {
 
   remove(comment) {
     if (comment != null) {
-      return comment.flags.deleted = true;
+      comment.text = "";
+      comment.flags.deleted = true;
+      return this.save();
     }
   }
 
 };
 
-// index = @comments.indexOf(comment)
-// if index>=0
-//   @comments.splice(index,1)
-//   @save()
 Comment = class Comment {
   constructor(comments, user1, data) {
     this.comments = comments;

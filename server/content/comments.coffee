@@ -47,12 +47,9 @@ class @Comments
 
   remove:(comment)->
     if comment?
+      comment.text = ""
       comment.flags.deleted = true
-
-    # index = @comments.indexOf(comment)
-    # if index>=0
-    #   @comments.splice(index,1)
-    #   @save()
+      @save()
 
 class Comment
   constructor:(@comments,@user,data)->
