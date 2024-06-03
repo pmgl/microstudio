@@ -7,7 +7,7 @@ class @AssetsManager extends Manager
     @list_change_event = "assetlist"
     @get_item = "getAsset"
     @use_thumbnails = true
-    @extensions = ["glb","obj","json","ttf","png","jpg","txt","csv","md"]
+    @extensions = ["glb","obj","json","ttf","png","jpg","txt","csv","md","wasm"]
     @update_list = "updateAssetList"
 
     @model_viewer = new ModelViewer @
@@ -86,6 +86,9 @@ class @AssetsManager extends Manager
         when "png","jpg"
           @image_viewer.view @asset
           @viewer = @image_viewer
+
+        when "wasm"
+          @checkWASMThumbnail @asset
 
 
   createAsset:(folder)->
@@ -171,6 +174,7 @@ class @AssetsManager extends Manager
       when "md" then "hsl(270,50%,60%)"
       when "glb" then "hsl(300,50%,60%)"
       when "obj" then "hsl(240,50%,70%)"
+      when "wasm" then "hsl(60,50%,60%)"
       else "hsl(0,0%,60%)"
 
     w = canvas.width
@@ -180,7 +184,9 @@ class @AssetsManager extends Manager
     context.fillStyle = color
     context.fillRect(0,h-2,w,2)
     context.font = "7pt sans-serif"
-    context.fillText "#{asset.ext.toUpperCase()}",w-26,h-5
+    t = asset.ext.toUpperCase()
+    tw = context.measureText(t).width
+    context.fillText "#{asset.ext.toUpperCase()}",w-tw-2,h-5
 
     asset.thumbnail_url = canvas.toDataURL()
 
@@ -194,6 +200,29 @@ class @AssetsManager extends Manager
 
     if asset.element?
       asset.element.querySelector("img").src = canvas.toDataURL()
+
+  checkWASMThumbnail:(asset)->
+    @checkThumbnail asset,()=>
+      @createWASMThumbnail asset.getURL(),(canvas)=>
+        if asset.element?
+          asset.element.querySelector("img").src = canvas.toDataURL()
+
+        @updateAssetIcon asset,canvas
+
+  createWASMThumbnail:(url,callback)->
+    canvas = document.createElement "canvas"
+    canvas.width = 128
+    canvas.height = 96
+    context = canvas.getContext "2d"
+    context.save()
+    context.fillStyle = "#222"
+    context.fillRect(0,0,canvas.width,canvas.height)
+    t = "</>"
+    context.font = "36pt monospace"
+    context.fillStyle = "hsl(20,50%,30%)"
+    tw = context.measureText(t).width
+    context.fillText(t,64-tw/2,60)
+    callback canvas
 
 class @CodeSnippet
   constructor:(@app)->

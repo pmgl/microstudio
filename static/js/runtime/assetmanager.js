@@ -22,6 +22,9 @@ this.AssetManager = class AssetManager {
       },
       loadMarkdown: (path, callback) => {
         return this.loadMarkdown(path, callback);
+      },
+      wasmInstance: (path, callback) => {
+        return this.wasmInstance(path, callback);
       }
     };
   }
@@ -138,6 +141,27 @@ this.AssetManager = class AssetManager {
 
   loadMarkdown(path, callback) {
     return this.loadText(path, callback, "md");
+  }
+
+  wasmInstance(path, callback) {
+    var loader;
+    path = path.replace(/\//g, "-");
+    path = `assets/${path}.wasm`;
+    loader = {
+      ready: 0
+    };
+    fetch(path).then((response) => {
+      return response.arrayBuffer().then((buffer) => {
+        return WebAssembly.instantiate(buffer).then((result) => {
+          loader.instance = result.instance;
+          loader.ready = 1;
+          if (callback) {
+            return callback(loader.instance);
+          }
+        });
+      });
+    });
+    return loader;
   }
 
 };

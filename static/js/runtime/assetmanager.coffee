@@ -8,6 +8,7 @@ class @AssetManager
       loadText: (path,callback) => @loadText path,callback
       loadCSV: (path,callback) => @loadCSV path,callback
       loadMarkdown: (path,callback) => @loadMarkdown path,callback
+      wasmInstance: (path,callback) => @wasmInstance path,callback
 
   getInterface:()->
     @interface
@@ -91,3 +92,19 @@ class @AssetManager
 
   loadMarkdown:(path,callback)->
     @loadText path,callback,"md"
+
+  wasmInstance:(path,callback)->
+    path = path.replace /\//g,"-"
+    path = "assets/#{path}.wasm"
+    loader =
+      ready: 0
+
+    fetch(path).then (response) =>
+      response.arrayBuffer().then (buffer) =>
+        WebAssembly.instantiate(buffer).then (result) =>
+          loader.instance = result.instance
+          loader.ready = 1
+          if callback
+            callback loader.instance
+
+    loader

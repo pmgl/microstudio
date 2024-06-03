@@ -554,7 +554,7 @@ class @WebApp
 
 
     # asset files
-    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_-]+.(glb|obj|jpg|png|ttf|txt|csv|json|md)$/,(req,res)=>
+    @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_-]+.(glb|obj|jpg|png|ttf|txt|csv|json|md|wasm)$/,(req,res)=>
       s = req.path.split("/")
       access = @getProjectAccess req,res
       return if not access?
@@ -574,6 +574,7 @@ class @WebApp
             when "txt" then res.setHeader("Content-Type", "text/plain")
             when "csv" then res.setHeader("Content-Type", "text/csv")
             when "json" then res.setHeader("Content-Type", "application/json")
+            when "wasm" then res.setHeader("Content-Type", "application/wasm")
 
           res.send content
         else

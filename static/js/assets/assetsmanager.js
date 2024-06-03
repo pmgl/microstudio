@@ -8,7 +8,7 @@ this.AssetsManager = class AssetsManager extends Manager {
     this.list_change_event = "assetlist";
     this.get_item = "getAsset";
     this.use_thumbnails = true;
-    this.extensions = ["glb", "obj", "json", "ttf", "png", "jpg", "txt", "csv", "md"];
+    this.extensions = ["glb", "obj", "json", "ttf", "png", "jpg", "txt", "csv", "md", "wasm"];
     this.update_list = "updateAssetList";
     this.model_viewer = new ModelViewer(this);
     this.font_viewer = new FontViewer(this);
@@ -107,6 +107,8 @@ this.AssetsManager = class AssetsManager extends Manager {
         case "jpg":
           this.image_viewer.view(this.asset);
           return this.viewer = this.image_viewer;
+        case "wasm":
+          return this.checkWASMThumbnail(this.asset);
       }
     }
   }
@@ -194,7 +196,7 @@ this.AssetsManager = class AssetsManager extends Manager {
   }
 
   updateAssetIcon(asset, canvas) {
-    var color, context, h, w;
+    var color, context, h, t, tw, w;
     context = canvas.getContext("2d");
     color = (function() {
       switch (asset.ext) {
@@ -212,6 +214,8 @@ this.AssetsManager = class AssetsManager extends Manager {
           return "hsl(300,50%,60%)";
         case "obj":
           return "hsl(240,50%,70%)";
+        case "wasm":
+          return "hsl(60,50%,60%)";
         default:
           return "hsl(0,0%,60%)";
       }
@@ -223,7 +227,9 @@ this.AssetsManager = class AssetsManager extends Manager {
     context.fillStyle = color;
     context.fillRect(0, h - 2, w, 2);
     context.font = "7pt sans-serif";
-    context.fillText(`${asset.ext.toUpperCase()}`, w - 26, h - 5);
+    t = asset.ext.toUpperCase();
+    tw = context.measureText(t).width;
+    context.fillText(`${asset.ext.toUpperCase()}`, w - tw - 2, h - 5);
     asset.thumbnail_url = canvas.toDataURL();
     this.app.client.sendRequest({
       name: "write_project_file",
@@ -236,6 +242,34 @@ this.AssetsManager = class AssetsManager extends Manager {
     if (asset.element != null) {
       return asset.element.querySelector("img").src = canvas.toDataURL();
     }
+  }
+
+  checkWASMThumbnail(asset) {
+    return this.checkThumbnail(asset, () => {
+      return this.createWASMThumbnail(asset.getURL(), (canvas) => {
+        if (asset.element != null) {
+          asset.element.querySelector("img").src = canvas.toDataURL();
+        }
+        return this.updateAssetIcon(asset, canvas);
+      });
+    });
+  }
+
+  createWASMThumbnail(url, callback) {
+    var canvas, context, t, tw;
+    canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 96;
+    context = canvas.getContext("2d");
+    context.save();
+    context.fillStyle = "#222";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    t = "</>";
+    context.font = "36pt monospace";
+    context.fillStyle = "hsl(20,50%,30%)";
+    tw = context.measureText(t).width;
+    context.fillText(t, 64 - tw / 2, 60);
+    return callback(canvas);
   }
 
 };

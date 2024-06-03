@@ -630,7 +630,7 @@ this.WebApp = class WebApp {
       });
     });
     // asset files
-    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_-]+.(glb|obj|jpg|png|ttf|txt|csv|json|md)$/, (req, res) => {
+    this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+)?)?\/assets\/[A-Za-z0-9_-]+.(glb|obj|jpg|png|ttf|txt|csv|json|md|wasm)$/, (req, res) => {
       var access, asset, project, s, user;
       s = req.path.split("/");
       access = this.getProjectAccess(req, res);
@@ -666,6 +666,9 @@ this.WebApp = class WebApp {
               break;
             case "json":
               res.setHeader("Content-Type", "application/json");
+              break;
+            case "wasm":
+              res.setHeader("Content-Type", "application/wasm");
           }
           return res.send(content);
         } else {
