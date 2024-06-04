@@ -1,5 +1,11 @@
 ## Changelog
 
+### Update 2024-06-04
+* WASM modules can now be added as assets and instantiated through `asset_manager`
+* removed storage limitation in standalone #222
+* Italian tutorial fix (thx HomineLudens)
+* added "information" on MPU :-)
+
 ### Update 2024-02-20
 * display warning when accessing unexisting object field (microScript 2.0)
 
