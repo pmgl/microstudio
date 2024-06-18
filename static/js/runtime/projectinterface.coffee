@@ -247,11 +247,16 @@ class @ProjectInterface
         @callback callback,result.content,res,result.error
 
     else if typeof obj == "string"
-      if options.ext in ["txt","csv","obj"]
+      if options.ext in ["txt","csv","obj","json","md"]
         ext = options.ext
       else
         ext = "txt"
 
+      if ext == "json" and typeof obj == "string"
+        try
+          obj = JSON.parse obj
+        catch err
+          
       msg =
         name: "write_project_file"
         path: path
