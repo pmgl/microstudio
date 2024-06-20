@@ -37,7 +37,7 @@ this.Runtime = class Runtime {
     return this.connections.push(connection);
   }
 
-  updateSource(file, src, reinit = false) {
+  async updateSource(file, src, reinit = false) {
     var err, init;
     if (this.vm == null) {
       return false;
@@ -49,7 +49,7 @@ this.Runtime = class Runtime {
     this.audio.cancelBeeps();
     this.screen.clear();
     try {
-      this.vm.run(src, 3000, file);
+       await this.vm.run(src, 3000, file);
       this.listener.postMessage({
         name: "compile_success",
         file: file
