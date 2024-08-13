@@ -123,6 +123,6 @@ draw = function()
     screen.drawSprite("wall",i*40-position%40,-80,40)
   end
 
-  screen.drawSprite("hero",-80,-50+hauteur,20)
+  screen.drawSprite("hero",-80,-50,20)
 end
 ```
