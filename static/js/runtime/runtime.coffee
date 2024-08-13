@@ -214,6 +214,7 @@ class @Runtime
     if not window.ms_async_load
       @vm.context.global.system.loading = 100
 
+    @vm.context.global.system.disable_autofullscreen = 0
     @vm.context.global.system.file = System.file
     @vm.context.global.system.javascript = System.javascript
     if window.ms_in_editor

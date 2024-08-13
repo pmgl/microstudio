@@ -1,7 +1,8 @@
-this.Player = (function() {
-  function Player(listener) {
+this.Player = class Player {
+  constructor(listener) {
     var i, len, ref, source;
     this.listener = listener;
+    //src = document.getElementById("code").innerText
     this.source_count = 0;
     this.sources = {};
     this.resources = resources;
@@ -19,67 +20,68 @@ this.Player = (function() {
     }
   }
 
-  Player.prototype.loadSource = function(source) {
+  loadSource(source) {
     var req;
     req = new XMLHttpRequest();
-    req.onreadystatechange = (function(_this) {
-      return function(event) {
-        var name;
-        if (req.readyState === XMLHttpRequest.DONE) {
-          if (req.status === 200) {
-            name = source.file.split(".")[0];
-            _this.sources[name] = req.responseText;
-            _this.source_count++;
-            if (_this.source_count >= resources.sources.length && (_this.runtime == null)) {
-              return _this.start();
-            }
+    req.onreadystatechange = (event) => {
+      var name;
+      if (req.readyState === XMLHttpRequest.DONE) {
+        if (req.status === 200) {
+          name = source.file.split(".")[0];
+          this.sources[name] = req.responseText;
+          this.source_count++;
+          if (this.source_count >= resources.sources.length && (this.runtime == null)) {
+            return this.start();
           }
         }
-      };
-    })(this);
-    req.open("GET", location.origin + location.pathname + ("ms/" + source.file + "?v=" + source.version));
+      }
+    };
+    req.open("GET", location.origin + location.pathname + `ms/${source.file}?v=${source.version}`);
     return req.send();
-  };
+  }
 
-  Player.prototype.start = function() {
+  start() {
     var touchListener, touchStartListener, wrapper;
     this.runtime = new Runtime((window.exported_project ? "" : location.origin + location.pathname), this.sources, resources, this);
     this.client = new PlayerClient(this);
     wrapper = document.getElementById("canvaswrapper");
     wrapper.appendChild(this.runtime.screen.canvas);
-    window.addEventListener("resize", (function(_this) {
-      return function() {
-        return _this.resize();
-      };
-    })(this));
+    window.addEventListener("resize", () => {
+      return this.resize();
+    });
     this.resize();
-    touchStartListener = (function(_this) {
-      return function(event) {
-        event.preventDefault();
-        _this.runtime.screen.canvas.removeEventListener("touchstart", touchStartListener);
+    //@runtime.start()
+    touchStartListener = (event) => {
+      event.preventDefault();
+      //event.stopPropagation()
+      //event.stopImmediatePropagation()
+      this.runtime.screen.canvas.removeEventListener("touchstart", touchStartListener);
+      return true;
+    };
+    touchListener = (event) => {
+      //event.preventDefault()
+      //event.stopPropagation()
+      //event.stopImmediatePropagation()
+      //@runtime.screen.canvas.removeEventListener "touchend",touchListener
+      if ((this.runtime != null) && (this.runtime.vm != null) && this.runtime.vm.context.global.system.disable_autofullscreen) {
         return true;
-      };
-    })(this);
-    touchListener = (function(_this) {
-      return function(event) {
-        _this.setFullScreen();
-        return true;
-      };
-    })(this);
+      } else {
+        this.setFullScreen();
+      }
+      return true;
+    };
     this.runtime.screen.canvas.addEventListener("touchstart", touchStartListener);
     this.runtime.screen.canvas.addEventListener("touchend", touchListener);
     this.runtime.start();
-    window.addEventListener("message", (function(_this) {
-      return function(msg) {
-        return _this.messageReceived(msg);
-      };
-    })(this));
+    window.addEventListener("message", (msg) => {
+      return this.messageReceived(msg);
+    });
     return this.postMessage({
       name: "focus"
     });
-  };
+  }
 
-  Player.prototype.resize = function() {
+  resize() {
     var file, ref, results, src;
     this.runtime.screen.resize();
     if (this.runtime.vm != null) {
@@ -96,9 +98,9 @@ this.Player = (function() {
         return this.runtime.drawCall();
       }
     }
-  };
+  }
 
-  Player.prototype.setFullScreen = function() {
+  setFullScreen() {
     var ref;
     if ((document.documentElement.webkitRequestFullScreen != null) && !document.webkitIsFullScreen) {
       document.documentElement.webkitRequestFullScreen();
@@ -110,52 +112,51 @@ this.Player = (function() {
     if ((window.screen != null) && (window.screen.orientation != null) && ((ref = window.orientation) === "portrait" || ref === "landscape")) {
       return window.screen.orientation.lock(window.orientation).then(null, function(error) {});
     }
-  };
+  }
 
-  Player.prototype.reportError = function(err) {
+  //console.error error
+  reportError(err) {
     return this.postMessage({
       name: "error",
       data: err
     });
-  };
+  }
 
-  Player.prototype.log = function(text) {
+  log(text) {
     return this.postMessage({
       name: "log",
       data: text
     });
-  };
+  }
 
-  Player.prototype.codePaused = function() {
+  codePaused() {
     return this.postMessage({
       name: "code_paused"
     });
-  };
+  }
 
-  Player.prototype.exit = function() {
+  exit() {
     return this.postMessage({
       name: "exit"
     });
-  };
+  }
 
-  Player.prototype.messageReceived = function(msg) {
+  messageReceived(msg) {
     var code, data, err, file;
     data = msg.data;
     try {
       data = JSON.parse(data);
       switch (data.name) {
         case "command":
-          return this.runtime.runCommand(data.line, (function(_this) {
-            return function(res) {
-              if (!data.line.trim().startsWith("print")) {
-                return _this.postMessage({
-                  name: "output",
-                  data: res,
-                  id: data.id
-                });
-              }
-            };
-          })(this));
+          return this.runtime.runCommand(data.line, (res) => {
+            if (!data.line.trim().startsWith("print")) {
+              return this.postMessage({
+                name: "output",
+                data: res,
+                id: data.id
+              });
+            }
+          });
         case "pause":
           return this.runtime.stop();
         case "step_forward":
@@ -176,14 +177,12 @@ this.Player = (function() {
           file = data.file;
           return this.runtime.updateMap(file, 0, data.data);
         case "take_picture":
-          this.runtime.screen.takePicture((function(_this) {
-            return function(pic) {
-              return _this.postMessage({
-                name: "picture_taken",
-                data: pic
-              });
-            };
-          })(this));
+          this.runtime.screen.takePicture((pic) => {
+            return this.postMessage({
+              name: "picture_taken",
+              data: pic
+            });
+          });
           if (this.runtime.stopped) {
             return this.runtime.drawCall();
           }
@@ -206,27 +205,27 @@ this.Player = (function() {
       err = error1;
       return console.error(err);
     }
-  };
+  }
 
-  Player.prototype.call = function(name, args) {
+  call(name, args) {
     if ((this.runtime != null) && (this.runtime.vm != null)) {
       return this.runtime.vm.call(name, args);
     }
-  };
+  }
 
-  Player.prototype.setGlobal = function(name, value) {
+  setGlobal(name, value) {
     if ((this.runtime != null) && (this.runtime.vm != null)) {
       return this.runtime.vm.context.global[name] = value;
     }
-  };
+  }
 
-  Player.prototype.exec = function(command, callback) {
+  exec(command, callback) {
     if (this.runtime != null) {
       return this.runtime.runCommand(command, callback);
     }
-  };
+  }
 
-  Player.prototype.postMessage = function(data) {
+  postMessage(data) {
     var err;
     if (window !== window.parent) {
       window.parent.postMessage(JSON.stringify(data), "*");
@@ -239,24 +238,22 @@ this.Player = (function() {
         return console.error(err);
       }
     }
-  };
+  }
 
-  Player.prototype.postRequest = function(data, callback) {
+  postRequest(data, callback) {
     data.request_id = this.request_id;
     this.pending_requests[this.request_id++] = callback;
     return this.postMessage(data);
-  };
+  }
 
-  return Player;
-
-})();
+};
 
 if ((navigator.serviceWorker != null) && !window.skip_service_worker) {
   navigator.serviceWorker.register('sw.js', {
     scope: location.pathname
   }).then(function(reg) {
     return console.log('Registration succeeded. Scope is' + reg.scope);
-  })["catch"](function(error) {
+  }).catch(function(error) {
     return console.log('Registration failed with' + error);
   });
 }

@@ -51,7 +51,10 @@ class @Player
       #event.stopPropagation()
       #event.stopImmediatePropagation()
       #@runtime.screen.canvas.removeEventListener "touchend",touchListener
-      @setFullScreen()
+      if @runtime? and @runtime.vm? and @runtime.vm.context.global.system.disable_autofullscreen
+        return true
+      else
+        @setFullScreen()
       true
 
     @runtime.screen.canvas.addEventListener "touchstart",touchStartListener

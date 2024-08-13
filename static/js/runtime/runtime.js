@@ -263,6 +263,7 @@ this.Runtime = class Runtime {
     if (!window.ms_async_load) {
       this.vm.context.global.system.loading = 100;
     }
+    this.vm.context.global.system.disable_autofullscreen = 0;
     this.vm.context.global.system.file = System.file;
     this.vm.context.global.system.javascript = System.javascript;
     if (window.ms_in_editor) {
