@@ -787,7 +787,7 @@ class @WebApp
     if project.public or project.code == code
       return { user: user, project: project }
 
-    res.send "Project does not exist"
+    @return404(req,res)
     return null
 
   getProjectManager:(project)->
