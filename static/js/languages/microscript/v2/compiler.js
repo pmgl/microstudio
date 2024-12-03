@@ -25,8 +25,9 @@ Compiler = (function() {
       this.routine.locals_size = this.locals.max_index;
     }
 
-    // console.info(@routine.toString())
-    // console.info("total length: "+@count)
+    
+    // console.info(JSON.stringify @routine.export())
+    // @routine = new Routine(0).import( @routine.export() )
     compile(statement) {
       if (statement instanceof Program.Value) {
         return this.compileValue(statement);

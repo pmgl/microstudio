@@ -5,7 +5,6 @@ this.Routine = class Routine {
     this.opcodes = [];
     this.arg1 = [];
     this.ref = [];
-    this.table = {};
     this.label_count = 0;
     this.labels = {};
     this.transpile = false;
@@ -378,6 +377,75 @@ this.Routine = class Routine {
       s += "\n";
     }
     return s;
+  }
+
+  exportArg(arg) {
+    if (arg == null) {
+      return 0;
+    } else if (arg instanceof Routine) {
+      return arg.export();
+    } else if (typeof arg === "function") {
+      return arg.name;
+    } else {
+      return arg;
+    }
+  }
+
+  export() {
+    var args, i, j, ref1, res;
+    args = [];
+    for (i = j = 0, ref1 = this.arg1.length - 1; j <= ref1; i = j += 1) {
+      args[i] = this.exportArg(this.arg1[i]);
+    }
+    res = {
+      num_args: this.num_args,
+      ops: this.opcodes,
+      args: args,
+      import_refs: this.import_refs,
+      import_values: this.import_values,
+      import_self: this.import_self,
+      locals_size: this.locals_size
+    };
+    return res;
+  }
+
+  import(src) {
+    var i, j, ref, ref1, token;
+    this.num_args = src.num_args;
+    this.opcodes = src.ops;
+    this.arg1 = src.args;
+    this.import_refs = src.import_refs;
+    this.import_values = src.import_values;
+    this.import_self = src.import_self;
+    this.locals_size = src.locals_size;
+    token = {
+      line: 0,
+      column: 0,
+      start: 0,
+      length: 0,
+      index: 0,
+      tokenizer: {
+        filename: "filename",
+        input: ""
+      }
+    };
+    ref = {
+      expression: {
+        token: token
+      },
+      token: token
+    };
+    for (i = j = 0, ref1 = this.opcodes.length - 1; j <= ref1; i = j += 1) {
+      if (this.opcodes[i] === 100) {
+        this.arg1[i] = Compiler.predefined_unary_functions[this.arg1[i]];
+      } else if (this.opcodes[i] === 101) {
+        this.arg1[i] = Compiler.predefined_binary_functions[this.arg1[i]];
+      } else if (typeof this.arg1[i] === "object" && !Array.isArray(this.arg1[i])) {
+        this.arg1[i] = new Routine(0).import(this.arg1[i]);
+      }
+      this.ref[i] = ref;
+    }
+    return this;
   }
 
 };

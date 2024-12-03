@@ -20,8 +20,9 @@ class Compiler
     @routine.resolveLabels()
     @count += @routine.opcodes.length
     @routine.locals_size = @locals.max_index
-    # console.info(@routine.toString())
-    # console.info("total length: "+@count)
+    
+    # console.info(JSON.stringify @routine.export())
+    # @routine = new Routine(0).import( @routine.export() )
 
   compile:(statement)->
     if statement instanceof Program.Value

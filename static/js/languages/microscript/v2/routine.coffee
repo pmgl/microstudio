@@ -5,7 +5,6 @@ class @Routine
     @arg1 = []
     @ref = []
 
-    @table = {}
     @label_count = 0
     @labels = {}
 
@@ -165,6 +164,66 @@ class @Routine
 
     s
 
+  exportArg:(arg)->
+    if not arg?
+      return 0
+    else if arg instanceof Routine
+      return arg.export()
+    else if typeof arg == "function"
+      return arg.name
+    else
+      return arg
+
+  export:()->
+    args = []
+    for i in [0..@arg1.length-1] by 1
+      args[i] = @exportArg(@arg1[i])
+
+    res =
+      num_args: @num_args
+      ops: @opcodes
+      args: args
+      import_refs: @import_refs
+      import_values: @import_values
+      import_self: @import_self
+      locals_size: @locals_size
+
+    return res
+
+  import:(src)->
+    @num_args = src.num_args
+    @opcodes = src.ops
+    @arg1 = src.args
+    @import_refs = src.import_refs
+    @import_values = src.import_values
+    @import_self = src.import_self
+    @locals_size = src.locals_size
+
+    token = 
+      line: 0
+      column: 0
+      start: 0
+      length: 0
+      index: 0
+      tokenizer:
+        filename: "filename"
+        input: ""
+
+    ref =
+      expression:
+        token: token
+      token: token
+
+    for i in [0..@opcodes.length-1] by 1
+      if @opcodes[i] == 100
+        @arg1[i] = Compiler.predefined_unary_functions[@arg1[i]]
+      else if @opcodes[i] == 101
+        @arg1[i] = Compiler.predefined_binary_functions[@arg1[i]]
+      else if typeof @arg1[i] == "object" and not Array.isArray(@arg1[i])
+        @arg1[i] = new Routine(0).import(@arg1[i])
+      @ref[i] = ref
+
+    return @
 
 class @OPCODES_CLASS
   constructor:()->
