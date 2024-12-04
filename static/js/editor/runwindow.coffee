@@ -118,10 +118,14 @@ class @RunWindow
   run:()->
     src = @app.editor.editor.getValue()
 
+    origin = "#{location.origin.replace(".dev",".io")}"
+    if @app.project.properties and @app.project.properties.embedder_policy
+      console.info "replacing origin to .dev"
+      origin = origin.replace(".io",".dev")
+      
     device = document.getElementById("device")
     code = if @app.project.public then "" else "#{@app.project.code}/"
-    url = "#{location.origin.replace(".dev",".io")}/#{@app.project.owner.nick}/#{@app.project.slug}/#{code}"
-    origin = "#{location.origin.replace(".dev",".io")}"
+    url = "#{origin}/#{@app.project.owner.nick}/#{@app.project.slug}/#{code}"
 
     @app.project.savePendingChanges ()=>
       device.innerHTML = "<iframe id='runiframe' allow='autoplay #{origin}; gamepad #{origin}; midi #{origin}; camera #{origin}; microphone #{origin}' src='#{url}?debug'></iframe>"
@@ -832,9 +836,13 @@ class @ServerWatcher
 
 class @FloatingRunWindow
   constructor:(@app)->
-    code = if @app.project.public then "" else "#{@app.project.code}/"
-    url = "#{location.origin.replace(".dev",".io")}/#{@app.project.owner.nick}/#{@app.project.slug}/#{code}"
     origin = "#{location.origin.replace(".dev",".io")}"
+    if @app.project.properties and @app.project.properties.embedder_policy
+      console.info "replacing origin to .dev"
+      origin = origin.replace(".io",".dev")
+
+    code = if @app.project.public then "" else "#{@app.project.code}/"
+    url = "#{origin}/#{@app.project.owner.nick}/#{@app.project.slug}/#{code}"
 
     bounds = document.querySelector("#device").getBoundingClientRect()
     if not FloatingRunWindow.offset?

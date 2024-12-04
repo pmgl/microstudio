@@ -81,6 +81,10 @@ class @WebApp
         delete @home_page[lang]
 
       s = req.path.split("/")
+      if s[1] == "about"      
+        res.setHeader( "Cross-Origin-Embedder-Policy", "require-corp" )
+        res.setHeader( "Cross-Origin-Opener-Policy", "same-origin" )
+
       if s[1] == "i"
         user = s[2]
         project = s[3]
@@ -239,21 +243,29 @@ class @WebApp
 
     # /user/project[/code/]
     @app.get /^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+\/?)?)?$/,(req,res)=>
+      access = @getProjectAccess req,res
+      if not access?
+        return  # 404 is already sent
+
+      user = access.user
+      project = access.project
+
+      embedder_policy = false
+      if user.id == 0 and project.properties? and project.properties.embedder_policy
+        embedder_policy = true
+        console.info "embedder_policy is true"
+      
       if req.query? and req.query.server?
         return if @ensureDevArea(req,res)
         return @serverBox req,res
 
-      return if @ensureIOArea(req,res)
+      if not embedder_policy
+        return if @ensureIOArea(req,res)
+
       if req.path.charAt(req.path.length-1) != "/"
         redir = req.protocol+'://' + req.get("host") + req.url+"/"
         console.info "redirecting to: "+redir
         return res.redirect(redir)
-
-      access = @getProjectAccess req,res
-      return if not access?
-
-      user = access.user
-      project = access.project
 
       file = "#{user.id}/#{project.id}/ms/main.ms"
 
@@ -309,6 +321,12 @@ class @WebApp
                     if not @play_funk? or not @server.use_cache
                       @play_funk = pug.compileFile "../templates/play/play.pug"
                     pf = @play_funk
+
+                  # Required to make SharedArrayBuffer work
+                  # But also breaks cross-origin iframes
+                  if embedder_policy
+                    res.setHeader( "Cross-Origin-Embedder-Policy", "require-corp" )
+                    res.setHeader( "Cross-Origin-Opener-Policy", "same-origin" )
 
                   res.send pf
                     user: user

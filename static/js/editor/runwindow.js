@@ -145,10 +145,14 @@ this.RunWindow = class RunWindow {
   run() {
     var code, device, origin, src, url;
     src = this.app.editor.editor.getValue();
+    origin = `${location.origin.replace(".dev", ".io")}`;
+    if (this.app.project.properties && this.app.project.properties.embedder_policy) {
+      console.info("replacing origin to .dev");
+      origin = origin.replace(".io", ".dev");
+    }
     device = document.getElementById("device");
     code = this.app.project.public ? "" : `${this.app.project.code}/`;
-    url = `${location.origin.replace(".dev", ".io")}/${this.app.project.owner.nick}/${this.app.project.slug}/${code}`;
-    origin = `${location.origin.replace(".dev", ".io")}`;
+    url = `${origin}/${this.app.project.owner.nick}/${this.app.project.slug}/${code}`;
     return this.app.project.savePendingChanges(() => {
       device.innerHTML = `<iframe id='runiframe' allow='autoplay ${origin}; gamepad ${origin}; midi ${origin}; camera ${origin}; microphone ${origin}' src='${url}?debug'></iframe>`;
       //document.getElementById("runiframe").focus()
@@ -1034,9 +1038,13 @@ this.FloatingRunWindow = class FloatingRunWindow {
   constructor(app) {
     var bounds, code, div, height, id, left, origin, parent, top, url, width;
     this.app = app;
-    code = this.app.project.public ? "" : `${this.app.project.code}/`;
-    url = `${location.origin.replace(".dev", ".io")}/${this.app.project.owner.nick}/${this.app.project.slug}/${code}`;
     origin = `${location.origin.replace(".dev", ".io")}`;
+    if (this.app.project.properties && this.app.project.properties.embedder_policy) {
+      console.info("replacing origin to .dev");
+      origin = origin.replace(".io", ".dev");
+    }
+    code = this.app.project.public ? "" : `${this.app.project.code}/`;
+    url = `${origin}/${this.app.project.owner.nick}/${this.app.project.slug}/${code}`;
     bounds = document.querySelector("#device").getBoundingClientRect();
     if (FloatingRunWindow.offset == null) {
       FloatingRunWindow.offset = 0;

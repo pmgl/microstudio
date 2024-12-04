@@ -94,6 +94,10 @@ this.WebApp = class WebApp {
         delete this.home_page[lang];
       }
       s = req.path.split("/");
+      if (s[1] === "about") {
+        res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+        res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+      }
       if (s[1] === "i") {
         user = s[2];
         project = s[3];
@@ -277,27 +281,34 @@ this.WebApp = class WebApp {
     });
     // /user/project[/code/]
     this.app.get(/^\/[^\/\|\?\&\.]+\/[^\/\|\?\&\.]+(\/([^\/\|\?\&\.]+\/?)?)?$/, (req, res) => {
-      var access, encoding, file, jsfiles, l, len3, lib, manager, o, pathcode, poster, prog_lang, project, redir, ref4, user;
+      var access, embedder_policy, encoding, file, jsfiles, l, len3, lib, manager, o, pathcode, poster, prog_lang, project, redir, ref4, user;
+      access = this.getProjectAccess(req, res);
+      if (access == null) { // 404 is already sent
+        return;
+      }
+      user = access.user;
+      project = access.project;
+      embedder_policy = false;
+      if (user.id === 0 && (project.properties != null) && project.properties.embedder_policy) {
+        embedder_policy = true;
+        console.info("embedder_policy is true");
+      }
       if ((req.query != null) && (req.query.server != null)) {
         if (this.ensureDevArea(req, res)) {
           return;
         }
         return this.serverBox(req, res);
       }
-      if (this.ensureIOArea(req, res)) {
-        return;
+      if (!embedder_policy) {
+        if (this.ensureIOArea(req, res)) {
+          return;
+        }
       }
       if (req.path.charAt(req.path.length - 1) !== "/") {
         redir = req.protocol + '://' + req.get("host") + req.url + "/";
         console.info("redirecting to: " + redir);
         return res.redirect(redir);
       }
-      access = this.getProjectAccess(req, res);
-      if (access == null) {
-        return;
-      }
-      user = access.user;
-      project = access.project;
       file = `${user.id}/${project.id}/ms/main.ms`;
       encoding = "text";
       manager = this.getProjectManager(project);
@@ -350,6 +361,12 @@ this.WebApp = class WebApp {
                       this.play_funk = pug.compileFile("../templates/play/play.pug");
                     }
                     pf = this.play_funk;
+                  }
+                  // Required to make SharedArrayBuffer work
+                  // But also breaks cross-origin iframes
+                  if (embedder_policy) {
+                    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+                    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
                   }
                   return res.send(pf({
                     user: user,
