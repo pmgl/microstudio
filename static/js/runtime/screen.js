@@ -42,6 +42,10 @@ this.Screen = class Screen {
         return this.canvas.style.cursor = "default";
       }
     });
+    // when the context is lost and then restored, base transform needs to be reinstated.
+    this.canvas.addEventListener("contextrestored", () => {
+      return this.initContext();
+    });
     setInterval((() => {
       return this.checkMouseCursor();
     }), 1000);

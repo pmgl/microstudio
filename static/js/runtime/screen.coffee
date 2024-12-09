@@ -44,6 +44,10 @@ class @Screen
         @cursor = "default"
         @canvas.style.cursor = "default"
 
+    # when the context is lost and then restored, base transform needs to be reinstated.
+    @canvas.addEventListener "contextrestored",()=>
+      @initContext()
+
     setInterval (()=>@checkMouseCursor()),1000
     @cursor_visibility = "auto"
 
