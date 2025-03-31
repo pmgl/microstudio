@@ -50,6 +50,7 @@ class @Client
 
         when "token_valid"
           @app.nick = msg.nick
+          @setToken @token    # refresh cookie
           @app.user =
             nick: msg.nick
             email: msg.email
