@@ -103,7 +103,7 @@ class @msImage
     @object_rotation = 0
     @object_scale_x = 1
 
-    @font = "BitCell"
+    @font = "BitCell" if not @font?
 
   clear:(color)->
     @initContext()
@@ -172,6 +172,13 @@ class @msImage
 
   setFont:(font)->
     @font = font or "Verdana"
+    @loadFont @font
+
+  loadFont:( font )->
+    window.player.runtime.screen.loadFont( font )
+
+  isFontReady:( font = @font )->
+    window.player.runtime.screen.isFontReady( font )
 
   setTranslation:(translation_x,translation_y)->
     @initContext()

@@ -120,7 +120,9 @@ this.msImage = (function() {
       }
       this.object_rotation = 0;
       this.object_scale_x = 1;
-      return this.font = "BitCell";
+      if (this.font == null) {
+        return this.font = "BitCell";
+      }
     }
 
     clear(color) {
@@ -204,7 +206,16 @@ this.msImage = (function() {
     }
 
     setFont(font) {
-      return this.font = font || "Verdana";
+      this.font = font || "Verdana";
+      return this.loadFont(this.font);
+    }
+
+    loadFont(font) {
+      return window.player.runtime.screen.loadFont(font);
+    }
+
+    isFontReady(font = this.font) {
+      return window.player.runtime.screen.isFontReady(font);
     }
 
     setTranslation(translation_x, translation_y) {
