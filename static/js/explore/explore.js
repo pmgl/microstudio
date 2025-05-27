@@ -2,6 +2,11 @@ this.Explore = class Explore {
   constructor(app) {
     var likes;
     this.app = app;
+    window.DOMPurify = DOMPurify(window);
+    window.DOMPurify.setConfig({
+      FORBID_TAGS: ['form', 'input', 'button', 'select', 'textarea'],
+      FORBID_ATTR: ['formaction', 'target']
+    });
     this.get("explore-back-button").addEventListener("click", () => {
       this.closeDetails();
       return this.app.appui.setMainSection("explore", true);

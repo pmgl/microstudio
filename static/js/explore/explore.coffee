@@ -1,5 +1,11 @@
 class @Explore
   constructor:(@app)->
+    window.DOMPurify = DOMPurify(window)
+    window.DOMPurify.setConfig({
+      FORBID_TAGS: ['form', 'input', 'button', 'select', 'textarea'],
+      FORBID_ATTR: ['formaction', 'target']
+    })
+
     @get("explore-back-button").addEventListener "click",()=>
       @closeDetails()
       @app.appui.setMainSection "explore",true
