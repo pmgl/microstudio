@@ -12,6 +12,7 @@ RateLimiter = require __dirname+"/ratelimiter.js"
 BuildManager = require __dirname+"/build/buildmanager.js"
 WebSocket = require "ws"
 process = require "process"
+morgan = require "morgan"
 
 class @Server
   constructor:(@config={},@callback)->
@@ -46,7 +47,14 @@ class @Server
 
   create:()->
     app = express()
-    static_files = "../static"
+
+    if fs.existsSync( path.join(__dirname, "../logs") )
+      accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), { flags: 'a' })
+
+      # setup the logger
+      app.use(morgan('combined', { stream: accessLogStream }))
+
+    static_files = "../static" 
 
     @date_started = Date.now()
 

@@ -1,4 +1,4 @@
-var BuildManager, Content, DB, FileStorage, RateLimiter, Session, WebApp, WebSocket, compression, cookieParser, express, fs, path, process;
+var BuildManager, Content, DB, FileStorage, RateLimiter, Session, WebApp, WebSocket, compression, cookieParser, express, fs, morgan, path, process;
 
 compression = require("compression");
 
@@ -27,6 +27,8 @@ BuildManager = require(__dirname + "/build/buildmanager.js");
 WebSocket = require("ws");
 
 process = require("process");
+
+morgan = require("morgan");
 
 this.Server = class Server {
   constructor(config = {}, callback1) {
@@ -63,8 +65,17 @@ this.Server = class Server {
   }
 
   create() {
-    var app, folder, i, len, plugin, ref, static_files;
+    var accessLogStream, app, folder, i, len, plugin, ref, static_files;
     app = express();
+    if (fs.existsSync(path.join(__dirname, "../logs"))) {
+      accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), {
+        flags: 'a'
+      });
+      // setup the logger
+      app.use(morgan('combined', {
+        stream: accessLogStream
+      }));
+    }
     static_files = "../static";
     this.date_started = Date.now();
     this.rate_limiter = new RateLimiter(this);

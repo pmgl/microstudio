@@ -9,3 +9,5 @@ data/
 .DS_Store
 .vs/
 microstudio.wiki/
+ignore/
+logs/

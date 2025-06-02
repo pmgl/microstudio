@@ -27,6 +27,7 @@
     "lamejs": "^1.2.1",
     "le-acme-core": "^2.1.4",
     "marked": "^4.1.0",
+    "morgan": "^1.10.0",
     "pidusage": "^2.0.21",
     "pug": "^3.0.0",
     "qrcode": "1.5.1",
