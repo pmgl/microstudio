@@ -5,6 +5,8 @@ class @RateLimiter
     @map.request = new RateLimiterClass(@,1,1000*100) # > 1000 home page loads per minute (> 5000 realtime)
     @map.request_ip = new RateLimiterClass(@,1,100*100) # > 100 home page loads per minute per ip (> 500 realtime)
 
+    @map.page_load_ip = new RateLimiterClass(@,1,30) # > 30 page loads per minute per ip
+
     @map.login_ip = new RateLimiterClass(@,1,20) # 20 tentatives de login par minute de la même IP
     @map.login_user = new RateLimiterClass(@,2,10) # 10 tentatives de login par username par 2 minutes
     @map.delete_account = new RateLimiterClass(@,5,5) # 5 tentatives de suppression par user par 5 minutes

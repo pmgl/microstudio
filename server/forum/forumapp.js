@@ -22,6 +22,9 @@ this.ForumApp = class ForumApp {
       if (this.webapp.ensureDevArea(req, res)) {
         return;
       }
+      if (!this.server.rate_limiter.accept("page_load_ip", req.connection.remoteAddress)) {
+        return this.webapp.return429(req, res);
+      }
       lang = "en";
       ref = this.webapp.languages;
       for (j = 0, len = ref.length; j < len; j++) {
@@ -64,6 +67,9 @@ this.ForumApp = class ForumApp {
       var c, category, cats, description, j, k, l, lang, len, len1, len2, list, m, p, path, posts, ref;
       if (this.webapp.ensureDevArea(req, res)) {
         return;
+      }
+      if (!this.server.rate_limiter.accept("page_load_ip", req.connection.remoteAddress)) {
+        return this.webapp.return429(req, res);
       }
       lang = "en";
       ref = this.webapp.languages;
@@ -115,6 +121,9 @@ this.ForumApp = class ForumApp {
       var c, cat, category, cats, id, j, k, l, lang, len, len1, list, path, post, ref, scroll, slug, theme;
       if (this.webapp.ensureDevArea(req, res)) {
         return;
+      }
+      if (!this.server.rate_limiter.accept("page_load_ip", req.connection.remoteAddress)) {
+        return this.webapp.return429(req, res);
       }
       lang = "en";
       ref = this.webapp.languages;
