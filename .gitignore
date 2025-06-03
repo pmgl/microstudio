@@ -11,3 +11,5 @@ data/
 microstudio.wiki/
 ignore/
 logs/
+server/blocked_ips.txt
+server/blocked_ips.bak
