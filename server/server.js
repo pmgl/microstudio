@@ -161,7 +161,7 @@ this.Server = class Server {
         }
       }
       if (this.PROD && this.PROXY) {
-        this.httpserver = require("http").createServer(app).listen(this.PORT);
+        this.httpserver = require("http").createServer(app).listen(this.PORT, "127.0.0.1");
         this.use_cache = true;
         return this.start(app, db);
       } else if (this.PROD) {

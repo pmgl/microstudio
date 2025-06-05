@@ -131,7 +131,7 @@ class @Server
           plugin.dbLoaded(db)
 
       if @PROD and @PROXY
-        @httpserver = require("http").createServer(app).listen(@PORT)
+        @httpserver = require("http").createServer(app).listen(@PORT,"127.0.0.1")
         @use_cache = true
         @start(app,db)
       else if @PROD
