@@ -72,9 +72,9 @@ class @Server
     @rate_limiter = new RateLimiter @
     app.use (req,res,next)=>
       if @ban_ip.isBanned( req.ip )
-        if req.socket
-          req.socket.destroy()
-          return
+        # if req.socket
+        #   req.socket.destroy()
+        #   return
 
         return res.status(429).send "Too many requests"
 

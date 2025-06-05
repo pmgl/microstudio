@@ -92,10 +92,9 @@ this.Server = class Server {
     app.use((req, res, next) => {
       var referrer;
       if (this.ban_ip.isBanned(req.ip)) {
-        if (req.socket) {
-          req.socket.destroy();
-          return;
-        }
+        // if req.socket
+        //   req.socket.destroy()
+        //   return
         return res.status(429).send("Too many requests");
       }
       if (req.path === "/") {
