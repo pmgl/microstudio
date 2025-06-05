@@ -16,7 +16,7 @@ class @ForumApp
     # main forum page
     @app.get /^\/(..\/)?community\/?$/, (req,res)=>
       return if @webapp.ensureDevArea(req,res)
-      return @webapp.return429(req,res) if not @server.rate_limiter.accept("page_load_ip",req.connection.remoteAddress)
+      return @webapp.return429(req,res) if not @server.rate_limiter.accept("page_load_ip",req.ip)
 
       lang = "en"
       for l in @webapp.languages
@@ -56,7 +56,7 @@ class @ForumApp
     # forum category
     @app.get /^\/(..\/)?community\/([^\/\|\?\&\.]+)\/?$/, (req,res)=>
       return if @webapp.ensureDevArea(req,res)
-      return @webapp.return429(req,res) if not @server.rate_limiter.accept("page_load_ip",req.connection.remoteAddress)
+      return @webapp.return429(req,res) if not @server.rate_limiter.accept("page_load_ip",req.ip)
 
       lang = "en"
       for l in @webapp.languages
@@ -101,7 +101,7 @@ class @ForumApp
     # forum post
     @app.get /^\/(..\/)?community\/([^\/\|\?\&\.]+)\/([^\/\|\?\&\.]+)\/\d+(\/\d+)?\/?$/, (req,res)=>
       return if @webapp.ensureDevArea(req,res)
-      return @webapp.return429(req,res) if not @server.rate_limiter.accept("page_load_ip",req.connection.remoteAddress)
+      return @webapp.return429(req,res) if not @server.rate_limiter.accept("page_load_ip",req.ip)
 
       lang = "en"
       for l in @webapp.languages
@@ -162,7 +162,7 @@ class @ForumApp
             category: category
         )
 
-        post.view(req.connection.remoteAddress)
+        post.view(req.ip)
       else
         @webapp.return404(req,res)
 

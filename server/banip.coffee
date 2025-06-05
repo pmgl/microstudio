@@ -33,15 +33,18 @@ class @BanIP
     @write_stream = fs.createWriteStream(BLOCKED_IPS_FILE, { flags: 'a' })
 
   banIP:(ip)->
+    return if not ip
     @banned[ip] = true
     try
       @write_stream.write(ip + '\n');
     catch err
 
   isBanned:(ip)->
+    return false if not ip
     return @banned[ip] or false
 
   request:(ip)->
+    return if not ip
     knownip = @known_ips[ip]
     if not knownip
       knownip = @known_ips[ip] = new KnownIP @, ip

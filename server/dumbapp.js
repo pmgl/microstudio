@@ -59,6 +59,7 @@ this.DumbApp = class DumbApp {
   create() {
     var accessLogStream, app;
     app = express();
+    app.set('trust proxy', true);
     if (fs.existsSync(path.join(__dirname, "../logs"))) {
       accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), {
         flags: 'a'
@@ -69,17 +70,18 @@ this.DumbApp = class DumbApp {
       }));
     }
     app.use((req, res, next) => {
-      if (this.ban_ip.isBanned(req.connection.remoteAddress)) {
-        if (req.socket) {
-          req.socket.destroy();
-          return;
-        }
-        return res.status(429).send("Too many requests");
-      }
-      if (req.path === "/") {
-        this.ban_ip.request(req.connection.remoteAddress);
-      }
-      console.info(req.connection.remoteAddress + " : " + req.path);
+      // if @ban_ip.isBanned( req.connection.remoteAddress )
+      //   if req.socket
+      //     req.socket.destroy()
+      //     return
+
+      //  return res.status(429).send "Too many requests"
+
+      // if req.path == "/"
+      //   @ban_ip.request( req.connection.remoteAddress )
+      console.info(req.get("host") + " : " + req.ip + " : " + req.path);
+      // console.info('IP réelle :', req.ip)
+      // console.info('X-Forwarded-For:', req.headers['x-forwarded-for'])
       return res.status(200).send(req.path);
     });
     if (this.PROD) {
@@ -107,17 +109,13 @@ this.DumbApp = class DumbApp {
       maxPayload: 40000000
     });
     this.io.on("connection", (socket, request) => {
-      var err;
-      if (this.ban_ip.isBanned(request.connection.remoteAddress)) {
-        try {
-          socket.close();
-        } catch (error) {
-          err = error;
-        }
-        return;
-      }
+      // if @ban_ip.isBanned(request.connection.remoteAddress)
+      //   try
+      //     socket.close()
+      //   catch err
+      //   return
       socket.request = request;
-      socket.remoteAddress = request.connection.remoteAddress;
+      socket.remoteAddress = request.headers['x-forwarded-for'];
       return new Session(this, socket);
     });
     return console.info("MAX PAYLOAD = " + this.io.options.maxPayload);

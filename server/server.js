@@ -1,4 +1,4 @@
-var BuildManager, Content, DB, FileStorage, RateLimiter, Session, WebApp, WebSocket, compression, cookieParser, express, fs, morgan, path, process;
+var BanIP, BuildManager, Content, DB, FileStorage, RateLimiter, Session, WebApp, WebSocket, compression, cookieParser, express, fs, morgan, path, process;
 
 compression = require("compression");
 
@@ -30,6 +30,8 @@ process = require("process");
 
 morgan = require("morgan");
 
+BanIP = require(__dirname + "/banip.js");
+
 this.Server = class Server {
   constructor(config = {}, callback1) {
     this.exit = this.exit.bind(this);
@@ -42,6 +44,7 @@ this.Server = class Server {
         return console.info(`send mail to:${recipient} subject:${subject} text:${text}`);
       }
     };
+    this.ban_ip = new BanIP(this);
     this.stats = { // STUB
       set: function(name, value) {},
       max: function(name, value) {},
@@ -50,7 +53,11 @@ this.Server = class Server {
       stop: function() {}
     };
     this.last_backup_time = 0;
-    if (this.config.realm === "production") {
+    this.PROXY = this.config.proxy || false;
+    if (this.config.realm === "production" && this.PROXY) {
+      this.PORT = this.config.port || 8080;
+      this.PROD = true;
+    } else if (this.config.realm === "production") {
       this.PORT = 443;
       this.PROD = true;
     } else if (this.config.standalone) {
@@ -67,6 +74,9 @@ this.Server = class Server {
   create() {
     var accessLogStream, app, folder, i, len, plugin, ref, static_files;
     app = express();
+    if (this.PROXY) {
+      app.set('trust proxy', true);
+    }
     if (fs.existsSync(path.join(__dirname, "../logs"))) {
       accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), {
         flags: 'a'
@@ -81,13 +91,23 @@ this.Server = class Server {
     this.rate_limiter = new RateLimiter(this);
     app.use((req, res, next) => {
       var referrer;
-      if (this.rate_limiter.accept("request", "general") && this.rate_limiter.accept("request_ip", req.connection.remoteAddress)) {
+      if (this.ban_ip.isBanned(req.ip)) {
+        if (req.socket) {
+          req.socket.destroy();
+          return;
+        }
+        return res.status(429).send("Too many requests");
+      }
+      if (req.path === "/") {
+        this.ban_ip.request(req.ip);
+      }
+      if (this.rate_limiter.accept("request", "general") && this.rate_limiter.accept("request_ip", req.ip)) {
         next();
       } else {
         res.status(500).send("");
       }
       this.stats.inc("http_requests");
-      this.stats.unique("ip_addresses", req.connection.remoteAddress);
+      this.stats.unique("ip_addresses", req.ip);
       referrer = req.get("Referrer");
       if ((referrer != null) && !referrer.startsWith("http://localhost") && !referrer.startsWith("https://microstudio.io") && !referrer.startsWith("https://microstudio.dev")) {
         if (referrer.includes("=")) {
@@ -96,7 +116,7 @@ this.Server = class Server {
         if (referrer.length > 120) {
           referrer = referrer.substring(0, 120);
         }
-        return this.stats.unique("referrer|" + referrer, req.connection.remoteAddress);
+        return this.stats.unique("referrer|" + referrer, req.ip);
       }
     });
     app.use(compression());
@@ -140,7 +160,11 @@ this.Server = class Server {
           plugin.dbLoaded(db);
         }
       }
-      if (this.PROD) {
+      if (this.PROD && this.PROXY) {
+        this.httpserver = require("http").createServer(app).listen(this.PORT);
+        this.use_cache = true;
+        return this.start(app, db);
+      } else if (this.PROD) {
         return require('greenlock-express').init({
           packageRoot: __dirname,
           configDir: "./greenlock.d",
@@ -179,8 +203,21 @@ this.Server = class Server {
     });
     this.sessions = [];
     this.io.on("connection", (socket, request) => {
+      var err;
+      if (this.ban_ip.isBanned(request.ip)) {
+        try {
+          socket.close();
+        } catch (error) {
+          err = error;
+        }
+        return;
+      }
       socket.request = request;
-      socket.remoteAddress = request.connection.remoteAddress;
+      if (this.PROXY) {
+        socket.remoteAddress = request.headers['x-forwarded-for'] || request.connection.remoteAddress;
+      } else {
+        socket.remoteAddress = request.connection.remoteAddress;
+      }
       return this.sessions.push(new Session(this, socket));
     });
     console.info("MAX PAYLOAD = " + this.io.options.maxPayload);

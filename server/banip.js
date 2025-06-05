@@ -52,6 +52,9 @@ this.BanIP = class BanIP {
 
   banIP(ip) {
     var err;
+    if (!ip) {
+      return;
+    }
     this.banned[ip] = true;
     try {
       return this.write_stream.write(ip + '\n');
@@ -61,11 +64,17 @@ this.BanIP = class BanIP {
   }
 
   isBanned(ip) {
+    if (!ip) {
+      return false;
+    }
     return this.banned[ip] || false;
   }
 
   request(ip) {
     var knownip;
+    if (!ip) {
+      return;
+    }
     knownip = this.known_ips[ip];
     if (!knownip) {
       knownip = this.known_ips[ip] = new KnownIP(this, ip);

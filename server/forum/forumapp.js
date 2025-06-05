@@ -22,7 +22,7 @@ this.ForumApp = class ForumApp {
       if (this.webapp.ensureDevArea(req, res)) {
         return;
       }
-      if (!this.server.rate_limiter.accept("page_load_ip", req.connection.remoteAddress)) {
+      if (!this.server.rate_limiter.accept("page_load_ip", req.ip)) {
         return this.webapp.return429(req, res);
       }
       lang = "en";
@@ -68,7 +68,7 @@ this.ForumApp = class ForumApp {
       if (this.webapp.ensureDevArea(req, res)) {
         return;
       }
-      if (!this.server.rate_limiter.accept("page_load_ip", req.connection.remoteAddress)) {
+      if (!this.server.rate_limiter.accept("page_load_ip", req.ip)) {
         return this.webapp.return429(req, res);
       }
       lang = "en";
@@ -122,7 +122,7 @@ this.ForumApp = class ForumApp {
       if (this.webapp.ensureDevArea(req, res)) {
         return;
       }
-      if (!this.server.rate_limiter.accept("page_load_ip", req.connection.remoteAddress)) {
+      if (!this.server.rate_limiter.accept("page_load_ip", req.ip)) {
         return this.webapp.return429(req, res);
       }
       lang = "en";
@@ -187,7 +187,7 @@ this.ForumApp = class ForumApp {
             category: category
           }
         }));
-        return post.view(req.connection.remoteAddress);
+        return post.view(req.ip);
       } else {
         return this.webapp.return404(req, res);
       }

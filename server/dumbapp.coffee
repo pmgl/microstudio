@@ -42,6 +42,7 @@ class @DumbApp
 
   create:()->
     app = express()
+    app.set('trust proxy', true)
 
     if fs.existsSync( path.join(__dirname, "../logs") )
       accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), { flags: 'a' })
@@ -50,17 +51,19 @@ class @DumbApp
       app.use(morgan('combined', { stream: accessLogStream }))
 
     app.use (req,res,next)=>
-      if @ban_ip.isBanned( req.connection.remoteAddress )
-        if req.socket
-          req.socket.destroy()
-          return
+      # if @ban_ip.isBanned( req.connection.remoteAddress )
+      #   if req.socket
+      #     req.socket.destroy()
+      #     return
 
-        return res.status(429).send "Too many requests"
+      #  return res.status(429).send "Too many requests"
 
-      if req.path == "/"
-        @ban_ip.request( req.connection.remoteAddress )
+      # if req.path == "/"
+      #   @ban_ip.request( req.connection.remoteAddress )
 
-      console.info req.connection.remoteAddress + " : " + req.path
+      console.info req.get("host") + " : " + req.ip + " : " + req.path
+      # console.info('IP réelle :', req.ip)
+      # console.info('X-Forwarded-For:', req.headers['x-forwarded-for'])
       res.status(200).send req.path
 
     if @PROD
@@ -85,14 +88,14 @@ class @DumbApp
       maxPayload: 40000000
 
     @io.on "connection",(socket,request)=>
-      if @ban_ip.isBanned(request.connection.remoteAddress)
-        try
-          socket.close()
-        catch err
-        return
+      # if @ban_ip.isBanned(request.connection.remoteAddress)
+      #   try
+      #     socket.close()
+      #   catch err
+      #   return
 
       socket.request = request
-      socket.remoteAddress = request.connection.remoteAddress
+      socket.remoteAddress = request.headers['x-forwarded-for']
       new Session @,socket
 
     console.info "MAX PAYLOAD = "+@io.options.maxPayload

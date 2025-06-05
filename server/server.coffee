@@ -14,6 +14,8 @@ WebSocket = require "ws"
 process = require "process"
 morgan = require "morgan"
 
+BanIP = require __dirname+"/banip.js"
+
 class @Server
   constructor:(@config={},@callback)->
     process.chdir __dirname
@@ -24,6 +26,8 @@ class @Server
       sendMail:(recipient,subject,text)->
         console.info "send mail to:#{recipient} subject:#{subject} text:#{text}"
 
+    @ban_ip = new BanIP(this)
+
     @stats =    # STUB
       set:(name,value)->
       max:(name,value)->
@@ -33,7 +37,12 @@ class @Server
 
     @last_backup_time = 0
 
-    if @config.realm == "production"
+    @PROXY = @config.proxy or false
+
+    if @config.realm == "production" and @PROXY
+      @PORT = @config.port or 8080
+      @PROD = true
+    else if @config.realm == "production" 
       @PORT = 443
       @PROD = true
     else if @config.standalone
@@ -47,6 +56,8 @@ class @Server
 
   create:()->
     app = express()
+    if @PROXY
+      app.set('trust proxy', true)
 
     if fs.existsSync( path.join(__dirname, "../logs") )
       accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), { flags: 'a' })
@@ -60,12 +71,22 @@ class @Server
 
     @rate_limiter = new RateLimiter @
     app.use (req,res,next)=>
-      if @rate_limiter.accept("request","general") and @rate_limiter.accept("request_ip",req.connection.remoteAddress)
+      if @ban_ip.isBanned( req.ip )
+        if req.socket
+          req.socket.destroy()
+          return
+
+        return res.status(429).send "Too many requests"
+
+      if req.path == "/"
+        @ban_ip.request( req.ip )
+
+      if @rate_limiter.accept("request","general") and @rate_limiter.accept("request_ip",req.ip)
         next()
       else
         res.status(500).send ""
       @stats.inc("http_requests")
-      @stats.unique("ip_addresses",req.connection.remoteAddress)
+      @stats.unique("ip_addresses",req.ip)
       referrer = req.get("Referrer")
       if referrer? and not referrer.startsWith("http://localhost") and not referrer.startsWith("https://microstudio.io") and not referrer.startsWith("https://microstudio.dev")
         if referrer.includes("=")
@@ -73,7 +94,7 @@ class @Server
 
         if referrer.length > 120
           referrer = referrer.substring(0,120)
-        @stats.unique("referrer|"+referrer,req.connection.remoteAddress)
+        @stats.unique("referrer|"+referrer,req.ip)
 
     app.use(compression())
 
@@ -109,7 +130,11 @@ class @Server
         if plugin.dbLoaded?
           plugin.dbLoaded(db)
 
-      if @PROD
+      if @PROD and @PROXY
+        @httpserver = require("http").createServer(app).listen(@PORT)
+        @use_cache = true
+        @start(app,db)
+      else if @PROD
         require('greenlock-express').init
           packageRoot: __dirname
           configDir: "./greenlock.d"
@@ -142,8 +167,17 @@ class @Server
     @sessions = []
 
     @io.on "connection",(socket,request)=>
+      if @ban_ip.isBanned(request.ip)
+        try
+          socket.close()
+        catch err
+        return
+
       socket.request = request
-      socket.remoteAddress = request.connection.remoteAddress
+      if @PROXY
+        socket.remoteAddress = request.headers['x-forwarded-for'] or request.connection.remoteAddress
+      else
+        socket.remoteAddress = request.connection.remoteAddress
       @sessions.push new Session @,socket
 
     console.info "MAX PAYLOAD = "+@io.options.maxPayload
