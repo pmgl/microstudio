@@ -144,6 +144,10 @@ class @Runner
     processor.run(@microvm.context)
 
   tick:()->
+    # Reset input states at the beginning of every frame
+    if @updateControls?
+      @updateControls()
+
     if @system.fps?
       @fps = @fps*.9 + @system.fps*.1
 
@@ -277,8 +281,6 @@ class @Thread
         program = parser.program
         compiler = new Compiler(program)
         @processor.load compiler.routine
-        if (f == "update()" or f == "serverUpdate()") and @runner.updateControls?
-          @runner.updateControls()
       true
     else
       false
