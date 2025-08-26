@@ -207,11 +207,11 @@ class @ExportFeatures
 
       wrapsource = (s)->s
       if project.language == "microscript_v2" # this is to prevent local variables contamination between files
-        wrapsource = (s)->
+        wrapsource = (s,f)->
           if /^\s*\/\/\s*javascript\s*\n/.test s
             '\nsystem.javascript("""\n\n'+ s.replace(/\\/g,"\\\\") + '\n\n""")\n'
           else
-            "\nfunction()\n#{s}\nend()\n"
+            "\n// file: #{f}\nfunction()\n#{s}\nend()\n"
 
       libs = []
       if project.graphics? and typeof project.graphics == "string"
@@ -382,7 +382,7 @@ class @ExportFeatures
                 #console.info "reading: "+JSON.stringify src
                 @webapp.server.content.files.read "#{user.id}/#{project.id}/ms/#{src.file}","text",(content)=>
                   if content?
-                    fullsource += wrapsource(content)+"\n\n"
+                    fullsource += wrapsource(content,src.file.replace(/-/g,"/"))+"\n\n"
                   queue.next()
 
           queue.add ()=>
@@ -441,11 +441,11 @@ class @ExportFeatures
 
     wrapsource = (s)->s
     if project.language == "microscript_v2" # this is to prevent local variables contamination between files
-      wrapsource = (s)->
+      wrapsource = (s,f)->
         if /^\s*\/\/\s*javascript\s*\n/.test s
           '\nsystem.javascript("""\n\n'+ s.replace(/\\/g,"\\\\") + '\n\n""")\n'
         else
-          "\nfunction()\n#{s}\nend()\n"
+          "\n// file: #{f}\nfunction()\n#{s}\nend()\n"
 
     libs = []
     if project.graphics? and typeof project.graphics == "string"
@@ -592,7 +592,7 @@ fs.readFile("./config.json",(err,data)=> {
             queue.add ()=>
               @webapp.server.content.files.read "#{user.id}/#{project.id}/ms/#{src.file}","text",(content)=>
                 if content?
-                  fullsource += wrapsource(content)+"\n\n"
+                  fullsource += wrapsource(content,src.file.replace(/-/g,"/"))+"\n\n"
                 queue.next()
 
         queue.next()

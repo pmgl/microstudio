@@ -266,11 +266,11 @@ this.ExportFeatures = class ExportFeatures {
         return s;
       };
       if (project.language === "microscript_v2") { // this is to prevent local variables contamination between files
-        wrapsource = function(s) {
+        wrapsource = function(s, f) {
           if (/^\s*\/\/\s*javascript\s*\n/.test(s)) {
             return '\nsystem.javascript("""\n\n' + s.replace(/\\/g, "\\\\") + '\n\n""")\n';
           } else {
-            return `\nfunction()\n${s}\nend()\n`;
+            return `\n// file: ${f}\nfunction()\n${s}\nend()\n`;
           }
         };
       }
@@ -505,7 +505,7 @@ this.ExportFeatures = class ExportFeatures {
                 //console.info "reading: "+JSON.stringify src
                 return this.webapp.server.content.files.read(`${user.id}/${project.id}/ms/${src.file}`, "text", (content) => {
                   if (content != null) {
-                    fullsource += wrapsource(content) + "\n\n";
+                    fullsource += wrapsource(content, src.file.replace(/-/g, "/")) + "\n\n";
                   }
                   return queue.next();
                 });
@@ -590,11 +590,11 @@ this.ExportFeatures = class ExportFeatures {
       return s;
     };
     if (project.language === "microscript_v2") { // this is to prevent local variables contamination between files
-      wrapsource = function(s) {
+      wrapsource = function(s, f) {
         if (/^\s*\/\/\s*javascript\s*\n/.test(s)) {
           return '\nsystem.javascript("""\n\n' + s.replace(/\\/g, "\\\\") + '\n\n""")\n';
         } else {
-          return `\nfunction()\n${s}\nend()\n`;
+          return `\n// file: ${f}\nfunction()\n${s}\nend()\n`;
         }
       };
     }
@@ -713,7 +713,7 @@ this.ExportFeatures = class ExportFeatures {
             return queue.add(() => {
               return this.webapp.server.content.files.read(`${user.id}/${project.id}/ms/${src.file}`, "text", (content) => {
                 if (content != null) {
-                  fullsource += wrapsource(content) + "\n\n";
+                  fullsource += wrapsource(content, src.file.replace(/-/g, "/")) + "\n\n";
                 }
                 return queue.next();
               });
