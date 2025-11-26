@@ -1,5 +1,5 @@
-this.Tokenizer = (function() {
-  function Tokenizer(input, filename) {
+this.Tokenizer = class Tokenizer {
+  constructor(input, filename) {
     this.input = input;
     this.filename = filename;
     this.index = 0;
@@ -35,19 +35,16 @@ this.Tokenizer = (function() {
     this.letter_regex = RegExp(/^\p{L}/, 'u');
   }
 
-  Tokenizer.prototype.pushBack = function(token) {
+  pushBack(token) {
     return this.buffer.splice(0, 0, token);
-  };
+  }
 
-  Tokenizer.prototype.finished = function() {
+  finished() {
     return this.index >= this.input.length && this.buffer.length === 0;
-  };
+  }
 
-  Tokenizer.prototype.nextChar = function(ignore_comments) {
+  nextChar(ignore_comments = false) {
     var c, endseq;
-    if (ignore_comments == null) {
-      ignore_comments = false;
-    }
     c = this.input.charAt(this.index++);
     if (c === "\n") {
       this.line += 1;
@@ -91,18 +88,18 @@ this.Tokenizer = (function() {
       this.column += 1;
     }
     return c;
-  };
+  }
 
-  Tokenizer.prototype.rewind = function() {
+  rewind() {
     this.index -= 1;
     this.column -= 1;
     if (this.input.charAt(this.index) === "\n") {
       this.line -= 1;
       return this.column = this.last_column;
     }
-  };
+  }
 
-  Tokenizer.prototype.next = function() {
+  next() {
     var c, code;
     if (this.buffer.length > 0) {
       return this.buffer.splice(0, 1)[0];
@@ -137,9 +134,9 @@ this.Tokenizer = (function() {
     } else {
       return this.error("Syntax Error");
     }
-  };
+  }
 
-  Tokenizer.prototype.changeNumberToIdentifier = function() {
+  changeNumberToIdentifier() {
     var i, j, ref, results, token, v;
     token = this.next();
     if ((token != null) && token.type === Token.TYPE_NUMBER) {
@@ -161,9 +158,9 @@ this.Tokenizer = (function() {
     } else {
       return this.pushBack(token);
     }
-  };
+  }
 
-  Tokenizer.prototype.parseDouble = function(c, d) {
+  parseDouble(c, d) {
     if ((this.shifts[c] != null) && this.index < this.input.length && this.input.charAt(this.index) === c) {
       this.nextChar();
       return new Token(this, this.shifts[c], c + c);
@@ -173,45 +170,45 @@ this.Tokenizer = (function() {
     } else {
       return new Token(this, d[0], c);
     }
-  };
+  }
 
-  Tokenizer.prototype.parseEquals = function(c) {
+  parseEquals(c) {
     if (this.index < this.input.length && this.input.charAt(this.index) === "=") {
       this.nextChar();
       return new Token(this, Token.TYPE_DOUBLE_EQUALS, "==");
     } else {
       return new Token(this, Token.TYPE_EQUALS, "=");
     }
-  };
+  }
 
-  Tokenizer.prototype.parseGreater = function(c) {
+  parseGreater(c) {
     if (this.index < this.input.length && this.input.charAt(this.index) === "=") {
       this.nextChar();
       return new Token(this, Token.TYPE_GREATER_OR_EQUALS, ">=");
     } else {
       return new Token(this, Token.TYPE_GREATER_OR_EQUALS, ">");
     }
-  };
+  }
 
-  Tokenizer.prototype.parseLower = function(c) {
+  parseLower(c) {
     if (this.index < this.input.length && this.input.charAt(this.index) === "=") {
       this.nextChar();
       return new Token(this, Token.TYPE_LOWER_OR_EQUALS, "<=");
     } else {
       return new Token(this, Token.TYPE_LOWER, "<");
     }
-  };
+  }
 
-  Tokenizer.prototype.parseUnequals = function(c) {
+  parseUnequals(c) {
     if (this.index < this.input.length && this.input.charAt(this.index) === "=") {
       this.nextChar();
       return new Token(this, Token.TYPE_UNEQUALS, "!=");
     } else {
       return this.error("Expected inequality !=");
     }
-  };
+  }
 
-  Tokenizer.prototype.parseIdentifier = function(s) {
+  parseIdentifier(s) {
     var c, code;
     while (true) {
       if (this.index >= this.input.length) {
@@ -226,9 +223,9 @@ this.Tokenizer = (function() {
         return new Token(this, Token.TYPE_IDENTIFIER, s);
       }
     }
-  };
+  }
 
-  Tokenizer.prototype.parseNumber = function(s) {
+  parseNumber(s) {
     var c, code, exp, pointed;
     pointed = false;
     exp = false;
@@ -259,9 +256,9 @@ this.Tokenizer = (function() {
         return new Token(this, Token.TYPE_NUMBER, Number.parseFloat(s), s);
       }
     }
-  };
+  }
 
-  Tokenizer.prototype.parseHexNumber = function(s) {
+  parseHexNumber(s) {
     var c;
     while (true) {
       if (this.index >= this.input.length) {
@@ -275,13 +272,10 @@ this.Tokenizer = (function() {
         return new Token(this, Token.TYPE_NUMBER, Number.parseInt(s), s);
       }
     }
-  };
+  }
 
-  Tokenizer.prototype.parseString = function(s, close) {
+  parseString(s, close = '"') {
     var c, code, count_close, n;
-    if (close == null) {
-      close = '"';
-    }
     if (close === '"') {
       if (this.input.charAt(this.index) === '"' && this.input.charAt(this.index + 1) === '"' && this.input.charAt(this.index + 2) !== '"') {
         close = '"""';
@@ -332,12 +326,10 @@ this.Tokenizer = (function() {
         s += c;
       }
     }
-  };
+  }
 
-  Tokenizer.prototype.error = function(s) {
+  error(s) {
     throw s;
-  };
+  }
 
-  return Tokenizer;
-
-})();
+};

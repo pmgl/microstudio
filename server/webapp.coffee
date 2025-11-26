@@ -433,6 +433,7 @@ class @WebApp
       Jimp.read path, (err, img) =>
         if err
           console.error err
+          @return404( req, res )
           return
         img.resize(size,size,Jimp.RESIZE_NEAREST_NEIGHBOR).getBuffer Jimp.MIME_PNG,(err,buffer)=>
           if err
