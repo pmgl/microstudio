@@ -91,15 +91,11 @@ this.Server = class Server {
     this.rate_limiter = new RateLimiter(this);
     app.use((req, res, next) => {
       var referrer;
-      if (this.ban_ip.isBanned(req.ip)) {
-        // if req.socket
-        //   req.socket.destroy()
-        //   return
-        return res.status(429).send("Too many requests");
-      }
-      if (req.path === "/") {
-        this.ban_ip.request(req.ip);
-      }
+      // if @ban_ip.isBanned( req.ip )
+      //   return res.status(429).send "Too many requests"
+
+      // if req.path == "/"
+      //   @ban_ip.request( req.ip )
       if (this.rate_limiter.accept("request", "general") && this.rate_limiter.accept("request_ip", req.ip)) {
         next();
       } else {
@@ -202,15 +198,11 @@ this.Server = class Server {
     });
     this.sessions = [];
     this.io.on("connection", (socket, request) => {
-      var err;
-      if (this.ban_ip.isBanned(request.ip)) {
-        try {
-          socket.close();
-        } catch (error) {
-          err = error;
-        }
-        return;
-      }
+      // if @ban_ip.isBanned(request.ip)
+      //   try
+      //     socket.close()
+      //   catch err
+      //   return
       socket.request = request;
       if (this.PROXY) {
         socket.remoteAddress = request.headers['x-forwarded-for'] || request.connection.remoteAddress;
