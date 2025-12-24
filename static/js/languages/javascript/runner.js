@@ -34,7 +34,7 @@ this.Runner = class Runner {
       return window.eval(program);
     } catch (error) {
       err = error;
-      if (err.stack != null) {
+      if (err.stack != null) {      
         line = err.stack.split(".js:");
         file = line[0];
         line = line[1];
@@ -54,7 +54,25 @@ this.Runner = class Runner {
           };
         }
       }
-      throw err.message;
+      //If the file is this file that isn't the true line number for this error
+      if(file.match(/javascript\/runner/) ){
+      return new Promise((resolve,reject)=>{
+        let blob = new Blob([program])
+        let url = URL.createObjectURL(blob)
+        let w = new Worker(url)
+        w.onerror = (e)=>{
+          this.microvm.context.location = {
+            token: {
+              line: e.lineno,
+              column: e.colno
+            }
+          };
+          reject(e.message);
+        }
+      })
+    }else{
+      throw err.message
+    }
     }
   }
 
