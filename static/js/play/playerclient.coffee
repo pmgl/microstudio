@@ -17,7 +17,7 @@ class @PlayerClient
     @socket = new WebSocket(window.location.origin.replace("http","ws"))
 
     @socket.onmessage = (msg)=>
-      console.info "received: "+msg.data
+      # console.info "received: "+msg.data
       try
         msg = JSON.parse msg.data
         if msg.request_id?

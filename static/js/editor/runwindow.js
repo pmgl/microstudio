@@ -484,11 +484,12 @@ this.RunWindow = class RunWindow {
                     text: msg.data.error
                   }
                 ];
-                this.app.project.notifyListeners("annotations");
+                return this.app.project.notifyListeners("annotations");
               }
             }
           }
-          return console.info(msg.data);
+          break;
+        // console.info msg.data
         case "compile_success":
           source = this.app.project.getSource(msg.file);
           if (source != null) {

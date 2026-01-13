@@ -408,7 +408,7 @@ class @RunWindow
                   text: msg.data.error
                 }]
                 @app.project.notifyListeners "annotations"
-          console.info msg.data
+          # console.info msg.data
 
         when "compile_success"
           source = @app.project.getSource(msg.file)

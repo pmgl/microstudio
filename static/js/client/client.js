@@ -93,8 +93,8 @@ this.Client = class Client {
     this.socket.onmessage = (msg) => {
       var c, err;
       msg = msg.data;
-      console.info("received: " + msg);
       try {
+        // console.info "received: "+msg
         msg = JSON.parse(msg);
         if (msg.request_id != null) {
           if (this.pending_requests[msg.request_id] != null) {

@@ -27,8 +27,8 @@ this.PlayerClient = class PlayerClient {
     this.socket = new WebSocket(window.location.origin.replace("http", "ws"));
     this.socket.onmessage = (msg) => {
       var err;
-      console.info("received: " + msg.data);
       try {
+        // console.info "received: "+msg.data
         msg = JSON.parse(msg.data);
         if (msg.request_id != null) {
           if (this.pending_requests[msg.request_id] != null) {

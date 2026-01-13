@@ -72,7 +72,7 @@ class @Client
 
     @socket.onmessage = (msg)=>
       msg = msg.data
-      console.info "received: "+msg
+      # console.info "received: "+msg
       try
         msg = JSON.parse msg
         if msg.request_id?
