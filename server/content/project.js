@@ -93,6 +93,19 @@ this.Project = class Project {
         this.files = {};
       }
       this.update_project_size = true;
+      this.checkStringField("title", 100);
+      this.checkStringField("slug", 100);
+      this.checkStringField("code", 200);
+      this.checkStringField("description", 10000);
+    }
+  }
+
+  checkStringField(field, size) {
+    if (typeof this[field] === "string") {
+      if (this[field].length > size) {
+        console.info("field " + field + " oversize: " + this[field].length);
+        return this.set(field, this[field].substring(0, size));
+      }
     }
   }
 

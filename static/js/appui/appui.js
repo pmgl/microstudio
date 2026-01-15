@@ -275,7 +275,7 @@ AppUI = class AppUI {
 
   addWarningMessage(text, icon = "fa-exclamation-circle", id, dismissable) {
     var close, div, span;
-    if (dismissable && (id != null)) {
+    if (dismissable && id) {
       if (localStorage.getItem(id)) {
         return;
       }
@@ -290,7 +290,9 @@ AppUI = class AppUI {
       close.classList.add("fa-times");
       close.addEventListener("click", () => {
         this.removeWarningMessage(div);
-        return localStorage.setItem(id, true);
+        if (id) {
+          return localStorage.setItem(id, true);
+        }
       });
       div.appendChild(close);
     }
@@ -746,6 +748,9 @@ AppUI = class AppUI {
       if (this.project != null) {
         this.updateProjectTitle();
         this.get("project-icon").src = location.origin + `/${this.project.owner.nick}/${this.project.slug}/${this.project.code}/icon.png`;
+      }
+      if (!this.app.user.flags.validated) {
+        this.addWarningMessage(this.app.translator.get("Remember to validate your e-mail address"), "fa-exclamation-circle", "validate_email_" + Math.floor(Date.now() / 1000 / 3600 / 24 / 2), true);
       }
     }
     this.get("user-nick").style.display = "inline-block";

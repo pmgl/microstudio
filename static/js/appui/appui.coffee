@@ -247,7 +247,7 @@ class AppUI
       document.body.appendChild div
 
   addWarningMessage:(text,icon="fa-exclamation-circle",id,dismissable)->
-    if dismissable and id?
+    if dismissable and id
       if localStorage.getItem(id)
         return
 
@@ -264,7 +264,8 @@ class AppUI
 
       close.addEventListener "click",()=>
         @removeWarningMessage div
-        localStorage.setItem(id,true)
+        if id
+          localStorage.setItem(id,true)
 
       div.appendChild close
 
@@ -641,6 +642,9 @@ class AppUI
       if @project?
         @updateProjectTitle()
         @get("project-icon").src = location.origin+"/#{@project.owner.nick}/#{@project.slug}/#{@project.code}/icon.png"
+
+      if not @app.user.flags.validated
+        @addWarningMessage( @app.translator.get("Remember to validate your e-mail address"), "fa-exclamation-circle", "validate_email_"+Math.floor( Date.now()/1000/3600/24/2 ), true )
 
     @get("user-nick").style.display = "inline-block"
     #@show "user-info"

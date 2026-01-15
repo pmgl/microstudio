@@ -28,6 +28,16 @@ class @User
       @updateTier()
       @progress = new UserProgress @,data
 
+      @checkStringField "nick", 50
+      @checkStringField "email", 100
+      @checkStringField "description", 10000
+
+  checkStringField:( field, size )->
+    if typeof @[field] == "string"
+      if @[field].length > size
+        console.info( "field "+field+" oversize: " + @[field].length )
+        @set( field, @[field].substring( 0, size ) )
+
   updateTier:()->
     switch @flags.tier
       when "pixel_master"

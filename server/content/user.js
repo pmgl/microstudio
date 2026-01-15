@@ -2,8 +2,8 @@ var UserProgress;
 
 UserProgress = require(__dirname + "/../gamify/userprogress.js");
 
-this.User = (function() {
-  function User(content, record) {
+this.User = class User {
+  constructor(content, record) {
     var data;
     this.content = content;
     this.record = record;
@@ -35,10 +35,22 @@ this.User = (function() {
       this.last_active = data.last_active || 0;
       this.updateTier();
       this.progress = new UserProgress(this, data);
+      this.checkStringField("nick", 50);
+      this.checkStringField("email", 100);
+      this.checkStringField("description", 10000);
     }
   }
 
-  User.prototype.updateTier = function() {
+  checkStringField(field, size) {
+    if (typeof this[field] === "string") {
+      if (this[field].length > size) {
+        console.info("field " + field + " oversize: " + this[field].length);
+        return this.set(field, this[field].substring(0, size));
+      }
+    }
+  }
+
+  updateTier() {
     switch (this.flags.tier) {
       case "pixel_master":
         this.max_storage = 200000000;
@@ -64,49 +76,49 @@ this.User = (function() {
           return this.early_access = false;
         }
     }
-  };
+  }
 
-  User.prototype.addListener = function(listener) {
+  addListener(listener) {
     if (this.listeners.indexOf(listener) < 0) {
       return this.listeners.push(listener);
     }
-  };
+  }
 
-  User.prototype.removeListener = function(listener) {
+  removeListener(listener) {
     var index;
     index = this.listeners.indexOf(listener);
     if (index >= 0) {
       return this.listeners.splice(index, 1);
     }
-  };
+  }
 
-  User.prototype.addProject = function(project) {
+  addProject(project) {
     return this.projects[project.id] = project;
-  };
+  }
 
-  User.prototype.listProjects = function() {
+  listProjects() {
     var key, list;
     list = [];
     for (key in this.projects) {
       list.push(this.projects[key]);
     }
     return list;
-  };
+  }
 
-  User.prototype.listPublicProjects = function() {
+  listPublicProjects() {
     var key, list, project, ref;
     list = [];
     ref = this.projects;
     for (key in ref) {
       project = ref[key];
-      if (project["public"]) {
+      if (project.public) {
         list.push(project);
       }
     }
     return list;
-  };
+  }
 
-  User.prototype.getTotalSize = function() {
+  getTotalSize() {
     var key, project, ref, size;
     size = 0;
     ref = this.projects;
@@ -115,17 +127,17 @@ this.User = (function() {
       size += project.getSize();
     }
     return size;
-  };
+  }
 
-  User.prototype.addProjectLink = function(link) {
+  addProjectLink(link) {
     return this.project_links.push(link);
-  };
+  }
 
-  User.prototype.listProjectLinks = function() {
+  listProjectLinks() {
     return this.project_links;
-  };
+  }
 
-  User.prototype.removeLink = function(projectid) {
+  removeLink(projectid) {
     var i, j, len, link, ref;
     ref = this.project_links;
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
@@ -135,13 +147,13 @@ this.User = (function() {
         return;
       }
     }
-  };
+  }
 
-  User.prototype.findProject = function(id) {
+  findProject(id) {
     return this.projects[id];
-  };
+  }
 
-  User.prototype.findProjectBySlug = function(slug) {
+  findProjectBySlug(slug) {
     var key, p;
     for (key in this.projects) {
       p = this.projects[key];
@@ -150,60 +162,64 @@ this.User = (function() {
       }
     }
     return null;
-  };
+  }
 
-  User.prototype.deleteProject = function(project) {
+  deleteProject(project) {
     delete this.projects[project.id];
-    return project["delete"]();
-  };
+    return project.delete();
+  }
 
-  User.prototype.set = function(prop, value) {
+  set(prop, value) {
     var data;
     data = this.record.get();
     data[prop] = value;
     this.record.set(data);
     return this[prop] = value;
-  };
+  }
 
-  User.prototype.addLike = function(id) {
+  addLike(id) {
     if (this.likes.indexOf(id) < 0) {
       this.likes.push(id);
       return this.set("likes", this.likes);
     }
-  };
+  }
 
-  User.prototype.removeLike = function(id) {
+  removeLike(id) {
     var index;
     index = this.likes.indexOf(id);
     if (index >= 0) {
       this.likes.splice(index, 1);
       return this.set("likes", this.likes);
     }
-  };
+  }
 
-  User.prototype.isLiked = function(id) {
+  isLiked(id) {
     return this.likes.indexOf(id) >= 0;
-  };
+  }
 
-  User.prototype.setFlag = function(flag, value) {
+  // Flags reference
+  // * validated (e-mail validated)
+  // * deleted (account deleted)
+  // *
+  setFlag(flag, value) {
     if (value) {
       this.flags[flag] = value;
     } else {
       delete this.flags[flag];
     }
     return this.set("flags", this.flags);
-  };
+  }
 
-  User.prototype.setSetting = function(setting, value) {
+  setSetting(setting, value) {
     if (value) {
       this.settings[setting] = value;
     } else {
       delete this.settings[setting];
     }
     return this.set("settings", this.settings);
-  };
+  }
 
-  User.prototype.createValidationToken = function() {
+  createValidationToken() {
     var i, j, map, token;
     map = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     token = "";
@@ -212,34 +228,34 @@ this.User = (function() {
     }
     this.record.setField("validation_token", token);
     return token;
-  };
+  }
 
-  User.prototype.getValidationToken = function() {
+  getValidationToken() {
     var code;
     code = this.record.getField("validation_token");
     if (code == null) {
       code = this.createValidationToken();
     }
     return code;
-  };
+  }
 
-  User.prototype.resetValidationToken = function() {
+  resetValidationToken() {
     return this.record.setField("validation_token");
-  };
+  }
 
-  User.prototype.canPublish = function() {
+  canPublish() {
     return this.flags.validated && !this.flags.deleted && !this.flags.banned;
-  };
+  }
 
-  User.prototype.showPublicStuff = function() {
+  showPublicStuff() {
     return this.flags.validated && !this.flags.deleted && !this.flags.banned && !this.flags.censored;
-  };
+  }
 
-  User.prototype.notify = function(text) {
+  notify(text) {
     return this.notifications.push(text);
-  };
+  }
 
-  User.prototype["delete"] = function() {
+  delete() {
     var folder, key, project, ref;
     this.flags.deleted = true;
     this.record.set({
@@ -251,15 +267,13 @@ this.User = (function() {
     ref = this.projects;
     for (key in ref) {
       project = ref[key];
-      project["delete"]();
+      project.delete();
     }
     this.projects = {};
-    folder = "" + this.id;
+    folder = `${this.id}`;
     this.content.files.deleteFolder(folder);
-  };
+  }
 
-  return User;
-
-})();
+};
 
 module.exports = this.User;

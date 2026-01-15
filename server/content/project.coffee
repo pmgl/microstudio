@@ -74,6 +74,17 @@ class @Project
         @files = {}
 
       @update_project_size = true
+      @checkStringField "title", 100
+      @checkStringField "slug", 100
+      @checkStringField "code", 200
+      @checkStringField "description", 10000
+
+  checkStringField:( field, size )->
+    if typeof @[field] == "string"
+      if @[field].length > size
+        console.info( "field "+field+" oversize: " + @[field].length )
+        @set( field, @[field].substring( 0, size ) )
+
 
   createCode:()->
     letters = "ABCDEFGHJKMNPRSTUVWXYZ23456789"
