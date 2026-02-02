@@ -405,11 +405,15 @@ class @Runtime
       ds = 1
       @floating_frame = @current_frame+1
 
-    for i in [1..ds] by 1
+    sync_update = @vm.context.global.system.sync_update
+    if sync_update
       @updateCall()
-      if i < ds
-        if @vm.runner.tick?
-          @vm.runner.tick()
+    else
+      for i in [1..ds] by 1
+        @updateCall()
+        if i < ds
+          if @vm.runner.tick?
+            @vm.runner.tick()
 
     @current_frame += ds
     @drawCall()

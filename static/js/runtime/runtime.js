@@ -482,7 +482,7 @@ this.Runtime = class Runtime {
   }
 
   timer() {
-    var ds, dt, fps, i, j, ref, time, update_rate;
+    var ds, dt, fps, i, j, ref, sync_update, time, update_rate;
     if (this.stopped) {
       return;
     }
@@ -508,11 +508,16 @@ this.Runtime = class Runtime {
       ds = 1;
       this.floating_frame = this.current_frame + 1;
     }
-    for (i = j = 1, ref = ds; j <= ref; i = j += 1) {
+    sync_update = this.vm.context.global.system.sync_update;
+    if (sync_update) {
       this.updateCall();
-      if (i < ds) {
-        if (this.vm.runner.tick != null) {
-          this.vm.runner.tick();
+    } else {
+      for (i = j = 1, ref = ds; j <= ref; i = j += 1) {
+        this.updateCall();
+        if (i < ds) {
+          if (this.vm.runner.tick != null) {
+            this.vm.runner.tick();
+          }
         }
       }
     }
