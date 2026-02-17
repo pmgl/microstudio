@@ -256,6 +256,7 @@ class @Thread
     @paused = false
     @terminated = false
     @next_calls = []
+    @call_cache = new Map()
     @interface =
       pause: ()=>@pause()
       resume: ()=>@resume()
@@ -272,11 +273,16 @@ class @Thread
       if f instanceof Routine
         @processor.load f
       else
-        parser = new Parser(f,"")
-        parser.parse()
-        program = parser.program
-        compiler = new Compiler(program)
-        @processor.load compiler.routine
+        cached = @call_cache.get(f)
+        if cached?
+          @processor.load cached
+        else
+          parser = new Parser(f,"")
+          parser.parse()
+          program = parser.program
+          compiler = new Compiler(program)
+          @call_cache.set f, compiler.routine
+          @processor.load compiler.routine
         if (f == "update()" or f == "serverUpdate()") and @runner.updateControls?
           @runner.updateControls()
       true

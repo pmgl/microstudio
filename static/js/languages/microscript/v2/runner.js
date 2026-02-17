@@ -314,6 +314,7 @@ this.Thread = class Thread {
     this.paused = false;
     this.terminated = false;
     this.next_calls = [];
+    this.call_cache = new Map();
     this.interface = {
       pause: () => {
         return this.pause();
@@ -335,17 +336,23 @@ this.Thread = class Thread {
   }
 
   loadNext() {
-    var compiler, f, parser, program;
+    var cached, compiler, f, parser, program;
     if (this.next_calls.length > 0) {
       f = this.next_calls.splice(0, 1)[0];
       if (f instanceof Routine) {
         this.processor.load(f);
       } else {
-        parser = new Parser(f, "");
-        parser.parse();
-        program = parser.program;
-        compiler = new Compiler(program);
-        this.processor.load(compiler.routine);
+        cached = this.call_cache.get(f);
+        if (cached != null) {
+          this.processor.load(cached);
+        } else {
+          parser = new Parser(f, "");
+          parser.parse();
+          program = parser.program;
+          compiler = new Compiler(program);
+          this.call_cache.set(f, compiler.routine);
+          this.processor.load(compiler.routine);
+        }
         if ((f === "update()" || f === "serverUpdate()") && (this.runner.updateControls != null)) {
           this.runner.updateControls();
         }
