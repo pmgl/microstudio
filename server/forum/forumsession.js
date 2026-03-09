@@ -1,93 +1,61 @@
-this.ForumSession = (function() {
-  function ForumSession(session) {
+this.ForumSession = class ForumSession {
+  constructor(session) {
     this.session = session;
-    this.session.register("create_forum_category", (function(_this) {
-      return function(msg) {
-        return _this.createForumCategory(msg);
-      };
-    })(this));
-    this.session.register("edit_forum_category", (function(_this) {
-      return function(msg) {
-        return _this.editForumCategory(msg);
-      };
-    })(this));
-    this.session.register("create_forum_post", (function(_this) {
-      return function(msg) {
-        return _this.createForumPost(msg);
-      };
-    })(this));
-    this.session.register("edit_forum_post", (function(_this) {
-      return function(msg) {
-        return _this.editForumPost(msg);
-      };
-    })(this));
-    this.session.register("create_forum_reply", (function(_this) {
-      return function(msg) {
-        return _this.createForumReply(msg);
-      };
-    })(this));
-    this.session.register("edit_forum_reply", (function(_this) {
-      return function(msg) {
-        return _this.editForumReply(msg);
-      };
-    })(this));
-    this.session.register("get_raw_post", (function(_this) {
-      return function(msg) {
-        return _this.getRawPost(msg);
-      };
-    })(this));
-    this.session.register("get_raw_reply", (function(_this) {
-      return function(msg) {
-        return _this.getRawReply(msg);
-      };
-    })(this));
-    this.session.register("get_my_likes", (function(_this) {
-      return function(msg) {
-        return _this.getMyLikes(msg);
-      };
-    })(this));
-    this.session.register("set_post_like", (function(_this) {
-      return function(msg) {
-        return _this.setPostLike(msg);
-      };
-    })(this));
-    this.session.register("set_reply_like", (function(_this) {
-      return function(msg) {
-        return _this.setReplyLike(msg);
-      };
-    })(this));
-    this.session.register("search_forum", (function(_this) {
-      return function(msg) {
-        return _this.searchForum(msg);
-      };
-    })(this));
-    this.session.register("set_category_watch", (function(_this) {
-      return function(msg) {
-        return _this.setCategoryWatch(msg);
-      };
-    })(this));
-    this.session.register("get_category_watch", (function(_this) {
-      return function(msg) {
-        return _this.getCategoryWatch(msg);
-      };
-    })(this));
-    this.session.register("set_post_watch", (function(_this) {
-      return function(msg) {
-        return _this.setPostWatch(msg);
-      };
-    })(this));
-    this.session.register("get_post_watch", (function(_this) {
-      return function(msg) {
-        return _this.getPostWatch(msg);
-      };
-    })(this));
+    this.session.register("create_forum_category", (msg) => {
+      return this.createForumCategory(msg);
+    });
+    this.session.register("edit_forum_category", (msg) => {
+      return this.editForumCategory(msg);
+    });
+    this.session.register("create_forum_post", (msg) => {
+      return this.createForumPost(msg);
+    });
+    this.session.register("edit_forum_post", (msg) => {
+      return this.editForumPost(msg);
+    });
+    this.session.register("create_forum_reply", (msg) => {
+      return this.createForumReply(msg);
+    });
+    this.session.register("edit_forum_reply", (msg) => {
+      return this.editForumReply(msg);
+    });
+    this.session.register("get_raw_post", (msg) => {
+      return this.getRawPost(msg);
+    });
+    this.session.register("get_raw_reply", (msg) => {
+      return this.getRawReply(msg);
+    });
+    this.session.register("get_my_likes", (msg) => {
+      return this.getMyLikes(msg);
+    });
+    this.session.register("set_post_like", (msg) => {
+      return this.setPostLike(msg);
+    });
+    this.session.register("set_reply_like", (msg) => {
+      return this.setReplyLike(msg);
+    });
+    this.session.register("search_forum", (msg) => {
+      return this.searchForum(msg);
+    });
+    this.session.register("set_category_watch", (msg) => {
+      return this.setCategoryWatch(msg);
+    });
+    this.session.register("get_category_watch", (msg) => {
+      return this.getCategoryWatch(msg);
+    });
+    this.session.register("set_post_watch", (msg) => {
+      return this.setPostWatch(msg);
+    });
+    this.session.register("get_post_watch", (msg) => {
+      return this.getPostWatch(msg);
+    });
     this.forum = this.session.server.content.forum;
     this.server = this.session.server;
     this.MAX_TEXT_LENGTH = 20000;
     this.MAX_TITLE_LENGTH = 400;
   }
 
-  ForumSession.prototype.createForumCategory = function(data) {
+  createForumCategory(data) {
     var cat;
     if (this.session.user == null) {
       return;
@@ -113,9 +81,9 @@ this.ForumSession = (function() {
       request_id: data.request_id,
       id: cat.id
     });
-  };
+  }
 
-  ForumSession.prototype.editForumCategory = function(data) {
+  editForumCategory(data) {
     var category;
     if (this.session.user == null) {
       return;
@@ -151,9 +119,9 @@ this.ForumSession = (function() {
         request_id: data.request_id
       });
     }
-  };
+  }
 
-  ForumSession.prototype.createForumPost = function(data) {
+  createForumPost(data) {
     var category, post;
     if (this.session.user == null) {
       return;
@@ -177,6 +145,9 @@ this.ForumSession = (function() {
       if (!this.server.rate_limiter.accept("create_forum_post", this.session.user.id)) {
         return;
       }
+      if (this.session.user.progress.stats.level < 10) {
+        return;
+      }
       category = this.forum.category_by_slug[data.category];
       if (category) {
         if (category.permissions.post !== "user") {
@@ -193,9 +164,9 @@ this.ForumSession = (function() {
         return this.session.user.progress.unlockAchievement("community/forum_post");
       }
     }
-  };
+  }
 
-  ForumSession.prototype.editForumPost = function(data) {
+  editForumPost(data) {
     var cat1, cat2, post;
     if (this.session.user == null) {
       return;
@@ -250,9 +221,9 @@ this.ForumSession = (function() {
         id: post.id
       });
     }
-  };
+  }
 
-  ForumSession.prototype.createForumReply = function(data) {
+  createForumReply(data) {
     var category, post, reply;
     if (this.session.user == null) {
       return;
@@ -268,6 +239,9 @@ this.ForumSession = (function() {
     }
     if ((this.session.user != null) && this.session.user.flags.validated && !this.session.user.flags.banned && !this.session.user.flags.censored) {
       if (!this.server.rate_limiter.accept("create_forum_reply", this.session.user.id)) {
+        return;
+      }
+      if (this.session.user.progress.stats.level < 10) {
         return;
       }
       post = this.forum.posts[data.post];
@@ -292,9 +266,9 @@ this.ForumSession = (function() {
         });
       }
     }
-  };
+  }
 
-  ForumSession.prototype.editForumReply = function(data) {
+  editForumReply(data) {
     var reply;
     if (this.session.user == null) {
       return;
@@ -321,9 +295,9 @@ this.ForumSession = (function() {
         request_id: data.request_id
       });
     }
-  };
+  }
 
-  ForumSession.prototype.getRawPost = function(data) {
+  getRawPost(data) {
     var post;
     if (this.session.user == null) {
       return;
@@ -344,9 +318,9 @@ this.ForumSession = (function() {
         status: post.status
       });
     }
-  };
+  }
 
-  ForumSession.prototype.getRawReply = function(data) {
+  getRawReply(data) {
     var reply;
     if (this.session.user == null) {
       return;
@@ -365,9 +339,9 @@ this.ForumSession = (function() {
         text: reply.text
       });
     }
-  };
+  }
 
-  ForumSession.prototype.getMyLikes = function(data) {
+  getMyLikes(data) {
     var cat, category, i, j, k, l, len, len1, len2, len3, list, post, r, ref, ref1, ref2, res;
     if (this.session.user == null) {
       return;
@@ -428,9 +402,9 @@ this.ForumSession = (function() {
         data: res
       });
     }
-  };
+  }
 
-  ForumSession.prototype.setPostLike = function(data) {
+  setPostLike(data) {
     var post;
     if (this.session.user == null) {
       return;
@@ -450,9 +424,9 @@ this.ForumSession = (function() {
         });
       }
     }
-  };
+  }
 
-  ForumSession.prototype.setReplyLike = function(data) {
+  setReplyLike(data) {
     var reply;
     if (this.session.user == null) {
       return;
@@ -472,9 +446,9 @@ this.ForumSession = (function() {
         });
       }
     }
-  };
+  }
 
-  ForumSession.prototype.setCategoryWatch = function(data) {
+  setCategoryWatch(data) {
     var category;
     if (this.session.user == null) {
       return;
@@ -495,9 +469,9 @@ this.ForumSession = (function() {
         watch: data.watch
       });
     }
-  };
+  }
 
-  ForumSession.prototype.setPostWatch = function(data) {
+  setPostWatch(data) {
     var post;
     if (this.session.user == null) {
       return;
@@ -518,9 +492,9 @@ this.ForumSession = (function() {
         watch: data.watch
       });
     }
-  };
+  }
 
-  ForumSession.prototype.getCategoryWatch = function(data) {
+  getCategoryWatch(data) {
     var category;
     if (this.session.user == null) {
       return;
@@ -536,9 +510,9 @@ this.ForumSession = (function() {
         watch: category.isWatching(this.session.user.id)
       });
     }
-  };
+  }
 
-  ForumSession.prototype.getPostWatch = function(data) {
+  getPostWatch(data) {
     var post;
     if (this.session.user == null) {
       return;
@@ -554,9 +528,9 @@ this.ForumSession = (function() {
         watch: post.isWatching(this.session.user.id)
       });
     }
-  };
+  }
 
-  ForumSession.prototype.searchForum = function(data) {
+  searchForum(data) {
     var i, index, len, list, post, r, res;
     if (data.language == null) {
       return;
@@ -587,10 +561,8 @@ this.ForumSession = (function() {
         results: list
       });
     }
-  };
+  }
 
-  return ForumSession;
-
-})();
+};
 
 module.exports = this.ForumSession;

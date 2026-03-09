@@ -81,6 +81,8 @@ class @ForumSession
 
     if @session.user? and @session.user.flags.validated and not @session.user.flags.banned and not @session.user.flags.censored
       return if not @server.rate_limiter.accept("create_forum_post",@session.user.id)
+      return if @session.user.progress.stats.level < 10
+
       category = @forum.category_by_slug[data.category]
       if category
         if category.permissions.post != "user"
@@ -149,6 +151,7 @@ class @ForumSession
 
     if @session.user? and @session.user.flags.validated and not @session.user.flags.banned and not @session.user.flags.censored
       return if not @server.rate_limiter.accept("create_forum_reply",@session.user.id)
+      return if @session.user.progress.stats.level < 10
 
       post = @forum.posts[data.post]
       if post?

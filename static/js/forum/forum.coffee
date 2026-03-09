@@ -9,8 +9,9 @@ class @Forum
     @addLinks()
     @updateUserCapabilities()
 
-    @plug "create-post-button",()=> document.getElementById("edit-post").style.display = "block"
-    @plug "create-post-button",()=> document.getElementById("edit-post").style.display = "block"
+    @plug "create-post-button",()=>
+      document.getElementById("edit-post").style.display = "block"
+
     @plug "edit-post-cancel",()=>
       if document.getElementById("edit-post")
         document.getElementById("edit-post").style.display = "none"
@@ -368,8 +369,7 @@ class @Forum
       e = document.querySelector("#create-post-button")
       if e? then e.style.display = "none"
     else
-      canpost = @user.flags.validated
-      canreply = @user.flags.validated
+      canpost = @user.flags.validated and @user.info.stats.level >= 10
 
       if not @user.flags.validated
         document.querySelector("#validate-your-email").style.display = "block"
