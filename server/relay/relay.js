@@ -40,12 +40,13 @@ Relay = class Relay {
         return this.client.send(msg);
       });
       this.client.on("message", (msg) => {
-        var data;
+        var callback, data;
         try {
           data = JSON.parse(msg.data);
           if (data.name === "check_server_token") {
-            if (data.valid && (this.token_requests[data.token] != null)) {
-              this.token_requests[data.token]();
+            callback = this.token_requests[data.token];
+            if (callback != null) {
+              callback(data.valid === true);
               return delete this.token_requests[data.token];
             }
           }
@@ -94,12 +95,17 @@ Relay = class Relay {
   }
 
   serverTokenCheck(token, server_id, callback) {
-    this.token_requests[token] = callback();
-    return this.client.send(JSON.stringify({
-      name: "check_server_token",
-      server_id: server_id,
-      token: token
-    }));
+    this.token_requests[token] = callback;
+    try {
+      return this.client.send(JSON.stringify({
+        name: "check_server_token",
+        server_id: server_id,
+        token: token
+      }));
+    } catch (error) {
+      delete this.token_requests[token];
+      return callback(false);
+    }
   }
 
 };
