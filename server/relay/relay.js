@@ -44,8 +44,13 @@ Relay = class Relay {
         try {
           data = JSON.parse(msg.data);
           if (data.name === "check_server_token") {
-            if (data.valid && (this.token_requests[data.token] != null)) {
-              this.token_requests[data.token]();
+            if (this.token_requests[data.token] != null) {
+              if (data.valid && (typeof this.token_requests[data.token].callback === "function")) {
+                this.token_requests[data.token].callback();
+              }
+              if (this.token_requests[data.token].timeout != null) {
+                clearTimeout(this.token_requests[data.token].timeout);
+              }
               return delete this.token_requests[data.token];
             }
           }
@@ -94,7 +99,14 @@ Relay = class Relay {
   }
 
   serverTokenCheck(token, server_id, callback) {
-    this.token_requests[token] = callback();
+    var request;
+    request = {
+      callback: callback
+    };
+    request.timeout = setTimeout((() => {
+      return delete this.token_requests[token];
+    }), 30000);
+    this.token_requests[token] = request;
     return this.client.send(JSON.stringify({
       name: "check_server_token",
       server_id: server_id,
