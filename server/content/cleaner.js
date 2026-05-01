@@ -8,7 +8,7 @@ this.Cleaner = class Cleaner {
     this.stop();
     this.users = Object.keys(this.content.users);
     this.index = 0;
-    this.guest_limit = Date.now() - 60 * 24 * 3600 * 1000;
+    this.guest_limit = Date.now() - 15 * 24 * 3600 * 1000;
     this.user_limit = Date.now() - 545 * 24 * 3600 * 1000;
     this.deleted = 0;
     this.deleted_projects = 0;
