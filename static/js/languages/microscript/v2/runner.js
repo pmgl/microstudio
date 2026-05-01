@@ -182,6 +182,10 @@ this.Runner = class Runner {
 
   tick() {
     var dt, frame_time, i, index, j, k, len, load, margin, processing, processor, ref, ref1, t, time, time_limit, time_out;
+    // Reset input states at the beginning of every frame
+    if (this.updateControls != null) {
+      this.updateControls();
+    }
     if (this.system.fps != null) {
       this.fps = this.fps * .9 + this.system.fps * .1;
     }
@@ -346,9 +350,6 @@ this.Thread = class Thread {
         program = parser.program;
         compiler = new Compiler(program);
         this.processor.load(compiler.routine);
-        if ((f === "update()" || f === "serverUpdate()") && (this.runner.updateControls != null)) {
-          this.runner.updateControls();
-        }
       }
       return true;
     } else {
