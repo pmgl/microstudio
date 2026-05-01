@@ -23,8 +23,11 @@ this.RelayService = class RelayService {
     if (msg.token == null) {
       return;
     }
-    return this.session.serverTokenCheck(msg.token, msg.server_id, () => {
+    return this.session.serverTokenCheck(msg.token, msg.server_id, (valid) => {
       var instance;
+      if (!valid) {
+        return this.session.socket.close();
+      }
       instance = new ServerInstance(this, msg.server_id, this.session);
       return RelayService.servers[msg.server_id] = instance;
     });
@@ -38,12 +41,22 @@ this.RelayService = class RelayService {
 
   clientConnection(msg) {
     var server;
-    if (msg.server_id == null) {
-      return;
+    if (!this.canTryClientConnection()) {
+      return this.session.socket.close();
+    }
+    if ((msg.server_id == null) || (msg.token == null)) {
+      this.clientConnectionFailed();
+      return this.session.socket.close();
     }
     server = RelayService.servers[msg.server_id];
     if (server != null) {
-      return server.clientConnection(this.session);
+      return this.session.serverTokenCheck(msg.token, msg.server_id, (valid) => {
+        if (!valid) {
+          this.clientConnectionFailed();
+          return this.session.socket.close();
+        }
+        return server.clientConnection(this.session);
+      });
     } else {
       return this.session.socket.close();
     }
@@ -62,8 +75,39 @@ this.RelayService = class RelayService {
     });
   }
 
+  canTryClientConnection() {
+    var entry, now;
+    now = Date.now();
+    entry = RelayService.client_failures[this.session.socket.remoteAddress];
+    if (entry == null) {
+      return true;
+    }
+    if (now - entry.time > 60000) {
+      delete RelayService.client_failures[this.session.socket.remoteAddress];
+      return true;
+    }
+    return entry.count < 5;
+  }
+
+  clientConnectionFailed() {
+    var entry, now;
+    now = Date.now();
+    entry = RelayService.client_failures[this.session.socket.remoteAddress];
+    if ((entry == null) || (now - entry.time > 60000)) {
+      return RelayService.client_failures[this.session.socket.remoteAddress] = {
+        count: 1,
+        time: now
+      };
+    } else {
+      entry.count += 1;
+      return entry.time = now;
+    }
+  }
+
 };
 
 this.RelayService.servers = {};
+
+this.RelayService.client_failures = {};
 
 module.exports = this.RelayService;
