@@ -101,7 +101,7 @@ Relay = class Relay {
   serverTokenCheck(token, server_id, callback) {
     var err;
     try {
-      this.token_requests[token] = callback;
+      this.token_requests[token] = callback();
       return this.client.send(JSON.stringify({
         name: "check_server_token",
         server_id: server_id,

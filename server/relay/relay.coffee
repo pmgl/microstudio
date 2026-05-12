@@ -73,7 +73,7 @@ class Relay
 
   serverTokenCheck:(token,server_id,callback)->
     try
-      @token_requests[token] = callback
+      @token_requests[token] = callback()
       @client.send JSON.stringify
         name: "check_server_token"
         server_id: server_id
