@@ -33,7 +33,9 @@ class Relay
 
       @client.on "open",()=>
         console.info "connected to main server"
-        @client.send msg
+        try
+          @client.send msg
+        catch err
 
       @client.on "message",(msg)=>
         try
@@ -70,11 +72,13 @@ class Relay
       @sessions.splice index,1
 
   serverTokenCheck:(token,server_id,callback)->
-    @token_requests[token] = callback()
-    @client.send JSON.stringify
-      name: "check_server_token"
-      server_id: server_id
-      token: token
+    try
+      @token_requests[token] = callback
+      @client.send JSON.stringify
+        name: "check_server_token"
+        server_id: server_id
+        token: token
+    catch err
 
 fs = require "fs"
 

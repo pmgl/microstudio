@@ -36,8 +36,13 @@ Relay = class Relay {
         address: this.config.relay_address
       });
       this.client.on("open", () => {
+        var err;
         console.info("connected to main server");
-        return this.client.send(msg);
+        try {
+          return this.client.send(msg);
+        } catch (error) {
+          err = error;
+        }
       });
       this.client.on("message", (msg) => {
         var data;
@@ -94,12 +99,17 @@ Relay = class Relay {
   }
 
   serverTokenCheck(token, server_id, callback) {
-    this.token_requests[token] = callback();
-    return this.client.send(JSON.stringify({
-      name: "check_server_token",
-      server_id: server_id,
-      token: token
-    }));
+    var err;
+    try {
+      this.token_requests[token] = callback;
+      return this.client.send(JSON.stringify({
+        name: "check_server_token",
+        server_id: server_id,
+        token: token
+      }));
+    } catch (error) {
+      err = error;
+    }
   }
 
 };
