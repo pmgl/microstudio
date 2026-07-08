@@ -75,7 +75,7 @@ You may also click on the color ```"#F00"``` and hold down CTRL to pick other co
 
 In *microStudio*, the coordinate system is based on the center of the screen. Thus the center
 of the screen has the coordinates 0,0. In portrait mode, the x coordinate will range from -100 (leftmost point) to +100 (rightmost point).
-In landcape mode, the y coordinate will range from -100 to 100 as well. This is illustrated below:
+In landscape mode, the y coordinate will range from -100 to 100 as well. This is illustrated below:
 
 ![Screen coordinates](/doc/img/screen_coordinates.png "Screen coordinates")
 
