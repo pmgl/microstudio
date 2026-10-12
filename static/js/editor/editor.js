@@ -107,6 +107,10 @@ this.Editor = class Editor extends Manager {
         err = error;
         console.error(err);
       }
+      if (event.ctrlKey && !event.altKey && event.key.toLowerCase() === "f" && (document.getElementById("editor-view").offsetParent != null)) {
+        event.preventDefault();
+        this.toggleCodeSearch(true, event.shiftKey);
+      }
       if (event.keyCode !== 17 && event.ctrlKey) {
         this.cancelValueTool();
         this.ignore_ctrl_up = true;
@@ -127,9 +131,6 @@ this.Editor = class Editor extends Manager {
           this.showValueTool();
         }
       }
-    });
-    document.querySelector("#code-search").addEventListener("click", (event) => {
-      return this.editor.execCommand("find");
     });
     this.font_size = 14;
     this.MIN_FONT_SIZE = 8;
@@ -163,8 +164,30 @@ this.Editor = class Editor extends Manager {
     this.lib_manager_button = document.querySelector("#manage-libs-button");
     this.lib_manager = document.querySelector(".lib-manager-container");
     this.editor_view = document.querySelector("#editor-view");
+    this.tabs_container = document.querySelector("#code-file-tabs");
+    this.search_panel = document.querySelector("#code-search-panel");
+    this.search_input = document.querySelector("#code-search-input");
+    this.search_results = document.querySelector("#code-search-results");
+    this.search_all_files = true;
     this.lib_manager_button.addEventListener("click", () => {
       return this.toggleLibManager();
+    });
+    document.querySelector("#code-search-file").addEventListener("click", () => {
+      return this.toggleCodeSearch(true, false);
+    });
+    document.querySelector("#code-search").addEventListener("click", () => {
+      return this.toggleCodeSearch(true, true);
+    });
+    document.querySelector("#code-search-close").addEventListener("click", () => {
+      return this.toggleCodeSearch(false);
+    });
+    this.search_input.addEventListener("input", () => {
+      return this.searchCode();
+    });
+    this.search_input.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        return this.toggleCodeSearch(false);
+      }
     });
   }
 
@@ -702,11 +725,16 @@ this.Editor = class Editor extends Manager {
     this.checkSave(true);
     if (this.selected_source != null) {
       this.sessions[this.selected_source] = {
-        range: this.editor.getSelectionRange()
+        range: this.editor.getSelectionRange(),
+        scrollTop: this.editor.session.getScrollTop()
       };
     }
     different = name !== this.selected_source;
     this.selected_source = name;
+    if ((name != null) && this.open_sources.indexOf(name) < 0) {
+      this.open_sources.push(name);
+    }
+    this.renderSourceTabs();
     if (this.selected_source != null) {
       this.updateSourceLanguage();
     }
@@ -718,6 +746,7 @@ this.Editor = class Editor extends Manager {
       if (this.sessions[this.selected_source] && different) {
         this.editor.selection.setRange(this.sessions[this.selected_source].range);
         this.editor.revealRange(this.sessions[this.selected_source].range);
+        this.editor.session.setScrollTop(this.sessions[this.selected_source].scrollTop || 0);
         return this.editor.focus();
       }
     } else {
@@ -725,9 +754,204 @@ this.Editor = class Editor extends Manager {
     }
   }
 
+  renderSourceTabs() {
+    var j, len, name, ref, results;
+    if (this.tabs_container == null) {
+      return;
+    }
+    this.tabs_container.innerHTML = "";
+    ref = this.open_sources || [];
+    results = [];
+    for (j = 0, len = ref.length; j < len; j++) {
+      name = ref[j];
+      results.push(((name) => {
+        var close, label, tab;
+        tab = document.createElement("div");
+        tab.classList.add("code-file-tab");
+        if (name === this.selected_source) {
+          tab.classList.add("selected");
+        }
+        label = document.createElement("span");
+        label.textContent = name.replace(/-/g, "/");
+        tab.appendChild(label);
+        close = document.createElement("i");
+        close.className = "fa fa-times";
+        close.title = this.app.translator.get("Close file");
+        tab.appendChild(close);
+        tab.addEventListener("click", (event) => {
+          if (event.target === close) {
+            event.stopPropagation();
+            return this.closeSourceTab(name);
+          } else {
+            return this.setSelectedItem(name);
+          }
+        });
+        return this.tabs_container.appendChild(tab);
+      })(name));
+    }
+    return results;
+  }
+
+  closeSourceTab(name) {
+    var index, next;
+    index = this.open_sources.indexOf(name);
+    if (index < 0) {
+      return;
+    }
+    this.open_sources.splice(index, 1);
+    if (name === this.selected_source) {
+      next = this.open_sources[Math.min(index, this.open_sources.length - 1)];
+      return this.setSelectedItem(next || null);
+    } else {
+      return this.renderSourceTabs();
+    }
+  }
+
+  toggleCodeSearch(show = this.search_panel.classList.contains("hidden"), all_files = this.search_all_files) {
+    if (show) {
+      this.search_all_files = all_files;
+    }
+    this.search_panel.classList.toggle("hidden", !show);
+    if (show) {
+      this.search_input.placeholder = this.app.translator.get(this.search_all_files ? "Search in all files" : "Search in current file");
+      this.search_input.focus();
+      this.search_input.select();
+      return this.searchCode();
+    }
+  }
+
+  searchCode() {
+    var all_files, query, search, source_name;
+    query = this.search_input.value.trim().toLowerCase();
+    all_files = this.search_all_files;
+    source_name = this.selected_source;
+    this.search_results.innerHTML = "";
+    if (query.length === 0) {
+      return;
+    }
+    search = () => {
+      var content, count, empty, index, j, k, len, len1, line, lines, preview, result, source, sources, title;
+      if (this.search_input.value.trim().toLowerCase() !== query) {
+        return;
+      }
+      if (this.search_all_files !== all_files || (!all_files && this.selected_source !== source_name)) {
+        return;
+      }
+      count = 0;
+      if (!all_files && (source_name != null)) {
+        source = this.app.project.getSource(source_name);
+      }
+      sources = all_files ? this.app.project.source_list : source != null ? [source] : [];
+      for (j = 0, len = sources.length; j < len; j++) {
+        source = sources[j];
+        content = !all_files && source.name === this.selected_source ? this.editor.getValue() : source.content;
+        lines = content.split("\n");
+        for (index = k = 0, len1 = lines.length; k < len1; index = ++k) {
+          line = lines[index];
+          if (line.toLowerCase().indexOf(query) >= 0) {
+            result = document.createElement("button");
+            result.className = "code-search-result";
+            result.type = "button";
+            title = document.createElement("strong");
+            title.textContent = `${source.name.replace(/-/g, "/")}:${index + 1}`;
+            preview = document.createElement("span");
+            preview.textContent = line.trim();
+            result.appendChild(title);
+            result.appendChild(preview);
+            ((name, row, column) => {
+              return result.addEventListener("click", () => {
+                return this.openSearchResult(name, row, column);
+              });
+            })(source.name, index, line.toLowerCase().indexOf(query));
+            this.search_results.appendChild(result);
+            count += 1;
+            if (count >= 200) {
+              break;
+            }
+          }
+          if (count >= 200) {
+            break;
+          }
+        }
+        if (count >= 200) {
+          break;
+        }
+      }
+      if (count === 0) {
+        empty = document.createElement("div");
+        empty.className = "code-search-empty";
+        empty.textContent = this.app.translator.get("No matches");
+        return this.search_results.appendChild(empty);
+      }
+    };
+    if (all_files) {
+      return this.ensureSourcesLoaded(search);
+    } else {
+      return search();
+    }
+  }
+
+  openSearchResult(name, row, column) {
+    var range;
+    this.setSelectedItem(name);
+    range = new ace.Range(row, column, row, column);
+    this.editor.selection.setRange(range);
+    this.editor.revealRange(range);
+    return this.editor.focus();
+  }
+
+  ensureSourcesLoaded(callback) {
+    var j, len, pending, remaining, results, source;
+    if (this.loading_sources) {
+      this.source_load_callbacks.push(callback);
+      return;
+    }
+    pending = (function() {
+      var j, len, ref, results;
+      ref = this.app.project.source_list;
+      results = [];
+      for (j = 0, len = ref.length; j < len; j++) {
+        source = ref[j];
+        if (!source.fetched) {
+          results.push(source);
+        }
+      }
+      return results;
+    }).call(this);
+    if (pending.length === 0) {
+      return callback();
+    }
+    this.loading_sources = true;
+    this.source_load_callbacks = [callback];
+    remaining = pending.length;
+    results = [];
+    for (j = 0, len = pending.length; j < len; j++) {
+      source = pending[j];
+      results.push(source.reload(() => {
+        var callbacks, cb, k, len1, results1;
+        remaining -= 1;
+        if (remaining === 0) {
+          this.loading_sources = false;
+          callbacks = this.source_load_callbacks;
+          this.source_load_callbacks = [];
+          results1 = [];
+          for (k = 0, len1 = callbacks.length; k < len1; k++) {
+            cb = callbacks[k];
+            results1.push(cb());
+          }
+          return results1;
+        }
+      }));
+    }
+    return results;
+  }
+
   projectOpened() {
     super.projectOpened();
     this.sessions = {};
+    this.open_sources = [];
+    this.loading_sources = false;
+    this.source_load_callbacks = [];
     this.app.project.addListener(this);
     this.app.runwindow.resetButtons();
     this.app.runwindow.windowResized();
@@ -812,16 +1036,39 @@ this.Editor = class Editor extends Manager {
   }
 
   selectedItemRenamed() {
-    return this.selected_source = this.selected_item;
+    var index, old;
+    old = this.selected_source;
+    index = this.open_sources.indexOf(old);
+    if (index >= 0) {
+      this.open_sources[index] = this.selected_item;
+    }
+    this.selected_source = this.selected_item;
+    return this.renderSourceTabs();
   }
 
   rebuildList() {
+    var name;
     super.rebuildList();
+    this.open_sources = (function() {
+      var j, len, ref, results;
+      ref = this.open_sources;
+      results = [];
+      for (j = 0, len = ref.length; j < len; j++) {
+        name = ref[j];
+        if (this.app.project.getSource(name) != null) {
+          results.push(name);
+        }
+      }
+      return results;
+    }).call(this);
     if ((this.selected_source == null) || (this.app.project.getSource(this.selected_source) == null)) {
       if (this.app.project.source_list.length > 0) {
-        return this.setSelectedItem(this.app.project.source_list[0].name);
+        this.setSelectedItem(this.app.project.source_list[0].name);
+      } else {
+        this.setSelectedItem(null);
       }
     }
+    return this.renderSourceTabs();
   }
 
   fileDropped(file, folder) {

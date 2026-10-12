@@ -29,8 +29,10 @@ div.code-editor#code-editor
         div.buttons
           div#code-font-minus(title="Decrease font size") <i class="fas fa-long-arrow-alt-down"></i> A
           div#code-font-plus(title="Increase font size") <i class="fas fa-long-arrow-alt-up"></i> A
-          div#code-search.selected(title="Search in code")
+          div#code-search-file(title=translator.get("Search in current file") + " (Ctrl+F)")
             i.fas.fa-search
+          div#code-search(title=translator.get("Search in all files") + " (Ctrl+Shift+F)")
+            i.fas.fa-search-plus
 
         div.value-tool-button#color-value-tool-button
           span CTRL
@@ -42,7 +44,14 @@ div.code-editor#code-editor
           div.slider-cursor
 
     div.editor-locked#editor-locked
+    div.code-file-tabs#code-file-tabs
     div.editor-view#editor-view
+    div.code-search-panel#code-search-panel.hidden
+      div.code-search-header
+        input(type="text" placeholder=translator.get("Search in all files"))#code-search-input
+        button(type="button" title=translator.get("Close search"))#code-search-close
+          i.fa.fa-times
+      div.code-search-results#code-search-results
     div.help-window#help-window
       div#help-window-content
         div.left-side

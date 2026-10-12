@@ -100,6 +100,10 @@ class @Editor extends Manager
       catch err
         console.error err
 
+      if event.ctrlKey and not event.altKey and event.key.toLowerCase() == "f" and document.getElementById("editor-view").offsetParent?
+        event.preventDefault()
+        @toggleCodeSearch true,event.shiftKey
+
       if event.keyCode != 17 and event.ctrlKey
         @cancelValueTool()
         @ignore_ctrl_up = true
@@ -117,9 +121,6 @@ class @Editor extends Manager
         else
           @showValueTool()
       return
-
-    document.querySelector("#code-search").addEventListener "click",(event)=>
-      @editor.execCommand("find")
 
     @font_size = 14
     @MIN_FONT_SIZE = 8
@@ -146,9 +147,30 @@ class @Editor extends Manager
     @lib_manager_button = document.querySelector "#manage-libs-button"
     @lib_manager = document.querySelector ".lib-manager-container"
     @editor_view = document.querySelector "#editor-view"
+    @tabs_container = document.querySelector "#code-file-tabs"
+    @search_panel = document.querySelector "#code-search-panel"
+    @search_input = document.querySelector "#code-search-input"
+    @search_results = document.querySelector "#code-search-results"
+    @search_all_files = true
 
     @lib_manager_button.addEventListener "click",()=>
       @toggleLibManager()
+
+    document.querySelector("#code-search-file").addEventListener "click",()=>
+      @toggleCodeSearch true,false
+
+    document.querySelector("#code-search").addEventListener "click",()=>
+      @toggleCodeSearch true,true
+
+    document.querySelector("#code-search-close").addEventListener "click",()=>
+      @toggleCodeSearch(false)
+
+    @search_input.addEventListener "input",()=>
+      @searchCode()
+
+    @search_input.addEventListener "keydown",(event)=>
+      if event.key == "Escape"
+        @toggleCodeSearch(false)
 
   updateLanguage:()->
     if @app.project
@@ -545,10 +567,14 @@ class @Editor extends Manager
     if @selected_source?
       @sessions[@selected_source] =
         range: @editor.getSelectionRange()
+        scrollTop: @editor.session.getScrollTop()
 
     different = name != @selected_source
 
     @selected_source = name
+    if name? and @open_sources.indexOf(name)<0
+      @open_sources.push name
+    @renderSourceTabs()
 
     if @selected_source?
       @updateSourceLanguage()
@@ -562,13 +588,130 @@ class @Editor extends Manager
       if @sessions[@selected_source] and different
         @editor.selection.setRange(@sessions[@selected_source].range)
         @editor.revealRange(@sessions[@selected_source].range)
+        @editor.session.setScrollTop(@sessions[@selected_source].scrollTop or 0)
         @editor.focus()
     else
       @setCode("")
 
+  renderSourceTabs:()->
+    return if not @tabs_container?
+    @tabs_container.innerHTML = ""
+    for name in @open_sources or []
+      do (name)=>
+        tab = document.createElement "div"
+        tab.classList.add "code-file-tab"
+        tab.classList.add "selected" if name == @selected_source
+        label = document.createElement "span"
+        label.textContent = name.replace(/-/g,"/")
+        tab.appendChild label
+        close = document.createElement "i"
+        close.className = "fa fa-times"
+        close.title = @app.translator.get("Close file")
+        tab.appendChild close
+        tab.addEventListener "click",(event)=>
+          if event.target == close
+            event.stopPropagation()
+            @closeSourceTab name
+          else
+            @setSelectedItem name
+        @tabs_container.appendChild tab
+
+  closeSourceTab:(name)->
+    index = @open_sources.indexOf(name)
+    return if index<0
+    @open_sources.splice index,1
+    if name == @selected_source
+      next = @open_sources[Math.min(index,@open_sources.length-1)]
+      @setSelectedItem next or null
+    else
+      @renderSourceTabs()
+
+  toggleCodeSearch:(show = @search_panel.classList.contains("hidden"),all_files = @search_all_files)->
+    @search_all_files = all_files if show
+    @search_panel.classList.toggle "hidden",not show
+    if show
+      @search_input.placeholder = @app.translator.get(if @search_all_files then "Search in all files" else "Search in current file")
+      @search_input.focus()
+      @search_input.select()
+      @searchCode()
+
+  searchCode:()->
+    query = @search_input.value.trim().toLowerCase()
+    all_files = @search_all_files
+    source_name = @selected_source
+    @search_results.innerHTML = ""
+    return if query.length == 0
+
+    search = ()=>
+      return if @search_input.value.trim().toLowerCase() != query
+      return if @search_all_files != all_files or (not all_files and @selected_source != source_name)
+      count = 0
+      source = @app.project.getSource(source_name) if not all_files and source_name?
+      sources = if all_files then @app.project.source_list else if source? then [source] else []
+      for source in sources
+        content = if not all_files and source.name == @selected_source then @editor.getValue() else source.content
+        lines = content.split "\n"
+        for line,index in lines
+          if line.toLowerCase().indexOf(query)>=0
+            result = document.createElement "button"
+            result.className = "code-search-result"
+            result.type = "button"
+            title = document.createElement "strong"
+            title.textContent = "#{source.name.replace(/-/g,"/")}:#{index+1}"
+            preview = document.createElement "span"
+            preview.textContent = line.trim()
+            result.appendChild title
+            result.appendChild preview
+            do (name=source.name,row=index,column=line.toLowerCase().indexOf(query))=>
+              result.addEventListener "click",()=>
+                @openSearchResult name,row,column
+            @search_results.appendChild result
+            count += 1
+            break if count>=200
+          break if count>=200
+        break if count>=200
+
+      if count == 0
+        empty = document.createElement "div"
+        empty.className = "code-search-empty"
+        empty.textContent = @app.translator.get("No matches")
+        @search_results.appendChild empty
+
+    if all_files then @ensureSourcesLoaded search else search()
+
+  openSearchResult:(name,row,column)->
+    @setSelectedItem name
+    range = new ace.Range(row,column,row,column)
+    @editor.selection.setRange range
+    @editor.revealRange range
+    @editor.focus()
+
+  ensureSourcesLoaded:(callback)->
+    if @loading_sources
+      @source_load_callbacks.push callback
+      return
+    pending = (source for source in @app.project.source_list when not source.fetched)
+    return callback() if pending.length == 0
+
+    @loading_sources = true
+    @source_load_callbacks = [callback]
+    remaining = pending.length
+    for source in pending
+      source.reload ()=>
+        remaining -= 1
+        if remaining == 0
+          @loading_sources = false
+          callbacks = @source_load_callbacks
+          @source_load_callbacks = []
+          for cb in callbacks
+            cb()
+
   projectOpened:()->
     super()
     @sessions = {}
+    @open_sources = []
+    @loading_sources = false
+    @source_load_callbacks = []
     @app.project.addListener @
     @app.runwindow.resetButtons()
     @app.runwindow.windowResized()
@@ -636,14 +779,22 @@ class @Editor extends Manager
 
 
   selectedItemRenamed:()->
+    old = @selected_source
+    index = @open_sources.indexOf(old)
+    @open_sources[index] = @selected_item if index>=0
     @selected_source = @selected_item
+    @renderSourceTabs()
 
 
   rebuildList:()->
     super()
+    @open_sources = (name for name in @open_sources when @app.project.getSource(name)?)
     if not @selected_source? or not @app.project.getSource(@selected_source)?
       if @app.project.source_list.length>0
         @setSelectedItem @app.project.source_list[0].name
+      else
+        @setSelectedItem null
+    @renderSourceTabs()
 
   fileDropped:(file,folder)->
     console.info "processing #{file.name}"

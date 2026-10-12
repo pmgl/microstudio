@@ -16,9 +16,12 @@
   transition-property: left, opacity ;
   opacity: 1 ;
 }
+#code-main > #editor-view {
+  top: 70px ;
+}
 #editor-locked {
   position: absolute ;
-  top: 60px ;
+  top: 86px ;
   left: 240px ;
   right: 40px ;
   padding: 20px ;
@@ -32,6 +35,114 @@
   opacity: 1 ;
   display: none ;
   pointer-events: none ;
+}
+
+.code-file-tabs {
+  position: absolute ;
+  top: 42px ;
+  left: 0 ;
+  right: 0 ;
+  height: 28px ;
+  overflow-x: auto ;
+  overflow-y: hidden ;
+  white-space: nowrap ;
+  background: hsl(200,20%,18%) ;
+}
+.code-file-tab {
+  display: inline-flex ;
+  align-items: center ;
+  gap: 10px ;
+  height: 28px ;
+  padding: 0 10px ;
+  box-sizing: border-box ;
+  border-right: 1px solid rgba(255,255,255,.1) ;
+  color: rgba(255,255,255,.7) ;
+  font-size: 12px ;
+  cursor: pointer ;
+}
+.code-file-tab.selected {
+  color: #FFF ;
+  background: hsl(200,25%,30%) ;
+}
+.code-file-tab i {
+  opacity: .6 ;
+}
+.code-file-tab i:hover {
+  opacity: 1 ;
+}
+
+.code-search-panel {
+  position: absolute ;
+  z-index: 20 ;
+  top: 76px ;
+  right: 10px ;
+  width: min(420px, calc(100% - 20px)) ;
+  max-height: calc(100% - 90px) ;
+  display: flex ;
+  flex-direction: column ;
+  background: hsl(200,25%,18%) ;
+  border: 1px solid rgba(255,255,255,.2) ;
+  box-shadow: 0 4px 18px rgba(0,0,0,.5) ;
+}
+.code-search-panel.hidden {
+  display: none ;
+}
+.code-search-header {
+  display: flex ;
+  gap: 5px ;
+  padding: 8px ;
+}
+.code-search-header input {
+  flex: 1 ;
+  min-width: 0 ;
+  background: hsl(200,20%,10%) ;
+  color: #FFF ;
+  border: 1px solid rgba(255,255,255,.25) ;
+  padding: 6px 8px ;
+}
+.code-search-header button {
+  background: hsl(200,30%,35%) ;
+  color: #FFF ;
+  border: 0 ;
+  cursor: pointer ;
+  padding: 0 10px ;
+}
+.code-search-results {
+  overflow-y: auto ;
+  max-height: 50vh ;
+}
+.code-search-result {
+  display: block ;
+  width: 100% ;
+  overflow: hidden ;
+  padding: 6px 10px ;
+  text-align: left ;
+  color: rgba(255,255,255,.85) ;
+  background: transparent ;
+  border: 0 ;
+  border-top: 1px solid rgba(255,255,255,.08) ;
+  cursor: pointer ;
+}
+.code-search-result:hover {
+  background: rgba(255,255,255,.1) ;
+}
+.code-search-result strong,.code-search-result span {
+  display: block ;
+  overflow: hidden ;
+  text-overflow: ellipsis ;
+  white-space: nowrap ;
+}
+.code-search-result strong {
+  color: hsl(180,60%,70%) ;
+  font-size: 11px ;
+}
+.code-search-result span,.code-search-empty {
+  font-family: "Ubuntu Mono", monospace ;
+  font-size: 12px ;
+}
+.code-search-empty {
+  padding: 10px ;
+  color: rgba(255,255,255,.65) ;
 }
 #editor-locked i {
   margin-right: 5px ;
