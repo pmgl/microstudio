@@ -23,6 +23,10 @@ class @Watch
     @app.runwindow.addListener (event)=>@runtimeEvent(event)
 
   reset:()->
+    @hover_callback(null) if @hover_callback?
+    @hover_expression = null
+    @hover_callback = null
+    @hover_added = false
     @watch_lines = {}
     @watch_list = ["global"]
     @text_filter = ""
@@ -46,6 +50,29 @@ class @Watch
     @watch_list_updated = true
     @start()
 
+  watchHover:(expression,callback)->
+    return if @hover_expression == expression
+    @clearHoverWatch()
+    @hover_expression = expression
+    @hover_callback = callback
+    @hover_added = @watch_list.indexOf(expression) < 0
+    @watch_list.push expression if @hover_added
+    @watch_list_updated = true
+    @start()
+
+  clearHoverWatch:()->
+    return unless @hover_expression?
+    if @hover_added
+      index = @watch_list.indexOf(@hover_expression)
+      @watch_list.splice(index,1) if index >= 0
+    @hover_expression = null
+    @hover_callback = null
+    @hover_added = false
+    if @app.appui.debug_splitbar.closed2
+      @stop()
+    else
+      @start()
+
   removeWatch:(w)->
     console.info "removing watch: "+w
     index = @watch_list.indexOf w
@@ -58,6 +85,10 @@ class @Watch
   watchUpdate:(msg)->
     return if not @started
     data = msg.data
+    if @hover_expression? and @hover_callback? and data.hasOwnProperty(@hover_expression)
+      @hover_callback(data[@hover_expression])
+    else if @hover_expression? and @hover_callback?
+      @hover_callback(null)
     #console.info data
     alive = {}
 

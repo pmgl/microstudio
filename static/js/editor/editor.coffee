@@ -29,6 +29,14 @@ class @Editor extends Manager
       #enableSnippets: true
       #enableLiveAutocompletion: true
 
+    @hover_value_tooltip = document.createElement "div"
+    @hover_value_tooltip.classList.add "code-hover-value"
+    document.body.appendChild @hover_value_tooltip
+    @editor.on "mousemove",(event)=>
+      @updateHoverValue(event)
+    @editor.on "mouseout",()=>
+      @clearHoverValue()
+
     @update_delay = 50
     @update_time = 0
     setInterval (()=>@check()),@update_delay/2
@@ -382,6 +390,97 @@ class @Editor extends Manager
   hideValueToolButtons:()->
     @color_tool_button.style.display = "none"
     @number_tool_button.style.display = "none"
+
+  updateHoverValue:(event)->
+    return @clearHoverValue() unless @app.project?.language?.startsWith("microscript")
+    return @clearHoverValue() unless document.getElementById("runiframe")?
+    return @clearHoverValue() unless @app.debug?.watch?
+
+    position = event.getDocumentPosition?()
+    return @clearHoverValue() unless position?
+    tokens = @editor.getSession().getTokens(position.row)
+    column = 0
+    identifier = false
+    for token in tokens
+      token_end = column + token.value.length
+      if position.column >= column and position.column < token_end
+        identifier = token.type.indexOf("identifier") == 0 or token.type == "variable.language"
+        break
+      column = token_end
+    return @clearHoverValue() unless identifier
+
+    line = @editor.session.getLine(position.row)
+    expression = null
+    match = null
+    regex = /[a-zA-Z_$][a-zA-Z0-9_$]*(?:\s*\.\s*[a-zA-Z_$][a-zA-Z0-9_$]*)*/g
+    while match = regex.exec(line)
+      if position.column >= match.index and position.column < match.index + match[0].length
+        text = match[0]
+        offset = position.column - match.index
+        segment_end = text.length
+        re2 = /[a-zA-Z_$][a-zA-Z0-9_$]*/g
+        while m2 = re2.exec(text)
+          if offset >= m2.index and offset < m2.index + m2[0].length
+            segment_end = m2.index + m2[0].length
+            break
+        expression = text.substring(0,segment_end).replace(/\s/g,"")
+        break
+    return @clearHoverValue() unless expression?
+
+    mouse = event.domEvent or event
+    @hover_value_tooltip.style.left = (mouse.clientX + 12) + "px"
+    @hover_value_tooltip.style.top = (mouse.clientY + 18) + "px"
+    if expression == @hover_value_expression
+      return if @hover_watch_active or @hover_value_timer?
+    else
+      @clearHoverValue()
+      @hover_value_expression = expression
+      @hover_value_tooltip.style.left = (mouse.clientX + 12) + "px"
+      @hover_value_tooltip.style.top = (mouse.clientY + 18) + "px"
+    @hover_value_timer = setTimeout (=>
+      return unless @hover_value_expression == expression
+      @hover_value_timer = null
+      @hover_watch_active = true
+      @app.debug.watch.watchHover(expression,(value)=>
+        return unless @hover_value_expression == expression
+        if value?
+          @hover_value_tooltip.textContent = expression + " = " + @formatHoverValue(value)
+          @hover_value_tooltip.style.display = "block"
+        else
+          @hover_watch_active = false
+          @hover_value_tooltip.style.display = "none"
+      )
+    ),400
+
+  clearHoverValue:()->
+    clearTimeout @hover_value_timer if @hover_value_timer?
+    @hover_value_timer = null
+    @hover_value_expression = null
+    @hover_watch_active = false
+    if @hover_value_tooltip?
+      @hover_value_tooltip.style.display = "none"
+    @app.debug.watch.clearHoverWatch() if @app.debug?.watch?
+
+  formatHoverValue:(value,depth=0)->
+    return "…" if depth > 2
+    if value?.type? and typeof value.type == "string" and value.hasOwnProperty("value")
+      switch value.type
+        when "string" then return JSON.stringify(value.value)
+        when "number" then return "" + value.value
+        when "function" then return "function()"
+        when "list" then return "[list:#{value.length}]"
+        when "object" then return value.value or "object"
+        else return "" + value.value
+    if Array.isArray(value)
+      values = ( @formatHoverValue(item,depth+1) for item in value.slice(0,5) )
+      values.push("…") if value.length > 5
+      return "[" + values.join(", ") + "]"
+    if typeof value == "object" and value?
+      keys = Object.keys(value).slice(0,5)
+      values = ("#{key}: #{@formatHoverValue(value[key],depth+1)}" for key in keys)
+      values.push("…") if Object.keys(value).length > 5
+      return "{" + values.join(", ") + "}"
+    "" + value
 
   showValueTool:()->
     return if @value_tool?

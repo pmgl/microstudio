@@ -16,6 +16,23 @@
   transition-property: left, opacity ;
   opacity: 1 ;
 }
+
+.code-hover-value {
+  position: fixed;
+  display: none;
+  z-index: 10000;
+  max-width: 360px;
+  padding: 5px 8px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 4px;
+  background: rgba(20,20,25,.95);
+  color: #fff;
+  font: 12px "Ubuntu Mono",monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+
 #code-main > #editor-view {
   top: 70px ;
 }
