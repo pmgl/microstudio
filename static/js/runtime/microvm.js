@@ -211,14 +211,14 @@ this.MicroVM = class MicroVM {
     return this.context.global[key] = value;
   }
 
-  run(program, timeout = 3000, filename = "", callback) {
+  async run(program, timeout = 3000, filename = "", callback) {
     var err, res;
     this.program = program;
     this.error_info = null;
     this.context.timeout = Date.now() + timeout;
     this.context.stack_size = 0;
     try {
-      res = this.runner.run(this.program, filename, callback);
+      res = await this.runner.run(this.program, filename, callback);
       this.storage_service.check();
       if (res != null) {
         return this.runner.toString(res);
