@@ -1,5 +1,6 @@
 this.MapEditor = class MapEditor extends Manager {
   constructor(app) {
+    var i, len, ref, tool;
     super(app);
     this.folder = "maps";
     this.item = "map";
@@ -39,6 +40,15 @@ this.MapEditor = class MapEditor extends Manager {
     this.app.appui.setAction("paste-map", () => {
       return this.paste();
     });
+    ref = ["draw", "fill", "select"];
+    for (i = 0, len = ref.length; i < len; i++) {
+      tool = ref[i];
+      ((tool) => {
+        return document.getElementById(`map-tool-${tool}`).addEventListener("click", () => {
+          return this.setTool(tool);
+        });
+      })(tool);
+    }
     document.addEventListener("keydown", (event) => {
       if (document.getElementById("mapeditor").offsetParent == null) {
         return;
@@ -55,11 +65,29 @@ this.MapEditor = class MapEditor extends Manager {
           case "Z":
             this.redo();
             break;
+          case "c":
+            this.copy();
+            break;
+          case "x":
+            this.cut();
+            break;
+          case "v":
+            this.paste();
+            break;
           default:
             return;
         }
         event.preventDefault();
         return event.stopPropagation();
+      } else if (event.key === "Delete" || event.key === "Backspace") {
+        if ((this.selected_map == null) || this.app.project.isLocked(`maps/${this.selected_map}.json`)) {
+          return;
+        }
+        this.app.project.lockFile(`maps/${this.selected_map}.json`);
+        this.mapview.deleteSelection();
+        return event.preventDefault();
+      } else if (event.key === "Escape") {
+        return this.mapview.clearSelection();
       }
     });
     this.background_color_picker = new BackgroundColorPicker(this, (color) => {
@@ -352,7 +380,7 @@ this.MapEditor = class MapEditor extends Manager {
     } catch (error) {
       err = error;
     }
-    if (Number.isInteger(w) && Number.isInteger(h) && w > 0 && h > 0 && w < 129 && h < 129 && (this.selected_map != null) && (w !== this.mapview.map.width || h !== this.mapview.map.height || bw !== this.mapview.map.block_width || bh !== this.mapview.map.block_height) && Number.isInteger(bw) && Number.isInteger(bh) && bw > 0 && bh > 0 && bw < 65 && bh < 65) {
+    if (Number.isInteger(w) && Number.isInteger(h) && w > 0 && h > 0 && w <= 256 && h <= 256 && (this.selected_map != null) && (w !== this.mapview.map.width || h !== this.mapview.map.height || bw !== this.mapview.map.block_width || bh !== this.mapview.map.block_height) && Number.isInteger(bw) && Number.isInteger(bh) && bw > 0 && bh > 0 && bw < 65 && bh < 65) {
       if (this.mapview.map.undo == null) {
         this.mapview.map.undo = new Undo();
       }
@@ -438,6 +466,22 @@ this.MapEditor = class MapEditor extends Manager {
     }
   }
 
+  setTool(tool) {
+    var e, i, len, ref, t;
+    this.mapview.setTool(tool);
+    ref = ["draw", "fill", "select"];
+    for (i = 0, len = ref.length; i < len; i++) {
+      t = ref[i];
+      e = document.getElementById(`map-tool-${t}`);
+      if (t === tool) {
+        e.classList.add("selected");
+      } else {
+        e.classList.remove("selected");
+      }
+    }
+    return document.getElementById("map-selection-hints").style.display = tool === "select" ? "block" : "none";
+  }
+
   undo() {
     var s;
     if (this.app.project.isLocked(`maps/${this.selected_map}.json`)) {
@@ -448,6 +492,7 @@ this.MapEditor = class MapEditor extends Manager {
       s = this.mapview.map.undo.undo(() => {
         return this.mapview.map.clone();
       });
+      this.mapview.floating_selection = null;
       if (s != null) {
         this.mapview.map.copyFrom(s);
         this.currentMapUpdated();
@@ -464,6 +509,7 @@ this.MapEditor = class MapEditor extends Manager {
     this.app.project.lockFile(`maps/${this.selected_map}.json`);
     if (this.mapview.map && (this.mapview.map.undo != null)) {
       s = this.mapview.map.undo.redo();
+      this.mapview.floating_selection = null;
       if (s != null) {
         this.mapview.map.copyFrom(s);
         this.currentMapUpdated();
@@ -473,22 +519,38 @@ this.MapEditor = class MapEditor extends Manager {
   }
 
   copy() {
-    return this.clipboard = this.mapview.map.clone();
+    var sel;
+    sel = this.mapview.selection;
+    if (this.mapview.tool === "select" && (sel != null)) {
+      this.clipboard = this.mapview.getCells(sel.x, sel.y, sel.w, sel.h);
+      return this.clipboard.partial = true;
+    } else {
+      return this.clipboard = this.mapview.map.clone();
+    }
   }
 
   cut() {
+    var sel;
     if (this.app.project.isLocked(`maps/${this.selected_map}.json`)) {
       return;
     }
     this.app.project.lockFile(`maps/${this.selected_map}.json`);
-    this.clipboard = this.mapview.map.clone();
     if (this.mapview.map.undo == null) {
       this.mapview.map.undo = new Undo();
     }
     if (this.mapview.map.undo.empty()) {
       this.mapview.map.undo.pushState(this.mapview.map.clone());
     }
-    this.mapview.map.clear();
+    sel = this.mapview.selection;
+    if (this.mapview.tool === "select" && (sel != null)) {
+      this.clipboard = this.mapview.getCells(sel.x, sel.y, sel.w, sel.h);
+      this.clipboard.partial = true;
+      this.mapview.floating_selection = null;
+      this.mapview.clearCells(sel.x, sel.y, sel.w, sel.h);
+    } else {
+      this.clipboard = this.mapview.map.clone();
+      this.mapview.map.clear();
+    }
     this.mapview.map.undo.pushState(this.mapview.map.clone());
     this.currentMapUpdated();
     return this.mapChanged();
@@ -506,7 +568,12 @@ this.MapEditor = class MapEditor extends Manager {
       if (this.mapview.map.undo.empty()) {
         this.mapview.map.undo.pushState(this.mapview.map.clone());
       }
-      this.mapview.map.copyFrom(this.clipboard);
+      if (this.clipboard.partial) {
+        this.setTool("select");
+        this.mapview.pasteCells(this.clipboard);
+      } else {
+        this.mapview.map.copyFrom(this.clipboard);
+      }
       this.mapview.map.undo.pushState(this.mapview.map.clone());
       this.currentMapUpdated();
       return this.mapChanged();

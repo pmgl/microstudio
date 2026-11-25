@@ -594,11 +594,11 @@ class @SpriteEditor extends Manager
 
     if picker
       #@spriteview.canvas.classList.add "colorpicker"
-      @spriteview.canvas.style.cursor = "url( '/img/eyedropper.svg' ) 0 24, pointer"
+      @spriteview.updateCursor()
       document.getElementById("eyedropper").classList.add "selected"
     else
       #@spriteview.canvas.classList.remove "colorpicker"
-      @spriteview.canvas.style.cursor = "crosshair"
+      @spriteview.updateCursor()
       document.getElementById("eyedropper").classList.remove "selected"
 
   updateSelectionHints:()->

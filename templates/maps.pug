@@ -46,7 +46,29 @@ div.maps-right
   div#map-editor-locked
   div#mapeditor-container
     div.mapeditor#mapeditor
-      div#mapeditor-wrapper
+      div#mapeditor-wrapper(tabindex="0")
+      div#map-tools
+        div.spritetoolbutton.selected#map-tool-draw(title=translator.get("Draw"))
+          i.fa.fa-pencil-alt
+          br
+          span #{translator.get("Draw")}
+        div.spritetoolbutton#map-tool-fill(title=translator.get("Fill"))
+          i.fa.fa-fill-drip
+          br
+          span #{translator.get("Fill")}
+        div.spritetoolbutton#map-tool-select(title=translator.get("Select"))
+          i.fa.fa-vector-square
+          br
+          span #{translator.get("Select")}
+        div#map-selection-hints
+          div.selection-hint#map-selection-hint-move <span>⇧</span><i class="fa fa-mouse-pointer"></i><br />#{translator.get("Move")}
+          div.selection-hint#map-selection-hint-clone <span>Alt</span><i class="fa fa-mouse-pointer"></i><br />#{translator.get("Clone")}
+      div#map-zoom
+        i.fa.fa-search-plus#map-zoom-plus(title=translator.get("Zoom in"))
+        br
+        i.fa.fa-search-minus#map-zoom-minus(title=translator.get("Zoom out"))
+        br
+        i.fa.fa-expand#map-zoom-fit(title=translator.get("Fit to view"))
       div#mapeditor-bottombar
         div.pick-color-button#map-background-color(title=translator.get("Background"))
         select#map-underlay-select

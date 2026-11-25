@@ -286,6 +286,7 @@ class @Concatenator
       "/js/util/random.js"
       "/js/util/splitbar.js"
       "/js/util/pixelartscaler.js"
+      "/js/util/canvasviewport.js"
 
       "/js/runtime/microvm.js"
 

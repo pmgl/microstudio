@@ -301,6 +301,8 @@
 }
 #sprite-zoom i {
   margin-top: 8px ;
+  width: 18px ;
+  text-align: center ;
   padding: 8px ;
   border-radius: 20px ;
   font-size: 18px ;
@@ -365,11 +367,8 @@
   cursor: pointer ;
 }
 .spriteeditor canvas {
-  box-shadow: 0 0 20px #000 ;
-  /*border: solid 1px rgba(255,255,255,.2);
-  border-radius: 4px ;*/
-  margin: 40px ;
   display: none ;
+  vertical-align: top ;
   cursor: crosshair ;
 }
 .spriteeditor canvas.colorpicker {

@@ -32,6 +32,10 @@ class @MapEditor extends Manager
     @app.appui.setAction "cut-map",()=>@cut()
     @app.appui.setAction "paste-map",()=>@paste()
 
+    for tool in ["draw","fill","select"]
+      do (tool)=>
+        document.getElementById("map-tool-#{tool}").addEventListener "click",()=>@setTool(tool)
+
     document.addEventListener "keydown",(event)=>
       return if not document.getElementById("mapeditor").offsetParent?
       #console.info event
@@ -41,10 +45,20 @@ class @MapEditor extends Manager
         switch event.key
           when "z" then @undo()
           when "Z" then @redo()
+          when "c" then @copy()
+          when "x" then @cut()
+          when "v" then @paste()
           else return
 
         event.preventDefault()
         event.stopPropagation()
+      else if event.key == "Delete" or event.key == "Backspace"
+        return if not @selected_map? or @app.project.isLocked("maps/#{@selected_map}.json")
+        @app.project.lockFile("maps/#{@selected_map}.json")
+        @mapview.deleteSelection()
+        event.preventDefault()
+      else if event.key == "Escape"
+        @mapview.clearSelection()
 
     @background_color_picker = new BackgroundColorPicker this,(color)=>
       @mapview.update()
@@ -296,7 +310,7 @@ class @MapEditor extends Manager
       bh = Number.parseFloat(bh)
     catch err
 
-    if Number.isInteger(w) and Number.isInteger(h) and w > 0 and h > 0 and w < 129 and h < 129 and @selected_map? and (w != @mapview.map.width or h != @mapview.map.height or bw != @mapview.map.block_width or bh != @mapview.map.block_height) and Number.isInteger(bw) and Number.isInteger(bh) and bw > 0 and bh > 0 and bw < 65 and bh < 65
+    if Number.isInteger(w) and Number.isInteger(h) and w > 0 and h > 0 and w <= 256 and h <= 256 and @selected_map? and (w != @mapview.map.width or h != @mapview.map.height or bw != @mapview.map.block_width or bh != @mapview.map.block_height) and Number.isInteger(bw) and Number.isInteger(bh) and bw > 0 and bh > 0 and bw < 65 and bh < 65
       @mapview.map.undo = new Undo() if not @mapview.map.undo?
       @mapview.map.undo.pushState @mapview.map.clone() if @mapview.map.undo.empty()
       @mapview.map.resize(w,h,bw,bh)
@@ -363,11 +377,22 @@ class @MapEditor extends Manager
       @map_size_validator.update()
       @map_blocksize_validator.update()
 
+  setTool:(tool)->
+    @mapview.setTool tool
+    for t in ["draw","fill","select"]
+      e = document.getElementById("map-tool-#{t}")
+      if t == tool
+        e.classList.add "selected"
+      else
+        e.classList.remove "selected"
+    document.getElementById("map-selection-hints").style.display = if tool == "select" then "block" else "none"
+
   undo:()->
     return if @app.project.isLocked("maps/#{@selected_map}.json")
     @app.project.lockFile("maps/#{@selected_map}.json")
     if @mapview.map and @mapview.map.undo?
       s = @mapview.map.undo.undo ()=>@mapview.map.clone()
+      @mapview.floating_selection = null
       if s?
         @mapview.map.copyFrom s
         @currentMapUpdated()
@@ -378,21 +403,34 @@ class @MapEditor extends Manager
     @app.project.lockFile("maps/#{@selected_map}.json")
     if @mapview.map and @mapview.map.undo?
       s = @mapview.map.undo.redo()
+      @mapview.floating_selection = null
       if s?
         @mapview.map.copyFrom s
         @currentMapUpdated()
         @mapChanged()
 
   copy:()->
-    @clipboard = @mapview.map.clone()
+    sel = @mapview.selection
+    if @mapview.tool == "select" and sel?
+      @clipboard = @mapview.getCells sel.x,sel.y,sel.w,sel.h
+      @clipboard.partial = true
+    else
+      @clipboard = @mapview.map.clone()
 
   cut:()->
     return if @app.project.isLocked("maps/#{@selected_map}.json")
     @app.project.lockFile("maps/#{@selected_map}.json")
-    @clipboard = @mapview.map.clone()
     @mapview.map.undo = new Undo() if not @mapview.map.undo?
     @mapview.map.undo.pushState @mapview.map.clone() if @mapview.map.undo.empty()
-    @mapview.map.clear()
+    sel = @mapview.selection
+    if @mapview.tool == "select" and sel?
+      @clipboard = @mapview.getCells sel.x,sel.y,sel.w,sel.h
+      @clipboard.partial = true
+      @mapview.floating_selection = null
+      @mapview.clearCells sel.x,sel.y,sel.w,sel.h
+    else
+      @clipboard = @mapview.map.clone()
+      @mapview.map.clear()
     @mapview.map.undo.pushState @mapview.map.clone()
     @currentMapUpdated()
     @mapChanged()
@@ -403,7 +441,11 @@ class @MapEditor extends Manager
     if @clipboard?
       @mapview.map.undo = new Undo() if not @mapview.map.undo?
       @mapview.map.undo.pushState @mapview.map.clone() if @mapview.map.undo.empty()
-      @mapview.map.copyFrom(@clipboard)
+      if @clipboard.partial
+        @setTool "select"
+        @mapview.pasteCells @clipboard
+      else
+        @mapview.map.copyFrom(@clipboard)
       @mapview.map.undo.pushState @mapview.map.clone()
       @currentMapUpdated()
       @mapChanged()

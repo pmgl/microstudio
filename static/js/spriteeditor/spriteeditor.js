@@ -532,7 +532,7 @@ this.SpriteEditor = class SpriteEditor extends Manager {
     var img;
     data = "data:image/png;base64," + data;
     this.ignore_changes = true;
-    img = new Image;
+    img = new Image();
     img.src = data;
     img.crossOrigin = "Anonymous";
     return img.onload = () => {
@@ -579,7 +579,7 @@ this.SpriteEditor = class SpriteEditor extends Manager {
       copy.classList.remove("fa-check");
       return copy.classList.add("fa-copy");
     }), 3000);
-    return navigator.clipboard.writeText(`"${colortext.value}"`);
+    return navigator.clipboard.writeText(`\"${colortext.value}\"`);
   }
 
   saveDimensionChange(value) {
@@ -756,11 +756,11 @@ this.SpriteEditor = class SpriteEditor extends Manager {
     this.spriteview.colorpicker = picker;
     if (picker) {
       //@spriteview.canvas.classList.add "colorpicker"
-      this.spriteview.canvas.style.cursor = "url( '/img/eyedropper.svg' ) 0 24, pointer";
+      this.spriteview.updateCursor();
       return document.getElementById("eyedropper").classList.add("selected");
     } else {
       //@spriteview.canvas.classList.remove "colorpicker"
-      this.spriteview.canvas.style.cursor = "crosshair";
+      this.spriteview.updateCursor();
       return document.getElementById("eyedropper").classList.remove("selected");
     }
   }
@@ -847,7 +847,7 @@ this.SpriteEditor = class SpriteEditor extends Manager {
         this.app.appui.showNotification(this.app.translator.get("Image file is too heavy"));
         return;
       }
-      img = new Image;
+      img = new Image();
       img.src = reader.result;
       return img.onload = () => {
         var name, sprite;
