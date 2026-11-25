@@ -1364,7 +1364,7 @@ class @Processor
           op_index = length # stop the thread
 
         when 200 # COMPILED
-          stack_index = arg1[op_index](stack,stack_index,locals,locals_offset,object,global)
+          stack_index = arg1[op_index](stack,stack_index,locals,locals_offset,object,global,context,@,routine)
           op_index++
 
         else
