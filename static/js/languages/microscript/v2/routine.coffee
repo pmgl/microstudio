@@ -8,7 +8,7 @@ class @Routine
     @label_count = 0
     @labels = {}
 
-    @transpile = false
+    @transpile = true
     @import_refs = []
     @import_values = []
     @import_self = -1
